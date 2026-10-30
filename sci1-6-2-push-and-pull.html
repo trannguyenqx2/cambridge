@@ -194,6 +194,33 @@ table.src td,table.src th{border:1px solid var(--line);padding:8px 10px;text-ali
 .tile{border:2px solid var(--line);background:#fff8e6;border-radius:11px;padding:8px 15px;font-size:17px;font-weight:700;cursor:pointer}
 .tile.sel{border-color:var(--orange);background:#fff3e6}
 .tile.used{opacity:.35;cursor:default}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.langseg button.locked{opacity:.6}
+.chipbtn.sel{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.chipbtn.wrong{border-color:#e5a3a3;background:#fdf0f0;color:#b03a3a}
+.arrowbtn.sel{border-color:var(--acc);background:#eef6ff}
+.arrowbtn.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.blank.wrong{color:#b03a3a;border-color:#e5a3a3;background:#fdf0f0;cursor:default}
+.placedchip.neu{border-color:var(--acc);background:#eef6ff;cursor:pointer}
+.placedchip.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.excard.selcard{border-color:var(--acc)}
 @media(max-width:900px){
   .console{display:none}
   .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
@@ -248,11 +275,13 @@ table.src td,table.src th{border:1px solid var(--line);padding:8px 10px;text-ali
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -329,6 +358,8 @@ table.src td,table.src th{border:1px solid var(--line);padding:8px 10px;text-ali
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -339,6 +370,7 @@ table.src td,table.src th{border:1px solid var(--line);padding:8px 10px;text-ali
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -369,8 +401,10 @@ table.src td,table.src th{border:1px solid var(--line);padding:8px 10px;text-ali
     <div id="exBody"></div>
     <div class="btnrow" style="margin-top:16px">
       <button id="exClose"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <span class="small" id="exFoot"></span>
+      <button class="primary" id="exSubmit"></button>
     </div>
   </div>
 </div>
@@ -392,8 +426,32 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 
 /* ================= language: 3 modes — en / both (EN+VI) / vi =================
    Static HTML text uses data-en / data-vi attributes.
-   Everything rendered by JS uses {en, vi} string objects with bi()/L(). */
-let lang='both';
+   Everything rendered by JS uses {en, vi} string objects with bi()/L().
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }              // one language (both -> EN)
 function bi(s){                                                // EN main + VI gloss under, in 'both'
   if(lang==='en') return esc(s.en);
@@ -412,7 +470,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 const fv=v=>{ const s=(Math.round(v*10)/10).toString(); return lang==='vi'? s.replace('.',',') : s; };
 
@@ -490,7 +548,23 @@ const STR={
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
   qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
-  crateName:{en:'Wagon',vi:'Xe kéo (wagon)'}
+  crateName:{en:'Wagon',vi:'Xe kéo (wagon)'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  notThisStep:{en:'That is not for this step — look at the step card!',vi:'Vật đó không thuộc bước này — hãy nhìn thẻ bước học!'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const OBJECTS={
   book:{emoji:'📕',name:{en:'Science book',vi:'Quyển sách (book)'},dist:4},
@@ -649,7 +723,7 @@ const EX1=[
  {id:'car',emoji:'🚗',en:'Push a toy car',vi:'Đẩy ô tô đồ chơi',ans:'push'},
  {id:'sled',emoji:'🛷',en:'Pull a sled',vi:'Kéo xe trượt tuyết',ans:'pull'}
 ];
-const EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
 const EX2=[
  {id:'door',emoji:'🚪',en:'door',vi:'cánh cửa',ans:'push'},
  {id:'drawer',emoji:'🗄️',en:'drawer',vi:'ngăn kéo',ans:'pull'},
@@ -658,7 +732,7 @@ const EX2=[
  {id:'swing',emoji:'🛝',en:'swing',vi:'xích đu',ans:'push'},
  {id:'rope',emoji:'🪢',en:'rope',vi:'sợi dây',ans:'pull'}
 ];
-const EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
 const EX3=[
  {id:'a',kind:'kick',correct:'➡️',arrows:['➡️','⬅️','⬆️']},
  {id:'b',kind:'head',correct:'↘️',arrows:['↘️','⬆️','⬅️']}
@@ -675,34 +749,83 @@ const EX4SENTS=[
  {enPre:'They can make the ball go faster by pushing it',enPost:'.',viPre:'Các bạn có thể làm quả bóng đi nhanh hơn bằng cách đẩy nó',viPost:'.',ans:'harder'},
  {enPre:'They can make it go slowly with a',enPost:'.',viPre:'Các bạn có thể làm nó đi chậm lại bằng một',viPost:'.',ans:'little'}
 ];
-function freshEx(){ return {e1:{},e2:{},e3:{},e4:[null,null,null,null],e4lock:[false,false,false,false]}; }
-function sanitizeEx(x){
-  const ex=freshEx();
+/* Mechanics v2 submit-mode exercises: EXANS holds the learner's current
+   (unsubmitted, freely changeable, feedback-free) answers; EXDONE holds the
+   correct sets of the latest submission. EX_TOTAL = 8 + 6 + 2 + 4 = 20. */
+const EX_TOTAL=EX1.length+EX2.length+EX3.length+EX4SENTS.length;
+function freshExAns(){ return {e1:{},e2:{},e3:{},e4:[null,null,null,null]}; }
+function freshExDone(){ return {e1:{},e2:{},e3:{},e4lock:[false,false,false,false]}; }
+let EX3_ORD=EX3.map(sc=>fyIdx(sc.arrows.length));
+function sanitizeExAns(x){
+  const ex=freshExAns();
   if(!x||typeof x!=='object') return ex;
-  if(x.e1&&typeof x.e1==='object') EX1.forEach(c=>{ if(x.e1[c.id]) ex.e1[c.id]=true; });
-  if(x.e2&&typeof x.e2==='object') EX2.forEach(c=>{ if(x.e2[c.id]===c.ans) ex.e2[c.id]=c.ans; });
-  if(x.e3&&typeof x.e3==='object') EX3.forEach(sc=>{ if(x.e3[sc.id]) ex.e3[sc.id]=true; });
+  if(x.e1&&typeof x.e1==='object') EX1.forEach(c=>{ if(x.e1[c.id]==='push'||x.e1[c.id]==='pull') ex.e1[c.id]=x.e1[c.id]; });
+  if(x.e2&&typeof x.e2==='object') EX2.forEach(c=>{ if(x.e2[c.id]==='push'||x.e2[c.id]==='pull') ex.e2[c.id]=x.e2[c.id]; });
+  if(x.e3&&typeof x.e3==='object') EX3.forEach(sc=>{ if(sc.arrows.indexOf(x.e3[sc.id])>=0) ex.e3[sc.id]=x.e3[sc.id]; });
   if(Array.isArray(x.e4)) EX4SENTS.forEach((s,i)=>{ const t=x.e4[i]; if(t&&EX4TILES.some(y=>y.id===t)) ex.e4[i]=t; });
-  if(Array.isArray(x.e4lock)) EX4SENTS.forEach((s,i)=>{ if(x.e4lock[i]&&ex.e4[i]===s.ans) ex.e4lock[i]=true; });
   return ex;
+}
+function sanitizeExDone(x){
+  const d=freshExDone();
+  if(!x||typeof x!=='object') return d;
+  if(x.e1&&typeof x.e1==='object') EX1.forEach(c=>{ if(x.e1[c.id]) d.e1[c.id]=true; });
+  if(x.e2&&typeof x.e2==='object') EX2.forEach(c=>{ if(x.e2[c.id]) d.e2[c.id]=true; });
+  if(x.e3&&typeof x.e3==='object') EX3.forEach(sc=>{ if(x.e3[sc.id]) d.e3[sc.id]=true; });
+  if(Array.isArray(x.e4lock)) EX4SENTS.forEach((s,i)=>{ if(x.e4lock[i]) d.e4lock[i]=true; });
+  return d;
 }
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci1-6-2';
 let doneSteps=new Set(), curStep=0, pred=null, records={}, selObj='book';
-let EX=freshEx();
+let EXANS=freshExAns(), EXDONE=freshExDone();
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.pred&&OBJECTS[s.pred]) pred=s.pred;
     if(s.records&&typeof s.records==='object') records=s.records;
     if(s.selObj&&OBJECTS[s.selObj]) selObj=s.selObj;
-    if(s.ex) EX=sanitizeEx(s.ex);
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.ex&&typeof s.ex==='object'&&s.ex.v===2){
+      EXANS=sanitizeExAns(s.ex);
+      EXDONE=sanitizeExDone(s.exDone);
+      exRevealed=!!s.exSub;
+    }else if(s.ex&&typeof s.ex==='object'){
+      /* migrate an old instant-feedback save: its earned DONE sets become the
+         answers, already revealed, with the old total as the submitted best */
+      const old=s.ex;
+      if(old.e1&&typeof old.e1==='object') EX1.forEach(c=>{ if(old.e1[c.id]){ EXANS.e1[c.id]=c.ans; EXDONE.e1[c.id]=true; } });
+      if(old.e2&&typeof old.e2==='object') EX2.forEach(c=>{ if(old.e2[c.id]===c.ans){ EXANS.e2[c.id]=c.ans; EXDONE.e2[c.id]=true; } });
+      if(old.e3&&typeof old.e3==='object') EX3.forEach(sc=>{ if(old.e3[sc.id]){ EXANS.e3[sc.id]=sc.correct; EXDONE.e3[sc.id]=true; } });
+      if(Array.isArray(old.e4)) EX4SENTS.forEach((st,i)=>{ const t=old.e4[i]; if(t&&EX4TILES.some(y=>y.id===t)) EXANS.e4[i]=t; });
+      if(Array.isArray(old.e4lock)) EX4SENTS.forEach((st,i)=>{ if(old.e4lock[i]&&EXANS.e4[i]===st.ans) EXDONE.e4lock[i]=true; });
+      const migrated=Object.keys(EXDONE.e1).length+Object.keys(EXDONE.e2).length+Object.keys(EXDONE.e3).length+EXDONE.e4lock.filter(Boolean).length;
+      if(migrated>0){ exRevealed=true; exBest=Math.max(exBest,migrated); }
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
 /* summary record for the site hub level map (additive only; main record schema unchanged) */
 const SUMKEY='camb:sum:sci1-6-2';
 let qBest=0;
@@ -711,10 +834,13 @@ try{
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScore(),et:20,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2);
+     e is the best SUBMITTED exercise score */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exBest,et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,pred:pred,records:records,selObj:selObj,ex:EX})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,pred:pred,records:records,selObj:selObj,ex:{v:2,e1:EXANS.e1,e2:EXANS.e2,e3:EXANS.e3,e4:EXANS.e4},exDone:EXDONE,exSub:exRevealed,exBest:exBest,ack:[...ackSet],mist:mist})); }catch(e){}
   saveSum();
 }
 /* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
@@ -726,6 +852,65 @@ function newTrack(){return {
   s6sel:new Set(), s6badMsg:false
 };}
 let T=newTrack();
+
+/* ================= Mechanics v2: notice, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function wipeStepEvidence(){
+  /* wipe ONLY the current step's collected evidence (the same trackers the
+     Reset button clears, plus step 5's persisted guess + results table) */
+  T=newTrack();
+  if(curStep===4){ pred=null; records={}; }
+  applyStepStart(curStep);
+}
+function resetStepEvidence(){
+  anims.length=0; wipeStepEvidence();
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderObjRow(); updateRecordBtn(); renderTable();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
+}
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -804,6 +989,13 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===5?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? conclLines(curStep).map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  const acked=ackSet.has(curStep);
+  paintAckGate();
+  $('btnNext').disabled=!(done&&acked);
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -834,7 +1026,7 @@ function renderStepExtra(){
       d.className='piccard'+(T.s3correct.has(c.id)?' right':'')+(T.s3sel===c.id?' sel':'');
       d.id='card_'+c.id;
       d.innerHTML='<span class="em">'+c.emoji+'</span>'+bi(c);
-      d.onclick=()=>{ if(T.s3correct.has(c.id)) return; T.s3sel=c.id; renderStepExtra(); refreshEvidence(); };
+      d.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } if(T.s3correct.has(c.id)) return; T.s3sel=c.id; renderStepExtra(); refreshEvidence(); };
       grid.appendChild(d);
     });
     box.appendChild(grid);
@@ -855,7 +1047,7 @@ function renderStepExtra(){
     OBJORDER.forEach(o=>{
       const b=document.createElement('button'); b.className='predbtn'+(pred===o?' sel':'');
       b.innerHTML=OBJECTS[o].emoji+' '+biInl(OBJECTS[o].name);
-      b.onclick=()=>{ pred=o; saveProg(); renderStepExtra(); refreshEvidence(); };
+      b.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } pred=o; saveProg(); renderStepExtra(); refreshEvidence(); };
       row.appendChild(b);
     });
     box.appendChild(row);
@@ -870,8 +1062,9 @@ function renderStepExtra(){
       d.id='safe_'+c.id;
       d.innerHTML='<span class="em">'+c.emoji+'</span><span>'+bi(c)+'</span>';
       d.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
         if(T.s6sel.has(c.id)){ T.s6sel.delete(c.id); if(!c.safe) T.s6badMsg=false; }
-        else{ T.s6sel.add(c.id); if(!c.safe){ T.s6badMsg=true; d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); } }
+        else{ T.s6sel.add(c.id); if(!c.safe){ T.s6badMsg=true; addMistake(); if(stepLocked()) return; d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); } }
         renderStepExtra(); refreshEvidence();
       };
       list.appendChild(d);
@@ -880,11 +1073,13 @@ function renderStepExtra(){
   }
 }
 function answerCard(ans){
+  if(stepLocked()){ flashReadBtn(); return; }
   if(!T.s3sel) return;
   const c=CARDS.find(x=>x.id===T.s3sel);
   if(c.ans===ans){
     T.s3correct.add(c.id); T.s3sel=null; renderStepExtra(); refreshEvidence();
   }else{
+    addMistake();
     const el=$('card_'+c.id);
     if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); }
   }
@@ -893,15 +1088,18 @@ function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
   anims.length=0;
   T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps(); renderObjRow(); updateStretchLock(); updateRecordBtn();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
-  anims.length=0; T=newTrack();
-  if(curStep===4) pred=null;
-  applyStepStart(curStep); saveProg(); renderSteps(); updateRecordBtn();
+  anims.length=0; wipeStepEvidence();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
+  saveProg(); renderSteps(); renderObjRow(); updateRecordBtn(); renderTable();
 };
 $('btnDemo').onclick=()=>{
   const i=curStep;
@@ -968,6 +1166,7 @@ function renderObjRow(){
   });
 }
 function selectObj(o){
+  if(curStep===4&&stepLocked()){ flashReadBtn(); return; }
   selObj=o; objPos[o]=0; lastLaunch=null;
   saveProg(); renderObjRow(); applySceneMode(); updateRecordBtn(); updateObjSprite();
 }
@@ -994,6 +1193,7 @@ function updateRecordBtn(){
   $('btnRecord').disabled=!(curStep===4&&lastLaunch&&lastLaunch.byUser&&!lastLaunch.recorded);
 }
 $('btnRecord').onclick=()=>{
+  if(stepLocked()){ flashReadBtn(); return; }
   if(!lastLaunch||!lastLaunch.byUser) return;
   records[lastLaunch.obj]=lastLaunch.dist;
   lastLaunch.recorded=true;
@@ -1007,58 +1207,66 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals score, correct answers and
+   explanations. qBest only ever moves on a submitted result. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
   $('qProg').innerHTML=biInl(prog);
   $('qText').innerHTML=bi(it.q);
   $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+function showQuizResults(){
   qFinished=true;
   const s=qScoreNow();
   if(s>qBest) qBest=s;
   saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
   $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let h='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    h+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) h+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    h+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=h; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -1080,6 +1288,7 @@ let wallet=loadWallet();
 const BOT_CODE='6.2';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1181,24 +1390,35 @@ const EXINSTR=[
  {en:'A push can be shown with an arrow. Tap the arrow that shows each push.',vi:'Lực đẩy được vẽ bằng một mũi tên. Chạm vào mũi tên chỉ đúng lực đẩy.'},
  {en:'Tap a word tile, then tap a gap to fill it. Tap a filled gap to take its word back. When you are ready, tap Check.',vi:'Chạm vào một thẻ từ, rồi chạm vào chỗ trống để điền. Chạm vào chỗ trống đã điền để lấy từ lại. Khi sẵn sàng, bấm Kiểm tra.'}
 ];
-let exTab=0, exSel=null, exTile=null, exHintTxt=null;
-function exCounts(){
-  return [Object.keys(EX.e1).length,Object.keys(EX.e2).length,Object.keys(EX.e3).length,EX.e4lock.filter(Boolean).length];
+let exTab=0, exSel=null, exTile=null;
+const EXMAX=[EX1.length,EX2.length,EX3.length,EX4SENTS.length];
+function exAnsweredCounts(){
+  return [Object.keys(EXANS.e1).length,Object.keys(EXANS.e2).length,Object.keys(EXANS.e3).length,EXANS.e4.filter(t=>t!==null).length];
 }
-function exScore(){ return exCounts().reduce((a,b)=>a+b,0); }
-function exDone(k){ const c=exCounts(), m=[8,6,2,4]; return c[k]>=m[k]; }
-function openEx(){ $('exModal').classList.add('open'); renderEx(); }
+function exCorrectCounts(){
+  return [Object.keys(EXDONE.e1).length,Object.keys(EXDONE.e2).length,Object.keys(EXDONE.e3).length,EXDONE.e4lock.filter(Boolean).length];
+}
+function exDone(k){ return exRevealed&&exCorrectCounts()[k]>=EXMAX[k]; }
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderEx();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('exClose').onclick=closeEx;
 $('btnExTop').onclick=openEx;
 function exBody1(){
   let h='<div class="exgrid">';
   EX1_ORDER.forEach(c=>{
-    const done=!!EX.e1[c.id];
-    h+='<div class="excard'+(done?' done':'')+'"><span class="em">'+c.emoji+'</span>'+bi(c)+
+    const chosen=EXANS.e1[c.id];
+    const cardDone=exRevealed&&chosen===c.ans;
+    h+='<div class="excard'+(cardDone?' done':'')+(chosen&&!exRevealed?' selcard':'')+'"><span class="em">'+c.emoji+'</span>'+bi(c)+
       '<div class="chiprow">'+
-      '<button class="chipbtn'+(done&&c.ans==='push'?' right':'')+'" data-ex1="'+c.id+':push">'+esc(L(STR.binPush))+'</button>'+
-      '<button class="chipbtn'+(done&&c.ans==='pull'?' right':'')+'" data-ex1="'+c.id+':pull">'+esc(L(STR.binPull))+'</button>'+
+      ['push','pull'].map(ans=>{
+        let cls='chipbtn';
+        if(exRevealed){ if(ans===c.ans) cls+=' right'; else if(chosen===ans) cls+=' wrong'; }
+        else if(chosen===ans) cls+=' sel';
+        return '<button class="'+cls+'" data-ex1="'+c.id+':'+ans+'">'+esc(L(ans==='push'?STR.binPush:STR.binPull))+'</button>';
+      }).join('')+
       '</div></div>';
   });
   return h+'</div>';
@@ -1206,14 +1426,18 @@ function exBody1(){
 function exBody2(){
   let h='<div class="tray">';
   EX2_ORDER.forEach(c=>{
-    if(EX.e2[c.id]) return;
+    if(EXANS.e2[c.id]) return;
     h+='<button class="objchip'+(exSel===c.id?' sel':'')+'" data-ex2chip="'+c.id+'"><span class="em">'+c.emoji+'</span> '+biInl(c)+'</button>';
   });
   h+='</div><div class="exboxes">';
   ['push','pull'].forEach(box=>{
-    const full=EX2.filter(c=>c.ans===box).every(c=>EX.e2[c.id]===box);
+    const full=exRevealed&&EX2.filter(c=>c.ans===box).every(c=>EXDONE.e2[c.id]);
     h+='<div class="exbox2'+(full?' full':'')+'" data-ex2box="'+box+'"><h4>'+biInl(box==='push'?EXSTR.boxPush:EXSTR.boxPull)+'</h4>';
-    EX2.filter(c=>EX.e2[c.id]===box).forEach(c=>{ h+='<span class="placedchip">'+c.emoji+' '+esc(L(c))+'</span>'; });
+    EX2.filter(c=>EXANS.e2[c.id]===box).forEach(c=>{
+      let cls='placedchip neu';
+      if(exRevealed) cls='placedchip'+(c.ans===box?'':' wrong');
+      h+='<span class="'+cls+'" data-ex2placed="'+c.id+'">'+c.emoji+' '+esc(L(c))+'</span>';
+    });
     h+='</div>';
   });
   return h+'</div>';
@@ -1221,7 +1445,8 @@ function exBody2(){
 function exBody3(){
   let h='';
   EX3.forEach((sc,si)=>{
-    const done=!!EX.e3[sc.id];
+    const chosen=EXANS.e3[sc.id];
+    const done=exRevealed&&chosen===sc.correct;
     h+='<div class="exscene">';
     if(sc.kind==='kick'){
       h+='<div class="actors"><span>🧒</span><span class="ball">⚽</span>'+(done?'<span style="font-size:54px;line-height:1">➡️</span>':'')+'</div><div class="ground"></div>';
@@ -1231,15 +1456,21 @@ function exBody3(){
     if(done) h+='<span class="bigcheck">✅</span>';
     h+='<div class="excaption">'+bi(si===0?EXSTR.capA:EXSTR.capB)+'</div>';
     h+='<div class="arrowrow"><span class="small">'+esc(L(EXSTR.tapArrow))+'</span>';
-    sc.arrows.forEach(a=>{ h+='<button class="arrowbtn'+(done&&a===sc.correct?' right':'')+'" data-ex3="'+sc.id+':'+a+'">'+a+'</button>'; });
+    (EX3_ORD[si]||sc.arrows.map((_,i)=>i)).forEach(ai=>{ const a=sc.arrows[ai];
+      let cls='arrowbtn';
+      if(exRevealed){ if(a===sc.correct) cls+=' right'; else if(chosen===a) cls+=' wrong'; }
+      else if(chosen===a) cls+=' sel';
+      h+='<button class="'+cls+'" data-ex3="'+sc.id+':'+a+'">'+a+'</button>'; });
     h+='</div></div>';
   });
   return h;
 }
 function exSentHtml(i){
-  const s=EX4SENTS[i], t=EX.e4[i]? EX4TILES.find(y=>y.id===EX.e4[i]) : null;
+  const s=EX4SENTS[i], t=EXANS.e4[i]? EX4TILES.find(y=>y.id===EXANS.e4[i]) : null;
   const pre=lang==='vi'? s.viPre : s.enPre, post=lang==='vi'? s.viPost : s.enPost;
-  let h='<div class="sent">'+esc(pre)+' <span class="blank'+(t?' filled':'')+(EX.e4lock[i]?' right':'')+'" data-blank="'+i+'">'+(t? esc(L(t)) : '______')+'</span>'+esc(post);
+  let bcls='blank'+(t?' filled':'');
+  if(exRevealed&&t) bcls+= (EXANS.e4[i]===s.ans? ' right':' wrong');
+  let h='<div class="sent">'+esc(pre)+' <span class="'+bcls+'" data-blank="'+i+'">'+(t? esc(L(t)) : '______')+'</span>'+esc(post);
   if(lang==='both') h+='<span class="gloss">'+esc(s.viPre)+' ______'+esc(s.viPost)+'</span>';
   return h+'</div>';
 }
@@ -1248,90 +1479,109 @@ function exBody4(){
   EX4SENTS.forEach((s,i)=>{ h+=exSentHtml(i); });
   h+='<div class="tray">';
   EX4TILES.forEach(t=>{
-    const used=EX.e4.indexOf(t.id)>=0;
+    const used=EXANS.e4.indexOf(t.id)>=0;
     h+='<button class="tile'+(exTile===t.id?' sel':'')+(used?' used':'')+'" data-tile="'+t.id+'">'+biInl(t)+'</button>';
   });
-  h+='</div><div class="btnrow"><button class="primary" id="ex4Check">'+esc(L(EXSTR.check))+'</button></div>';
+  h+='</div>';
   return h;
 }
 function renderEx(){
   $('exTitle').innerHTML=biInl(EXSTR.title);
-  const sc=exScore();
-  $('exScoreLine').innerHTML= sc>=20? bi(EXSTR.great) : bi(EXSTR.score(sc));
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  const counts=exRevealed? exCorrectCounts() : exAnsweredCounts();
+  if(exRevealed){
+    const total=exCorrectCounts().reduce((a,b)=>a+b,0);
+    $('exScoreLine').innerHTML= total>=EX_TOTAL? bi(EXSTR.great) : bi(EXSTR.score(total));
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCounts().reduce((a,b)=>a+b,0),EX_TOTAL));
+  }
   $('exFoot').innerHTML=biInl(EXSTR.foot);
   const tabs=$('exTabs'); tabs.innerHTML='';
   EXTABS.forEach((t,i)=>{
     const b=document.createElement('button');
     b.className='extab'+(i===exTab?' on':'')+(exDone(i)?' done':'');
     b.textContent=(i+1)+' · '+L(t.kind)+(exDone(i)?' ✓':'');
-    b.onclick=()=>{ exTab=i; exSel=null; exTile=null; exHintTxt=null; renderEx(); };
+    b.onclick=()=>{ exTab=i; exSel=null; exTile=null; renderEx(); };
     tabs.appendChild(b);
   });
-  const counts=exCounts(), maxs=[8,6,2,4];
-  let h='<div class="exname">'+biInl(EXTABS[exTab].name)+' <span class="exprog">'+counts[exTab]+' / '+maxs[exTab]+'</span></div>';
+  let h='<div class="exname">'+biInl(EXTABS[exTab].name)+' <span class="exprog">'+counts[exTab]+' / '+EXMAX[exTab]+'</span></div>';
   h+='<p class="exinstr">'+bi(EXINSTR[exTab])+'</p>';
   h+= exTab===0? exBody1() : exTab===1? exBody2() : exTab===2? exBody3() : exBody4();
-  if(exHintTxt) h+='<div class="exhint">'+bi(exHintTxt)+'</div>';
   h+='<div class="exwell'+(exDone(exTab)?' open':'')+'">'+bi(EXSTR.well)+'</div>';
   const body=$('exBody'); body.innerHTML=h;
-  /* wire the current exercise */
+  /* wire the current exercise — Mechanics v2 submit mode: choices are neutral
+     and can be changed freely; nothing is scored or revealed until Submit */
   body.querySelectorAll('[data-ex1]').forEach(b=>b.onclick=()=>{
+    if(exRevealed) return;
     const parts=b.dataset.ex1.split(':'), id=parts[0], ans=parts[1];
-    const c=EX1.find(x=>x.id===id);
-    if(!c||EX.e1[id]) return;
-    if(c.ans===ans){ EX.e1[id]=true; saveProg(); renderEx(); }
-    else{ const card=b.closest('.excard'); if(card){ card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'),500); } }
+    EXANS.e1[id]=ans; saveProg(); renderEx();
   });
-  body.querySelectorAll('[data-ex2chip]').forEach(b=>b.onclick=()=>{ exSel=b.dataset.ex2chip; exHintTxt=null; renderEx(); });
+  body.querySelectorAll('[data-ex2chip]').forEach(b=>b.onclick=()=>{ if(exRevealed) return; exSel=b.dataset.ex2chip; renderEx(); });
+  body.querySelectorAll('[data-ex2placed]').forEach(b=>b.onclick=()=>{
+    if(exRevealed) return;
+    delete EXANS.e2[b.dataset.ex2placed]; saveProg(); renderEx();
+  });
   body.querySelectorAll('[data-ex2box]').forEach(b=>b.onclick=()=>{
-    if(!exSel) return;
-    const c=EX2.find(x=>x.id===exSel), target=b.dataset.ex2box, id=exSel;
-    if(c&&c.ans===target){ EX.e2[id]=target; exSel=null; exHintTxt=null; saveProg(); renderEx(); }
-    else{
-      exHintTxt=EXSTR.ex2hint; renderEx();
-      const chip=body.querySelector('[data-ex2chip="'+id+'"]');
-      if(chip){ chip.classList.add('shake'); setTimeout(()=>chip.classList.remove('shake'),500); }
-    }
+    if(exRevealed||!exSel) return;
+    EXANS.e2[exSel]=b.dataset.ex2box; exSel=null; saveProg(); renderEx();
   });
   body.querySelectorAll('[data-ex3]').forEach(b=>b.onclick=()=>{
+    if(exRevealed) return;
     const parts=b.dataset.ex3.split(':'), id=parts[0], arr=parts[1];
-    const s=EX3.find(x=>x.id===id);
-    if(!s||EX.e3[id]) return;
-    if(arr===s.correct){ EX.e3[id]=true; saveProg(); renderEx(); }
-    else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+    EXANS.e3[id]=arr; saveProg(); renderEx();
   });
   body.querySelectorAll('[data-tile]').forEach(b=>b.onclick=()=>{
+    if(exRevealed) return;
     const id=b.dataset.tile;
-    if(EX.e4.indexOf(id)>=0) return;
-    exTile=(exTile===id? null : id); exHintTxt=null; renderEx();
+    if(EXANS.e4.indexOf(id)>=0) return;
+    exTile=(exTile===id? null : id); renderEx();
   });
   body.querySelectorAll('[data-blank]').forEach(b=>b.onclick=()=>{
+    if(exRevealed) return;
     const i=parseInt(b.dataset.blank,10);
-    if(EX.e4lock[i]) return;
-    if(EX.e4[i]){ EX.e4[i]=null; saveProg(); renderEx(); return; }
-    if(exTile&&EX.e4.indexOf(exTile)<0){ EX.e4[i]=exTile; exTile=null; exHintTxt=null; saveProg(); renderEx(); }
+    if(EXANS.e4[i]){ EXANS.e4[i]=null; saveProg(); renderEx(); return; }
+    if(exTile&&EXANS.e4.indexOf(exTile)<0){ EXANS.e4[i]=exTile; exTile=null; saveProg(); renderEx(); }
   });
-  const chk=$('ex4Check');
-  if(chk) chk.onclick=()=>{
-    let wrong=0, filledAny=false;
-    EX4SENTS.forEach((s,i)=>{
-      if(EX.e4[i]&&!EX.e4lock[i]){
-        filledAny=true;
-        if(EX.e4[i]===s.ans) EX.e4lock[i]=true; else { EX.e4[i]=null; wrong++; }
-      }
-    });
-    exHintTxt= wrong? EXSTR.ex4wrong : (filledAny? null : EXSTR.ex4empty);
-    saveProg(); renderEx();
-    if(wrong){ const b2=$('ex4Check'); if(b2){ b2.classList.add('shake'); setTimeout(()=>b2.classList.remove('shake'),500); } }
-  };
 }
+$('exSubmit').onclick=()=>{
+  EXDONE=freshExDone();
+  EX1.forEach(c=>{ if(EXANS.e1[c.id]===c.ans) EXDONE.e1[c.id]=true; });
+  EX2.forEach(c=>{ if(EXANS.e2[c.id]===c.ans) EXDONE.e2[c.id]=true; });
+  EX3.forEach(sc=>{ if(EXANS.e3[sc.id]===sc.correct) EXDONE.e3[sc.id]=true; });
+  EX4SENTS.forEach((s,i)=>{ EXDONE.e4lock[i]=(EXANS.e4[i]===s.ans); });
+  const total=exCorrectCounts().reduce((a,b)=>a+b,0);
+  if(total>exBest) exBest=total;
+  exRevealed=true; exSel=null; exTile=null;
+  saveProg(); renderEx();
+};
+$('exRetry').onclick=()=>{
+  EXANS=freshExAns(); EXDONE=freshExDone();
+  exRevealed=false; exSel=null; exTile=null;
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
+  EX3_ORD=EX3.map(sc=>fyIdx(sc.arrows.length));
+  saveProg(); renderEx();
+};
 
 /* ================= language switching ================= */
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderObjRow(); updateStretchLock(); updateObjSprite(); renderEx();
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderObjRow(); updateStretchLock(); updateObjSprite(); renderEx();
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1342,7 +1592,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1374,6 +1624,7 @@ function stepAnims(now){
 
 /* ================= actions (src: 'user' writes trackers, 'demo' never does) ================= */
 function doPushBook(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   const from=bookPos, to=Math.min(6,bookPos+3.2), base=T.s1slide;
   addAnim(1.1,f=>{
     bookPos=from+(to-from)*easeOut(f);
@@ -1381,6 +1632,7 @@ function doPushBook(src){
   });
 }
 function doPullBook(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   const from=bookPos, to=0.2, base=T.s2pulled;
   addAnim(1.2,f=>{
     bookPos=from+(to-from)*easeInOut(f);
@@ -1388,11 +1640,13 @@ function doPullBook(src){
   });
 }
 function doSmallPush(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   const basePos=cratePos;
   addAnim(0.7,f=>{ cratePos=basePos+0.07*Math.sin(f*Math.PI*2)*(1-f); },
     ()=>{ cratePos=basePos; if(src==='user') T.s4small=true; refreshEvidence(); });
 }
 function doHelpPush(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   if(childB) childB.visible=true;
   const from=cratePos, to=from+2.6, base=T.s4crate, counted=(src==='user'&&T.s4small);
   pushing=true;
@@ -1402,6 +1656,7 @@ function doHelpPush(src){
   },()=>{ pushing=false; });
 }
 function doLaunch(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   const obj=selObj;
   launchCount++;
   const jitter=(((launchCount*37)%10)/10)*0.3-0.15;
@@ -1440,6 +1695,13 @@ let renderer3=null, scene3=null, camera3=null;
 let bookG=null, boxG=null, pencilG=null, crateG=null, launcherG=null, bandMesh=null,
     ropeLine=null, childA=null, childB=null, objSprite=null, startSprite=null, wagonWheels=[];
 let lastRW=0, lastRH=0, pushing=false;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+const PROXY={};
+function proxyMat(){ return new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}); }
+function sphProxy(r){ return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),proxyMat()); }
+function boxProxy(w,h,d){ return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),proxyMat()); }
+function addProxy(id,mesh,parent){ mesh.userData.objId=id; parent.add(mesh); hitProxies.push(mesh); PROXY[id]=mesh; return mesh; }
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 const ORB={r:7.4, th:0.55, ph:1.02, tx:0, ty:0.3, tz:0};
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
 function makeChild(shirt,skin){
@@ -1592,10 +1854,19 @@ function init3D(){
   startSprite=makeLabelSprite('START',0.55);
   startSprite.position.set(START_X-0.15,1.15,-1.05); scene3.add(startSprite);
   objSprite=makeLabelSprite('',0.85); scene3.add(objSprite);
+  /* Mechanics v2: generous invisible hit proxies for every scene tap target */
+  { const p=boxProxy(1.3,0.7,1.0); p.position.set(0.12,0.14,0); addProxy('book',p,bookG); }
+  { const p=sphProxy(0.58); p.position.y=0.26; addProxy('box',p,boxG); }
+  { const p=boxProxy(0.85,0.5,0.6); p.position.y=0.12; addProxy('pencil',p,pencilG); }
+  { const p=sphProxy(0.78); p.position.y=0.48; addProxy('crate',p,crateG); }
+  { const p=sphProxy(0.45); p.position.y=0.62; addProxy('childA',p,childA); }
+  { const p=sphProxy(0.45); p.position.y=0.62; addProxy('childB',p,childB); }
+  { const p=boxProxy(0.5,1.0,1.35); p.position.y=0.45; addProxy('launcher',p,launcherG); }
   /* pointer: orbit, plus book dragging in step 1 */
   const el=renderer3.domElement; el.style.touchAction='none';
   const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
   let dragMode=null, dragOff=0, dragStartPos=0, dragBase=0;
+  let downX=0, downY=0, downT=0;
   function castAt(e){
     const r=el.getBoundingClientRect();
     ptr.x=((e.clientX-r.left)/r.width)*2-1;
@@ -1603,8 +1874,9 @@ function init3D(){
     ray.setFromCamera(ptr,camera3);
   }
   el.addEventListener('pointerdown',e=>{
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
     castAt(e);
-    if(curStep===0&&bookG&&ray.intersectObject(bookG,false).length){
+    if(curStep===0&&!stepLocked()&&PROXY.book&&ray.intersectObject(PROXY.book,false).length){
       dragMode='book';
       const p=ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-0.1),new THREE.Vector3());
       dragOff=p? p.x-brickToX(bookPos) : 0;
@@ -1627,7 +1899,17 @@ function init3D(){
       dragMode={x:e.clientX,y:e.clientY};
     }
   });
-  el.addEventListener('pointerup',()=>{ dragMode=null; });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
   el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(11,Math.max(4.2,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
 }
 function objGroup(o){ return o==='book'? bookG : (o==='box'? boxG : pencilG); }
@@ -1722,6 +2004,27 @@ function renderSceneInner(){
   renderer3.render(scene3,camera3);
 }
 
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['book'],                    /* step 1: push the book (tap = push, or drag it) */
+  ['book'],                    /* step 2: pull the book back (tap = pull) */
+  [],                          /* step 3: card sort — no scene targets */
+  ['crate'],                   /* step 4: the wagon (its actions are the two step-card buttons) */
+  ['book','box','pencil','launcher'], /* step 5: tap the object or the band to launch it */
+  []                           /* step 6: safety cards — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ showNotice(STR.notThisStep); addMistake(); return; }
+  if(curStep===0&&id==='book') doPushBook('user');
+  else if(curStep===1&&id==='book') doPullBook('user');
+  else if(curStep===4) doLaunch('user');
+  /* step 4's wagon tap is in-scope but has no action of its own — the two
+     push buttons in the step card are that step's actions */
+}
+
 /* ================= evidence + measure readouts ================= */
 let lastEvidHtml='';
 function refreshEvidence(){
@@ -1750,6 +2053,8 @@ let lastFrame=performance.now();
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps();
   }
@@ -1767,7 +2072,346 @@ renderEx();
 init3D();
 goStep(curStep);
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
+<!-- CAMB-BRIDGE v1 --><script>
+/* CAMB-BRIDGE v1 — Cambridge <-> toan.b-media.vn: login sync + progress/stars sync.
+ *
+ * Inlined into the hub and every lesson by bridge/inject_bridge.py (marked block).
+ * Dependency-free, defensive: it NEVER throws into the page. If the platform API
+ * is unreachable (e.g. the standalone GitHub Pages origin, where /api/* does not
+ * exist), the bridge stays dormant and the pages behave exactly as before
+ * (localStorage-only progress). One console note maximum.
+ *
+ * How the token arrives (localStorage is per-origin):
+ *   (a) same origin — Cambridge served from the platform server's
+ *       public/cambridge/: the platform app already stored the session in
+ *       localStorage key "toanlop4_auth_v1"; the bridge just reads it.
+ *   (b) fragment handoff — the platform links to Cambridge with #token=<token>
+ *       (the pattern its own OAuth flow uses): the bridge stores it under the
+ *       same key, in the platform's own storage shape, and strips the fragment.
+ *   (c) no token — guest/local mode.
+ *
+ * API base: relative "/api/..." by default, so it works on ANY origin that is
+ * served by / tunnelled to the platform server (toan.b-media.vn/cambridge/,
+ * or cambridge.b-media.vn once the tunnel points it at the same server).
+ * Set window.CAMB_API_BASE before this script only for exotic setups.
+ *
+ * Sync model (no lesson rewrites): the bridge OBSERVES the lessons' existing
+ * localStorage records — summaries "camb:sum:..." and the battle wallet
+ * "camb:wallet" — and reports changes to the platform:
+ *   summary change -> POST /api/saga/progress {module, lessonId, pct, q, maxOpen}
+ *       pct = combined steps+exercises completion % of the summary;
+ *       q   = best quiz fraction (summary q / qt);
+ *       maxOpen = the lesson's 1-based position in its book (Science 1 map
+ *       embedded below; server only ever raises it).
+ *   lesson opened  -> POST /api/saga/theory (once per lesson)
+ *   new wallet.botWins[code]  -> POST /api/solo-result, mode "bot"
+ *   new wallet.bossWins[key]  -> POST /api/solo-result, mode "boss"
+ * The wallet records only THAT a duel/boss was won, never the score, so battle
+ * reports encode the win minimally: bot = the duel's 4 questions completed,
+ * botId "easy", playerScore 1 / botScore 0 (the win flag); boss = 5/8 correct,
+ * bossTier "easy" (5/8 is the smallest score the server's own 60% easy
+ * threshold accepts as the win the wallet recorded). The server stays the
+ * authority: it recomputes stars and applies its daily caps regardless.
+ * Failed posts go to a retry queue in localStorage ("camb:bridge-queue-v1"),
+ * flushed on `online`, on load and on visibility return — the same approach
+ * (and the same accepted duplicate risk for solo-result) as the platform's
+ * own offline queue.
+ */
+(function () {
+  "use strict";
+  var AUTH_KEY = "toanlop4_auth_v1";
+  var QUEUE_KEY = "camb:bridge-queue-v1";
+  var SENT_KEY = "camb:bridge-sent-v1";
+  var API_BASE = (typeof window !== "undefined" && window.CAMB_API_BASE) || "";
+  var noted = false;
+  function note(msg) { if (!noted) { noted = true; try { console.info("[camb-bridge] " + msg); } catch (e) {} } }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function parseJson(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+
+  /* ---------- token intake ---------- */
+  function storeToken(token) {
+    var cur = parseJson(lsGet(AUTH_KEY) || "null") || {};
+    cur.token = token;
+    if (!("user" in cur)) cur.user = null;
+    cur.savedAt = Date.now();
+    lsSet(AUTH_KEY, JSON.stringify(cur));
+  }
+  (function intakeFragment() {
+    try {
+      var h = window.location.hash || "";
+      var m = h.match(/token=([^&]+)/);
+      if (m) {
+        storeToken(decodeURIComponent(m[1]));
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
+    } catch (e) {}
+  })();
+  function getToken() {
+    var raw = lsGet(AUTH_KEY);
+    if (!raw) return null;
+    if (raw.charAt(0) === "{") { var o = parseJson(raw); return (o && o.token) || null; }
+    return raw; // tolerate a bare token string
+  }
+
+  /* ---------- small state ---------- */
+  var token = getToken();
+  var user = null;          // window.CAMB_USER once profile loads
+  var apiDown = false;      // network-level failure seen (standalone origin etc.)
+  function loadSent() { return parseJson(lsGet(SENT_KEY) || "null") || { sums: {}, bot: {}, boss: {}, theory: {} }; }
+  function saveSent(s) { lsSet(SENT_KEY, JSON.stringify(s)); }
+  function loadQueue() { var q = parseJson(lsGet(QUEUE_KEY) || "null"); return Array.isArray(q) ? q : []; }
+  function saveQueue(q) { lsSet(QUEUE_KEY, JSON.stringify(q.slice(-80))); }
+  function queuePost(url, body, meta) {
+    var q = loadQueue();
+    var sig = url + "|" + JSON.stringify(body);
+    for (var i = 0; i < q.length; i++) if (q[i].url + "|" + JSON.stringify(q[i].body) === sig) return;
+    q.push({ url: url, body: body, at: Date.now(), meta: meta || null });
+    saveQueue(q);
+  }
+
+  /* ---------- API ---------- */
+  function api(path, method, body, keepalive) {
+    return new Promise(function (resolve, reject) {
+      var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : null;
+      var headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      fetch(API_BASE + path, {
+        method: method || "GET",
+        headers: headers,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctl ? ctl.signal : undefined,
+        keepalive: !!keepalive
+      }).then(function (res) {
+        if (timer) clearTimeout(timer);
+        return res.text().then(function (txt) {
+          var data = parseJson(txt || "null");
+          if (!res.ok) { var err = new Error("HTTP " + res.status); err.status = res.status; err.data = data; throw err; }
+          resolve(data);
+        });
+      }).catch(function (e) {
+        if (timer) clearTimeout(timer);
+        reject(e);
+      });
+    });
+  }
+  // POST that queues on network failure; resolves true when the server took it.
+  function post(path, body, meta, keepalive) {
+    return api(path, "POST", body, keepalive).then(function (data) {
+      if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+      return true;
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return false; }
+      if (!e || !e.status) { apiDown = true; note("platform API unreachable — staying in local mode, will retry."); }
+      queuePost(path, body, meta);
+      return false;
+    });
+  }
+  function onUnauthorized() {
+    token = null; user = null; window.CAMB_USER = null;
+    lsDel(AUTH_KEY);
+    note("session expired or invalid — signed out locally.");
+    renderHubAccount();
+  }
+
+  /* ---------- hub account chip (hub only: lessons have no #starVl) ---------- */
+  function platformOrigin() {
+    if (typeof window !== "undefined" && window.CAMB_PLATFORM_ORIGIN) return window.CAMB_PLATFORM_ORIGIN;
+    return window.location.hostname === "toan.b-media.vn" ? window.location.origin : "https://toan.b-media.vn";
+  }
+  function renderHubAccount() {
+    try {
+      var pill = document.getElementById("starVl");
+      if (!pill || !pill.parentNode) return; // not the hub — stay invisible
+      var chip = document.getElementById("cambAcct");
+      if (!chip) {
+        chip = document.createElement("div");
+        chip.id = "cambAcct";
+        chip.style.cssText = "font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);" +
+          "border-radius:999px;padding:5px 10px;text-align:right;line-height:1.35;max-width:230px";
+        pill.parentNode.insertBefore(chip, pill);
+      }
+      if (user) {
+        chip.innerHTML = "";
+        var s1 = document.createElement("span");
+        s1.textContent = "👤 " + user.username + " · ⭐ " + user.stars;
+        chip.appendChild(s1);
+      } else if (token && !apiDown) {
+        chip.textContent = "…";
+      } else if (token && apiDown) {
+        chip.textContent = "Chưa nối được máy chủ — tiến trình lưu trên máy này";
+      } else {
+        chip.innerHTML = "";
+        var t = document.createElement("span");
+        t.textContent = "Chưa đăng nhập — tiến trình chỉ lưu trên máy này ";
+        var a = document.createElement("a");
+        a.href = platformOrigin() + "/";
+        a.textContent = "Đăng nhập";
+        a.style.cssText = "color:#fff;text-decoration:underline;font-weight:800";
+        chip.appendChild(t); chip.appendChild(a);
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- sync: summaries -> saga/progress ---------- */
+  var SCI1_ORDER = ["1-1","1-2","1-3","1-4","2-1","2-2","2-3","3-1","3-2","3-3","3-4",
+    "4-1","4-2","4-3","4-4","5-1","5-2","5-3","5-4","6-1","6-2","6-3","6-4","6-5"];
+  function maxOpenFor(module, lessonId) {
+    if (module === "sci1") { var i = SCI1_ORDER.indexOf(lessonId); return i >= 0 ? i + 1 : 0; }
+    return 0;
+  }
+  function currentLesson() {
+    var m = (window.location.pathname || "").match(/(sci|math)(\d+)-(\d+)-(\d+)-/);
+    if (!m) return null;
+    return { module: m[1] + m[2], lessonId: m[3] + "-" + m[4], code: m[3] + "." + m[4] };
+  }
+  function syncSummaries(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var keys = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf("camb:sum:") === 0) keys.push(k); } } catch (e) {}
+    keys.forEach(function (key) {
+      var sm = parseJson(lsGet(key) || "null");
+      if (!sm) return;
+      var idm = key.slice("camb:sum:".length).match(/^(sci|math)(\d+)-(\d+)-(\d+)$/);
+      if (!idm) return;
+      var module = idm[1] + idm[2], lessonId = idm[3] + "-" + idm[4];
+      var s = +sm.s || 0, st = +sm.st || 0, e2 = +sm.e || 0, et = +sm.et || 0, q = +sm.q || 0, qt = +sm.qt || 0;
+      if (s + e2 + q <= 0) return; // nothing achieved yet — don't create empty entries
+      var hash = [s, st, e2, et, q, qt].join("/");
+      if (sent.sums[key] === hash) return;
+      var pct = (st + et) > 0 ? Math.round(100 * (s + e2) / (st + et)) : 0;
+      var body = { module: module, lessonId: lessonId, pct: pct, q: qt > 0 ? q / qt : 0, maxOpen: maxOpenFor(module, lessonId) };
+      jobs.push(post("/api/saga/progress", body, { sumKey: key, hash: hash }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.sums[key] = hash; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: wallet -> solo-result (bot / boss) ---------- */
+  function syncWallet(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var w = parseJson(lsGet("camb:wallet") || "null");
+    if (!w) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var here = currentLesson();
+    Object.keys(w.botWins || {}).forEach(function (code) {
+      if (!w.botWins[code] || sent.bot[code]) return;
+      var pm = String(code).match(/^(\d+)\.(\d+)$/);
+      if (!pm) return;
+      var module = here ? here.module : "sci1"; // wallet codes carry no book; only sci1 exists today
+      var lessonId = pm[1] + "-" + pm[2];
+      var body = { score: 4, correct: 4, total: 4, bonus: 0, subject: "science",
+        moduleId: module, lessonId: lessonId, lessonTitle: code, mode: "bot",
+        botId: "easy", playerScore: 1, botScore: 0, botModule: module, botLesson: lessonId };
+      jobs.push(post("/api/solo-result", body, { botCode: code }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.bot[code] = 1; saveSent(s2); }
+      }));
+    });
+    Object.keys(w.bossWins || {}).forEach(function (bkey) {
+      if (!w.bossWins[bkey] || sent.boss[bkey]) return;
+      var bm = String(bkey).match(/^(sci|math)(\d+)-u(\d+)$/);
+      if (!bm) return;
+      var module = bm[1] + bm[2], unitId = "u" + bm[3];
+      var body = { score: 5, correct: 5, total: 8, bonus: 0, subject: "science",
+        moduleId: module, lessonId: unitId, lessonTitle: "Boss Unit " + bm[3], mode: "boss",
+        bossTier: "easy", bossModule: module, bossLesson: unitId };
+      jobs.push(post("/api/solo-result", body, { bossKey: bkey }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.boss[bkey] = 1; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: lesson opened -> saga/theory (once) ---------- */
+  function syncTheory(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var here = currentLesson();
+    if (!here) return Promise.resolve();
+    var key = here.module + "/" + here.lessonId;
+    var sent = loadSent();
+    if (sent.theory[key]) return Promise.resolve();
+    return post("/api/saga/theory", { module: here.module, lessonId: here.lessonId }, { theoryKey: key }, keepalive)
+      .then(function (ok) { if (ok) { var s2 = loadSent(); s2.theory[key] = 1; saveSent(s2); } });
+  }
+
+  /* ---------- offline queue flush ---------- */
+  function flushQueue() {
+    if (!token || !user) return Promise.resolve();
+    var q = loadQueue();
+    if (!q.length) return Promise.resolve();
+    saveQueue([]);
+    var chain = Promise.resolve();
+    q.forEach(function (item) {
+      chain = chain.then(function () {
+        return api(item.url, "POST", item.body).then(function (data) {
+          if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+          var meta = item.meta || {};
+          var s2 = loadSent(), dirty = false;
+          if (meta.sumKey && meta.hash) { s2.sums[meta.sumKey] = meta.hash; dirty = true; }
+          if (meta.botCode) { s2.bot[meta.botCode] = 1; dirty = true; }
+          if (meta.bossKey) { s2.boss[meta.bossKey] = 1; dirty = true; }
+          if (meta.theoryKey) { s2.theory[meta.theoryKey] = 1; dirty = true; }
+          if (dirty) saveSent(s2);
+        }).catch(function (e) {
+          if (e && e.status === 401) { onUnauthorized(); return; }
+          queuePost(item.url, item.body, item.meta); // still failing — requeue
+        });
+      });
+    });
+    return chain;
+  }
+
+  function syncAll(keepalive) {
+    if (!token || !user) return;
+    syncTheory(keepalive)
+      .then(function () { return syncSummaries(keepalive); })
+      .then(function () { return syncWallet(keepalive); })
+      .catch(function () {});
+  }
+
+  /* ---------- boot ---------- */
+  function boot() {
+    renderHubAccount();
+    if (!token) { note("no platform session — guest/local mode."); return; }
+    api("/api/profile", "GET").then(function (p) {
+      if (!p || !p.username) { apiDown = true; renderHubAccount(); return; }
+      user = { username: p.username, stars: p.stars || 0, testBypass: !!p.testBypass };
+      window.CAMB_USER = user;
+      if (p.testBypass || String(p.username).toLowerCase() === "congtuth") lsSet("camb:test-bypass", "1");
+      else lsDel("camb:test-bypass");
+      renderHubAccount();
+      flushQueue().then(function () { syncAll(false); });
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return; }
+      apiDown = true; // standalone origin / server down: keep token, stay silent
+      note("platform API unreachable — staying in local mode, will retry.");
+      renderHubAccount();
+    });
+    setInterval(function () { if (user) syncAll(false); }, 5000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && user) { flushQueue().then(function () { syncAll(false); }); } });
+    window.addEventListener("beforeunload", function () { if (user) syncAll(true); });
+    window.addEventListener("storage", function () { if (user) syncAll(false); });
+    window.addEventListener("online", function () { if (user) flushQueue().then(function () { syncAll(false); }); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+
+</script><!-- /CAMB-BRIDGE v1 -->
 </body>
 </html>

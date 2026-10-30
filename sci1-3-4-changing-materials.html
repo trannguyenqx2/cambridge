@@ -177,6 +177,38 @@ button:disabled{opacity:.45;cursor:default}
   #stepCard{width:340px}
 }
 
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+.wchip.sel{border-color:var(--acc);background:#eef6ff}
+.wchip.wrongsel{border-color:#e5a3a3;background:#fdf0f0;color:#a33333}
+.cellbtn.picked{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.cellbtn.missed{border-style:dashed;color:var(--mut)}
+.slot.wrongslot{border-bottom-color:#e5a3a3;color:#a33333}
+
 /* ===== 3.4 additions: actions, results grid, band table, ex3 table ===== */
 .matlabel{font-size:13.5px;color:var(--mut);font-weight:700;margin:8px 0 5px}
 .actgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
@@ -257,11 +289,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -330,6 +364,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -340,6 +376,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -401,6 +438,8 @@ button:disabled{opacity:.45;cursor:default}
     </section>
 
     <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <button id="exClose"></button>
     </div>
@@ -413,7 +452,31 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 /* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+/* Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -432,7 +495,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= things on the bench ================= */
@@ -547,7 +610,22 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'stretch',vi:'kéo giãn'},
@@ -692,7 +770,7 @@ const EX1=[
  {id:'x_band',  emoji:'➰', en:'Stretched rubber band', vi:'Dây thun bị kéo giãn', ans:'stretch'},
  {id:'x_sponge',emoji:'🧽', en:'Squashed sponge',    vi:'Bọt biển bị ép dẹp',   ans:'compress'}
 ];
-const EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
 const EX1_WORD_ORDER=EX1.map(()=>fyShuffle(WORDS4));
 const EX2_OPTS=[
  {id:'bent',     en:'bent',     vi:'bị uốn cong'},
@@ -707,7 +785,7 @@ const EX2=[
  {id:'y_rope',  emoji:'🪢', en:'The rope has been',  vi:'Sợi dây đã bị',   ans:'twisted'},
  {id:'y_fruit', emoji:'🍎', en:'The fruit has been', vi:'Quả táo đã bị',   ans:'compressed'}
 ];
-const EX2_ORDER=mixOrder(EX2,c=>c.ans,1);
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,1);
 const EX2_WORD_ORDER=EX2.map(()=>fyShuffle(EX2_OPTS));
 const EX3_MATS=[
  {id:'paper', en:'Paper', vi:'Giấy',   given:{c:1,b:1}},
@@ -721,10 +799,25 @@ const EX3_SENTS=[
  {id:'s_wood',  pre:{en:'Zara cannot',vi:'Zara không thể'}, post:{en:'the wood.',vi:'gỗ (wood).'},   ans:'bend'},
  {id:'s_fabric',pre:{en:'Zara can',   vi:'Zara có thể'},    post:{en:'the fabric.',vi:'vải (fabric).'}, ans:'compress'}
 ];
-const EX3_TILES=fyShuffle(WORDS4.filter(w=>w.id==='bend'||w.id==='compress'));
+let EX3_TILES=fyShuffle(WORDS4.filter(w=>w.id==='bend'||w.id==='compress'));
 const EX_TOTAL=EX1.length+EX2.length+10+EX3_SENTS.length; /* 4 + 6 + 10 + 2 = 22 */
 let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), EX3SDONE=new Set();
 let EX3VAL={}, ex1Wrong=false, ex3SelTile=null;
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                        /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                      /* persisted per-step mistake counters (anti-guess) */
+let exBest=0, exRevealed=false;              /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let EX1ANS={}, EX2ANS={}, EX3SANS={};        /* exercises: the learner's current (unsubmitted) answers */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci1-3-4';
@@ -737,7 +830,7 @@ try{
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.grid&&typeof s.grid==='object') MAT_ORDER.forEach(m=>{ ACTION_ORDER.forEach(a=>{
       if(s.grid[m]&&(s.grid[m][a]===true||s.grid[m][a]===false)) GRID[m][a]=s.grid[m][a]; }); });
     if(s.s3&&typeof s.s3==='object') S3=Object.assign(S3,s.s3);
@@ -750,8 +843,28 @@ try{
       if(Array.isArray(s.ex.e3s)) EX3SDONE=new Set(s.ex.e3s.filter(id=>EX3_SENTS.some(x=>x.id===id)));
       if(s.ex.e3v&&typeof s.ex.e3v==='object') EX3VAL=s.ex.e3v;
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&WORDS4.some(w=>w.id===s.exAns.a1[id])) EX1ANS[id]=s.exAns.a1[id]; });
+      if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&EX2_OPTS.some(w=>w.id===s.exAns.a2[id])) EX2ANS[id]=s.exAns.a2[id]; });
+      if(s.exAns.a3s&&typeof s.exAns.a3s==='object') Object.keys(s.exAns.a3s).forEach(id=>{ if(EX3_SENTS.some(x=>x.id===id)&&WORDS4.some(w=>w.id===s.exAns.a3s[id])) EX3SANS[id]=s.exAns.a3s[id]; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size||EX3SDONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed
+         (the Ex3 table answers already live in EX3VAL, loaded above) */
+      EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+      EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+      EX3_SENTS.forEach(sn=>{ if(EX3SDONE.has(sn.id)) EX3SANS[sn.id]=sn.ans; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3SDONE.size);
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
 const SUMKEY='camb:sum:sci1-3-4';
 let qBest=0;
 try{
@@ -759,12 +872,78 @@ try{
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,grid:GRID,s3:S3,pred:PRED,meas:MEAS,
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,grid:GRID,s3:S3,pred:PRED,meas:MEAS,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:{a1:EX1ANS,a2:EX2ANS,a3s:EX3SANS},
     ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE],e3s:[...EX3SDONE],e3v:EX3VAL}})); }catch(e){}
   saveSum();
+}
+
+/* ================= Mechanics v2: notice, gates, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+/* wipe ONLY the current step's collected evidence (the same state the Reset
+   button clears: this lesson's evidence lives in the persisted GRID / S3 /
+   PRED / MEAS records), then re-lock the instruction (read gate). */
+function clearStepEvidence(){
+  if(curStep===0) ACTION_ORDER.forEach(a=>{ GRID.sponge[a]=null; });
+  if(curStep===1){ ['fabric','wood'].forEach(m=>ACTION_ORDER.forEach(a=>{ GRID[m][a]=null; })); }
+  if(curStep===2){ S3={stretched:false,released:false,paper:false,ans:false}; bandHeld=false; POSE.paper.bend=0; applyPose('paper'); }
+  if(curStep===3){ PRED=null; }
+  if(curStep===4){ MEAS={}; curBand=PRED||'thin'; bricksNow=0; }
+  hintMsg=null;
+}
+function resetStepEvidence(){
+  clearStepEvidence();
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderResGrid(); renderBandBox(); refreshEvidence();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
 }
 /* transient per-visit state */
 let SELMAT='sponge';
@@ -852,6 +1031,13 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===5?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? conclFor(curStep).map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  const acked=ackSet.has(curStep);
+  paintAckGate();
+  $('btnNext').disabled=!(done&&acked);
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -920,9 +1106,10 @@ function renderStepExtra(){
         d.className='piccard'+(S3.ans&&opt[0]==='band'?' right':'');
         d.innerHTML='<span class="em">'+opt[2]+'</span>'+bi(opt[1]);
         d.onclick=()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
           if(S3.ans) return;
           if(opt[0]==='band'){ S3.ans=true; saveProg(); renderStepExtra(); refreshEvidence(); }
-          else{ d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500);
+          else{ addMistake(); d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500);
             hintMsg={en:'The paper stayed bent — it did not go back. Elastic things go back to their old shape.',vi:'Tờ giấy vẫn cong — nó không trở lại. Vật đàn hồi (elastic) thì trở lại hình dạng cũ.'};
             refreshEvidence(); setTimeout(()=>{ hintMsg=null; refreshEvidence(); },2600); }
         };
@@ -961,17 +1148,18 @@ function renderStepExtra(){
 function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
   hintMsg=null;
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps(); refreshEvidence();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
-  if(curStep===0) ACTION_ORDER.forEach(a=>{ GRID.sponge[a]=null; });
-  if(curStep===1){ ['fabric','wood'].forEach(m=>ACTION_ORDER.forEach(a=>{ GRID[m][a]=null; })); }
-  if(curStep===2){ S3={stretched:false,released:false,paper:false,ans:false}; bandHeld=false; POSE.paper.bend=0; applyPose('paper'); tweenRig(1,0.4); }
-  if(curStep===3){ PRED=null; }
-  if(curStep===4){ MEAS={}; curBand=PRED||'thin'; bricksNow=0; mountBand(curBand); }
+  clearStepEvidence();
+  if(curStep===4) mountBand(curBand);
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   applyStepStart(curStep);
   saveProg(); renderSteps(); renderResGrid(); renderBandBox(); refreshEvidence();
 };
@@ -996,6 +1184,7 @@ function selectMaterial(m,focus){
 let actBusy=false;
 function performAction(mat,act,src){
   if(actBusy) return;
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   const ok=TRUTH[mat][act];
   if(src==='user'){
     if(curStep===0&&mat==='sponge'){ GRID.sponge[act]=ok; }
@@ -1003,7 +1192,14 @@ function performAction(mat,act,src){
     else if(curStep===0&&mat!=='sponge'){
       hintMsg={en:'This step is about the sponge. Pick the sponge first!',vi:'Bước này nói về miếng bọt biển (sponge). Hãy chọn bọt biển trước!'};
       setTimeout(()=>{ hintMsg=null; refreshEvidence(); },2400);
+      addMistake();
     }
+    else if(curStep===1){
+      hintMsg={en:'This step is about the fabric and the wood. Pick one of those!',vi:'Bước này nói về vải (fabric) và gỗ (wood). Hãy chọn một trong hai!'};
+      setTimeout(()=>{ hintMsg=null; refreshEvidence(); },2400);
+      addMistake();
+    }
+    else addMistake();   /* Mechanics v2: the action buttons are steps 1–2 targets; in later steps they are not this step's targets */
     saveProg(); renderResGrid();
   }
   focusVisual(mat);
@@ -1012,6 +1208,7 @@ function performAction(mat,act,src){
   refreshEvidence(); renderStepExtra();
 }
 function doStretchBand(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   if(bandHeld) return;
   bandHeld=true;
   tweenRig(1.75,0.8);
@@ -1019,6 +1216,7 @@ function doStretchBand(src){
   renderStepExtra(); refreshEvidence();
 }
 function doLetGo(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   if(!bandHeld) return;
   bandHeld=false;
   const from=rigLen;
@@ -1030,6 +1228,7 @@ function doLetGo(src){
   renderStepExtra(); refreshEvidence();
 }
 function doBendPaper(src){
+  if(src==='user'&&stepLocked()){ flashReadBtn(); return; }
   addAnim(0.8,f=>{ POSE.paper.bend=easeOut(f); applyPose('paper'); },
     ()=>{ POSE.paper.bend=1; applyPose('paper'); });
   focusVisual('paper');
@@ -1037,10 +1236,12 @@ function doBendPaper(src){
   renderStepExtra(); refreshEvidence();
 }
 function setPred(bid){
+  if(stepLocked()){ flashReadBtn(); return; }
   PRED=bid; focusThing('band_'+bid);
   saveProg(); renderBandBox(); renderStepExtra(); refreshEvidence();
 }
 function mountBand(bid){
+  if(stepLocked()){ flashReadBtn(); return; }
   curBand=bid;
   bricksNow=(MEAS[bid]!==undefined)?3:0;
   setRigBandVisual(bid);
@@ -1049,12 +1250,14 @@ function mountBand(bid){
   renderStepExtra(); refreshEvidence();
 }
 function addBrick(){
+  if(stepLocked()){ flashReadBtn(); return; }
   if(!curBand||bricksNow>=3||MEAS[curBand]!==undefined) return;
   bricksNow++;
   applyRig(false);
   renderStepExtra(); refreshEvidence();
 }
 function recordBand(){
+  if(stepLocked()){ flashReadBtn(); return; }
   if(!curBand||bricksNow<3||MEAS[curBand]!==undefined) return;
   MEAS[curBand]=BANDS[curBand].units;
   saveProg(); renderBandBox(); renderStepExtra(); refreshEvidence();
@@ -1142,6 +1345,7 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
@@ -1150,50 +1354,57 @@ function openQuiz(){
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
   $('qProg').innerHTML=biInl(prog);
   $('qText').innerHTML=bi(it.q);
   $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals score, correct answers and
+   explanations. qBest only ever moves on a submitted result. */
+function showQuizResults(){
   qFinished=true;
   const s=qScoreNow();
   if(s>qBest) qBest=s;
   saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
   $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let h='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    h+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) h+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    h+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=h; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -1215,6 +1426,7 @@ let wallet=loadWallet();
 const BOT_CODE='3.4';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1284,7 +1496,11 @@ $('bClose').onclick=closeBot;
 $('btnBotTop').onclick=openBot;
 
 /* ================= exercises panel ================= */
-function exScoreNow(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3SDONE.size; }
+function exScoreNow(){ return exBest; }
+function exAnsweredCount(){
+  return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length
+    +Object.keys(EX3VAL).filter(k=>EX3VAL[k]===0||EX3VAL[k]===1).length+Object.keys(EX3SANS).length);
+}
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
@@ -1292,66 +1508,78 @@ function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
-  /* Ex 1 · Focus — circle the matching word */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=EX1.length);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=EX1.length);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3SDONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — circle the matching word (choices stay neutral until Submit) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
-  $('ex1Hint').innerHTML=ex1Wrong? bi(STR.ex1Hint) : '';
+  $('ex1Hint').innerHTML='';
   const g1=$('ex1Grid'); g1.innerHTML='';
   EX1_ORDER.forEach((it,ix)=>{
-    const doneIt=EX1DONE.has(it.id);
     const card=document.createElement('div');
-    card.className='excard'+(doneIt?' right':'');
+    card.className='excard'+(exRevealed&&EX1DONE.has(it.id)?' right':'');
     card.id='excard_'+it.id;
     card.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
     const chips=document.createElement('div'); chips.className='wordchips';
     (EX1_WORD_ORDER[EX1.indexOf(it)]||WORDS4).forEach(w=>{
       const c=document.createElement('button');
-      c.className='wchip'+(doneIt&&w.id===it.ans?' right':'');
+      let cls='wchip';
+      if(EX1ANS[it.id]===w.id) cls+=' sel';
+      if(exRevealed&&w.id===it.ans) cls+=' right';
+      else if(exRevealed&&EX1ANS[it.id]===w.id) cls+=' wrongsel';
+      c.className=cls;
       c.textContent=L(w);
       c.onclick=()=>{
-        if(doneIt) return;
-        if(w.id===it.ans){ EX1DONE.add(it.id); ex1Wrong=false; saveProg(); renderExercises(); }
-        else{ ex1Wrong=true; renderExercises();
-          const el=$('excard_'+it.id); if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); } }
+        if(exRevealed) return;
+        if(EX1ANS[it.id]===w.id) delete EX1ANS[it.id]; else EX1ANS[it.id]=w.id;
+        saveProg(); renderExercises();
       };
       chips.appendChild(c);
     });
     card.appendChild(chips);
     g1.appendChild(card);
   });
-  /* Ex 2 · Practice — what has happened? */
-  $('exSec2').classList.toggle('done',EX2DONE.size>=EX2.length);
-  $('ex2T').innerHTML=exHead(STR.ex2T,EX2DONE.size>=EX2.length);
+  /* Ex 2 · Practice — what has happened? (choices stay neutral until Submit) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
   const list=$('ex2List'); list.innerHTML='';
   EX2_ORDER.forEach(it=>{
-    const doneIt=EX2DONE.has(it.id);
     const row=document.createElement('div'); row.className='exsent'; row.id='exrow_'+it.id;
-    let html='<span style="font-size:24px">'+it.emoji+'</span> '+biInl(it)+' ';
-    row.innerHTML=html;
+    row.innerHTML='<span style="font-size:24px">'+it.emoji+'</span> '+biInl(it)+' ';
     const chips=document.createElement('span'); chips.className='wordchips'; chips.style.display='inline-flex'; chips.style.marginTop='0';
     (EX2_WORD_ORDER[EX2.indexOf(it)]||EX2_OPTS).forEach(w=>{
       const c=document.createElement('button');
-      c.className='wchip'+(doneIt&&w.id===it.ans?' right':'');
+      let cls='wchip';
+      if(EX2ANS[it.id]===w.id) cls+=' sel';
+      if(exRevealed&&w.id===it.ans) cls+=' right';
+      else if(exRevealed&&EX2ANS[it.id]===w.id) cls+=' wrongsel';
+      c.className=cls;
       c.textContent=L(w);
       c.onclick=()=>{
-        if(doneIt) return;
-        if(w.id===it.ans){ EX2DONE.add(it.id); saveProg(); renderExercises(); }
-        else{ const el=$('exrow_'+it.id); if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); } }
+        if(exRevealed) return;
+        if(EX2ANS[it.id]===w.id) delete EX2ANS[it.id]; else EX2ANS[it.id]=w.id;
+        saveProg(); renderExercises();
       };
       chips.appendChild(c);
     });
     row.appendChild(chips);
-    if(doneIt){ const ex=document.createElement('div'); ex.className='exexpl'; ex.innerHTML='✓ '+esc(L(WORDS4.find(w=>w.id===it.ans)||EX2_OPTS.find(w=>w.id===it.ans))); row.appendChild(ex); }
+    if(exRevealed){ const ex=document.createElement('div'); ex.className='exexpl'; ex.innerHTML=(EX2DONE.has(it.id)?'✓ ':'')+esc(L(EX2_OPTS.find(w=>w.id===it.ans))); row.appendChild(ex); }
     list.appendChild(row);
   });
-  /* Ex 3 · Challenge — Zara's table + sentences */
-  const ex3DoneAll=EX3DONE.size>=10&&EX3SDONE.size>=EX3_SENTS.length;
+  /* Ex 3 · Challenge — Zara's table + sentences (values stay neutral until Submit) */
+  const ex3DoneAll=exRevealed&&EX3DONE.size>=10&&EX3SDONE.size>=EX3_SENTS.length;
   $('exSec3').classList.toggle('done',ex3DoneAll);
   $('ex3T').innerHTML=exHead(STR.ex3T,ex3DoneAll);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
@@ -1366,10 +1594,13 @@ function renderExercises(){
       if(m.given){
         th+='<td><button class="cellbtn given" disabled>'+(m.given[col]?'✓':'✗')+'</button></td>';
       }else{
-        const locked=EX3DONE.has(key);
         const val=EX3VAL[key];
-        const cls=locked? (m.truth[col]===1?'locked-y':'locked-n') : (val!==undefined?'wrongshow':'');
-        const txt=locked? (m.truth[col]===1?'✓':'✗') : (val===undefined?'':(val===1?'✓':'✗'));
+        let cls='', txt='';
+        if(exRevealed){
+          if(val!==undefined&&val===m.truth[col]){ cls=val===1?'locked-y':'locked-n'; txt=val===1?'✓':'✗'; }
+          else if(val!==undefined){ cls='wrongshow'; txt=val===1?'✓':'✗'; }
+          else{ cls='missed'; txt=m.truth[col]===1?'✓':'✗'; }
+        }else if(val!==undefined){ cls='picked'; txt=val===1?'✓':'✗'; }
         th+='<td><button class="cellbtn '+cls+'" data-cell="'+key+'">'+txt+'</button></td>';
       }
     });
@@ -1379,44 +1610,78 @@ function renderExercises(){
   box.appendChild(tbl);
   tbl.querySelectorAll('[data-cell]').forEach(btn=>{
     btn.onclick=()=>{
+      if(exRevealed) return;
       const key=btn.dataset.cell;
-      if(EX3DONE.has(key)) return;
-      const parts=key.split('_'), m=EX3_MATS.find(x=>x.id===parts[0]), col=parts[1];
       const cur=EX3VAL[key];
       const next=cur===undefined?1:(cur===1?0:undefined);
       if(next===undefined) delete EX3VAL[key]; else EX3VAL[key]=next;
-      if(next!==undefined&&next===m.truth[col]) EX3DONE.add(key);
       saveProg(); renderExercises();
     };
   });
   /* tiles */
   const tw=$('ex3Tiles'); tw.innerHTML='';
   EX3_TILES.forEach(w=>{
-    const used=EX3_SENTS.some(s=>EX3SDONE.has(s.id)&&s.ans===w.id);
+    const used=EX3_SENTS.some(s=>EX3SANS[s.id]===w.id);
     const t=document.createElement('button');
     t.className='tile'+(ex3SelTile===w.id?' sel':'')+(used?' used':'');
     t.textContent=L(w);
-    t.onclick=()=>{ ex3SelTile=(ex3SelTile===w.id? null : w.id); renderExercises(); };
+    t.onclick=()=>{ if(exRevealed) return; ex3SelTile=(ex3SelTile===w.id? null : w.id); renderExercises(); };
     tw.appendChild(t);
   });
   /* sentences */
   const sl=$('ex3Sents'); sl.innerHTML='';
   EX3_SENTS.forEach(s=>{
-    const doneIt=EX3SDONE.has(s.id);
+    const ans=EX3SANS[s.id];
     const row=document.createElement('div'); row.className='exsent';
-    row.innerHTML=biInl(s.pre)+' <span class="slot'+(doneIt?' filled':'')+'" data-sent="'+s.id+'">'+(doneIt? esc(L(WORDS4.find(w=>w.id===s.ans))) : '＿＿＿＿')+'</span> '+biInl(s.post);
+    let slotCls='slot', slotTxt='＿＿＿＿';
+    if(ans!==undefined){
+      slotTxt=esc(L(WORDS4.find(x=>x.id===ans)));
+      if(exRevealed) slotCls+=EX3SDONE.has(s.id)? ' filled':' wrongslot';
+    }
+    row.innerHTML=biInl(s.pre)+' <span class="'+slotCls+'" data-sent="'+s.id+'">'+slotTxt+'</span> '+biInl(s.post)
+      +(exRevealed&&ans!==undefined&&!EX3SDONE.has(s.id)? ' <span style="color:#0a7a44;font-weight:800">→ '+esc(L(WORDS4.find(x=>x.id===s.ans)))+'</span>' : '');
     sl.appendChild(row);
   });
   sl.querySelectorAll('[data-sent]').forEach(slot=>{
     slot.onclick=()=>{
+      if(exRevealed) return;
       const s=EX3_SENTS.find(x=>x.id===slot.dataset.sent);
-      if(!s||EX3SDONE.has(s.id)||!ex3SelTile) return;
-      if(ex3SelTile===s.ans){ EX3SDONE.add(s.id); ex3SelTile=null; saveProg(); renderExercises(); }
-      else{ slot.classList.add('shake'); setTimeout(()=>slot.classList.remove('shake'),500); }
+      if(!s) return;
+      if(ex3SelTile){ EX3SANS[s.id]=ex3SelTile; ex3SelTile=null; saveProg(); renderExercises(); }
+      else if(EX3SANS[s.id]!==undefined){ delete EX3SANS[s.id]; saveProg(); renderExercises(); }
     };
   });
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+/* Mechanics v2 submit-mode exercises: one Submit scores everything at once;
+   the summary e value is the best SUBMITTED score (the DONE sets now hold the
+   correct sets of the latest submission — empty until the first Submit). */
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  const e3=new Set();
+  EX3_MATS.forEach(m=>{ if(m.given) return; ['c','b'].forEach(col=>{ const key=m.id+'_'+col; if(EX3VAL[key]===m.truth[col]) e3.add(key); }); });
+  EX3DONE=e3;
+  EX3SDONE=new Set(EX3_SENTS.filter(s=>EX3SANS[s.id]===s.ans).map(s=>s.id));
+  const total=EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3SDONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true; ex3SelTile=null;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1ANS={}; EX2ANS={}; EX3VAL={}; EX3SANS={}; ex3SelTile=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set(); EX3SDONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,1);
+  EX1.forEach((it,i)=>{ EX1_WORD_ORDER[i]=fyShuffle(WORDS4); });
+  EX2.forEach((it,i)=>{ EX2_WORD_ORDER[i]=fyShuffle(EX2_OPTS); });
+  EX3_TILES=fyShuffle(WORDS4.filter(w=>w.id==='bend'||w.id==='compress'));
+  exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1424,13 +1689,25 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderResGrid(); renderBandBox(); renderKeyWords(); applyRig(false);
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
   refreshEvidence();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderResGrid(); renderBandBox(); renderKeyWords(); applyRig(false);
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+    if($('exModal').classList.contains('open')) renderExercises();
+    refreshEvidence();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1439,7 +1716,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1481,6 +1758,7 @@ function setSpriteText(sp,text){
 }
 let renderer3=null, scene3=null, camera3=null;
 let G={}, nameSprite=null, ringMesh=null, resultSprite=null, bandSprite=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
 let MAT3={}, POSE={};
 MAT_ORDER.forEach(m=>{ POSE[m]={stretch:0,squash:0,twist:0,bend:0}; });
 let rigLen=1, rigBrickCount=0, resultUntil=0;
@@ -1590,6 +1868,12 @@ function buildRuler(){
   g.position.set(3.55,0,-0.55);
   return g;
 }
+/* Mechanics v2 tappability: every tap target carries an invisible hit proxy of
+   generous minimum size (nested/small/thin objects included). */
+function proxyMat(){ return new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}); }
+function sphProxy(r){ return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),proxyMat()); }
+function addProxy(id,mesh,parent){ mesh.userData.objId=id; parent.add(mesh); hitProxies.push(mesh); return mesh; }
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 function init3D(){
   const wrap=$('stage3d');
   try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
@@ -1629,6 +1913,15 @@ function init3D(){
   potGroup.traverse(o=>{ o.userData.objId='pot'; });
   scene3.add(buildRuler());
   BAND_ORDER.forEach((bid,k)=>{ reg('band_'+bid,buildWallBand(bid,1.95+k*0.65)); });
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.62); p.position.set(0,0.2,0); addProxy('sponge',p,G.sponge); }
+  { const p=sphProxy(0.6); p.position.set(0,0.1,0); addProxy('fabric',p,G.fabric); }
+  { const p=sphProxy(0.68); p.position.set(0,0.08,0); addProxy('paper',p,G.paper); }
+  { const p=sphProxy(0.62); p.position.set(0,0.08,0); addProxy('wood',p,G.wood); }
+  BAND_ORDER.forEach(bid=>{ const p=sphProxy(0.5); p.position.set(0,-0.22,0); addProxy('band_'+bid,p,G['band_'+bid]); });
+  { const p=sphProxy(0.3); p.position.set(0,BAR_Y-LOOP_R,0); addProxy('rig',p,rigGroup); }
+  { const p=new THREE.Mesh(new THREE.BoxGeometry(1.45,0.3,0.3),proxyMat()); p.position.set(0,BAR_Y,0); addProxy('rig',p,rigGroup); }
+  { const p=sphProxy(0.42); p.position.set(0,-0.17,0); addProxy('pot',p,potGroup); }
   flagMesh=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.18,4),new THREE.MeshBasicMaterial({color:0xe33e2b}));
   flagMesh.rotation.z=Math.PI/2; flagMesh.position.set(3.2,1.6,-0.55); scene3.add(flagMesh);
   ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
@@ -1664,11 +1957,8 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
-      for(let h=0;h<hits.length;h++){
-        const id=hits[h].object.userData.objId;
-        if(id){ handleTap(id); break; }
-      }
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
     }
   });
   el.addEventListener('pointercancel',()=>{ dragMode=null; });
@@ -1788,19 +2078,26 @@ function applyStepStart(i){
   applyRig(false);
   renderMatRow(); renderResGrid(); renderBandBox();
 }
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Picking a material is navigation (the console buttons do the same and are
+   never penalised); the wall bands and the rig are other steps' targets in
+   steps where they do not belong, so taps there are inert + a mistake. */
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
   if(MATS[id]){ selectMaterial(id,false); bounceThing(id); return; }
   if(id.indexOf('band_')===0){
     const bid=id.slice(5);
     focusVisual(id); bounceThing(id);
     if(curStep===3) setPred(bid);
     else if(curStep===4) mountBand(bid);
+    else addMistake();
     return;
   }
   if(id==='rig'||id==='pot'){
     focusVisual('rig');
     if(curStep===2){ if(bandHeld) doLetGo('user'); else doStretchBand('user'); }
     else if(curStep===4) addBrick();
+    else addMistake();
     return;
   }
 }
@@ -1865,6 +2162,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderBandBox();
   }
@@ -1883,7 +2182,346 @@ renderKeyWords();
 init3D();
 goStep(curStep);
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
+<!-- CAMB-BRIDGE v1 --><script>
+/* CAMB-BRIDGE v1 — Cambridge <-> toan.b-media.vn: login sync + progress/stars sync.
+ *
+ * Inlined into the hub and every lesson by bridge/inject_bridge.py (marked block).
+ * Dependency-free, defensive: it NEVER throws into the page. If the platform API
+ * is unreachable (e.g. the standalone GitHub Pages origin, where /api/* does not
+ * exist), the bridge stays dormant and the pages behave exactly as before
+ * (localStorage-only progress). One console note maximum.
+ *
+ * How the token arrives (localStorage is per-origin):
+ *   (a) same origin — Cambridge served from the platform server's
+ *       public/cambridge/: the platform app already stored the session in
+ *       localStorage key "toanlop4_auth_v1"; the bridge just reads it.
+ *   (b) fragment handoff — the platform links to Cambridge with #token=<token>
+ *       (the pattern its own OAuth flow uses): the bridge stores it under the
+ *       same key, in the platform's own storage shape, and strips the fragment.
+ *   (c) no token — guest/local mode.
+ *
+ * API base: relative "/api/..." by default, so it works on ANY origin that is
+ * served by / tunnelled to the platform server (toan.b-media.vn/cambridge/,
+ * or cambridge.b-media.vn once the tunnel points it at the same server).
+ * Set window.CAMB_API_BASE before this script only for exotic setups.
+ *
+ * Sync model (no lesson rewrites): the bridge OBSERVES the lessons' existing
+ * localStorage records — summaries "camb:sum:..." and the battle wallet
+ * "camb:wallet" — and reports changes to the platform:
+ *   summary change -> POST /api/saga/progress {module, lessonId, pct, q, maxOpen}
+ *       pct = combined steps+exercises completion % of the summary;
+ *       q   = best quiz fraction (summary q / qt);
+ *       maxOpen = the lesson's 1-based position in its book (Science 1 map
+ *       embedded below; server only ever raises it).
+ *   lesson opened  -> POST /api/saga/theory (once per lesson)
+ *   new wallet.botWins[code]  -> POST /api/solo-result, mode "bot"
+ *   new wallet.bossWins[key]  -> POST /api/solo-result, mode "boss"
+ * The wallet records only THAT a duel/boss was won, never the score, so battle
+ * reports encode the win minimally: bot = the duel's 4 questions completed,
+ * botId "easy", playerScore 1 / botScore 0 (the win flag); boss = 5/8 correct,
+ * bossTier "easy" (5/8 is the smallest score the server's own 60% easy
+ * threshold accepts as the win the wallet recorded). The server stays the
+ * authority: it recomputes stars and applies its daily caps regardless.
+ * Failed posts go to a retry queue in localStorage ("camb:bridge-queue-v1"),
+ * flushed on `online`, on load and on visibility return — the same approach
+ * (and the same accepted duplicate risk for solo-result) as the platform's
+ * own offline queue.
+ */
+(function () {
+  "use strict";
+  var AUTH_KEY = "toanlop4_auth_v1";
+  var QUEUE_KEY = "camb:bridge-queue-v1";
+  var SENT_KEY = "camb:bridge-sent-v1";
+  var API_BASE = (typeof window !== "undefined" && window.CAMB_API_BASE) || "";
+  var noted = false;
+  function note(msg) { if (!noted) { noted = true; try { console.info("[camb-bridge] " + msg); } catch (e) {} } }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function parseJson(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+
+  /* ---------- token intake ---------- */
+  function storeToken(token) {
+    var cur = parseJson(lsGet(AUTH_KEY) || "null") || {};
+    cur.token = token;
+    if (!("user" in cur)) cur.user = null;
+    cur.savedAt = Date.now();
+    lsSet(AUTH_KEY, JSON.stringify(cur));
+  }
+  (function intakeFragment() {
+    try {
+      var h = window.location.hash || "";
+      var m = h.match(/token=([^&]+)/);
+      if (m) {
+        storeToken(decodeURIComponent(m[1]));
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
+    } catch (e) {}
+  })();
+  function getToken() {
+    var raw = lsGet(AUTH_KEY);
+    if (!raw) return null;
+    if (raw.charAt(0) === "{") { var o = parseJson(raw); return (o && o.token) || null; }
+    return raw; // tolerate a bare token string
+  }
+
+  /* ---------- small state ---------- */
+  var token = getToken();
+  var user = null;          // window.CAMB_USER once profile loads
+  var apiDown = false;      // network-level failure seen (standalone origin etc.)
+  function loadSent() { return parseJson(lsGet(SENT_KEY) || "null") || { sums: {}, bot: {}, boss: {}, theory: {} }; }
+  function saveSent(s) { lsSet(SENT_KEY, JSON.stringify(s)); }
+  function loadQueue() { var q = parseJson(lsGet(QUEUE_KEY) || "null"); return Array.isArray(q) ? q : []; }
+  function saveQueue(q) { lsSet(QUEUE_KEY, JSON.stringify(q.slice(-80))); }
+  function queuePost(url, body, meta) {
+    var q = loadQueue();
+    var sig = url + "|" + JSON.stringify(body);
+    for (var i = 0; i < q.length; i++) if (q[i].url + "|" + JSON.stringify(q[i].body) === sig) return;
+    q.push({ url: url, body: body, at: Date.now(), meta: meta || null });
+    saveQueue(q);
+  }
+
+  /* ---------- API ---------- */
+  function api(path, method, body, keepalive) {
+    return new Promise(function (resolve, reject) {
+      var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : null;
+      var headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      fetch(API_BASE + path, {
+        method: method || "GET",
+        headers: headers,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctl ? ctl.signal : undefined,
+        keepalive: !!keepalive
+      }).then(function (res) {
+        if (timer) clearTimeout(timer);
+        return res.text().then(function (txt) {
+          var data = parseJson(txt || "null");
+          if (!res.ok) { var err = new Error("HTTP " + res.status); err.status = res.status; err.data = data; throw err; }
+          resolve(data);
+        });
+      }).catch(function (e) {
+        if (timer) clearTimeout(timer);
+        reject(e);
+      });
+    });
+  }
+  // POST that queues on network failure; resolves true when the server took it.
+  function post(path, body, meta, keepalive) {
+    return api(path, "POST", body, keepalive).then(function (data) {
+      if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+      return true;
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return false; }
+      if (!e || !e.status) { apiDown = true; note("platform API unreachable — staying in local mode, will retry."); }
+      queuePost(path, body, meta);
+      return false;
+    });
+  }
+  function onUnauthorized() {
+    token = null; user = null; window.CAMB_USER = null;
+    lsDel(AUTH_KEY);
+    note("session expired or invalid — signed out locally.");
+    renderHubAccount();
+  }
+
+  /* ---------- hub account chip (hub only: lessons have no #starVl) ---------- */
+  function platformOrigin() {
+    if (typeof window !== "undefined" && window.CAMB_PLATFORM_ORIGIN) return window.CAMB_PLATFORM_ORIGIN;
+    return window.location.hostname === "toan.b-media.vn" ? window.location.origin : "https://toan.b-media.vn";
+  }
+  function renderHubAccount() {
+    try {
+      var pill = document.getElementById("starVl");
+      if (!pill || !pill.parentNode) return; // not the hub — stay invisible
+      var chip = document.getElementById("cambAcct");
+      if (!chip) {
+        chip = document.createElement("div");
+        chip.id = "cambAcct";
+        chip.style.cssText = "font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);" +
+          "border-radius:999px;padding:5px 10px;text-align:right;line-height:1.35;max-width:230px";
+        pill.parentNode.insertBefore(chip, pill);
+      }
+      if (user) {
+        chip.innerHTML = "";
+        var s1 = document.createElement("span");
+        s1.textContent = "👤 " + user.username + " · ⭐ " + user.stars;
+        chip.appendChild(s1);
+      } else if (token && !apiDown) {
+        chip.textContent = "…";
+      } else if (token && apiDown) {
+        chip.textContent = "Chưa nối được máy chủ — tiến trình lưu trên máy này";
+      } else {
+        chip.innerHTML = "";
+        var t = document.createElement("span");
+        t.textContent = "Chưa đăng nhập — tiến trình chỉ lưu trên máy này ";
+        var a = document.createElement("a");
+        a.href = platformOrigin() + "/";
+        a.textContent = "Đăng nhập";
+        a.style.cssText = "color:#fff;text-decoration:underline;font-weight:800";
+        chip.appendChild(t); chip.appendChild(a);
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- sync: summaries -> saga/progress ---------- */
+  var SCI1_ORDER = ["1-1","1-2","1-3","1-4","2-1","2-2","2-3","3-1","3-2","3-3","3-4",
+    "4-1","4-2","4-3","4-4","5-1","5-2","5-3","5-4","6-1","6-2","6-3","6-4","6-5"];
+  function maxOpenFor(module, lessonId) {
+    if (module === "sci1") { var i = SCI1_ORDER.indexOf(lessonId); return i >= 0 ? i + 1 : 0; }
+    return 0;
+  }
+  function currentLesson() {
+    var m = (window.location.pathname || "").match(/(sci|math)(\d+)-(\d+)-(\d+)-/);
+    if (!m) return null;
+    return { module: m[1] + m[2], lessonId: m[3] + "-" + m[4], code: m[3] + "." + m[4] };
+  }
+  function syncSummaries(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var keys = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf("camb:sum:") === 0) keys.push(k); } } catch (e) {}
+    keys.forEach(function (key) {
+      var sm = parseJson(lsGet(key) || "null");
+      if (!sm) return;
+      var idm = key.slice("camb:sum:".length).match(/^(sci|math)(\d+)-(\d+)-(\d+)$/);
+      if (!idm) return;
+      var module = idm[1] + idm[2], lessonId = idm[3] + "-" + idm[4];
+      var s = +sm.s || 0, st = +sm.st || 0, e2 = +sm.e || 0, et = +sm.et || 0, q = +sm.q || 0, qt = +sm.qt || 0;
+      if (s + e2 + q <= 0) return; // nothing achieved yet — don't create empty entries
+      var hash = [s, st, e2, et, q, qt].join("/");
+      if (sent.sums[key] === hash) return;
+      var pct = (st + et) > 0 ? Math.round(100 * (s + e2) / (st + et)) : 0;
+      var body = { module: module, lessonId: lessonId, pct: pct, q: qt > 0 ? q / qt : 0, maxOpen: maxOpenFor(module, lessonId) };
+      jobs.push(post("/api/saga/progress", body, { sumKey: key, hash: hash }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.sums[key] = hash; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: wallet -> solo-result (bot / boss) ---------- */
+  function syncWallet(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var w = parseJson(lsGet("camb:wallet") || "null");
+    if (!w) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var here = currentLesson();
+    Object.keys(w.botWins || {}).forEach(function (code) {
+      if (!w.botWins[code] || sent.bot[code]) return;
+      var pm = String(code).match(/^(\d+)\.(\d+)$/);
+      if (!pm) return;
+      var module = here ? here.module : "sci1"; // wallet codes carry no book; only sci1 exists today
+      var lessonId = pm[1] + "-" + pm[2];
+      var body = { score: 4, correct: 4, total: 4, bonus: 0, subject: "science",
+        moduleId: module, lessonId: lessonId, lessonTitle: code, mode: "bot",
+        botId: "easy", playerScore: 1, botScore: 0, botModule: module, botLesson: lessonId };
+      jobs.push(post("/api/solo-result", body, { botCode: code }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.bot[code] = 1; saveSent(s2); }
+      }));
+    });
+    Object.keys(w.bossWins || {}).forEach(function (bkey) {
+      if (!w.bossWins[bkey] || sent.boss[bkey]) return;
+      var bm = String(bkey).match(/^(sci|math)(\d+)-u(\d+)$/);
+      if (!bm) return;
+      var module = bm[1] + bm[2], unitId = "u" + bm[3];
+      var body = { score: 5, correct: 5, total: 8, bonus: 0, subject: "science",
+        moduleId: module, lessonId: unitId, lessonTitle: "Boss Unit " + bm[3], mode: "boss",
+        bossTier: "easy", bossModule: module, bossLesson: unitId };
+      jobs.push(post("/api/solo-result", body, { bossKey: bkey }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.boss[bkey] = 1; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: lesson opened -> saga/theory (once) ---------- */
+  function syncTheory(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var here = currentLesson();
+    if (!here) return Promise.resolve();
+    var key = here.module + "/" + here.lessonId;
+    var sent = loadSent();
+    if (sent.theory[key]) return Promise.resolve();
+    return post("/api/saga/theory", { module: here.module, lessonId: here.lessonId }, { theoryKey: key }, keepalive)
+      .then(function (ok) { if (ok) { var s2 = loadSent(); s2.theory[key] = 1; saveSent(s2); } });
+  }
+
+  /* ---------- offline queue flush ---------- */
+  function flushQueue() {
+    if (!token || !user) return Promise.resolve();
+    var q = loadQueue();
+    if (!q.length) return Promise.resolve();
+    saveQueue([]);
+    var chain = Promise.resolve();
+    q.forEach(function (item) {
+      chain = chain.then(function () {
+        return api(item.url, "POST", item.body).then(function (data) {
+          if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+          var meta = item.meta || {};
+          var s2 = loadSent(), dirty = false;
+          if (meta.sumKey && meta.hash) { s2.sums[meta.sumKey] = meta.hash; dirty = true; }
+          if (meta.botCode) { s2.bot[meta.botCode] = 1; dirty = true; }
+          if (meta.bossKey) { s2.boss[meta.bossKey] = 1; dirty = true; }
+          if (meta.theoryKey) { s2.theory[meta.theoryKey] = 1; dirty = true; }
+          if (dirty) saveSent(s2);
+        }).catch(function (e) {
+          if (e && e.status === 401) { onUnauthorized(); return; }
+          queuePost(item.url, item.body, item.meta); // still failing — requeue
+        });
+      });
+    });
+    return chain;
+  }
+
+  function syncAll(keepalive) {
+    if (!token || !user) return;
+    syncTheory(keepalive)
+      .then(function () { return syncSummaries(keepalive); })
+      .then(function () { return syncWallet(keepalive); })
+      .catch(function () {});
+  }
+
+  /* ---------- boot ---------- */
+  function boot() {
+    renderHubAccount();
+    if (!token) { note("no platform session — guest/local mode."); return; }
+    api("/api/profile", "GET").then(function (p) {
+      if (!p || !p.username) { apiDown = true; renderHubAccount(); return; }
+      user = { username: p.username, stars: p.stars || 0, testBypass: !!p.testBypass };
+      window.CAMB_USER = user;
+      if (p.testBypass || String(p.username).toLowerCase() === "congtuth") lsSet("camb:test-bypass", "1");
+      else lsDel("camb:test-bypass");
+      renderHubAccount();
+      flushQueue().then(function () { syncAll(false); });
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return; }
+      apiDown = true; // standalone origin / server down: keep token, stay silent
+      note("platform API unreachable — staying in local mode, will retry.");
+      renderHubAccount();
+    });
+    setInterval(function () { if (user) syncAll(false); }, 5000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && user) { flushQueue().then(function () { syncAll(false); }); } });
+    window.addEventListener("beforeunload", function () { if (user) syncAll(true); });
+    window.addEventListener("storage", function () { if (user) syncAll(false); });
+    window.addEventListener("online", function () { if (user) flushQueue().then(function () { syncAll(false); }); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+
+</script><!-- /CAMB-BRIDGE v1 -->
 </body>
 </html>

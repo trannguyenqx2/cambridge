@@ -177,6 +177,36 @@ button:disabled{opacity:.45;cursor:default}
   #stepCard{width:340px}
 }
 
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== lesson 1.2 submit-mode exercise marks ===== */
+.sentbtn.picked{text-decoration:line-through;background:#eef6ff;border-color:var(--acc);color:#22384f}
+.sentbtn.wrongpick{text-decoration:line-through;border-color:#e5a3a3;background:#fdf0f0;color:#b03a3a}
+.sentbtn.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
 /* ===== lesson 1.2 additions ===== */
 .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .partchip{flex:1;min-width:110px;font-size:18px;font-weight:800;padding:12px 8px;border-radius:14px;border:2px solid var(--line);background:#fff;line-height:1.3}
@@ -248,11 +278,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -318,6 +350,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -328,6 +362,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -397,6 +432,8 @@ button:disabled{opacity:.45;cursor:default}
     </section>
 
     <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <button id="exClose"></button>
     </div>
@@ -404,13 +441,40 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 
 <script>
+
 "use strict";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
-function L(s){ return lang==='vi'? s.vi : s.en; }
+/* ================= language: 3 modes — en / both (EN+VI) / vi =================
+   Static HTML text uses data-en / data-vi attributes.
+   Everything rendered by JS uses {en, vi} string objects with bi()/L().
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
+function L(s){ return lang==='vi'? s.vi : s.en; }              // one language (both -> EN)
 function bi(s){
   if(lang==='en') return esc(s.en);
   if(lang==='vi') return esc(s.vi);
@@ -428,7 +492,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= garden things ================= */
@@ -527,7 +591,24 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  bestLine:{en:'Best score: ',vi:'Điểm cao nhất: '},
+  exBestLine:(n,t)=>({en:'Best submitted score: '+n+' of '+t,vi:'Điểm nộp cao nhất: '+n+' / '+t}),
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'flower',vi:'hoa'},
@@ -698,8 +779,8 @@ const EXWORDS=[
  {part:'stem',   word:{en:'stem',vi:'thân (stem)'}},
  {part:'roots',  word:{en:'root',vi:'rễ (root)'}}
 ];
-const EX1_ORDER=mixOrder(EXWORDS,w=>w.part,2);
-const EX2_ORDER=mixOrder(EXWORDS,w=>w.part,2);
+let EX1_ORDER=mixOrder(EXWORDS,w=>w.part,2);
+let EX2_ORDER=mixOrder(EXWORDS,w=>w.part,2);
 const EX3STAGES=[
  {n:1, label:{en:'A seed with its first root',vi:'Hạt với chiếc rễ đầu tiên'}},
  {n:2, label:{en:'A young stem grows up',vi:'Thân non mọc lên'}},
@@ -721,7 +802,9 @@ const EX4=[
   e:{en:'The roots grow first, and then the stem — that is how a plant grows.',vi:'Rễ mọc trước, rồi mới đến thân — cây lớn lên như vậy đó.'}}
 ];
 const EX_TOTAL=4+4+4+2; /* Ex1 4 + Ex2 4 + Ex3 4 + Ex4 2 = 14 */
-let EX1DONE=new Set(), EX2DONE=new Set(), EX4DONE=new Set(), EX3N=0;
+let EX1DONE=new Set(), EX2DONE=new Set(), EX4DONE=new Set(), EX3N=0; /* correct sets of the LATEST submission (empty until the first Submit) */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let EX1ANS={}, EX2ANS={}, EX3SEQ=[], EX4ANS={}; /* exercises: the learner's current (unsubmitted) answers */
 let ex1sel=null, ex2sel=null;
 
 /* ================= state + persistence ================= */
@@ -729,12 +812,25 @@ const KEY='camb:sci1-1-2';
 const SUMKEY='camb:sum:sci1-1-2';
 let doneSteps=new Set(), curStep=0;
 let MATCHED=new Set(), OBSERVED=new Set(), QBEST=0;
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(Array.isArray(s.matched)) MATCHED=new Set(s.matched.filter(p=>PARTS.indexOf(p)>=0));
     if(Array.isArray(s.observed)) OBSERVED=new Set(s.observed.filter(p=>['plantA','plantB','plantC'].indexOf(p)>=0));
     QBEST=Math.max(0,Math.min(QUIZ.length,s.qbest|0));
@@ -744,14 +840,37 @@ try{
       EX3N=Math.max(0,Math.min(4,s.ex.e3|0));
       if(Array.isArray(s.ex.e4)) EX4DONE=new Set(s.ex.e4.map(Number).filter(n=>n===0||n===1));
     }
+    /* Mechanics v2 fields — absent in pre-v2 saves: then done steps count as acknowledged and the
+       old exercise totals become the submitted best with its answers pre-filled as already revealed. */
+    ackSet=new Set(Array.isArray(s.ack)? s.ack.filter(n=>Number.isInteger(n)) : [...doneSteps]);
+    if(Array.isArray(s.mist)) for(let i=0;i<6;i++) mist[i]=Math.max(0,Math.min(2,s.mist[i]|0));
+    if(Number.isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      const okA=o=>{ const r={}; if(o&&typeof o==='object') for(const k in o) if(PARTS.indexOf(k)>=0&&PARTS.indexOf(o[k])>=0) r[k]=o[k]; return r; };
+      EX1ANS=okA(s.exAns.a1); EX2ANS=okA(s.exAns.a2);
+      if(Array.isArray(s.exAns.seq)){ const seen=new Set(); EX3SEQ=s.exAns.seq.map(Number).filter(n=>n>=1&&n<=4&&!seen.has(n)&&seen.add(n)); }
+      if(s.exAns.a4&&typeof s.exAns.a4==='object') for(const k in s.exAns.a4){ const v=s.exAns.a4[k]; if((k==='0'||k==='1')&&(v===0||v===1)) EX4ANS[k]=v; }
+      exRevealed=!!s.exSub;
+    } else {
+      /* pre-v2 save: the old live totals become the submitted best, answers pre-filled, panel revealed */
+      const oldTotal=EX1DONE.size+EX2DONE.size+EX3N+EX4DONE.size;
+      if(oldTotal>0){
+        exBest=Math.max(exBest,oldTotal);
+        EX1DONE.forEach(p=>{ EX1ANS[p]=p; }); EX2DONE.forEach(p=>{ EX2ANS[p]=p; });
+        EX3SEQ=[1,2,3,4].slice(0,EX3N); EX4DONE.forEach(pi=>{ EX4ANS[pi]=EX4[pi].wrong; });
+        exRevealed=true;
+      }
+    }
   }
 }catch(e){/* fresh start */}
-function exScoreNow(){ return EX1DONE.size+EX2DONE.size+EX3N+EX4DONE.size; }
+lang=effLang();
+function exScoreNow(){ return exBest; }
 function writeSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:QBEST,qt:QUIZ.length})); }catch(e){}
+  /* summary v2: s = steps done AND acknowledged; e/q = best SUBMITTED scores only */
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:STEPS.filter((_,i)=>doneSteps.has(i)&&ackSet.has(i)).length,st:STEPS.length,e:exBest,et:EX_TOTAL,q:QBEST,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,matched:[...MATCHED],observed:[...OBSERVED],qbest:QBEST,ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:EX3N,e4:[...EX4DONE]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,matched:[...MATCHED],observed:[...OBSERVED],qbest:QBEST,ack:[...ackSet],mist:mist.slice(),exBest:exBest,exSub:exRevealed,exAns:{a1:Object.assign({},EX1ANS),a2:Object.assign({},EX2ANS),seq:EX3SEQ.slice(),a4:Object.assign({},EX4ANS)},ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:EX3N,e4:[...EX4DONE]}})); }catch(e){}
   writeSum();
 }
 /* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
@@ -764,6 +883,69 @@ function newTrack(){return {
   s6sel:new Set()
 };}
 let T=newTrack();
+
+/* ================= Mechanics v2: notice, read gate, ack gate, anti-guess ================= */
+let noticeTimer=null;
+function showNotice(s){
+  const b=$('noticeBox'); b.innerHTML=esc(L(s))+(lang==='en'? ' <span class="gloss">· '+esc(s.vi)+'</span>' : '');
+  b.classList.add('show');
+  if(noticeTimer) clearTimeout(noticeTimer);
+  noticeTimer=setTimeout(()=>b.classList.remove('show'),2600);
+}
+function flashReadBtn(){
+  const b=$('btnRead'); if(!b) return;
+  b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash');
+  const h=$('readHint'); if(h){ h.textContent=L(STR.readAgain); h.style.display='block'; }
+}
+function paintReadGate(){
+  const b=$('btnRead'); if(!b) return;
+  const locked=stepLocked();
+  $('readRow').style.display=locked? 'block':'none';
+  if(!locked){ $('readHint').style.display='none'; return; }
+  b.textContent=justReset? L(STR.startAgainBtn) : L(STR.startBtn);
+  const w=readWaitLeft();
+  b.disabled=w>0;
+  if(w>0){ b.textContent=L(STR.readWait(w)); readShownSec=w; }
+}
+function tickReadGate(){
+  if(!stepLocked()) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec) paintReadGate();
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackArmStep=curStep; ackReadyAt=Date.now()+ACK_MIN_S*1000; ackShownSec=-1; }
+  const w=ackWaitLeft();
+  b.disabled=w>0;
+  b.textContent=w>0? L(STR.ackWait(w)) : L(STR.gotItBtn);
+  if(w>0) ackShownSec=w;
+}
+function tickAckGate(){
+  if(ackArmStep!==curStep) return;
+  if(!(doneSteps.has(curStep)||checkStep(curStep))||ackSet.has(curStep)) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec) paintAckGate();
+}
+/* anti-guess reset: wipe the CURRENT step's evidence, zero its counter, re-lock the instruction */
+function resetStepEvidence(){
+  T=newTrack();
+  if(curStep===1) MATCHED.clear();
+  if(curStep===3) OBSERVED.clear();
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate();
+  ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderJobs(); renderObserved();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3){ resetStepEvidence(); return; }
+  saveProg();
+}
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -843,6 +1025,11 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===5?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  paintAckGate();
+  $('btnNext').disabled=!(done&&ackSet.has(curStep));
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -884,12 +1071,14 @@ function renderStepExtra(){
       d.innerHTML=(done? '<span class="em">'+THINGS[j.part].emoji+'</span><b>'+biInl(PARTNAME[j.part])+'</b><br>' : '')+bi(j.job);
       d.onclick=()=>{
         if(done) return;
+        if(stepLocked()){ flashReadBtn(); return; }
         if(!T.s2sel){ d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); refreshEvidence(); return; }
         if(T.s2sel===j.part){
           T.s2done.add(j.part); MATCHED.add(j.part); T.s2sel=null; T.s2wrong=false;
           saveProg(); renderJobs(); renderStepExtra(); refreshEvidence();
         }else{
           T.s2wrong=true; d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); refreshEvidence();
+          addMistake();
         }
       };
       grid.appendChild(d);
@@ -905,6 +1094,7 @@ function renderStepExtra(){
       b.innerHTML=PARTCHIP[p].emoji+' '+biInl(PARTCHIP[p].name)+(built?' ✓':'');
       b.onclick=()=>{
         if(built) return;
+        if(stepLocked()){ flashReadBtn(); return; }
         if(p===GROW_ORDER[T.s3next]){
           T.s3next++; T.s3wrong=null;
           popModelPart(p);
@@ -917,6 +1107,7 @@ function renderStepExtra(){
           else if(T.s3next===3) T.s3wrong='Only the flower is missing!';
           b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500);
           refreshEvidence();
+          addMistake();
         }
       };
       row.appendChild(b);
@@ -938,10 +1129,15 @@ function renderStepExtra(){
       const by=document.createElement('button'); by.className='ynbtn no'; by.innerHTML=bi(STR.yesBtn);
       const bn=document.createElement('button'); bn.className='ynbtn yes'; bn.innerHTML=bi(STR.noBtn);
       by.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
         OBSERVED.add(T.s4pending); T.s4obs.add(T.s4pending); T.s4pending=null; T.s4wrong=false;
         saveProg(); renderObserved(); renderStepExtra(); refreshEvidence();
       };
-      bn.onclick=()=>{ T.s4wrong=true; bn.classList.add('shake'); setTimeout(()=>bn.classList.remove('shake'),500); refreshEvidence(); };
+      bn.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
+        T.s4wrong=true; bn.classList.add('shake'); setTimeout(()=>bn.classList.remove('shake'),500); refreshEvidence();
+        addMistake();
+      };
       row.appendChild(by); row.appendChild(bn); box.appendChild(row);
     }
   }else if(curStep===4){
@@ -963,7 +1159,8 @@ function renderStepExtra(){
       d.id='safe_'+c.id;
       d.innerHTML='<span class="em">'+c.emoji+'</span>'+bi(c.name);
       d.onclick=()=>{
-        if(picked) T.s6sel.delete(c.id); else T.s6sel.add(c.id);
+        if(stepLocked()){ flashReadBtn(); return; }
+        if(picked) T.s6sel.delete(c.id); else { T.s6sel.add(c.id); if(!c.safe) addMistake(); }
         renderStepExtra(); refreshEvidence();
       };
       grid.appendChild(d);
@@ -973,14 +1170,27 @@ function renderStepExtra(){
 }
 function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   anims.length=0;
   T=newTrack();
   applyStepStart(curStep);
   saveProg(); renderSteps();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{
+  if(readWaitLeft()>0){ paintReadGate(); return; } /* still counting down — the button is disabled anyway */
+  stepRead=true; everRead.add(curStep); justReset=false;
+  $('readHint').style.display='none';
+  renderSteps();
+};
+$('btnGotIt').onclick=()=>{
+  if(ackWaitLeft()>0){ paintAckGate(); return; } /* still counting down — the button is disabled anyway */
+  ackSet.add(curStep); ackArmStep=-1;
+  saveProg(); renderSteps();
+};
 $('btnResetStep').onclick=()=>{
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   anims.length=0; T=newTrack();
   applyStepStart(curStep); saveProg(); renderSteps();
 };
@@ -1067,59 +1277,63 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2: submit-mode quiz — picking an option gives NO feedback and the
+   score never moves while answering; answers stay changeable until Submit. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
-  $('qProg').innerHTML=biInl(prog);
+  $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length, vi:'Câu '+(qi+1)+' / '+QUIZ.length});
   $('qText').innerHTML=bi(it.q);
-  $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qScore').textContent=L(STR.bestLine)+QBEST+' / '+QUIZ.length;
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(di===st.chosen?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
-  qFinished=true;
-  const s=qScoreNow();
-  if(s>QBEST){ QBEST=s; }
-  saveProg();
-  $('qProg').textContent='';
-  $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+function showQuizResults(s){
+  $('qProg').innerHTML=biInl(STR.qDone);
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
-  $('qScore').innerHTML=bi(fin);
+  $('qText').innerHTML=bi(fin);
+  $('qScore').textContent=L(STR.bestLine)+QBEST+' / '+QUIZ.length;
+  $('qBack').style.display='none';
   $('qNext').textContent=L(STR.qAgain);
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
+  $('qOpts').innerHTML=QUIZ.map((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const yours=st.chosen>=0? it.o[ord[st.chosen]] : null;
+    const right=!!yours&&yours===it.o[it.a];
+    return '<div class="qrev"><div class="qrevq">'+(idx+1)+'. '+biInl(it.q)+'</div>'
+      +'<div class="qreva">'+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>'
+      +(yours&&!right? '<div class="qrevy">'+esc(L(STR.qYourAns))+biInl(yours)+'</div>' : '')
+      +(!yours? '<div class="qrevy">'+esc(L(STR.qYourAns))+esc(L(STR.qNoAns))+'</div>' : '')
+      +'<div class="qreve">'+biInl(it.e)+'</div></div>';
+  }).join('');
+}
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; closeQuiz(); openQuiz(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  const s=qScoreNow();
+  if(s>QBEST){ QBEST=s; }
+  qFinished=true;
+  saveProg();
+  showQuizResults(s);
 };
+$('qBack').onclick=()=>{ if(qi>0){ qi--; showQ(); } };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
 
@@ -1140,6 +1354,7 @@ let wallet=loadWallet();
 const BOT_CODE='1.2';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1212,14 +1427,30 @@ $('btnBotTop').onclick=openBot;
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
-/* Plant diagrams (SVG). Zones are the visible parts; label slots fill in when correct. */
-function diaSVG(kind,doneSet){
+/* Plant diagrams (SVG). Zones are the visible parts; label slots show the learner's
+   chosen word (neutral) until Submit reveals right / wrong / missed. */
+function wordEn(p){ const w=EXWORDS.find(x=>x.part===p); return w? w.word.en : p; }
+function exDiaLabels(ans){
+  const m={};
+  PARTS.forEach(p=>{
+    const w=ans[p];
+    if(!exRevealed) m[p]= w? {t:wordEn(w),mode:'ans'} : {t:'?',mode:'empty'};
+    else if(w===p) m[p]={t:wordEn(p),mode:'right'};
+    else if(w) m[p]={t:wordEn(w),mode:'wrong'};
+    else m[p]={t:wordEn(p),mode:'missed'};
+  });
+  return m;
+}
+function diaSVG(kind,labMap){
   const lab=(part,x,y,anchor)=>{
-    const done=doneSet.has(part);
+    const m=labMap[part]||{t:'?',mode:'empty'};
     const w=part==='flower'?64:(part==='roots'?52:48);
+    const fill=m.mode==='right'?'#e2f5ea':(m.mode==='wrong'?'#fdf0f0':(m.mode==='ans'?'#eef6ff':'#ffffff'));
+    const stroke=m.mode==='right'?'#0d9d58':(m.mode==='wrong'?'#e5a3a3':(m.mode==='missed'?'#b3541e':(m.mode==='ans'?'#7db3f0':'#b9c9d8')));
+    const color=m.mode==='right'?'#0a7a44':(m.mode==='wrong'?'#b03a3a':(m.mode==='missed'?'#b3541e':'#22384f'));
     return '<g class="zlab" data-part="'+part+'">'
-      +'<rect x="'+(anchor==='end'? x-w : x)+'" y="'+(y-13)+'" width="'+w+'" height="26" rx="8" fill="'+(done?'#e2f5ea':'#ffffff')+'" stroke="'+(done?'#0d9d58':'#b9c9d8')+'" stroke-width="2"/>'
-      +'<text x="'+(anchor==='end'? x-w/2 : x+w/2)+'" y="'+(y+5)+'" text-anchor="middle" class="ztext" fill="'+(done?'#0a7a44':'#8494a9')+'">'+(done? part : '?')+'</text></g>';
+      +'<rect x="'+(anchor==='end'? x-w : x)+'" y="'+(y-13)+'" width="'+w+'" height="26" rx="8" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2"'+(m.mode==='missed'?' stroke-dasharray="5 4"':'')+'/>'
+      +'<text x="'+(anchor==='end'? x-w/2 : x+w/2)+'" y="'+(y+5)+'" text-anchor="middle" class="ztext" fill="'+color+'">'+esc(m.t)+'</text></g>';
   };
   const zone=(part,shape)=>'<g class="zone" data-part="'+part+'">'+shape+'</g>';
   let parts='';
@@ -1262,120 +1493,146 @@ function stageSVG(n){
   if(n>=4) inner+=flower;
   return '<svg viewBox="0 0 120 104" class="stageart">'+inner+'</svg>';
 }
-function renderExChips(elId,order,doneSet,selVal,onPick){
+function renderExChips(elId,order,ansSet,selVal,onPick){
   const el=$(elId); el.innerHTML='';
   order.forEach(w=>{
-    const used=doneSet.has(w.part);
+    const used=ansSet.has(w.part);
     const b=document.createElement('button');
     b.className='wchip'+(selVal===w.part?' sel':'')+(used?' used':'');
     b.textContent=(lang==='en'? w.word.en : (lang==='vi'? w.word.vi : w.word.en));
     if(lang==='both') b.innerHTML=esc(w.word.en)+'<span class="gloss inl">'+esc(w.word.vi)+'</span>';
-    b.onclick=()=>{ if(used) return; onPick(w.part); };
+    b.onclick=()=>onPick(w.part);
     el.appendChild(b);
   });
 }
+/* Mechanics v2: submit-mode exercises — choices stay neutral and changeable;
+   nothing is scored or revealed until the single Submit button is tapped. */
 function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3N+EX4DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line)+' · '+biInl(STR.exBestLine(exBest,EX_TOTAL));
+  }else{
+    const answered=Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+EX3SEQ.length+Object.keys(EX4ANS).length;
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(answered,EX_TOTAL))+' · '+biInl(STR.exBestLine(exBest,EX_TOTAL));
+  }
   /* Ex 1 · Focus — label the plant */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=4);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=4);
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
-  $('ex1Dia').innerHTML=diaSVG(1,EX1DONE);
-  renderExChips('ex1Chips',EX1_ORDER,EX1DONE,ex1sel,p=>{ ex1sel=p; renderExercises(); });
-  $('ex1Dia').querySelectorAll('.zone').forEach(z=>{
-    z.addEventListener('click',()=>{
-      const part=z.getAttribute('data-part');
-      if(EX1DONE.has(part)) return;
-      if(!ex1sel){ $('ex1Hint').innerHTML=bi(STR.exTapWordFirst); return; }
-      if(ex1sel===part){ EX1DONE.add(part); ex1sel=null; saveProg(); renderExercises(); }
-      else{ $('ex1Hint').innerHTML=bi(STR.exWrongPart); z.classList.add('shake'); setTimeout(()=>z.classList.remove('shake'),500); }
-    });
-  });
-  $('ex1Dia').querySelectorAll('.zlab').forEach(z=>{
-    z.addEventListener('click',()=>{
-      const part=z.getAttribute('data-part');
-      if(EX1DONE.has(part)||!ex1sel) return;
-      if(ex1sel===part){ EX1DONE.add(part); ex1sel=null; saveProg(); renderExercises(); }
-    });
-  });
+  $('ex1Dia').innerHTML=diaSVG(1,exDiaLabels(EX1ANS));
+  renderExChips('ex1Chips',EX1_ORDER,new Set(Object.values(EX1ANS)),ex1sel,p=>{ ex1sel=(ex1sel===p? null:p); renderExercises(); });
+  const zoneClick1=part=>{
+    if(exRevealed) return;
+    if(EX1ANS[part]&&!ex1sel){ ex1sel=EX1ANS[part]; delete EX1ANS[part]; saveProg(); renderExercises(); return; }
+    if(!ex1sel){ $('ex1Hint').innerHTML=bi(STR.exTapWordFirst); return; }
+    PARTS.forEach(p=>{ if(EX1ANS[p]===ex1sel) delete EX1ANS[p]; });
+    EX1ANS[part]=ex1sel; ex1sel=null; saveProg(); renderExercises();
+  };
+  $('ex1Dia').querySelectorAll('.zone').forEach(z=>z.addEventListener('click',()=>zoneClick1(z.getAttribute('data-part'))));
+  $('ex1Dia').querySelectorAll('.zlab').forEach(z=>z.addEventListener('click',()=>zoneClick1(z.getAttribute('data-part'))));
   /* Ex 2 · Practice — label the roots plant */
-  $('exSec2').classList.toggle('done',EX2DONE.size>=4);
-  $('ex2T').innerHTML=exHead(STR.ex2T,EX2DONE.size>=4);
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=4);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=4);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
-  $('ex2Dia').innerHTML=diaSVG(2,EX2DONE);
-  renderExChips('ex2Chips',EX2_ORDER,EX2DONE,ex2sel,p=>{ ex2sel=p; renderExercises(); });
-  $('ex2Dia').querySelectorAll('.zone').forEach(z=>{
-    z.addEventListener('click',()=>{
-      const part=z.getAttribute('data-part');
-      if(EX2DONE.has(part)) return;
-      if(!ex2sel){ $('ex2Hint').innerHTML=bi(STR.exTapWordFirst); return; }
-      if(ex2sel===part){ EX2DONE.add(part); ex2sel=null; saveProg(); renderExercises(); }
-      else{ $('ex2Hint').innerHTML=bi(STR.exWrongPart); z.classList.add('shake'); setTimeout(()=>z.classList.remove('shake'),500); }
-    });
-  });
-  $('ex2Dia').querySelectorAll('.zlab').forEach(z=>{
-    z.addEventListener('click',()=>{
-      const part=z.getAttribute('data-part');
-      if(EX2DONE.has(part)||!ex2sel) return;
-      if(ex2sel===part){ EX2DONE.add(part); ex2sel=null; saveProg(); renderExercises(); }
-    });
-  });
-  /* Ex 3 · Challenge — growth order */
-  $('exSec3').classList.toggle('done',EX3N>=4);
-  $('ex3T').innerHTML=exHead(STR.ex3T,EX3N>=4);
+  $('ex2Dia').innerHTML=diaSVG(2,exDiaLabels(EX2ANS));
+  renderExChips('ex2Chips',EX2_ORDER,new Set(Object.values(EX2ANS)),ex2sel,p=>{ ex2sel=(ex2sel===p? null:p); renderExercises(); });
+  const zoneClick2=part=>{
+    if(exRevealed) return;
+    if(EX2ANS[part]&&!ex2sel){ ex2sel=EX2ANS[part]; delete EX2ANS[part]; saveProg(); renderExercises(); return; }
+    if(!ex2sel){ $('ex2Hint').innerHTML=bi(STR.exTapWordFirst); return; }
+    PARTS.forEach(p=>{ if(EX2ANS[p]===ex2sel) delete EX2ANS[p]; });
+    EX2ANS[part]=ex2sel; ex2sel=null; saveProg(); renderExercises();
+  };
+  $('ex2Dia').querySelectorAll('.zone').forEach(z=>z.addEventListener('click',()=>zoneClick2(z.getAttribute('data-part'))));
+  $('ex2Dia').querySelectorAll('.zlab').forEach(z=>z.addEventListener('click',()=>zoneClick2(z.getAttribute('data-part'))));
+  /* Ex 3 · Challenge — growth order (tap cards in the order YOU think; tap again to undo) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3N>=4);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3N>=4);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
   const g3=$('ex3Grid'); g3.innerHTML='';
   EX3_ORDER.forEach(st=>{
-    const placed=st.n<=EX3N;
+    const pos=EX3SEQ.indexOf(st.n);
+    const placed=pos>=0;
     const d=document.createElement('div');
-    d.className='piccard'+(placed?' right':'');
+    let cls='';
+    if(exRevealed&&placed) cls=(st.n===pos+1)? ' right':' wrong';
+    else if(placed) cls=' placed';
+    d.className='piccard'+cls;
     d.id='stage_'+st.n;
-    d.innerHTML=stageSVG(st.n)+'<div>'+bi(st.label)+'</div>'+(placed? '<div class="ordbadge">'+st.n+'</div>' : '');
+    d.innerHTML=stageSVG(st.n)+'<div>'+bi(st.label)+'</div>'+(placed? '<div class="ordbadge">'+(pos+1)+'</div>' : '');
     d.onclick=()=>{
-      if(placed) return;
-      if(st.n===EX3N+1){ EX3N++; saveProg(); renderExercises(); }
-      else{ d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500);
-        $('ex3Hint').innerHTML=bi({en:'Not yet! '+(EX3N===0?'The roots grow first.':EX3N===1?'After the roots, the stem grows.':EX3N===2?'Then the leaves grow on the stem.':'The flower comes last.'),
-                                    vi:'Chưa đúng! '+(EX3N===0?'Rễ (roots) mọc đầu tiên.':EX3N===1?'Sau rễ, thân (stem) mọc lên.':EX3N===2?'Rồi lá (leaf) mọc trên thân.':'Hoa (flower) mọc sau cùng.')}); }
+      if(exRevealed) return;
+      if(placed) EX3SEQ.splice(EX3SEQ.indexOf(st.n),1);
+      else EX3SEQ.push(st.n);
+      saveProg(); renderExercises();
     };
     g3.appendChild(d);
   });
-  /* Ex 4 · Challenge — cross the wrong sentence */
-  $('exSec4').classList.toggle('done',EX4DONE.size>=2);
-  $('ex4T').innerHTML=exHead(STR.ex4T,EX4DONE.size>=2);
+  /* Ex 4 · Challenge — cross the wrong sentence (your cross stays neutral until Submit) */
+  $('exSec4').classList.toggle('done',exRevealed&&EX4DONE.size>=2);
+  $('ex4T').innerHTML=exHead(STR.ex4T,exRevealed&&EX4DONE.size>=2);
   $('ex4Inst').innerHTML=bi(STR.ex4Inst);
   const list=$('ex4List'); list.innerHTML='';
   EX4.forEach((pair,pi)=>{
     const wrap=document.createElement('div'); wrap.className='expair';
     wrap.innerHTML='<div class="small" style="font-weight:800;margin-bottom:4px">'+(pi===0?'a':'b')+')</div>';
     pair.sents.forEach((s,si)=>{
-      const crossed=EX4DONE.has(pi)&&si===pair.wrong;
+      const chosen=EX4ANS[pi]===si;
       const b=document.createElement('button');
-      b.className='sentbtn'+(crossed?' crossed':'');
+      let cls='';
+      if(exRevealed){
+        if(si===pair.wrong&&chosen) cls=' crossed';
+        else if(chosen) cls=' wrongpick';
+        else if(si===pair.wrong) cls=' rightmark';
+      }else if(chosen) cls=' picked';
+      b.className='sentbtn'+cls;
       b.id='ex4_'+pi+'_'+si;
-      b.innerHTML=(crossed?'✗ ':'')+bi(s);
+      b.innerHTML=((cls===' crossed'||cls===' picked'||cls===' wrongpick')?'✗ ':'')+bi(s);
       b.onclick=()=>{
-        if(EX4DONE.has(pi)) return;
-        if(si===pair.wrong){ EX4DONE.add(pi); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        if(EX4ANS[pi]===si) delete EX4ANS[pi]; else EX4ANS[pi]=si;
+        saveProg(); renderExercises();
       };
       wrap.appendChild(b);
     });
-    if(EX4DONE.has(pi)){
+    if(exRevealed){
       const ex=document.createElement('div'); ex.className='exexpl';
-      ex.innerHTML='✓ '+bi(pair.e);
+      ex.innerHTML=(EX4DONE.has(pi)?'✓ ':'✗ ')+bi(pair.e);
       wrap.appendChild(ex);
     }
     list.appendChild(wrap);
   });
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(PARTS.filter(p=>EX1ANS[p]===p));
+  EX2DONE=new Set(PARTS.filter(p=>EX2ANS[p]===p));
+  EX3N=EX3SEQ.reduce((n,v,i)=>n+(v===i+1?1:0),0);
+  EX4DONE=new Set(EX4.map((pair,pi)=>pi).filter(pi=>EX4ANS[pi]===EX4[pi].wrong));
+  const total=EX1DONE.size+EX2DONE.size+EX3N+EX4DONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1ANS={}; EX2ANS={}; EX3SEQ=[]; EX4ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX4DONE=new Set(); EX3N=0;
+  EX1_ORDER=mixOrder(EXWORDS,w=>w.part,2);
+  EX2_ORDER=mixOrder(EXWORDS,w=>w.part,2);
+  EX3_ORDER=mixOrder(EX3STAGES,s=>s.n,2);
+  if(EX3_ORDER.map(s=>s.n).join()==='1,2,3,4'){ const t=EX3_ORDER[0]; EX3_ORDER[0]=EX3_ORDER[2]; EX3_ORDER[2]=t; }
+  ex1sel=null; ex2sel=null; exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){ if(!allStepsAcked()){ showNotice(STR.finishSteps); return; } $('exModal').classList.add('open'); renderExercises(); }
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1383,12 +1640,23 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(!viUnlocked()&&m!=='en'){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=effLang(); saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderJobs(); renderObserved(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
+}
+/* the bridge profile can arrive after first paint (async) — re-apply the policy when it lands */
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderJobs(); renderObserved(); renderKeyWords();
+    if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
+    if($('exModal').classList.contains('open')) renderExercises();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1397,7 +1665,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1444,8 +1712,27 @@ let lastRW=0, lastRH=0;
 const ORB={r:9.4, th:0.14, ph:1.08, tx:0, ty:0.45, tz:0};
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
 function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
-function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function reg(id,group){
+  group.userData.objId=id;
+  group.traverse(o=>{ o.userData.objId=id; if(o.isMesh&&o.material&&o.material.transparent&&o.material.opacity===0) hitProxies.push(o); });
+  G[id]=group; scene3.add(group); return group;
+}
 function hitMesh(geo){ return new THREE.Mesh(geo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})); }
+/* Mechanics v2 tappability: invisible hit proxies — raycast ONLY these, and only while shown. */
+let hitProxies=[];
+const proxyMat=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+function sphProxy(parent,r,x,y,z){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),proxyMat);
+  m.position.set(x||0,y||0,z||0);
+  m.userData.objId=parent.userData.objId;
+  parent.add(m); hitProxies.push(m);
+  return m;
+}
+function isShownObj(o){
+  let n=o;
+  while(n){ if(n.visible===false) return false; n=n.parent; }
+  return true;
+}
 
 function buildBed(){
   const g=new THREE.Group();
@@ -1493,7 +1780,7 @@ function buildStem(){
   const g=new THREE.Group();
   const st=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.085,1.78,10),stdMat(0x3f9e4d,0.85)));
   st.position.y=0.89; g.add(st);
-  const hit=hitMesh(new THREE.CylinderGeometry(0.24,0.24,1.85,8));
+  const hit=hitMesh(new THREE.CylinderGeometry(0.33,0.33,1.85,8));
   hit.position.y=0.9; g.add(hit);
   g.userData.baseY=0;
   return g;
@@ -1697,6 +1984,11 @@ function init3D(){
   reg('plantC',buildPlantC());
   reg('glass',buildGlass());
   modelG=buildModel();
+  /* generous invisible proxies for the things that have no hit mesh of their own */
+  sphProxy(G.plantA,0.66,0,1.05,0);
+  sphProxy(G.plantB,0.72,0,0.66,0);
+  sphProxy(G.plantC,0.58,0,0.8,0);
+  sphProxy(G.glass,0.5,0,0.55,0);
   ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
     new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
   ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
@@ -1728,11 +2020,8 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
-      for(let h=0;h<hits.length;h++){
-        const id=hits[h].object.userData.objId;
-        if(id){ handleTap(id); break; }
-      }
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
     }
   });
   el.addEventListener('pointercancel',()=>{ dragMode=null; });
@@ -1780,12 +2069,22 @@ function bounceThing(id){
   const baseY=g.userData.baseY||0;
   addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
 }
+/* Mechanics v2: scene taps count ONLY for the current step's targets.
+   PARTS = flower / leaf / stem / roots of the big plant. */
+const STEP_TARGETS=[
+  PARTS, PARTS, [],
+  ['glass','plantA','plantB','plantC'],
+  PARTS, []
+];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
   if(!THINGS[id]) return;
   focusVisual(id);
   bounceThing(id);
   if(curStep===3&&(id==='glass'||THINGS[id].kind==='plant')) focusThing(id);
+  const wrongPart=(curStep===4&&PARTS.indexOf(id)>=0&&T.s5done<4&&id!==RIDDLES[T.s5idx].part);
   sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0||wrongPart) addMistake();
 }
 function sceneClick(id){
   if(curStep===0){
@@ -1859,6 +2158,7 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate(); tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderJobs(); renderObserved();
   }
@@ -1878,7 +2178,345 @@ init3D();
 goStep(curStep);
 try{ if(!localStorage.getItem(SUMKEY)) saveProg(); }catch(e){}
 requestAnimationFrame(loop);
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
+
 
 </script>
+<!-- CAMB-BRIDGE v1 --><script>
+/* CAMB-BRIDGE v1 — Cambridge <-> toan.b-media.vn: login sync + progress/stars sync.
+ *
+ * Inlined into the hub and every lesson by bridge/inject_bridge.py (marked block).
+ * Dependency-free, defensive: it NEVER throws into the page. If the platform API
+ * is unreachable (e.g. the standalone GitHub Pages origin, where /api/* does not
+ * exist), the bridge stays dormant and the pages behave exactly as before
+ * (localStorage-only progress). One console note maximum.
+ *
+ * How the token arrives (localStorage is per-origin):
+ *   (a) same origin — Cambridge served from the platform server's
+ *       public/cambridge/: the platform app already stored the session in
+ *       localStorage key "toanlop4_auth_v1"; the bridge just reads it.
+ *   (b) fragment handoff — the platform links to Cambridge with #token=<token>
+ *       (the pattern its own OAuth flow uses): the bridge stores it under the
+ *       same key, in the platform's own storage shape, and strips the fragment.
+ *   (c) no token — guest/local mode.
+ *
+ * API base: relative "/api/..." by default, so it works on ANY origin that is
+ * served by / tunnelled to the platform server (toan.b-media.vn/cambridge/,
+ * or cambridge.b-media.vn once the tunnel points it at the same server).
+ * Set window.CAMB_API_BASE before this script only for exotic setups.
+ *
+ * Sync model (no lesson rewrites): the bridge OBSERVES the lessons' existing
+ * localStorage records — summaries "camb:sum:..." and the battle wallet
+ * "camb:wallet" — and reports changes to the platform:
+ *   summary change -> POST /api/saga/progress {module, lessonId, pct, q, maxOpen}
+ *       pct = combined steps+exercises completion % of the summary;
+ *       q   = best quiz fraction (summary q / qt);
+ *       maxOpen = the lesson's 1-based position in its book (Science 1 map
+ *       embedded below; server only ever raises it).
+ *   lesson opened  -> POST /api/saga/theory (once per lesson)
+ *   new wallet.botWins[code]  -> POST /api/solo-result, mode "bot"
+ *   new wallet.bossWins[key]  -> POST /api/solo-result, mode "boss"
+ * The wallet records only THAT a duel/boss was won, never the score, so battle
+ * reports encode the win minimally: bot = the duel's 4 questions completed,
+ * botId "easy", playerScore 1 / botScore 0 (the win flag); boss = 5/8 correct,
+ * bossTier "easy" (5/8 is the smallest score the server's own 60% easy
+ * threshold accepts as the win the wallet recorded). The server stays the
+ * authority: it recomputes stars and applies its daily caps regardless.
+ * Failed posts go to a retry queue in localStorage ("camb:bridge-queue-v1"),
+ * flushed on `online`, on load and on visibility return — the same approach
+ * (and the same accepted duplicate risk for solo-result) as the platform's
+ * own offline queue.
+ */
+(function () {
+  "use strict";
+  var AUTH_KEY = "toanlop4_auth_v1";
+  var QUEUE_KEY = "camb:bridge-queue-v1";
+  var SENT_KEY = "camb:bridge-sent-v1";
+  var API_BASE = (typeof window !== "undefined" && window.CAMB_API_BASE) || "";
+  var noted = false;
+  function note(msg) { if (!noted) { noted = true; try { console.info("[camb-bridge] " + msg); } catch (e) {} } }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function parseJson(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+
+  /* ---------- token intake ---------- */
+  function storeToken(token) {
+    var cur = parseJson(lsGet(AUTH_KEY) || "null") || {};
+    cur.token = token;
+    if (!("user" in cur)) cur.user = null;
+    cur.savedAt = Date.now();
+    lsSet(AUTH_KEY, JSON.stringify(cur));
+  }
+  (function intakeFragment() {
+    try {
+      var h = window.location.hash || "";
+      var m = h.match(/token=([^&]+)/);
+      if (m) {
+        storeToken(decodeURIComponent(m[1]));
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
+    } catch (e) {}
+  })();
+  function getToken() {
+    var raw = lsGet(AUTH_KEY);
+    if (!raw) return null;
+    if (raw.charAt(0) === "{") { var o = parseJson(raw); return (o && o.token) || null; }
+    return raw; // tolerate a bare token string
+  }
+
+  /* ---------- small state ---------- */
+  var token = getToken();
+  var user = null;          // window.CAMB_USER once profile loads
+  var apiDown = false;      // network-level failure seen (standalone origin etc.)
+  function loadSent() { return parseJson(lsGet(SENT_KEY) || "null") || { sums: {}, bot: {}, boss: {}, theory: {} }; }
+  function saveSent(s) { lsSet(SENT_KEY, JSON.stringify(s)); }
+  function loadQueue() { var q = parseJson(lsGet(QUEUE_KEY) || "null"); return Array.isArray(q) ? q : []; }
+  function saveQueue(q) { lsSet(QUEUE_KEY, JSON.stringify(q.slice(-80))); }
+  function queuePost(url, body, meta) {
+    var q = loadQueue();
+    var sig = url + "|" + JSON.stringify(body);
+    for (var i = 0; i < q.length; i++) if (q[i].url + "|" + JSON.stringify(q[i].body) === sig) return;
+    q.push({ url: url, body: body, at: Date.now(), meta: meta || null });
+    saveQueue(q);
+  }
+
+  /* ---------- API ---------- */
+  function api(path, method, body, keepalive) {
+    return new Promise(function (resolve, reject) {
+      var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : null;
+      var headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      fetch(API_BASE + path, {
+        method: method || "GET",
+        headers: headers,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctl ? ctl.signal : undefined,
+        keepalive: !!keepalive
+      }).then(function (res) {
+        if (timer) clearTimeout(timer);
+        return res.text().then(function (txt) {
+          var data = parseJson(txt || "null");
+          if (!res.ok) { var err = new Error("HTTP " + res.status); err.status = res.status; err.data = data; throw err; }
+          resolve(data);
+        });
+      }).catch(function (e) {
+        if (timer) clearTimeout(timer);
+        reject(e);
+      });
+    });
+  }
+  // POST that queues on network failure; resolves true when the server took it.
+  function post(path, body, meta, keepalive) {
+    return api(path, "POST", body, keepalive).then(function (data) {
+      if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+      return true;
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return false; }
+      if (!e || !e.status) { apiDown = true; note("platform API unreachable — staying in local mode, will retry."); }
+      queuePost(path, body, meta);
+      return false;
+    });
+  }
+  function onUnauthorized() {
+    token = null; user = null; window.CAMB_USER = null;
+    lsDel(AUTH_KEY);
+    note("session expired or invalid — signed out locally.");
+    renderHubAccount();
+  }
+
+  /* ---------- hub account chip (hub only: lessons have no #starVl) ---------- */
+  function platformOrigin() {
+    if (typeof window !== "undefined" && window.CAMB_PLATFORM_ORIGIN) return window.CAMB_PLATFORM_ORIGIN;
+    return window.location.hostname === "toan.b-media.vn" ? window.location.origin : "https://toan.b-media.vn";
+  }
+  function renderHubAccount() {
+    try {
+      var pill = document.getElementById("starVl");
+      if (!pill || !pill.parentNode) return; // not the hub — stay invisible
+      var chip = document.getElementById("cambAcct");
+      if (!chip) {
+        chip = document.createElement("div");
+        chip.id = "cambAcct";
+        chip.style.cssText = "font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);" +
+          "border-radius:999px;padding:5px 10px;text-align:right;line-height:1.35;max-width:230px";
+        pill.parentNode.insertBefore(chip, pill);
+      }
+      if (user) {
+        chip.innerHTML = "";
+        var s1 = document.createElement("span");
+        s1.textContent = "👤 " + user.username + " · ⭐ " + user.stars;
+        chip.appendChild(s1);
+      } else if (token && !apiDown) {
+        chip.textContent = "…";
+      } else if (token && apiDown) {
+        chip.textContent = "Chưa nối được máy chủ — tiến trình lưu trên máy này";
+      } else {
+        chip.innerHTML = "";
+        var t = document.createElement("span");
+        t.textContent = "Chưa đăng nhập — tiến trình chỉ lưu trên máy này ";
+        var a = document.createElement("a");
+        a.href = platformOrigin() + "/";
+        a.textContent = "Đăng nhập";
+        a.style.cssText = "color:#fff;text-decoration:underline;font-weight:800";
+        chip.appendChild(t); chip.appendChild(a);
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- sync: summaries -> saga/progress ---------- */
+  var SCI1_ORDER = ["1-1","1-2","1-3","1-4","2-1","2-2","2-3","3-1","3-2","3-3","3-4",
+    "4-1","4-2","4-3","4-4","5-1","5-2","5-3","5-4","6-1","6-2","6-3","6-4","6-5"];
+  function maxOpenFor(module, lessonId) {
+    if (module === "sci1") { var i = SCI1_ORDER.indexOf(lessonId); return i >= 0 ? i + 1 : 0; }
+    return 0;
+  }
+  function currentLesson() {
+    var m = (window.location.pathname || "").match(/(sci|math)(\d+)-(\d+)-(\d+)-/);
+    if (!m) return null;
+    return { module: m[1] + m[2], lessonId: m[3] + "-" + m[4], code: m[3] + "." + m[4] };
+  }
+  function syncSummaries(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var keys = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf("camb:sum:") === 0) keys.push(k); } } catch (e) {}
+    keys.forEach(function (key) {
+      var sm = parseJson(lsGet(key) || "null");
+      if (!sm) return;
+      var idm = key.slice("camb:sum:".length).match(/^(sci|math)(\d+)-(\d+)-(\d+)$/);
+      if (!idm) return;
+      var module = idm[1] + idm[2], lessonId = idm[3] + "-" + idm[4];
+      var s = +sm.s || 0, st = +sm.st || 0, e2 = +sm.e || 0, et = +sm.et || 0, q = +sm.q || 0, qt = +sm.qt || 0;
+      if (s + e2 + q <= 0) return; // nothing achieved yet — don't create empty entries
+      var hash = [s, st, e2, et, q, qt].join("/");
+      if (sent.sums[key] === hash) return;
+      var pct = (st + et) > 0 ? Math.round(100 * (s + e2) / (st + et)) : 0;
+      var body = { module: module, lessonId: lessonId, pct: pct, q: qt > 0 ? q / qt : 0, maxOpen: maxOpenFor(module, lessonId) };
+      jobs.push(post("/api/saga/progress", body, { sumKey: key, hash: hash }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.sums[key] = hash; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: wallet -> solo-result (bot / boss) ---------- */
+  function syncWallet(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var w = parseJson(lsGet("camb:wallet") || "null");
+    if (!w) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var here = currentLesson();
+    Object.keys(w.botWins || {}).forEach(function (code) {
+      if (!w.botWins[code] || sent.bot[code]) return;
+      var pm = String(code).match(/^(\d+)\.(\d+)$/);
+      if (!pm) return;
+      var module = here ? here.module : "sci1"; // wallet codes carry no book; only sci1 exists today
+      var lessonId = pm[1] + "-" + pm[2];
+      var body = { score: 4, correct: 4, total: 4, bonus: 0, subject: "science",
+        moduleId: module, lessonId: lessonId, lessonTitle: code, mode: "bot",
+        botId: "easy", playerScore: 1, botScore: 0, botModule: module, botLesson: lessonId };
+      jobs.push(post("/api/solo-result", body, { botCode: code }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.bot[code] = 1; saveSent(s2); }
+      }));
+    });
+    Object.keys(w.bossWins || {}).forEach(function (bkey) {
+      if (!w.bossWins[bkey] || sent.boss[bkey]) return;
+      var bm = String(bkey).match(/^(sci|math)(\d+)-u(\d+)$/);
+      if (!bm) return;
+      var module = bm[1] + bm[2], unitId = "u" + bm[3];
+      var body = { score: 5, correct: 5, total: 8, bonus: 0, subject: "science",
+        moduleId: module, lessonId: unitId, lessonTitle: "Boss Unit " + bm[3], mode: "boss",
+        bossTier: "easy", bossModule: module, bossLesson: unitId };
+      jobs.push(post("/api/solo-result", body, { bossKey: bkey }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.boss[bkey] = 1; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: lesson opened -> saga/theory (once) ---------- */
+  function syncTheory(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var here = currentLesson();
+    if (!here) return Promise.resolve();
+    var key = here.module + "/" + here.lessonId;
+    var sent = loadSent();
+    if (sent.theory[key]) return Promise.resolve();
+    return post("/api/saga/theory", { module: here.module, lessonId: here.lessonId }, { theoryKey: key }, keepalive)
+      .then(function (ok) { if (ok) { var s2 = loadSent(); s2.theory[key] = 1; saveSent(s2); } });
+  }
+
+  /* ---------- offline queue flush ---------- */
+  function flushQueue() {
+    if (!token || !user) return Promise.resolve();
+    var q = loadQueue();
+    if (!q.length) return Promise.resolve();
+    saveQueue([]);
+    var chain = Promise.resolve();
+    q.forEach(function (item) {
+      chain = chain.then(function () {
+        return api(item.url, "POST", item.body).then(function (data) {
+          if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+          var meta = item.meta || {};
+          var s2 = loadSent(), dirty = false;
+          if (meta.sumKey && meta.hash) { s2.sums[meta.sumKey] = meta.hash; dirty = true; }
+          if (meta.botCode) { s2.bot[meta.botCode] = 1; dirty = true; }
+          if (meta.bossKey) { s2.boss[meta.bossKey] = 1; dirty = true; }
+          if (meta.theoryKey) { s2.theory[meta.theoryKey] = 1; dirty = true; }
+          if (dirty) saveSent(s2);
+        }).catch(function (e) {
+          if (e && e.status === 401) { onUnauthorized(); return; }
+          queuePost(item.url, item.body, item.meta); // still failing — requeue
+        });
+      });
+    });
+    return chain;
+  }
+
+  function syncAll(keepalive) {
+    if (!token || !user) return;
+    syncTheory(keepalive)
+      .then(function () { return syncSummaries(keepalive); })
+      .then(function () { return syncWallet(keepalive); })
+      .catch(function () {});
+  }
+
+  /* ---------- boot ---------- */
+  function boot() {
+    renderHubAccount();
+    if (!token) { note("no platform session — guest/local mode."); return; }
+    api("/api/profile", "GET").then(function (p) {
+      if (!p || !p.username) { apiDown = true; renderHubAccount(); return; }
+      user = { username: p.username, stars: p.stars || 0, testBypass: !!p.testBypass };
+      window.CAMB_USER = user;
+      if (p.testBypass || String(p.username).toLowerCase() === "congtuth") lsSet("camb:test-bypass", "1");
+      else lsDel("camb:test-bypass");
+      renderHubAccount();
+      flushQueue().then(function () { syncAll(false); });
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return; }
+      apiDown = true; // standalone origin / server down: keep token, stay silent
+      note("platform API unreachable — staying in local mode, will retry.");
+      renderHubAccount();
+    });
+    setInterval(function () { if (user) syncAll(false); }, 5000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && user) { flushQueue().then(function () { syncAll(false); }); } });
+    window.addEventListener("beforeunload", function () { if (user) syncAll(true); });
+    window.addEventListener("storage", function () { if (user) syncAll(false); });
+    window.addEventListener("online", function () { if (user) flushQueue().then(function () { syncAll(false); }); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+
+</script><!-- /CAMB-BRIDGE v1 -->
 </body>
 </html>

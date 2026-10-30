@@ -170,6 +170,33 @@ button:disabled{opacity:.45;cursor:default}
 .wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
 .exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
 .exexpl .gloss{font-size:.85em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.zonechip.ans{border-color:var(--acc);background:#eef6ff}
+.zonechip.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.zonechip.wrong{border-color:#e5a3a3;background:#fdf0f0;cursor:default}
+.sentrow.wrong .blank{border-bottom-color:#e5a3a3;color:#b03a3a}
+.rightword{color:#0a7a44;font-weight:800}
+.langseg button.locked{opacity:.6}
 @media(max-width:900px){
   .console{display:none}
   .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
@@ -250,11 +277,13 @@ svg .zone:hover{opacity:.85}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -320,6 +349,8 @@ svg .zone:hover{opacity:.85}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -330,6 +361,7 @@ svg .zone:hover{opacity:.85}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -380,6 +412,8 @@ svg .zone:hover{opacity:.85}
     </section>
 
     <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <button id="exClose"></button>
     </div>
@@ -396,8 +430,34 @@ svg .zone:hover{opacity:.85}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+/* ================= language: 3 modes — en / both (EN+VI) / vi =================
+   Static HTML text uses data-en / data-vi attributes.
+   Everything rendered by JS uses {en, vi} string objects with bi()/L().
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -416,7 +476,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= space-corner things (camera focus targets) ================= */
@@ -511,7 +571,22 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'Earth',vi:'Trái Đất'},
@@ -692,7 +767,7 @@ const EX1=[
  {id:'v_house',emoji:'🏠', en:'You can see houses', vi:'Nhìn thấy nhà', see:false},
  {id:'v_people',emoji:'🚶',en:'You can see people', vi:'Nhìn thấy người', see:false}
 ];
-const EX1_ORDER=mixOrder(EX1,c=>c.see?'see':'no',2);
+let EX1_ORDER=mixOrder(EX1,c=>c.see?'see':'no',2);
 /* Ex2 Practice — labels onto the Earth picture */
 const EX2LABELS=[
  {id:'lb_land', zone:'z_land', en:'land', vi:'đất (land)'},
@@ -700,7 +775,7 @@ const EX2LABELS=[
  {id:'lb_lake', zone:'z_lake', en:'land covered by a lake', vi:'đất bị hồ (lake) che phủ'},
  {id:'lb_ball', zone:'z_cap',  en:'The Earth is like a ball', vi:'Trái Đất như một quả bóng (ball)'}
 ];
-const EX2_ORDER=mixOrder(EX2LABELS,c=>c.zone,2);
+let EX2_ORDER=mixOrder(EX2LABELS,c=>c.zone,2);
 /* Ex3 Challenge — finish the sentences with tiles */
 const EX3=[
  {pre:{en:'The Earth is like a very large',vi:'Trái Đất như một'}, post:{en:'.',vi:'rất lớn.'}, ans:'w_ball'},
@@ -716,21 +791,38 @@ const EX3TILES=[
  {id:'w_land',  en:'land', vi:'đất (land)', for:-1},
  {id:'w_moon',  en:'Moon', vi:'Mặt Trăng (Moon)', for:-1}
 ];
-const EX3_ORDER=mixOrder(EX3TILES,t=>t.for,3);
+let EX3_ORDER=mixOrder(EX3TILES,t=>t.for,3);
 const EX_TOTAL=6+4+4; /* 14 */
-let EX1DONE=new Set(), EX2DONE={}, EX3DONE=new Set(), ex1Wrong=false, ex2sel=null, ex2Wrong=false, ex3sel=-1;
+let EX1DONE=new Set(), EX2DONE={}, EX3DONE=new Set(), ex2sel=null, ex3sel=-1;
+/* Mechanics v2 state (submit-mode exercises): EX1DONE/EX2DONE/EX3DONE now hold
+   the correct sets of the latest SUBMISSION — empty until the first Submit. */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers */
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci1-4-1';
 let doneSteps=new Set(), curStep=0;
 let FOUND={ball:false,spin:false,space:false,count:false,home:false,report:false};
 let CNT={water:0,land:0,planets:0,report:0};
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
     if(s.cnt&&typeof s.cnt==='object') CNT=Object.assign(CNT,s.cnt);
     if(s.ex&&typeof s.ex==='object'){
@@ -738,20 +830,42 @@ try{
       if(s.ex.e2&&typeof s.ex.e2==='object') EX2DONE=s.ex.e2;
       if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+      if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(z=>{ const lb=EX2LABELS.find(x=>x.id===s.exAns.a2[z]); if(lb&&EX2LABELS.some(x=>x.zone===z)) EX2ANS[z]=lb.id; });
+      if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); const t=EX3TILES.find(x=>x.id===s.exAns.a3[k]); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&t) EX3ANS[si]=t.id; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||Object.keys(EX2DONE).length||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1SEL=new Set(EX1DONE);
+      Object.keys(EX2DONE).forEach(z=>{ EX2ANS[z]=EX2DONE[z]; });
+      EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.ans; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+Object.keys(EX2DONE).length+EX3DONE.size);
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
+/* summary record for the site hub level map (additive only; main record schema unchanged) */
 const SUMKEY='camb:sum:sci1-4-1';
 let qBest=0;
 try{
   const sm=JSON.parse(localStorage.getItem(SUMKEY)||'null');
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
-function exScoreNow(){ return EX1DONE.size+Object.keys(EX2DONE).length+EX3DONE.size; }
+function exScoreNow(){ return exBest; }
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,found:FOUND,cnt:CNT,ex:{e1:[...EX1DONE],e2:EX2DONE,e3:[...EX3DONE]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,found:FOUND,cnt:CNT,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS},ex:{e1:[...EX1DONE],e2:EX2DONE,e3:[...EX3DONE]}})); }catch(e){}
   saveSum();
 }
 function newTrack(){ return {
@@ -763,6 +877,62 @@ function newTrack(){ return {
   s6done:new Set(), s6sel:-1
 };}
 let T=newTrack();
+
+/* ================= Mechanics v2: notice, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function resetStepEvidence(){
+  /* wipe ONLY the current step's collected evidence (the per-visit tracker,
+     plus that step's console mirror), then re-lock the instruction (read gate). */
+  anims.length=0; T=newTrack();
+  if(curStep===2){ FOUND.space=false; if(viewMode==='space') setView('room'); }
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderFound();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
+}
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -842,6 +1012,13 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===5?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  const acked=ackSet.has(curStep);
+  paintAckGate();
+  $('btnNext').disabled=!(done&&acked);
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -863,7 +1040,7 @@ function buildSort(box,cards,bins,correctSet,getSel,setSel){
     d.className='piccard'+(correctSet.has(c.id)?' right':'')+(getSel()===c.id?' sel':'');
     d.id='card_'+c.id;
     d.innerHTML='<span class="em">'+c.emoji+'</span>'+bi(c);
-    d.onclick=()=>{ if(correctSet.has(c.id)) return; setSel(c.id); renderStepExtra(); refreshEvidence(); };
+    d.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } if(correctSet.has(c.id)) return; setSel(c.id); renderStepExtra(); refreshEvidence(); };
     grid.appendChild(d);
   });
   box.appendChild(grid);
@@ -871,12 +1048,14 @@ function buildSort(box,cards,bins,correctSet,getSel,setSel){
   bins.forEach(bn=>{
     const b=document.createElement('button'); b.className='binbtn '+bn.cls; b.innerHTML=bi(bn.label);
     b.onclick=()=>{
+      if(stepLocked()){ flashReadBtn(); return; }
       const sel=getSel(); if(!sel) return;
       const c=cards.find(x=>x.id===sel);
       if(c.ans===bn.key){
         correctSet.add(c.id); setSel(null);
         renderStepExtra(); refreshEvidence();
       }else{
+        addMistake();
         const el=$('card_'+c.id);
         if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); }
       }
@@ -903,7 +1082,7 @@ function buildReport(box,sents,tiles,doneSet,getSel,setSel,placedOf){
     const placed=placedOf(si);
     const blankTxt=placed? L(TILES.find(t=>t.id===placed)) : '______';
     row.innerHTML=biInl(s.pre)+' <span class="blank">'+esc(blankTxt)+'</span> '+biInl(s.post);
-    row.onclick=()=>{ if(doneSet.has(si)) return; setSel(si); renderStepExtra(); refreshEvidence(); };
+    row.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } if(doneSet.has(si)) return; setSel(si); renderStepExtra(); refreshEvidence(); };
     box.appendChild(row);
   });
   const tray=document.createElement('div'); tray.className='tray';
@@ -914,12 +1093,14 @@ function buildReport(box,sents,tiles,doneSet,getSel,setSel,placedOf){
     b.id='tile_'+t.id;
     b.innerHTML=biInl(t);
     b.onclick=()=>{
+      if(stepLocked()){ flashReadBtn(); return; }
       if(used) return;
       const si=getSel(); if(si<0) return;
       if(t.for===si){
         doneSet.add(si); setSel(-1);
         renderStepExtra(); refreshEvidence();
       }else{
+        addMistake();
         b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500);
       }
     };
@@ -945,9 +1126,10 @@ function renderStepExtra(){
         d.id='card_'+c.id;
         d.innerHTML='<span class="em">'+c.emoji+'</span>'+bi(c);
         d.onclick=()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
           if(T.s3seen.has(c.id)) return;
           if(c.ans==='see'){ T.s3seen.add(c.id); T.s3hint=null; renderStepExtra(); }
-          else{ T.s3hint='no'; d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); }
+          else{ T.s3hint='no'; addMistake(); d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); }
           refreshEvidence();
         };
         grid.appendChild(d);
@@ -975,13 +1157,17 @@ function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
   anims.length=0;
   T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
   anims.length=0; T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   applyStepStart(curStep); saveProg(); renderSteps();
 };
 $('btnDemo').onclick=()=>{
@@ -1071,58 +1257,66 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals score, correct answers and
+   explanations. qBest only ever moves on a submitted result. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
   $('qProg').innerHTML=biInl(prog);
   $('qText').innerHTML=bi(it.q);
   $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+function showQuizResults(){
   qFinished=true;
   const s=qScoreNow();
   if(s>qBest) qBest=s;
   saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
   $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let h='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    h+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) h+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    h+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=h; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -1144,6 +1338,7 @@ let wallet=loadWallet();
 const BOT_CODE='4.1';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1212,49 +1407,64 @@ $('bNext').onclick=()=>{
 $('bClose').onclick=closeBot;
 $('btnBotTop').onclick=openBot;
 
-/* ================= exercises panel ================= */
+/* ================= exercises panel (Mechanics v2: submit-mode) =================
+   Answers are recorded WITHOUT any right/wrong feedback and can be changed
+   freely. One Submit scores everything at once, then reveals the correct
+   answers. The summary `e` value is the best SUBMITTED score (EX1DONE/
+   EX2DONE/EX3DONE now hold the correct sets of the latest submission —
+   empty until the first Submit). */
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
 function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
-  /* Ex 1 · Focus — tick what Meg can see */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=6);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=6);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+Object.keys(EX2DONE).length+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — tick what Meg can see (a tick is the learner's own mark; nothing is revealed yet) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=6);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=6);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
-  $('ex1Hint').innerHTML=ex1Wrong? bi(STR.ex1No) : '';
+  $('ex1Hint').innerHTML='';
   const g1=$('ex1Grid'); g1.innerHTML='';
   EX1_ORDER.forEach(it=>{
-    const ticked=EX1DONE.has(it.id);
+    const ticked=EX1SEL.has(it.id);
     const b=document.createElement('button');
     b.className='excard tickcard'+(ticked?' ticked':'');
+    if(exRevealed){
+      if(ticked&&it.see) b.className='excard tickcard right';
+      else if(ticked&&!it.see) b.className='excard wrongsel';
+      else if(!ticked&&it.see) b.className='excard missed';
+    }
     b.id='excard_'+it.id;
     b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ticked? '<div class="tickmark">✓</div>' : '<div class="small">☐</div>');
     b.onclick=()=>{
-      if(ticked) return;
-      if(it.see){ EX1DONE.add(it.id); ex1Wrong=false; saveProg(); renderExercises(); }
-      else{
-        ex1Wrong=true; renderExercises();
-        const el=$('excard_'+it.id);
-        if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); }
-      }
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
     };
     g1.appendChild(b);
   });
-  /* Ex 2 · Practice — label the Earth picture */
-  $('exSec2').classList.toggle('done',Object.keys(EX2DONE).length>=4);
-  $('ex2T').innerHTML=exHead(STR.ex2T,Object.keys(EX2DONE).length>=4);
+  /* Ex 2 · Practice — label the Earth picture (labels can be placed, moved and taken back) */
+  $('exSec2').classList.toggle('done',exRevealed&&Object.keys(EX2DONE).length>=4);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&Object.keys(EX2DONE).length>=4);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
-  $('ex2Hint').innerHTML=ex2Wrong? bi(STR.ex2No) : '';
+  $('ex2Hint').innerHTML='';
   const g2=$('ex2Grid'); g2.innerHTML='';
   const wrap=document.createElement('div'); wrap.className='diagramwrap';
-  const placedTxt=zid=>{ const lb=EX2LABELS.find(x=>x.zone===zid); return EX2DONE[zid]? L(lb) : '?'; };
+  const placedTxt=zid=>{ const lb=EX2LABELS.find(x=>x.id===EX2ANS[zid]); if(!lb) return '?'; return L(lb)+(exRevealed? (EX2DONE[zid]? ' ✓' : ' ✗') : ''); };
   wrap.innerHTML=
    '<svg viewBox="0 0 360 250" width="100%" style="max-width:430px" role="img">'
    +'<circle cx="180" cy="105" r="86" fill="#3fa7d6" stroke="#2b7bb3" stroke-width="3"/>'
@@ -1269,57 +1479,84 @@ function renderExercises(){
    +'</svg>';
   const chips=document.createElement('div');
   EX2_ORDER.forEach(lb=>{
-    const used=Object.keys(EX2DONE).some(z=>EX2DONE[z]===lb.id);
+    const placedZone=Object.keys(EX2ANS).find(z=>EX2ANS[z]===lb.id);
+    const used=!!placedZone;
     const c=document.createElement('button');
-    c.className='zonechip'+(used?' placed':'')+(ex2sel===lb.id?' sel':'');
+    c.className='zonechip'+(exRevealed? (used? (EX2DONE[placedZone]? ' right':' wrong') : '') : (used? ' ans':''))+(ex2sel===lb.id?' sel':'');
     c.id='exchip_'+lb.id;
     c.innerHTML=biInl(lb);
-    c.onclick=()=>{ if(used) return; ex2sel=lb.id; ex2Wrong=false; renderExercises(); };
+    c.onclick=()=>{
+      if(exRevealed) return;
+      if(used){ delete EX2ANS[placedZone]; ex2sel=lb.id; saveProg(); renderExercises(); return; }
+      ex2sel=lb.id; renderExercises();
+    };
     chips.appendChild(c);
   });
   wrap.appendChild(chips);
   g2.appendChild(wrap);
   wrap.querySelectorAll('.zone').forEach(z=>{
     z.addEventListener('click',()=>{
+      if(exRevealed||!ex2sel) return;
       const zid=z.getAttribute('data-zone');
-      if(EX2DONE[zid]||!ex2sel) return;
-      const lb=EX2LABELS.find(x=>x.id===ex2sel);
-      if(lb&&lb.zone===zid){ EX2DONE[zid]=lb.id; ex2sel=null; ex2Wrong=false; saveProg(); renderExercises(); }
-      else{ ex2Wrong=true; renderExercises(); }
+      Object.keys(EX2ANS).forEach(zz=>{ if(EX2ANS[zz]===ex2sel) delete EX2ANS[zz]; });
+      EX2ANS[zid]=ex2sel; ex2sel=null; saveProg(); renderExercises();
     });
   });
-  /* Ex 3 · Challenge — finish the sentences */
-  $('exSec3').classList.toggle('done',EX3DONE.size>=EX3.length);
-  $('ex3T').innerHTML=exHead(STR.ex3T,EX3DONE.size>=EX3.length);
+  /* Ex 3 · Challenge — finish the sentences (tiles can be placed and taken back) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
   $('ex3Hint').textContent='';
   const list=$('ex3List'); list.innerHTML='';
   EX3.forEach((s3,si)=>{
     const row=document.createElement('div');
-    row.className='sentrow'+(EX3DONE.has(si)?' done':'')+(ex3sel===si?' sel':'');
+    const placed=EX3ANS[si]? EX3TILES.find(t=>t.id===EX3ANS[si]) : null;
+    row.className='sentrow'+(exRevealed? (EX3DONE.has(si)?' done':' wrong') : (ex3sel===si?' sel':''));
     row.id='exsent_'+si;
-    const placed=EX3DONE.has(si)? EX3TILES.find(t=>t.id===s3.ans) : null;
-    row.innerHTML=esc(si+1)+'. '+biInl(s3.pre)+' <span class="blank">'+esc(placed? L(placed) : '______')+'</span> '+biInl(s3.post);
-    row.onclick=()=>{ if(EX3DONE.has(si)) return; ex3sel=si; renderExercises(); };
+    row.innerHTML=esc(si+1)+'. '+biInl(s3.pre)+' <span class="blank">'+esc(placed? L(placed) : '______')+'</span> '+biInl(s3.post)
+      +(exRevealed&&!EX3DONE.has(si)? ' <span class="rightword">→ '+esc(L(EX3TILES.find(t=>t.id===s3.ans)))+'</span>' : '');
+    row.onclick=()=>{ if(exRevealed) return; ex3sel=si; renderExercises(); };
     list.appendChild(row);
   });
   const tray=document.createElement('div'); tray.className='tray';
   EX3_ORDER.forEach(t=>{
-    const used=EX3.some((s3,si)=>EX3DONE.has(si)&&s3.ans===t.id);
+    const used=Object.keys(EX3ANS).some(k=>EX3ANS[k]===t.id);
     const b=document.createElement('button');
     b.className='tilebtn'+(used?' used':'');
     b.id='extile_'+t.id;
     b.innerHTML=biInl(t);
     b.onclick=()=>{
-      if(used||ex3sel<0) return;
-      if(t.for===ex3sel){ EX3DONE.add(ex3sel); ex3sel=-1; saveProg(); renderExercises(); }
-      else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+      if(exRevealed) return;
+      if(used){ const k=Object.keys(EX3ANS).find(k=>EX3ANS[k]===t.id); delete EX3ANS[k]; saveProg(); renderExercises(); return; }
+      if(ex3sel<0) return;
+      EX3ANS[ex3sel]=t.id; saveProg(); renderExercises();
     };
     tray.appendChild(b);
   });
   list.appendChild(tray);
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1.filter(x=>x.see&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE={}; EX2LABELS.forEach(lb=>{ if(EX2ANS[lb.zone]===lb.id) EX2DONE[lb.zone]=lb.id; });
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].ans));
+  const total=EX1DONE.size+Object.keys(EX2DONE).length+EX3DONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true; ex2sel=null; ex3sel=-1;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null; ex3sel=-1;
+  EX1DONE=new Set(); EX2DONE={}; EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.see?'see':'no',2);
+  EX2_ORDER=mixOrder(EX2LABELS,c=>c.zone,2);
+  EX3_ORDER=mixOrder(EX3TILES,t=>t.for,3);
+  exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1327,12 +1564,23 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderGroups(); renderFound(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderGroups(); renderFound(); renderKeyWords();
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+    if($('exModal').classList.contains('open')) renderExercises();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1341,7 +1589,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1383,6 +1631,7 @@ function setSpriteText(sp,text){
 }
 let renderer3=null, scene3=null, camera3=null;
 let G={}, nameSprite=null, ringMesh=null, globeSpinG=null, earthBallG=null, windowG=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
 let labelTarget=null, viewMode='room';
 let lastRW=0, lastRH=0;
 const ORB={r:9.4, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
@@ -1393,6 +1642,12 @@ const PLANET_R=[0.16,0.26,0.28,0.22,0.5,0.44,0.34,0.33];
 const PLANET_C=[0x9c8e82,0xe8c98a,0x3fa7d6,0xd1603a,0xe0a35e,0xead9a8,0x9fd8d8,0x3d5fd1];
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
 function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
+/* Mechanics v2 tappability: every tap target carries an invisible hit proxy of
+   generous minimum size (nested/small/thin objects included). */
+function proxyMat(){ return new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}); }
+function sphProxy(r){ return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),proxyMat()); }
+function addProxy(id,mesh,parent){ mesh.userData.objId=id; parent.add(mesh); hitProxies.push(mesh); return mesh; }
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 function reg(id,group){ group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
 function regAs(group,id){ group.traverse(o=>{ o.userData.objId=id; }); scene3.add(group); return group; }
 
@@ -1416,6 +1671,14 @@ function buildGlobe(){
     p.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir);
     p.userData.objId='globeLand';
     globeSpinG.add(p);
+    /* Mechanics v2: a generous invisible proxy over each land patch, so land
+       stays easy to tap (and distinct from the water proxy around it). */
+    const pp=new THREE.Mesh(new THREE.SphereGeometry(0.38,12,9),proxyMat());
+    pp.scale.set(1,0.4,0.9);
+    pp.position.copy(dir.clone().multiplyScalar(0.78));
+    pp.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir);
+    pp.userData.objId='globeLand';
+    globeSpinG.add(pp); hitProxies.push(pp);
   });
   globeSpinG.traverse(o=>{ if(!o.userData.objId) o.userData.objId='globe'; });
   wrap.traverse(o=>{ if(!o.userData.objId) o.userData.objId='globe'; });
@@ -1570,6 +1833,14 @@ function init3D(){
   buildShelf();
   buildWindow();
   G.meg=buildMeg();
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.9); p.userData.objId='globeWater'; globeSpinG.add(p); hitProxies.push(p); }
+  { const p=new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.74,0.5,16),proxyMat()); p.position.set(0,0.25,0); addProxy('globe',p,G.globe); }
+  { const p=sphProxy(0.62); addProxy('sunball',p,G.sun); }
+  for(let i=0;i<8;i++){ const r=Math.min(0.58,Math.max(PLANET_R[i]+0.14,0.32)); addProxy('planet'+i,sphProxy(r),G['planet'+i]); }
+  { const p=new THREE.Mesh(new THREE.CircleGeometry(1.0,24),proxyMat()); p.position.z=0.02; addProxy('window',p,windowG); }  /* r=1.0: the visual disc is 0.98 — any larger and this proxy would swallow Neptune/Uranus, which peek out behind the window's rim */
+  { const p=sphProxy(0.52); p.position.set(0,0.75,0); addProxy('meg',p,G.meg); }
+  { const p=new THREE.Mesh(new THREE.BoxGeometry(8.4,0.34,0.95),proxyMat()); p.position.set(0.1,0.95,SHELF.z); addProxy('shelf',p,G.shelf); }
   /* highlight ring */
   ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
     new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
@@ -1603,11 +1874,8 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
-      for(let h=0;h<hits.length;h++){
-        const id=hits[h].object.userData.objId;
-        if(id){ handleTap(id); break; }
-      }
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
     }
   });
   el.addEventListener('pointercancel',()=>{ dragMode=null; });
@@ -1711,17 +1979,32 @@ function syncStepDone(i){
   if(i===5){ FOUND.report=true; CNT.report=3; }
   saveProg(); renderFound(); renderGroups();
 }
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['planet2'],                       /* step 1: the Earth ball on the shelf */
+  ['globe','globeWater','globeLand'],/* step 2: the big globe (water + land places) */
+  ['window'],                        /* step 3: the rocket window (the cards live in the step card) */
+  ['sunball','planet0','planet1','planet2','planet3','planet4','planet5','planet6','planet7'], /* step 4: count from the Sun ball */
+  ['planet0','planet1','planet2','planet3','planet4','planet5','planet6','planet7'],           /* step 5: the one planet with living things (+ the sort cards) */
+  []                                 /* step 6: the report lives in the step card */
+];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  const inScope=STEP_TARGETS[curStep].indexOf(id)>=0;
   if(id==='window'){
     focusVisual('window');
-    if(viewMode==='room'){
-      setView('space');
-      if(curStep===2&&!T.s3space){
-        T.s3space=true; FOUND.space=true;
-        saveProg(); renderFound();
-        setTimeout(()=>{ renderStepExtra(); refreshEvidence(); },350);
+    if(curStep===2){
+      if(viewMode==='room'){
+        setView('space');
+        if(!T.s3space){
+          T.s3space=true; FOUND.space=true;
+          saveProg(); renderFound();
+          setTimeout(()=>{ renderStepExtra(); refreshEvidence(); },350);
+        }
       }
-    }
+    }else addMistake();
     return;
   }
   if(id==='globeWater'||id==='globeLand'||id==='globe'){
@@ -1732,20 +2015,23 @@ function handleTap(id){
       else{ if(T.s2land<2) T.s2land++; T.s2last='land'; CNT.land=Math.max(CNT.land,T.s2land); }
       saveProg(); renderGroups(); renderStepExtra();
     }
+    if(!inScope) addMistake();
     refreshEvidence();
     return;
   }
   if(id==='sunball'){
     focusVisual('sun');
     if(G.sun) bounceGroup(G.sun,G.sun.position.y,0.15);
+    if(!inScope) addMistake();
     return;
   }
   if(id==='meg'){
     focusVisual('meg');
     if(G.meg) bounceGroup(G.meg,0,0.12);
+    if(!inScope) addMistake();
     return;
   }
-  if(id==='shelf'){ focusVisual('shelf'); return; }
+  if(id==='shelf'){ focusVisual('shelf'); if(!inScope) addMistake(); return; }
   if(id.indexOf('planet')===0){
     const n=parseInt(id.slice(6),10);
     const g=G[id]; if(!g) return;
@@ -1763,6 +2049,7 @@ function handleTap(id){
         if(T.s4count>=3){ CNT.planets=3; saveProg(); renderGroups(); }
       }else{
         T.s4count=0; T.s4wrong=true;
+        addMistake();   /* a wrong planet is a wrong choice — and the count starts again (the step's own rule) */
       }
     }else if(curStep===4&&n===2){
       if(T.s5correct.size>=5){
@@ -1772,7 +2059,9 @@ function handleTap(id){
       renderStepExtra();
     }else if(curStep===4&&n!==2){
       T.s5hint='wrongplanet';
+      addMistake();
     }
+    if(!inScope) addMistake();
     refreshEvidence();
     return;
   }
@@ -1826,6 +2115,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); syncStepDone(curStep); renderSteps();
   }
@@ -1845,7 +2136,346 @@ renderFocusRow();
 init3D();
 goStep(curStep);
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
+<!-- CAMB-BRIDGE v1 --><script>
+/* CAMB-BRIDGE v1 — Cambridge <-> toan.b-media.vn: login sync + progress/stars sync.
+ *
+ * Inlined into the hub and every lesson by bridge/inject_bridge.py (marked block).
+ * Dependency-free, defensive: it NEVER throws into the page. If the platform API
+ * is unreachable (e.g. the standalone GitHub Pages origin, where /api/* does not
+ * exist), the bridge stays dormant and the pages behave exactly as before
+ * (localStorage-only progress). One console note maximum.
+ *
+ * How the token arrives (localStorage is per-origin):
+ *   (a) same origin — Cambridge served from the platform server's
+ *       public/cambridge/: the platform app already stored the session in
+ *       localStorage key "toanlop4_auth_v1"; the bridge just reads it.
+ *   (b) fragment handoff — the platform links to Cambridge with #token=<token>
+ *       (the pattern its own OAuth flow uses): the bridge stores it under the
+ *       same key, in the platform's own storage shape, and strips the fragment.
+ *   (c) no token — guest/local mode.
+ *
+ * API base: relative "/api/..." by default, so it works on ANY origin that is
+ * served by / tunnelled to the platform server (toan.b-media.vn/cambridge/,
+ * or cambridge.b-media.vn once the tunnel points it at the same server).
+ * Set window.CAMB_API_BASE before this script only for exotic setups.
+ *
+ * Sync model (no lesson rewrites): the bridge OBSERVES the lessons' existing
+ * localStorage records — summaries "camb:sum:..." and the battle wallet
+ * "camb:wallet" — and reports changes to the platform:
+ *   summary change -> POST /api/saga/progress {module, lessonId, pct, q, maxOpen}
+ *       pct = combined steps+exercises completion % of the summary;
+ *       q   = best quiz fraction (summary q / qt);
+ *       maxOpen = the lesson's 1-based position in its book (Science 1 map
+ *       embedded below; server only ever raises it).
+ *   lesson opened  -> POST /api/saga/theory (once per lesson)
+ *   new wallet.botWins[code]  -> POST /api/solo-result, mode "bot"
+ *   new wallet.bossWins[key]  -> POST /api/solo-result, mode "boss"
+ * The wallet records only THAT a duel/boss was won, never the score, so battle
+ * reports encode the win minimally: bot = the duel's 4 questions completed,
+ * botId "easy", playerScore 1 / botScore 0 (the win flag); boss = 5/8 correct,
+ * bossTier "easy" (5/8 is the smallest score the server's own 60% easy
+ * threshold accepts as the win the wallet recorded). The server stays the
+ * authority: it recomputes stars and applies its daily caps regardless.
+ * Failed posts go to a retry queue in localStorage ("camb:bridge-queue-v1"),
+ * flushed on `online`, on load and on visibility return — the same approach
+ * (and the same accepted duplicate risk for solo-result) as the platform's
+ * own offline queue.
+ */
+(function () {
+  "use strict";
+  var AUTH_KEY = "toanlop4_auth_v1";
+  var QUEUE_KEY = "camb:bridge-queue-v1";
+  var SENT_KEY = "camb:bridge-sent-v1";
+  var API_BASE = (typeof window !== "undefined" && window.CAMB_API_BASE) || "";
+  var noted = false;
+  function note(msg) { if (!noted) { noted = true; try { console.info("[camb-bridge] " + msg); } catch (e) {} } }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function parseJson(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+
+  /* ---------- token intake ---------- */
+  function storeToken(token) {
+    var cur = parseJson(lsGet(AUTH_KEY) || "null") || {};
+    cur.token = token;
+    if (!("user" in cur)) cur.user = null;
+    cur.savedAt = Date.now();
+    lsSet(AUTH_KEY, JSON.stringify(cur));
+  }
+  (function intakeFragment() {
+    try {
+      var h = window.location.hash || "";
+      var m = h.match(/token=([^&]+)/);
+      if (m) {
+        storeToken(decodeURIComponent(m[1]));
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
+    } catch (e) {}
+  })();
+  function getToken() {
+    var raw = lsGet(AUTH_KEY);
+    if (!raw) return null;
+    if (raw.charAt(0) === "{") { var o = parseJson(raw); return (o && o.token) || null; }
+    return raw; // tolerate a bare token string
+  }
+
+  /* ---------- small state ---------- */
+  var token = getToken();
+  var user = null;          // window.CAMB_USER once profile loads
+  var apiDown = false;      // network-level failure seen (standalone origin etc.)
+  function loadSent() { return parseJson(lsGet(SENT_KEY) || "null") || { sums: {}, bot: {}, boss: {}, theory: {} }; }
+  function saveSent(s) { lsSet(SENT_KEY, JSON.stringify(s)); }
+  function loadQueue() { var q = parseJson(lsGet(QUEUE_KEY) || "null"); return Array.isArray(q) ? q : []; }
+  function saveQueue(q) { lsSet(QUEUE_KEY, JSON.stringify(q.slice(-80))); }
+  function queuePost(url, body, meta) {
+    var q = loadQueue();
+    var sig = url + "|" + JSON.stringify(body);
+    for (var i = 0; i < q.length; i++) if (q[i].url + "|" + JSON.stringify(q[i].body) === sig) return;
+    q.push({ url: url, body: body, at: Date.now(), meta: meta || null });
+    saveQueue(q);
+  }
+
+  /* ---------- API ---------- */
+  function api(path, method, body, keepalive) {
+    return new Promise(function (resolve, reject) {
+      var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : null;
+      var headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      fetch(API_BASE + path, {
+        method: method || "GET",
+        headers: headers,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctl ? ctl.signal : undefined,
+        keepalive: !!keepalive
+      }).then(function (res) {
+        if (timer) clearTimeout(timer);
+        return res.text().then(function (txt) {
+          var data = parseJson(txt || "null");
+          if (!res.ok) { var err = new Error("HTTP " + res.status); err.status = res.status; err.data = data; throw err; }
+          resolve(data);
+        });
+      }).catch(function (e) {
+        if (timer) clearTimeout(timer);
+        reject(e);
+      });
+    });
+  }
+  // POST that queues on network failure; resolves true when the server took it.
+  function post(path, body, meta, keepalive) {
+    return api(path, "POST", body, keepalive).then(function (data) {
+      if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+      return true;
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return false; }
+      if (!e || !e.status) { apiDown = true; note("platform API unreachable — staying in local mode, will retry."); }
+      queuePost(path, body, meta);
+      return false;
+    });
+  }
+  function onUnauthorized() {
+    token = null; user = null; window.CAMB_USER = null;
+    lsDel(AUTH_KEY);
+    note("session expired or invalid — signed out locally.");
+    renderHubAccount();
+  }
+
+  /* ---------- hub account chip (hub only: lessons have no #starVl) ---------- */
+  function platformOrigin() {
+    if (typeof window !== "undefined" && window.CAMB_PLATFORM_ORIGIN) return window.CAMB_PLATFORM_ORIGIN;
+    return window.location.hostname === "toan.b-media.vn" ? window.location.origin : "https://toan.b-media.vn";
+  }
+  function renderHubAccount() {
+    try {
+      var pill = document.getElementById("starVl");
+      if (!pill || !pill.parentNode) return; // not the hub — stay invisible
+      var chip = document.getElementById("cambAcct");
+      if (!chip) {
+        chip = document.createElement("div");
+        chip.id = "cambAcct";
+        chip.style.cssText = "font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);" +
+          "border-radius:999px;padding:5px 10px;text-align:right;line-height:1.35;max-width:230px";
+        pill.parentNode.insertBefore(chip, pill);
+      }
+      if (user) {
+        chip.innerHTML = "";
+        var s1 = document.createElement("span");
+        s1.textContent = "👤 " + user.username + " · ⭐ " + user.stars;
+        chip.appendChild(s1);
+      } else if (token && !apiDown) {
+        chip.textContent = "…";
+      } else if (token && apiDown) {
+        chip.textContent = "Chưa nối được máy chủ — tiến trình lưu trên máy này";
+      } else {
+        chip.innerHTML = "";
+        var t = document.createElement("span");
+        t.textContent = "Chưa đăng nhập — tiến trình chỉ lưu trên máy này ";
+        var a = document.createElement("a");
+        a.href = platformOrigin() + "/";
+        a.textContent = "Đăng nhập";
+        a.style.cssText = "color:#fff;text-decoration:underline;font-weight:800";
+        chip.appendChild(t); chip.appendChild(a);
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- sync: summaries -> saga/progress ---------- */
+  var SCI1_ORDER = ["1-1","1-2","1-3","1-4","2-1","2-2","2-3","3-1","3-2","3-3","3-4",
+    "4-1","4-2","4-3","4-4","5-1","5-2","5-3","5-4","6-1","6-2","6-3","6-4","6-5"];
+  function maxOpenFor(module, lessonId) {
+    if (module === "sci1") { var i = SCI1_ORDER.indexOf(lessonId); return i >= 0 ? i + 1 : 0; }
+    return 0;
+  }
+  function currentLesson() {
+    var m = (window.location.pathname || "").match(/(sci|math)(\d+)-(\d+)-(\d+)-/);
+    if (!m) return null;
+    return { module: m[1] + m[2], lessonId: m[3] + "-" + m[4], code: m[3] + "." + m[4] };
+  }
+  function syncSummaries(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var keys = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf("camb:sum:") === 0) keys.push(k); } } catch (e) {}
+    keys.forEach(function (key) {
+      var sm = parseJson(lsGet(key) || "null");
+      if (!sm) return;
+      var idm = key.slice("camb:sum:".length).match(/^(sci|math)(\d+)-(\d+)-(\d+)$/);
+      if (!idm) return;
+      var module = idm[1] + idm[2], lessonId = idm[3] + "-" + idm[4];
+      var s = +sm.s || 0, st = +sm.st || 0, e2 = +sm.e || 0, et = +sm.et || 0, q = +sm.q || 0, qt = +sm.qt || 0;
+      if (s + e2 + q <= 0) return; // nothing achieved yet — don't create empty entries
+      var hash = [s, st, e2, et, q, qt].join("/");
+      if (sent.sums[key] === hash) return;
+      var pct = (st + et) > 0 ? Math.round(100 * (s + e2) / (st + et)) : 0;
+      var body = { module: module, lessonId: lessonId, pct: pct, q: qt > 0 ? q / qt : 0, maxOpen: maxOpenFor(module, lessonId) };
+      jobs.push(post("/api/saga/progress", body, { sumKey: key, hash: hash }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.sums[key] = hash; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: wallet -> solo-result (bot / boss) ---------- */
+  function syncWallet(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var w = parseJson(lsGet("camb:wallet") || "null");
+    if (!w) return Promise.resolve();
+    var sent = loadSent();
+    var jobs = [];
+    var here = currentLesson();
+    Object.keys(w.botWins || {}).forEach(function (code) {
+      if (!w.botWins[code] || sent.bot[code]) return;
+      var pm = String(code).match(/^(\d+)\.(\d+)$/);
+      if (!pm) return;
+      var module = here ? here.module : "sci1"; // wallet codes carry no book; only sci1 exists today
+      var lessonId = pm[1] + "-" + pm[2];
+      var body = { score: 4, correct: 4, total: 4, bonus: 0, subject: "science",
+        moduleId: module, lessonId: lessonId, lessonTitle: code, mode: "bot",
+        botId: "easy", playerScore: 1, botScore: 0, botModule: module, botLesson: lessonId };
+      jobs.push(post("/api/solo-result", body, { botCode: code }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.bot[code] = 1; saveSent(s2); }
+      }));
+    });
+    Object.keys(w.bossWins || {}).forEach(function (bkey) {
+      if (!w.bossWins[bkey] || sent.boss[bkey]) return;
+      var bm = String(bkey).match(/^(sci|math)(\d+)-u(\d+)$/);
+      if (!bm) return;
+      var module = bm[1] + bm[2], unitId = "u" + bm[3];
+      var body = { score: 5, correct: 5, total: 8, bonus: 0, subject: "science",
+        moduleId: module, lessonId: unitId, lessonTitle: "Boss Unit " + bm[3], mode: "boss",
+        bossTier: "easy", bossModule: module, bossLesson: unitId };
+      jobs.push(post("/api/solo-result", body, { bossKey: bkey }, keepalive).then(function (ok) {
+        if (ok) { var s2 = loadSent(); s2.boss[bkey] = 1; saveSent(s2); }
+      }));
+    });
+    return Promise.all(jobs);
+  }
+
+  /* ---------- sync: lesson opened -> saga/theory (once) ---------- */
+  function syncTheory(keepalive) {
+    if (!token || !user) return Promise.resolve();
+    var here = currentLesson();
+    if (!here) return Promise.resolve();
+    var key = here.module + "/" + here.lessonId;
+    var sent = loadSent();
+    if (sent.theory[key]) return Promise.resolve();
+    return post("/api/saga/theory", { module: here.module, lessonId: here.lessonId }, { theoryKey: key }, keepalive)
+      .then(function (ok) { if (ok) { var s2 = loadSent(); s2.theory[key] = 1; saveSent(s2); } });
+  }
+
+  /* ---------- offline queue flush ---------- */
+  function flushQueue() {
+    if (!token || !user) return Promise.resolve();
+    var q = loadQueue();
+    if (!q.length) return Promise.resolve();
+    saveQueue([]);
+    var chain = Promise.resolve();
+    q.forEach(function (item) {
+      chain = chain.then(function () {
+        return api(item.url, "POST", item.body).then(function (data) {
+          if (data && typeof data.stars === "number" && user) { user.stars = data.stars; renderHubAccount(); }
+          var meta = item.meta || {};
+          var s2 = loadSent(), dirty = false;
+          if (meta.sumKey && meta.hash) { s2.sums[meta.sumKey] = meta.hash; dirty = true; }
+          if (meta.botCode) { s2.bot[meta.botCode] = 1; dirty = true; }
+          if (meta.bossKey) { s2.boss[meta.bossKey] = 1; dirty = true; }
+          if (meta.theoryKey) { s2.theory[meta.theoryKey] = 1; dirty = true; }
+          if (dirty) saveSent(s2);
+        }).catch(function (e) {
+          if (e && e.status === 401) { onUnauthorized(); return; }
+          queuePost(item.url, item.body, item.meta); // still failing — requeue
+        });
+      });
+    });
+    return chain;
+  }
+
+  function syncAll(keepalive) {
+    if (!token || !user) return;
+    syncTheory(keepalive)
+      .then(function () { return syncSummaries(keepalive); })
+      .then(function () { return syncWallet(keepalive); })
+      .catch(function () {});
+  }
+
+  /* ---------- boot ---------- */
+  function boot() {
+    renderHubAccount();
+    if (!token) { note("no platform session — guest/local mode."); return; }
+    api("/api/profile", "GET").then(function (p) {
+      if (!p || !p.username) { apiDown = true; renderHubAccount(); return; }
+      user = { username: p.username, stars: p.stars || 0, testBypass: !!p.testBypass };
+      window.CAMB_USER = user;
+      if (p.testBypass || String(p.username).toLowerCase() === "congtuth") lsSet("camb:test-bypass", "1");
+      else lsDel("camb:test-bypass");
+      renderHubAccount();
+      flushQueue().then(function () { syncAll(false); });
+    }).catch(function (e) {
+      if (e && e.status === 401) { onUnauthorized(); return; }
+      apiDown = true; // standalone origin / server down: keep token, stay silent
+      note("platform API unreachable — staying in local mode, will retry.");
+      renderHubAccount();
+    });
+    setInterval(function () { if (user) syncAll(false); }, 5000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && user) { flushQueue().then(function () { syncAll(false); }); } });
+    window.addEventListener("beforeunload", function () { if (user) syncAll(true); });
+    window.addEventListener("storage", function () { if (user) syncAll(false); });
+    window.addEventListener("online", function () { if (user) flushQueue().then(function () { syncAll(false); }); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+
+</script><!-- /CAMB-BRIDGE v1 -->
 </body>
 </html>
