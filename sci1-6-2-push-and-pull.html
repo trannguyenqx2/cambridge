@@ -518,6 +518,64 @@ const STEPS=[
     {en:'I can record my observations in a table.',vi:'Con biết ghi lại những gì quan sát được vào bảng.'},
     {en:'I can stay safe when doing science.',vi:'Con biết giữ an toàn khi làm khoa học.'}]}
 ];
+/* ================= interleaved display order =================
+   Answer-bearing cards/options are shuffled at load (and the quiz option
+   order is re-rolled each time the quiz opens) so correct answers never
+   form a uniform row or column and never fall into a predictable strictly
+   alternating pattern. All progress/evidence state is keyed by item id —
+   or, for quiz options, mapped through qOrder — never by display position. */
+function fyIdx(n){ const a=[]; for(let i=0;i<n;i++) a.push(i);
+  for(let i=n-1;i>0;i--){ const j=(Math.random()*(i+1))|0, t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function fyShuffle(arr){ const ix=fyIdx(arr.length), out=[]; for(let i=0;i<ix.length;i++) out.push(arr[ix[i]]); return out; }
+function mixPenalty(items,keyFn,cols){
+  const keys=items.map(keyFn);
+  if(new Set(keys).size<2||items.length<2) return 0;
+  let p=0;
+  for(let r=0;r<items.length;r+=cols){ const row=keys.slice(r,r+cols);
+    if(row.length>=2&&row.every(k=>k===row[0])) p+=10; }
+  for(let c=0;c<cols;c++){ const col=[]; for(let r=c;r<items.length;r+=cols) col.push(keys[r]);
+    if(col.length>=2&&col.every(k=>k===col[0])) p+=10; }
+  for(let i=2;i<keys.length;i++) if(keys[i]===keys[i-1]&&keys[i-1]===keys[i-2]) p+=6;
+  if(keys.length>=6){ let alt=true;
+    for(let i=1;i<keys.length;i++) if(keys[i]===keys[i-1]){ alt=false; break; }
+    if(alt) p+=10; }
+  return p;
+}
+function pairFallback(items,keyFn){
+  const groups={}; items.forEach(it=>{ const k=keyFn(it); (groups[k]=groups[k]||[]).push(it); });
+  const gs=Object.keys(groups).map(k=>fyShuffle(groups[k])), out=[];
+  for(;;){ const live=gs.filter(g=>g.length); if(live.length<2) break;
+    live.sort((a,b)=>b.length-a.length);
+    const x=live[0].pop(), y=live[1].pop();
+    if(Math.random()<0.5) out.push(x,y); else out.push(y,x); }
+  gs.forEach(g=>{ while(g.length) out.push(g.pop()); });
+  return out;
+}
+function mixOrder(items,keyFn,cols){
+  cols=cols||2;
+  if(items.length<3||new Set(items.map(keyFn)).size<2) return fyShuffle(items.slice());
+  let best=null, bestP=Infinity;
+  for(let t=0;t<400&&bestP>0;t++){ const cand=fyShuffle(items), p=mixPenalty(cand,keyFn,cols);
+    if(p<bestP){ best=cand; bestP=p; } }
+  if(bestP>0){ const cand=pairFallback(items,keyFn);
+    if(mixPenalty(cand,keyFn,cols)<bestP) best=cand; }
+  return best;
+}
+let qOrder=[];
+function rollQuizOrder(){
+  qOrder=QUIZ.map(q=>fyIdx(q.o.length));
+  if(QUIZ.length>=3){
+    const pos=qOrder.map((ord,qi)=>ord.indexOf(QUIZ[qi].a));
+    if(pos.every(p=>p===pos[0])){
+      const li=QUIZ.length-1;
+      for(let t=0;t<60&&qOrder[li].indexOf(QUIZ[li].a)===pos[0];t++) qOrder[li]=fyIdx(QUIZ[li].o.length);
+      if(qOrder[li].indexOf(QUIZ[li].a)===pos[0]){
+        const ord=qOrder[li], ci=ord.indexOf(QUIZ[li].a), oi=(ci+1)%ord.length, tmp=ord[ci];
+        ord[ci]=ord[oi]; ord[oi]=tmp;
+      }
+    }
+  }
+}
 const CARDS=[
  {id:'ball',emoji:'⚽',en:'Kick a ball',vi:'Đá bóng',ans:'push'},
  {id:'drawer',emoji:'🗄️',en:'Open a drawer',vi:'Mở ngăn kéo',ans:'pull'},
@@ -528,12 +586,14 @@ const CARDS=[
  {id:'dozer',emoji:'🚜',en:'A bulldozer pushes earth',vi:'Xe ủi đẩy đất',ans:'push'},
  {id:'tow',emoji:'🚛',en:'A tow truck pulls a car',vi:'Xe cứu hộ kéo một chiếc ô tô',ans:'pull'}
 ];
+const CARDS_ORDER=mixOrder(CARDS,c=>c.ans,2);
 const SAFECARDS=[
  {id:'safe2',emoji:'🙂',en:'Keep the band away from faces',vi:'Giữ dây thun tránh xa mặt',safe:true},
  {id:'bad1',emoji:'🎯',en:'Point the band at a friend’s face',vi:'Chĩa dây thun vào mặt bạn',safe:false},
  {id:'safe1',emoji:'🙋',en:'Tell a teacher if the band snaps',vi:'Nói với thầy cô nếu dây thun bị đứt',safe:true},
  {id:'bad2',emoji:'👀',en:'Stretch the band as far as you can, near your eyes',vi:'Kéo dây thun căng hết cỡ ngay gần mắt',safe:false}
 ];
+const SAFE_ORDER=mixOrder(SAFECARDS,c=>c.safe?'safe':'bad',1);
 const QUIZ=[
  {q:{en:'Which one is a PULL?',vi:'Việc nào là KÉO (pull)?'},
   o:[{en:'Kicking a ball',vi:'Đá một quả bóng'},{en:'Dragging a wagon behind you',vi:'Kéo một chiếc xe kéo theo sau'},{en:'Pushing a swing',vi:'Đẩy một chiếc xích đu'}],a:1,
@@ -560,6 +620,7 @@ const EX1=[
  {id:'car',emoji:'🚗',en:'Push a toy car',vi:'Đẩy ô tô đồ chơi',ans:'push'},
  {id:'sled',emoji:'🛷',en:'Pull a sled',vi:'Kéo xe trượt tuyết',ans:'pull'}
 ];
+const EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
 const EX2=[
  {id:'door',emoji:'🚪',en:'door',vi:'cánh cửa',ans:'push'},
  {id:'drawer',emoji:'🗄️',en:'drawer',vi:'ngăn kéo',ans:'pull'},
@@ -568,6 +629,7 @@ const EX2=[
  {id:'swing',emoji:'🛝',en:'swing',vi:'xích đu',ans:'push'},
  {id:'rope',emoji:'🪢',en:'rope',vi:'sợi dây',ans:'pull'}
 ];
+const EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
 const EX3=[
  {id:'a',kind:'kick',correct:'➡️',arrows:['➡️','⬅️','⬆️']},
  {id:'b',kind:'head',correct:'↘️',arrows:['↘️','⬆️','⬅️']}
@@ -727,7 +789,7 @@ function renderStepExtra(){
     b.onclick=()=>doPullBook('user'); box.appendChild(b);
   }else if(curStep===2){
     const grid=document.createElement('div'); grid.className='picgrid';
-    CARDS.forEach(c=>{
+    CARDS_ORDER.forEach(c=>{
       const d=document.createElement('div');
       d.className='piccard'+(T.s3correct.has(c.id)?' right':'')+(T.s3sel===c.id?' sel':'');
       d.id='card_'+c.id;
@@ -762,7 +824,7 @@ function renderStepExtra(){
     b.onclick=()=>doLaunch('user'); box.appendChild(b);
   }else if(curStep===5){
     const list=document.createElement('div'); list.className='safelist';
-    SAFECARDS.forEach(c=>{
+    SAFE_ORDER.forEach(c=>{
       const d=document.createElement('div');
       d.className='safecard'+(T.s6sel.has(c.id)?' sel':'');
       d.id='safe_'+c.id;
@@ -900,10 +962,11 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 
 /* ================= quiz (one question at a time) ================= */
 let qi=0, qState=[], qFinished=false;
-function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen===QUIZ[idx].a?1:0),0); }
+function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
+  rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
@@ -916,22 +979,23 @@ function showQ(){
   $('qScore').textContent='';
   $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
   $('qOpts').innerHTML='';
-  it.o.forEach((o,oi)=>{
+  (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
+    const o=it.o[oi];
     const b=document.createElement('button'); b.className='qopt';
-    b.innerHTML=String.fromCharCode(65+oi)+'. '+bi(o);
+    b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
     if(st.chosen>=0){
       if(oi===it.a) b.classList.add('right');
-      else if(oi===st.chosen) b.classList.add('wrong');
+      else if(di===st.chosen) b.classList.add('wrong');
     }
     b.onclick=()=>{
       if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=oi; showQ();
+      qState[qi].chosen=di; showQ();
     };
     $('qOpts').appendChild(b);
   });
   const ex=$('qExpl');
   if(st.chosen>=0){
-    const right=st.chosen===it.a;
+    const right=(qOrder[qi]||[])[st.chosen]===it.a;
     ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
     ex.classList.add('open');
     $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
@@ -999,7 +1063,7 @@ $('exClose').onclick=closeEx;
 $('btnExTop').onclick=openEx;
 function exBody1(){
   let h='<div class="exgrid">';
-  EX1.forEach(c=>{
+  EX1_ORDER.forEach(c=>{
     const done=!!EX.e1[c.id];
     h+='<div class="excard'+(done?' done':'')+'"><span class="em">'+c.emoji+'</span>'+bi(c)+
       '<div class="chiprow">'+
@@ -1011,7 +1075,7 @@ function exBody1(){
 }
 function exBody2(){
   let h='<div class="tray">';
-  EX2.forEach(c=>{
+  EX2_ORDER.forEach(c=>{
     if(EX.e2[c.id]) return;
     h+='<button class="objchip'+(exSel===c.id?' sel':'')+'" data-ex2chip="'+c.id+'"><span class="em">'+c.emoji+'</span> '+biInl(c)+'</button>';
   });
