@@ -562,8 +562,10 @@ const STR={
   qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
   startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
   startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
   readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
   gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
   finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
   viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
   qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
@@ -770,6 +772,13 @@ let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score +
 let EX1SEL=new Set(), EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers */
 let EX3_ORD=EX3.map(()=>fyIdx(2));          /* exercises: per-sentence word-option display order */
 let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=15; /* Mechanics v2: minimum reading time — the Start button stays disabled this long */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=15; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
 function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
 function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
@@ -841,6 +850,37 @@ function showNotice(s){
   clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
 }
 function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
 function resetStepEvidence(){
   /* wipe ONLY the current step's collected evidence (same trackers the Reset button clears,
      plus that step's console mirrors), then re-lock the instruction (read gate). */
@@ -851,7 +891,7 @@ function resetStepEvidence(){
   if(curStep===4){ FOUND.biggest=false; FOUND.smallest=false; }
   if(curStep===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
   applyStepStart(curStep);
-  stepRead=false; justReset=true;
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
   mist[curStep]=0;
   saveProg(); renderSteps(); renderGroups(); renderFound();
 }
@@ -935,18 +975,10 @@ function renderSteps(){
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
   /* Mechanics v2: read gate + conclusion acknowledgement */
-  const rr=$('readRow');
-  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; }
-  else{
-    rr.style.display='block';
-    $('btnRead').innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn);
-    $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
-    $('readHint').style.display=justReset? 'block':'none';
-  }
+  paintReadGate();
   $('stepExtra').classList.toggle('locked',stepLocked());
   const acked=ackSet.has(curStep);
-  $('btnGotIt').style.display=(done&&!acked)? 'inline-block':'none';
-  $('btnGotIt').innerHTML=biInl(STR.gotItBtn);
+  paintAckGate();
   $('btnNext').disabled=!(done&&acked);
   $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
@@ -1050,17 +1082,17 @@ function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
   anims.length=0;
   T=newTrack();
-  stepRead=false; justReset=false;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" */
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
 $('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
-$('btnRead').onclick=()=>{ stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
-$('btnGotIt').onclick=()=>{ ackSet.add(curStep); saveProg(); renderSteps(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
   anims.length=0; T=newTrack();
-  stepRead=false; justReset=false;
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   applyStepStart(curStep); saveProg(); renderSteps();
 };
 $('btnDemo').onclick=()=>{
@@ -2010,6 +2042,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderFound();
   }
