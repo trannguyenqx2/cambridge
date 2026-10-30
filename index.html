@@ -141,6 +141,17 @@ try { var sv = JSON.parse(localStorage.getItem('camb:hub-view') || 'null'); if (
 
 function sumKey(subj, book, code) { return 'camb:sum:' + (subj === 'science' ? 'sci' : 'math') + book + '-' + code.replace('.', '-'); }
 function getSum(k) { try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return (v && typeof v === 'object') ? v : null; } catch (e) { return null; } }
+function getProgress(subj, book, code) {
+  var sm = getSum(sumKey(subj, book, code));
+  if (sm) return sm;
+  /* Fallback: derive from the lesson's own main record (progress saved before summary keys existed) */
+  try {
+    var mk = (subj === 'science' ? 'camb:sci' : 'camb:math') + book + '-' + code.replace('.', '-');
+    var m = JSON.parse(localStorage.getItem(mk) || 'null');
+    if (m && Array.isArray(m.done)) return { s: m.done.length, st: Math.max(6, m.done.length), e: 0, et: 0, q: 0, qt: 0, legacy: true };
+  } catch (e) {}
+  return null;
+}
 function starsOf(sm) {
   if (!sm) return 0;
   var n = 0;
@@ -187,7 +198,7 @@ function render() {
   var flat = [];
   book.units.forEach(function (u) { u.lessons.forEach(function (l) { flat.push(l); }); });
   flat.forEach(function (l) {
-    l._sm = l.f ? getSum(sumKey(state.subj, state.book, l.c)) : null;
+    l._sm = l.f ? getProgress(state.subj, state.book, l.c) : null;
     l._done = !!(l._sm && l._sm.st > 0 && l._sm.s >= l._sm.st);
     l._prog = !!(l._sm && (l._sm.s > 0 || l._sm.e > 0 || l._sm.q > 0));
   });
