@@ -772,13 +772,13 @@ let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score +
 let EX1SEL=new Set(), EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers */
 let EX3_ORD=EX3.map(()=>fyIdx(2));          /* exercises: per-sentence word-option display order */
 let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
-const READ_MIN_S=15; /* Mechanics v2: minimum reading time — the Start button stays disabled this long */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
 let readReadyAt=0, readShownSec=-1;
 function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
-function readWaitLeft(){ return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
-const ACK_MIN_S=15; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks */
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
 let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
-function ackWaitLeft(){ if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
 function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
 function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
