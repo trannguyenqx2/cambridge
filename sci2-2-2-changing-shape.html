@@ -126,6 +126,34 @@ button:disabled{opacity:.45;cursor:default}
 .below h2{margin:0 0 8px;font-size:20px}
 .below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
 .below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+.wordopt.sel{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.wordopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
 /* ===== quiz modal ===== */
 #quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 #quizModal.open{display:flex}
@@ -248,11 +276,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -318,6 +348,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -328,6 +360,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -387,6 +420,8 @@ button:disabled{opacity:.45;cursor:default}
 
     <div class="btnrow" style="margin-top:16px">
       <span class="sp" style="flex:1"></span>
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <button id="exClose"></button>
     </div>
   </div>
@@ -397,10 +432,36 @@ button:disabled{opacity:.45;cursor:default}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
-function L(s){ return lang==='vi'? s.vi : s.en; }
-function bi(s){
+/* ================= language: 3 modes — en / both (EN+VI) / vi =================
+   Static HTML text uses data-en / data-vi attributes.
+   Everything rendered by JS uses {en, vi} string objects with bi()/L().
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
+function L(s){ return lang==='vi'? s.vi : s.en; }              // one language (both -> EN)
+function bi(s){                                                // EN main + VI gloss under, in 'both'
   if(lang==='en') return esc(s.en);
   if(lang==='vi') return esc(s.vi);
   return esc(s.en)+'<span class="gloss">'+esc(s.vi)+'</span>';
@@ -417,7 +478,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= workbench things ================= */
@@ -519,7 +580,22 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'shape',vi:'hình dạng'},
@@ -670,7 +746,7 @@ const WS_WORDS=[
 ];
 const WS_GRID=['CHANGEPS','TOBJECTA','PATTERNL','HEIGHTMS','MEASUREO','SHAPEDUF'];
 const WS_POS={change:[0,0],object:[1,1],pattern:[2,0],height:[3,0],measure:[4,0],shape:[5,0]};
-const WS_ORDER=fyShuffle(WS_WORDS.slice());
+let WS_ORDER=fyShuffle(WS_WORDS.slice());
 /* Ex 2 · Practice — Mina rolls clay and measures with paperclips: rolls -> clips */
 const EX2=[
  {rolls:10,clips:3,opts:[2,3,4]},
@@ -678,7 +754,7 @@ const EX2=[
  {rolls:30,clips:5,opts:[4,5,6]},
  {rolls:40,clips:6,opts:[5,6,7]}
 ];
-const EX2_ORDERS=EX2.map(()=>fyIdx(3));
+let EX2_ORDERS=EX2.map(()=>fyIdx(3));
 /* Ex 3 · Challenge — Max's table: rolls 5->2, 10->4, 15->7, 20->10 paperclips */
 const MAXTABLE=[[5,2],[10,4],[15,7],[20,10]];
 const EX3=[
@@ -691,22 +767,38 @@ const EX3=[
  {q:{en:'When you roll the clay more times, it gets ___.',vi:'Khi lăn đất nhiều lần hơn, đất sẽ ___.'},
   opts:[{en:'shorter',vi:'ngắn hơn (shorter)'},{en:'harder',vi:'cứng hơn (harder)'},{en:'longer',vi:'dài hơn (longer)'}],a:2}
 ];
-const EX3_ORDERS=EX3.map(()=>fyIdx(3));
+let EX3_ORDERS=EX3.map(()=>fyIdx(3));
 const EX_TOTAL=WS_WORDS.length+EX2.length+EX3.length; /* 6 + 4 + 4 = 14 */
 let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
 let ex1sel=null, ex1prog=0;
+/* Mechanics v2 submit-mode exercise answers (unsubmitted; no feedback while answering) */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let EX1FOUND=new Set(), EX2ANS={}, EX3ANS={}; /* the learner's current (unsubmitted) answers: words found / rolls->clips / q index->option index */
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci2-2-2';
 let doneSteps=new Set(), curStep=0;
 let FOUND={dough:false,sponge:false,clothes:false,drops:false,band:false};
 let REC={drops:{},band:{}};
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
     if(s.rec&&typeof s.rec==='object'){
       if(s.rec.drops&&typeof s.rec.drops==='object') REC.drops=s.rec.drops;
@@ -717,8 +809,28 @@ try{
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number));
       if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(Array.isArray(s.exAns.f1)) EX1FOUND=new Set(s.exAns.f1.filter(id=>WS_WORDS.some(x=>x.id===id)));
+      if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const r=Number(k); const row=EX2.find(x=>x.rolls===r); if(row&&row.opts.indexOf(s.exAns.a2[k])>=0) EX2ANS[r]=s.exAns.a2[k]; });
+      if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&Number.isInteger(s.exAns.a3[k])&&s.exAns.a3[k]>=0&&s.exAns.a3[k]<EX3[si].opts.length) EX3ANS[si]=s.exAns.a3[k]; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1FOUND=new Set(EX1DONE);
+      EX2.forEach(r=>{ if(EX2DONE.has(r.rolls)) EX2ANS[r.rolls]=r.clips; });
+      EX3.forEach((q3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=q3.a; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
+/* summary record for the site hub level map (additive only; main record schema unchanged) */
 const SUMKEY='camb:sum:sci2-2-2';
 let qBest=0;
 try{
@@ -726,10 +838,12 @@ try{
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,found:FOUND,rec:REC,ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,found:FOUND,rec:REC,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:{f1:[...EX1FOUND],a2:EX2ANS,a3:EX3ANS},ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
   saveSum();
 }
 /* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
@@ -744,6 +858,67 @@ function newTrack(){return {
 let T=newTrack();
 const DROP_HEIGHTS=[2,4,6,8];
 const dropWidth=h=>h/2+4;
+
+/* ================= Mechanics v2: notice, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function resetStepEvidence(){
+  /* wipe ONLY the current step's collected evidence (same trackers the Reset button clears,
+     plus that step's console mirrors), then re-lock the instruction (read gate). */
+  anims.length=0; T=newTrack();
+  doughBusy=false; spongeBusy=false; foldBusy=false; ballBusy=false; bandBusy=false;
+  if(curStep===0){ FOUND.dough=false; FOUND.sponge=false; FOUND.clothes=false; }
+  if(curStep===1){ [2,4,6,8].forEach(h=>{ delete REC.drops[h]; }); FOUND.drops=false; }
+  if(curStep===2){ delete REC.drops[10]; }
+  if(curStep===3){ REC.band={}; FOUND.band=false; }
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderRecords(); renderFound();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
+}
+
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -820,6 +995,12 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===STEPS.length-1?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  paintAckGate();
+  $('btnNext').disabled=!(done&&ackSet.has(curStep));
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -841,7 +1022,7 @@ function buildSort(box,cards,bins,correctSet,getSel,setSel,onCorrect){
     d.className='piccard'+(correctSet.has(c.id)?' right':'')+(getSel()===c.id?' sel':'');
     d.id='card_'+c.id;
     d.innerHTML='<span class="em">'+c.emoji+'</span>'+bi(c);
-    d.onclick=()=>{ if(correctSet.has(c.id)) return; setSel(c.id); renderStepExtra(); refreshEvidence(); };
+    d.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } if(correctSet.has(c.id)) return; setSel(c.id); renderStepExtra(); refreshEvidence(); };
     grid.appendChild(d);
   });
   box.appendChild(grid);
@@ -849,6 +1030,7 @@ function buildSort(box,cards,bins,correctSet,getSel,setSel,onCorrect){
   bins.forEach(bn=>{
     const b=document.createElement('button'); b.className='binbtn '+bn.cls; b.innerHTML=bi(bn.label);
     b.onclick=()=>{
+      if(stepLocked()){ flashReadBtn(); return; }
       const sel=getSel(); if(!sel) return;
       const c=cards.find(x=>x.id===sel);
       if(c.ans===bn.key){
@@ -857,6 +1039,7 @@ function buildSort(box,cards,bins,correctSet,getSel,setSel,onCorrect){
         renderStepExtra(); refreshEvidence();
         if(onCorrect) onCorrect(c);
       }else{
+        addMistake();
         const el=$('card_'+c.id);
         if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); }
       }
@@ -877,7 +1060,7 @@ function statPills(box,items){
 }
 function bigActionBtn(box,label,fn,blue){
   const b=document.createElement('button'); b.className='bigbtn'+(blue?' blue':'');
-  b.style.marginTop='8px'; b.innerHTML=biInl(label); b.onclick=fn;
+  b.style.marginTop='8px'; b.innerHTML=biInl(label); b.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } fn(); };
   box.appendChild(b); return b;
 }
 function renderStepExtra(){
@@ -901,9 +1084,10 @@ function renderStepExtra(){
       d.id='pred_'+n;
       d.innerHTML='<span class="em">🧱</span>'+bi(STR.bricksW(n));
       d.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
         if(T.tested) return;
         T.pred=n; T.predRight=(n===9);
-        if(!T.predRight){ renderStepExtra(); refreshEvidence(); const el=$('pred_'+n); if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); } return; }
+        if(!T.predRight){ addMistake(); renderStepExtra(); refreshEvidence(); const el=$('pred_'+n); if(el){ el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),500); } return; }
         renderStepExtra(); refreshEvidence();
       };
       grid.appendChild(d);
@@ -925,9 +1109,10 @@ function renderStepExtra(){
       const d=document.createElement('button'); d.className='lolarow'+(doneAt>=0?' right':''); d.id='lola_'+li;
       d.innerHTML='<span>🩹 '+biInl(STR.lolaRow(row.books,row.notes))+'</span>'+(doneAt>=0?'<span class="pos">'+(doneAt+1)+' ✓</span>':'');
       d.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
         if(doneAt>=0) return;
         if(row.books===T.lolaNext){ T.lolaDone.add(row.books); T.lolaNext++; T.lolaWrong=null; saveProg(); renderStepExtra(); refreshEvidence(); }
-        else{ T.lolaWrong=row.books; d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); refreshEvidence(); }
+        else{ addMistake(); T.lolaWrong=row.books; d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); refreshEvidence(); }
       };
       box.appendChild(d);
     });
@@ -941,13 +1126,17 @@ function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
   anims.length=0;
   T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
   anims.length=0; T=newTrack(); T.lolaDone=new Set();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   applyStepStart(curStep); saveProg(); renderSteps();
 };
 $('btnDemo').onclick=()=>{
@@ -1032,58 +1221,66 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals score, correct answers and
+   explanations. qBest only ever moves on a submitted result. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
   $('qProg').innerHTML=biInl(prog);
   $('qText').innerHTML=bi(it.q);
   $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+function showQuizResults(){
   qFinished=true;
   const s=qScoreNow();
   if(s>qBest) qBest=s;
   saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
   $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let h='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    h+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) h+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    h+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=h; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -1105,6 +1302,7 @@ let wallet=loadWallet();
 const BOT_CODE='sci2-2.2';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1173,8 +1371,16 @@ $('bNext').onclick=()=>{
 $('bClose').onclick=closeBot;
 $('btnBotTop').onclick=openBot;
 
-/* ================= exercises panel ================= */
-function exScoreNow(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size; }
+/* ================= exercises panel (Mechanics v2: submit-mode) =================
+   Answers are recorded WITHOUT any right/wrong feedback and can be changed
+   freely. One Submit scores everything at once, then reveals the correct
+   answers. The summary `e` value is the best SUBMITTED score (EX1DONE/
+   EX2DONE/EX3DONE now hold the correct sets of the latest submission —
+   empty until the first Submit). Spelling a word in the word hunt IS the
+   answer: its letters light as they are tapped, but the word only scores
+   when the set is submitted. */
+function exScoreNow(){ return exBest; }
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1FOUND.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
@@ -1182,7 +1388,7 @@ function wsCellKey(r,c){ return r*8+c; }
 function wsLitSet(wordId){
   const w=WS_WORDS.find(x=>x.id===wordId); if(!w) return new Set();
   const pos=WS_POS[wordId], out=new Set();
-  const n=EX1DONE.has(wordId)? w.en.length : (ex1sel===wordId? ex1prog : 0);
+  const n=EX1FOUND.has(wordId)? w.en.length : (ex1sel===wordId? ex1prog : 0);
   for(let i=0;i<n;i++) out.add(wsCellKey(pos[0],pos[1]+i));
   return out;
 }
@@ -1190,26 +1396,34 @@ function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
   /* Ex 1 · Focus — word hunt */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=WS_WORDS.length);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=WS_WORDS.length);
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=WS_WORDS.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=WS_WORDS.length);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
-  $('ex1Hint').innerHTML=ex1sel? bi(STR.ex1HintPick) : '';
+  $('ex1Hint').innerHTML=(!exRevealed&&ex1sel)? bi(STR.ex1HintPick) : '';
   const wl=$('ex1Words'); wl.innerHTML='';
   WS_ORDER.forEach(w=>{
     const chip=document.createElement('button');
-    chip.className='wschip'+(EX1DONE.has(w.id)?' done':'')+(ex1sel===w.id?' sel':'');
-    chip.innerHTML=esc(lang==='vi'? w.vi : w.en)+(EX1DONE.has(w.id)?' ✓':'');
-    chip.onclick=()=>{ if(EX1DONE.has(w.id)) return; ex1sel=w.id; ex1prog=0; renderExercises(); };
+    chip.className='wschip'+(EX1FOUND.has(w.id)?' done':'')+(ex1sel===w.id?' sel':'');
+    chip.innerHTML=esc(lang==='vi'? w.vi : w.en)+(EX1FOUND.has(w.id)?' ✓':'');
+    chip.onclick=()=>{ if(exRevealed||EX1FOUND.has(w.id)) return; ex1sel=w.id; ex1prog=0; renderExercises(); };
     wl.appendChild(chip);
   });
   const g1=$('ex1Grid'); g1.innerHTML='';
   const litAll={};
-  WS_WORDS.forEach(w=>{ wsLitSet(w.id).forEach(k=>{ litAll[k]=EX1DONE.has(w.id)?'done':'lit'; }); });
+  WS_WORDS.forEach(w=>{ wsLitSet(w.id).forEach(k=>{ litAll[k]=EX1FOUND.has(w.id)?'done':'lit'; }); });
   WS_GRID.forEach((rowStr,r)=>{
     [...rowStr].forEach((ch,c)=>{
       const cell=document.createElement('button');
@@ -1217,11 +1431,11 @@ function renderExercises(){
       cell.className='wscell'+(litAll[k]?' '+litAll[k]:'');
       cell.textContent=ch; cell.id='wscell_'+k;
       cell.onclick=()=>{
-        if(!ex1sel||EX1DONE.has(ex1sel)) return;
+        if(exRevealed||!ex1sel||EX1FOUND.has(ex1sel)) return;
         const w=WS_WORDS.find(x=>x.id===ex1sel), pos=WS_POS[ex1sel];
         if(k===wsCellKey(pos[0],pos[1]+ex1prog)){
           ex1prog++;
-          if(ex1prog>=w.en.length){ EX1DONE.add(w.id); ex1sel=null; ex1prog=0; saveProg(); }
+          if(ex1prog>=w.en.length){ EX1FOUND.add(w.id); ex1sel=null; ex1prog=0; saveProg(); }
           renderExercises();
         }else{
           cell.classList.add('shake'); setTimeout(()=>cell.classList.remove('shake'),500);
@@ -1230,13 +1444,12 @@ function renderExercises(){
       g1.appendChild(cell);
     });
   });
-  /* Ex 2 · Practice — measure Mina's clay with paperclips */
-  $('exSec2').classList.toggle('done',EX2DONE.size>=EX2.length);
-  $('ex2T').innerHTML=exHead(STR.ex2T,EX2DONE.size>=EX2.length);
+  /* Ex 2 · Practice — measure Mina's clay with paperclips (chosen number shows as a neutral mark) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
   const l2=$('ex2List'); l2.innerHTML='';
   EX2.forEach((row,ri)=>{
-    const done=EX2DONE.has(row.rolls);
     const div=document.createElement('div'); div.className='exsent';
     const bar=document.createElement('div'); bar.className='claybar';
     bar.innerHTML='<div class="clayfill" style="width:'+(row.clips*13)+'%"></div><div class="clayclips">'+'📎'.repeat(row.clips)+'</div>';
@@ -1246,12 +1459,15 @@ function renderExercises(){
     EX2_ORDERS[ri].forEach(oi=>{
       const n=row.opts[oi];
       const b=document.createElement('button');
-      b.className='wordopt'+(done&&n===row.clips?' right':'');
+      let cls='wordopt';
+      if(exRevealed&&n===row.clips) cls+=' right';
+      else if(exRevealed&&EX2ANS[row.rolls]===n) cls+=' wrongsel';
+      else if(!exRevealed&&EX2ANS[row.rolls]===n) cls+=' sel';
+      b.className=cls;
       b.textContent=n+' 📎';
       b.onclick=()=>{
-        if(done) return;
-        if(n===row.clips){ EX2DONE.add(row.rolls); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX2ANS[row.rolls]=n; saveProg(); renderExercises();
       };
       optRow.appendChild(b);
     });
@@ -1259,8 +1475,8 @@ function renderExercises(){
     l2.appendChild(div);
   });
   /* Ex 3 · Challenge — Max's results table */
-  $('exSec3').classList.toggle('done',EX3DONE.size>=EX3.length);
-  $('ex3T').innerHTML=exHead(STR.ex3T,EX3DONE.size>=EX3.length);
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
   const l3=$('ex3List'); l3.innerHTML='';
   const tbl=document.createElement('table'); tbl.className='maxtable';
@@ -1269,19 +1485,21 @@ function renderExercises(){
     '<tr><th>'+biInl(STR.ex3Clips)+'</th>'+MAXTABLE.map(p=>'<td><b>'+p[1]+'</b></td>').join('')+'</tr>';
   l3.appendChild(tbl);
   EX3.forEach((q3,qi3)=>{
-    const done=EX3DONE.has(qi3);
     const div=document.createElement('div'); div.className='exsent';
     div.innerHTML='<div>'+(qi3+1)+'. '+biInl(q3.q)+'</div>';
     const optRow=document.createElement('div'); optRow.style.marginTop='4px';
     EX3_ORDERS[qi3].forEach(oi=>{
       const o=q3.opts[oi];
       const b=document.createElement('button');
-      b.className='wordopt'+(done&&oi===q3.a?' right':'');
+      let cls='wordopt';
+      if(exRevealed&&oi===q3.a) cls+=' right';
+      else if(exRevealed&&EX3ANS[qi3]===oi) cls+=' wrongsel';
+      else if(!exRevealed&&EX3ANS[qi3]===oi) cls+=' sel';
+      b.className=cls;
       b.innerHTML=biInl(o);
       b.onclick=()=>{
-        if(done) return;
-        if(oi===q3.a){ EX3DONE.add(qi3); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX3ANS[qi3]=oi; saveProg(); renderExercises();
       };
       optRow.appendChild(b);
     });
@@ -1289,7 +1507,29 @@ function renderExercises(){
     l3.appendChild(div);
   });
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1FOUND);
+  EX2DONE=new Set(EX2.filter(r=>EX2ANS[r.rolls]===r.clips).map(r=>r.rolls));
+  EX3DONE=new Set(EX3.map((q3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].a));
+  const total=EX1DONE.size+EX2DONE.size+EX3DONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true; ex1sel=null; ex1prog=0;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1FOUND=new Set(); EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  ex1sel=null; ex1prog=0;
+  WS_ORDER=fyShuffle(WS_WORDS.slice());
+  EX2_ORDERS=EX2.map(()=>fyIdx(3));
+  EX3_ORDERS=EX3.map(()=>fyIdx(3));
+  exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1297,12 +1537,23 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderRecords(); renderFound(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderRecords(); renderFound(); renderKeyWords();
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+    if($('exModal').classList.contains('open')) renderExercises();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1311,7 +1562,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1357,6 +1608,8 @@ let ballMesh=null, towerG=null, widthCubes=[], ballBusy=false, dropSetupH=2;
 let bandMesh=null, hookG=null, booksG=null, noteMeshes=[], bandBooks=0, bandBusy=false;
 let doughMesh=null, pinG=null, spongeMesh=null, flapPivot=null, woodG=null;
 let lastRW=0, lastRH=0;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 const ORB={r:9.6, th:0.15, ph:1.07, tx:0, ty:0.5, tz:0};
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
 function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
@@ -1364,7 +1617,7 @@ function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.
 function proxy(parent,w,h,d,x,y,z){
   const p=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
     new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-  p.position.set(x,y,z); parent.add(p); return p;
+  p.position.set(x,y,z); parent.add(p); hitProxies.push(p); return p;
 }
 function buildDropRig(){
   const g=new THREE.Group();
@@ -1571,7 +1824,7 @@ function buildClothes(){
   flap.position.set(0,0,-0.13); flapPivot.add(flap); g.add(flapPivot);
   const collar=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.02,8,16),stdMat(0x2f6fb3,0.8));
   collar.rotation.x=Math.PI/2; collar.position.set(0,0.11,-0.22); g.add(collar);
-  proxy(g,1.1,0.7,1.0,0,0.3,0);
+  proxy(g,1.15,0.95,1.05,0,0.42,0);
   g.position.set(1.75,0,1.9); g.userData.baseY=0;
   return g;
 }
@@ -1676,11 +1929,8 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
-      for(let h=0;h<hits.length;h++){
-        const id=hits[h].object.userData.objId;
-        if(id){ handleTap(id); break; }
-      }
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
     }
   });
   el.addEventListener('pointercancel',()=>{ dragMode=null; });
@@ -1726,7 +1976,19 @@ function bounceThing(id){
   const baseY=g.userData.baseY||0;
   addAnim(0.55,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.16; },()=>{ g.position.y=baseY; });
 }
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['dough','sponge','clothes'],  /* step 1: change the soft things' shapes */
+  ['clayball'],                   /* step 2: drop the clay ball */
+  ['clayball'],                   /* step 3: test the prediction from 10 bricks */
+  ['band'],                       /* step 4: stretch the rubber band */
+  [],                             /* step 5: Lola's rows are in the step card — no scene targets */
+  []                              /* step 6: card sort — no scene targets */
+];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
   if(!THINGS[id]) return;
   focusVisual(id);
   if(curStep===0){
@@ -1736,13 +1998,18 @@ function handleTap(id){
     if(id==='wood'){ T.hint='wood'; wiggleWood(); }
     else if(id==='clayball'||id==='band'){ T.hint=id; bounceThing(id); }
     else bounceThing(id);
-  }else if(curStep===1&&id==='clayball'){ doDrop('user'); return; }
-  else if(curStep===2&&id==='clayball'){
+    addMistake();
+    refreshEvidence();
+    return;
+  }
+  if(curStep===1&&id==='clayball'){ doDrop('user'); return; }
+  if(curStep===2&&id==='clayball'){
     if(T.predRight&&!T.tested){ doDropTest('user'); return; }
     bounceThing(id);
   }
   else if(curStep===3&&id==='band'){ addBook('user'); return; }
   else bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
   refreshEvidence();
 }
 function applyStepStart(i){
@@ -1805,6 +2072,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderFound();
   }
@@ -1824,6 +2093,11 @@ renderFocusRow();
 init3D();
 goStep(curStep);
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
 <!-- CAMB-BRIDGE v1 --><script>

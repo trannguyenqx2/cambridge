@@ -170,6 +170,33 @@ button:disabled{opacity:.45;cursor:default}
 .wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
 .exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
 .exexpl .gloss{font-size:.85em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.excard.sel{border-color:var(--acc);background:#eef6ff}
+.excard.sel .em{filter:none;opacity:1}
+.excard.placed{border-color:var(--acc)}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.anstag{margin-left:6px}
+.wordopt.sel{border-color:var(--acc);background:#eef6ff}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.wordopt.wrongmark{border-color:#e5a3a3;background:#fdf0f0}
+.langseg button.locked{opacity:.6}
 @media(max-width:900px){
   .console{display:none}
   .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
@@ -224,11 +251,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -294,6 +323,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -304,6 +335,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -333,7 +365,7 @@ button:disabled{opacity:.45;cursor:default}
     <div id="exScoreLine"></div>
     <p class="small" id="exIntro"></p>
     <div id="exBody"></div>
-    <div class="btnrow" style="margin-top:14px"><span class="sp" style="flex:1"></span><button class="primary" id="exCloseBtn"></button></div>
+    <div class="btnrow" style="margin-top:14px"><button class="primary" id="exSubmit"></button><button id="exRetry" style="display:none"></button><span class="sp" style="flex:1"></span><button class="primary" id="exCloseBtn"></button></div>
   </div>
 </div>
 
@@ -352,8 +384,32 @@ button:disabled{opacity:.45;cursor:default}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+/* ================= language: 3 modes — en / both (EN+VI) / vi =================
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -372,7 +428,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= kitchen things (focus/look targets) ================= */
@@ -448,7 +504,22 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'solid',vi:'chất rắn'},
@@ -585,7 +656,7 @@ const EX1=[
  {id:'e_toast',emoji:'🍞',en:'Bread in the toaster',vi:'Bánh mì trong máy nướng',changing:true},
  {id:'e_apple',emoji:'🍎',en:'Peeled apple',vi:'Táo đã gọt',changing:true}
 ];
-const EX1_ORDER=mixOrder(EX1,c=>c.changing?'changing':'still',3);
+let EX1_ORDER=mixOrder(EX1,c=>c.changing?'changing':'still',3);
 const EX2=[
  {id:'x_butter',emoji:'🧈',en:'Butter',vi:'Bơ',ans:'solid'},
  {id:'x_milk',emoji:'🥛',en:'Milk',vi:'Sữa',ans:'liquid'},
@@ -593,7 +664,7 @@ const EX2=[
  {id:'x_honey',emoji:'🍯',en:'Honey',vi:'Mật ong',ans:'liquid'},
  {id:'x_cake',emoji:'🍰',en:'Cake',vi:'Bánh',ans:'solid'}
 ];
-const EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
 const EX3=[
  {parts:[{en:'A bar of chocolate is a',vi:'Một thanh sô-cô-la là một chất'},0,{en:'.',vi:'.'}],
   opts:[{en:'solid',vi:'rắn (solid)'},{en:'liquid',vi:'lỏng (liquid)'}],right:0,
@@ -619,18 +690,34 @@ const EX3=[
 ];
 const EX_TOTAL=EX1.filter(x=>x.changing).length+EX2.length+EX3.length; /* 5 + 5 + 7 = 17 */
 let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null, ex1Not=false;
+let EX3_ORD=EX3.map(()=>fyIdx(2));   /* Mechanics v2: per-sentence word-option display order (re-rolled on retry) */
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci2-3-5', SUMKEY='camb:sum:sci2-3-5';
 let doneSteps=new Set(), curStep=0;
 let CHG={ice:false,mix:false,choc:false,cake:false,toast:false,apple:false};
 let qBest=0;
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.chg&&typeof s.chg==='object') CHG=Object.assign(CHG,s.chg);
     if(typeof s.qBest==='number') qBest=s.qBest;
     if(s.ex&&typeof s.ex==='object'){
@@ -638,21 +725,100 @@ try{
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
       if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+      if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='solid'||s.exAns.a2[id]==='liquid')) EX2ANS[id]=s.exAns.a2[id]; });
+      if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1SEL=new Set(EX1DONE);
+      EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+      EX3.forEach((sent,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=sent.right; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+    }
   }
 }catch(e){}
+lang=effLang();
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify({
-    done:[...doneSteps], cur:curStep, lang, chg:CHG, qBest,
+    done:[...doneSteps], cur:curStep, lang:prefLang, chg:CHG, qBest,
+    ack:[...ackSet], mist:mist, exBest:exBest, exSub:exRevealed,
+    exAns:{s1:[...EX1SEL], a2:EX2ANS, a3:EX3ANS},
     ex:{e1:[...EX1DONE], e2:[...EX2DONE], e3:[...EX3DONE]}
   })); }catch(e){}
   saveSum();
 }
 function saveSum(){
+  /* s counts only steps that are done AND acknowledged (Mechanics v2); e is the best SUBMITTED exercise score */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
   try{ localStorage.setItem(SUMKEY, JSON.stringify({
-    s:doneSteps.size, st:STEPS.length,
-    e:EX1DONE.size+EX2DONE.size+EX3DONE.size, et:EX_TOTAL,
+    s:acked, st:STEPS.length,
+    e:exBest, et:EX_TOTAL,
     q:qBest, qt:QUIZ.length
   })); }catch(e){}
+}
+/* ================= Mechanics v2: notice, gates, anti-guess ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function resetStepEvidence(){
+  /* This lesson's step evidence is a single CHG flag, unset until the action
+     animation completes — so the anti-guess reset cancels any in-flight
+     action, restores the scene to the un-changed state and re-locks the
+     instruction (read gate). */
+  anims.length=0;
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  refreshScene();
+  save(); renderStep(); renderConsole();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else save();
 }
 /* step evidence: one flag per step */
 const STEPFLAG=['ice','mix','choc','cake','toast','apple'];
@@ -721,16 +887,28 @@ function renderStep(){
   $('btnPrev').textContent=L(STR.prevBtn);
   $('btnPrev').disabled=curStep===0;
   $('btnNext').textContent=curStep===STEPS.length-1? L(STR.nextQuiz):L(STR.nextBtn);
+  /* Mechanics v2: read gate + conclusion gate; Next needs done+acknowledged */
+  paintReadGate();
+  paintAckGate();
+  const canNext=done&&ackSet.has(curStep);
+  $('btnNext').disabled=!canNext;
+  $('btnNext').classList.toggle('dis',!canNext);
   $('wordNow').innerHTML=bi(st.word);
   renderChrome();
 }
 function goStep(i){
-  curStep=Math.max(0,Math.min(STEPS.length-1,i)); save();
+  curStep=Math.max(0,Math.min(STEPS.length-1,i));
+  anims.length=0;
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
+  save();
   applyStepStart(); renderStep(); renderConsole();
 }
 function resetStep(){
   const f=STEPFLAG[curStep];
-  CHG[f]=false; doneSteps.delete(curStep); save();
+  anims.length=0;
+  CHG[f]=false; doneSteps.delete(curStep); ackSet.delete(curStep);
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
+  save();
   refreshScene(); renderStep(); renderConsole();
 }
 /* ================= console ================= */
@@ -778,50 +956,76 @@ function renderConsole(){
     kw.appendChild(sEl);
   });
 }
-/* ================= quiz ================= */
-let qIdx=0, qScore=0, qAnswered=false, qOpen=false;
-function openQuiz(){ qOpen=true; qPhase='play'; rollQuizOrder(); qIdx=0; qScore=0; $('quizModal').classList.add('open'); showQ(); }
+/* ================= quiz (Mechanics v2: submit-mode) =================
+   NO feedback while answering — answers can be changed freely; one Submit at
+   the end reveals the score, the correct answers and the explanations.
+   qBest only ever moves on a submitted result. NOTE: qState stores the
+   DISPLAY index of the chosen option; qScoreNow maps it through qOrder. */
+let qi=0, qState=[], qFinished=false, qOpen=false;
+function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
+function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  qOpen=true; $('quizModal').classList.add('open');
+  qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
+  rollQuizOrder();
+  showQ();
+}
 function closeQuiz(){ qOpen=false; $('quizModal').classList.remove('open'); }
 function showQ(){
-  const q=QUIZ[qIdx]; qAnswered=false;
+  const it=QUIZ[qi], st=qState[qi];
   $('qTitle').innerHTML=bi(STR.quizTitle);
-  $('qProg').textContent=(qIdx+1)+' / '+QUIZ.length;
-  $('qText').innerHTML=bi(q.q);
-  $('qExpl').classList.remove('open'); $('qExpl').innerHTML='';
-  $('qScore').textContent='';
   $('qClose').textContent=L(STR.qClose);
-  $('qNext').textContent=qIdx===QUIZ.length-1? L(STR.qResult):L(STR.qNext);
-  $('qNext').style.visibility='hidden';
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
+  $('qProg').innerHTML=biInl(prog);
+  $('qText').innerHTML=bi(it.q);
+  $('qScore').textContent='';
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
+  $('qNext').style.visibility='visible';
   const box=$('qOpts'); box.innerHTML='';
-  qOrder[qIdx].forEach(oi=>{
-    const o=q.o[oi], b=document.createElement('button'); b.className='qopt';
-    b.innerHTML=biInl(o);
-    b.onclick=()=>{
-      if(qAnswered) return; qAnswered=true;
-      const right=oi===q.a;
-      if(right) qScore++;
-      b.classList.add(right?'right':'wrong');
-      [...box.children].forEach((c,ci)=>{ if(qOrder[qIdx][ci]===q.a) c.classList.add('right'); c.style.pointerEvents='none'; });
-      const ex=$('qExpl'); ex.innerHTML=(right? esc(L(STR.qRight)):esc(L(STR.qWrong)))+bi(q.e); ex.classList.add('open');
-      $('qNext').style.visibility='visible';
-    };
+  (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
+    const o=it.o[oi];
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
+    b.innerHTML=String.fromCharCode(65+di)+'. '+biInl(o);
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     box.appendChild(b);
   });
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-let qPhase='play';
-function quizNext(){
-  if(qPhase==='results'){ qPhase='play'; qIdx=0; qScore=0; rollQuizOrder(); showQ(); return; }
-  if(qIdx<QUIZ.length-1){ qIdx++; showQ(); return; }
-  if(qScore>qBest){ qBest=qScore; }
-  save(); renderChrome(); qPhase='results';
-  $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+function showQuizResults(){
+  qFinished=true;
+  const s=qScoreNow();
+  if(s>qBest) qBest=s;
+  save(); renderChrome();
   $('qProg').textContent='';
-  $('qScore').textContent='⭐ '+qScore+' / '+QUIZ.length;
+  $('qText').innerHTML=bi(STR.qDone);
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
+  const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
+             vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
+  $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let hh='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    hh+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) hh+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    hh+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=hh; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
   $('qNext').style.visibility='visible';
 }
-$('qNext').onclick=quizNext;
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
+};
 $('qClose').onclick=closeQuiz;
 /* ================= bot duel ================= */
 const BOT_CODE='sci2-3.5';
@@ -829,6 +1033,7 @@ let bIdx=0, bYou=0, bBot=0, bAnswered=false, bOrder=[], bOpen=false;
 function loadWallet(){ try{ const w=JSON.parse(localStorage.getItem('camb:wallet')); if(w&&typeof w.stars==='number'&&w.botWins&&w.bossWins) return w; }catch(e){} return {stars:0,botWins:{},bossWins:{}}; }
 function saveWallet(w){ try{ localStorage.setItem('camb:wallet', JSON.stringify(w)); }catch(e){} }
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   bOpen=true; bPhase='play'; bIdx=0; bYou=0; bBot=0;
   bOrder=QUIZ.map(q=>fyIdx(q.o.length));
   $('botModal').classList.add('open'); showB();
@@ -888,45 +1093,72 @@ function botNext(){
 }
 $('bNext').onclick=botNext;
 $('bClose').onclick=closeBot;
-/* ================= exercises panel ================= */
-function exScoreNow(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size; }
+/* ================= exercises panel (Mechanics v2: submit-mode) =================
+   Answers are recorded WITHOUT any right/wrong feedback and can be changed
+   freely. One Submit scores everything at once, then reveals the correct
+   answers and explanations. The summary `e` value is the best SUBMITTED
+   score (EX1DONE/EX2DONE/EX3DONE now hold the correct sets of the latest
+   submission — empty until the first Submit). */
+function exScoreNow(){ return exBest; }
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
 function exHead(sec,doneNow){
   return '<h3>'+esc(L(sec))+' <span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span></h3>';
 }
 function renderExercises(){
   $('exTitle').innerHTML=bi(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
-  $('exScoreLine').textContent='⭐ '+exScoreNow()+' / '+EX_TOTAL+(exScoreNow()>=EX_TOTAL? ' — '+L(STR.exGreat):'');
   $('exCloseBtn').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
   const body=$('exBody'); body.innerHTML='';
-  /* --- Ex1: tap the changing materials --- */
-  const s1=document.createElement('section'); s1.className='exsec'+(EX1DONE.size>=5?' done':'');
-  s1.innerHTML=exHead(STR.ex1T, EX1DONE.size>=5)+'<p class="exinst">'+esc(lang==='vi'? STR.ex1Inst.vi : STR.ex1Inst.en)+'</p>';
+  /* --- Ex1: tap the changing materials (tap toggles a choice; nothing is revealed yet) --- */
+  const s1=document.createElement('section'); s1.className='exsec'+(exRevealed&&EX1DONE.size>=5?' done':'');
+  s1.innerHTML=exHead(STR.ex1T, exRevealed&&EX1DONE.size>=5)+'<p class="exinst">'+esc(lang==='vi'? STR.ex1Inst.vi : STR.ex1Inst.en)+'</p>';
   const g1=document.createElement('div'); g1.className='exgrid';
   EX1_ORDER.forEach(c=>{
-    const b=document.createElement('button'); b.className='excard'+(EX1DONE.has(c.id)?' coloured':'');
+    const sel=EX1SEL.has(c.id);
+    const b=document.createElement('button');
+    b.className='excard';
+    if(exRevealed){
+      if(sel&&c.changing) b.classList.add('right');
+      else if(sel&&!c.changing) b.classList.add('wrongsel');
+      else if(!sel&&c.changing) b.classList.add('missed');
+    }else if(sel) b.classList.add('sel');
+    b.id='excard_'+c.id;
     b.innerHTML='<span class="em">'+c.emoji+'</span>'+esc(lang==='vi'? c.vi : c.en);
     b.onclick=()=>{
-      if(EX1DONE.has(c.id)) return;
-      if(c.changing){ EX1DONE.add(c.id); save(); renderExercises(); }
-      else { ex1Not=true; const h=s1.querySelector('.exhint'); if(h) h.textContent=L(STR.ex1Not); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+      if(exRevealed) return;
+      if(EX1SEL.has(c.id)) EX1SEL.delete(c.id); else EX1SEL.add(c.id);
+      save(); renderExercises();
     };
     g1.appendChild(b);
   });
-  s1.appendChild(g1);
-  const h1=document.createElement('div'); h1.className='exhint'; if(ex1Not) h1.textContent=L(STR.ex1Not);
-  s1.appendChild(h1); body.appendChild(s1);
-  /* --- Ex2: solid or liquid sort --- */
-  const s2=document.createElement('section'); s2.className='exsec'+(EX2DONE.size>=EX2.length?' done':'');
-  s2.innerHTML=exHead(STR.ex2T, EX2DONE.size>=EX2.length)+'<p class="exinst">'+esc(lang==='vi'? STR.ex2Inst.vi : STR.ex2Inst.en)+'</p>';
+  s1.appendChild(g1); body.appendChild(s1);
+  /* --- Ex2: solid or liquid sort (the chosen group shows as a neutral tag) --- */
+  const s2=document.createElement('section'); s2.className='exsec'+(exRevealed&&EX2DONE.size>=EX2.length?' done':'');
+  s2.innerHTML=exHead(STR.ex2T, exRevealed&&EX2DONE.size>=EX2.length)+'<p class="exinst">'+esc(lang==='vi'? STR.ex2Inst.vi : STR.ex2Inst.en)+'</p>';
   const g2=document.createElement('div'); g2.className='exgrid';
   EX2_ORDER.forEach(c=>{
-    if(EX2DONE.has(c.id)) return;
-    const b=document.createElement('button'); b.className='excard'+(ex2sel===c.id?' sel':'');
-    b.style.borderColor=ex2sel===c.id? '#0b76d1':'';
-    b.style.background=ex2sel===c.id? '#eef6ff':'';
-    b.innerHTML='<span class="em">'+c.emoji+'</span>'+esc(lang==='vi'? c.vi : c.en);
-    b.onclick=()=>{ ex2sel=c.id; renderExercises(); };
+    const ans=EX2ANS[c.id];
+    const b=document.createElement('button');
+    b.className='excard'+(ex2sel===c.id?' sel':'');
+    if(exRevealed){
+      if(EX2DONE.has(c.id)) b.classList.add('right');
+      else if(ans) b.classList.add('wrongsel');
+    }else if(ans) b.classList.add('placed');
+    b.id='excard_'+c.id;
+    b.innerHTML='<span class="em">'+c.emoji+'</span>'+esc(lang==='vi'? c.vi : c.en)+(ans? '<span class="anstag">'+(ans==='solid'?'🧊':'💧')+'</span>' : '');
+    b.onclick=()=>{ if(exRevealed) return; ex2sel=c.id; renderExercises(); };
     g2.appendChild(b);
   });
   s2.appendChild(g2);
@@ -934,59 +1166,94 @@ function renderExercises(){
   [['solid',STR.binSolid],['liquid',STR.binLiquid]].forEach(([ans,lbl])=>{
     const b=document.createElement('button'); b.className='binbtn '+(ans==='solid'?'living':'nonliving');
     b.innerHTML=biInl(lbl);
-    b.onclick=()=>{
-      if(!ex2sel) return;
-      const c=EX2.find(x=>x.id===ex2sel);
-      if(c&&c.ans===ans){ EX2DONE.add(c.id); ex2sel=null; save(); }
-      renderExercises();
-    };
+    b.onclick=()=>ex2Place(ans);
     bins.appendChild(b);
   });
   s2.appendChild(bins); body.appendChild(s2);
-  /* --- Ex3: finish the sentences --- */
-  const s3=document.createElement('section'); s3.className='exsec'+(EX3DONE.size>=EX3.length?' done':'');
-  s3.innerHTML=exHead(STR.ex3T, EX3DONE.size>=EX3.length)+'<p class="exinst">'+esc(lang==='vi'? STR.ex3Inst.vi : STR.ex3Inst.en)+'</p>';
+  /* --- Ex3: finish the sentences (tap a word to choose it; changeable until Submit) --- */
+  const s3=document.createElement('section'); s3.className='exsec'+(exRevealed&&EX3DONE.size>=EX3.length?' done':'');
+  s3.innerHTML=exHead(STR.ex3T, exRevealed&&EX3DONE.size>=EX3.length)+'<p class="exinst">'+esc(lang==='vi'? STR.ex3Inst.vi : STR.ex3Inst.en)+'</p>';
   EX3.forEach((sent,si)=>{
     const row=document.createElement('div'); row.className='exsent';
-    const done=EX3DONE.has(si);
     let html=esc(lang==='vi'? sent.parts[0].vi : sent.parts[0].en)+' ';
-    if(done) html+='<span class="wordopt crossed">'+esc(lang==='vi'? sent.opts[sent.right].vi : sent.opts[sent.right].en)+'</span>';
+    (EX3_ORD[si]||sent.opts.map((_,i)=>i)).forEach(oi=>{
+      const chosen=EX3ANS[si]===oi;
+      let cls='wordopt';
+      if(exRevealed){
+        if(oi===sent.right) cls+=' rightmark';
+        else if(chosen) cls+=' wrongmark';
+      }else if(chosen) cls+=' sel';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+esc(lang==='vi'? sent.opts[oi].vi : sent.opts[oi].en)+'</button>';
+    });
     html+=' '+esc(lang==='vi'? sent.parts[2].vi : sent.parts[2].en);
     row.innerHTML=html;
-    if(!done){
-      const ord=fyIdx(sent.opts.length);
-      ord.forEach(oi=>{
-        const w=document.createElement('button'); w.className='wordopt';
-        w.textContent=lang==='vi'? sent.opts[oi].vi : sent.opts[oi].en;
-        w.onclick=()=>{
-          if(oi===sent.right){ EX3DONE.add(si); save(); renderExercises(); }
-          else { w.classList.add('shake'); setTimeout(()=>w.classList.remove('shake'),500); }
-        };
-        row.appendChild(document.createTextNode(' ')); row.appendChild(w);
-      });
-    } else {
-      const ex=document.createElement('div'); ex.className='exexpl'; ex.innerHTML=bi(sent.e); row.appendChild(ex);
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl'; ex.innerHTML=(EX3DONE.has(si)? '✓ ':'')+bi(sent.e); row.appendChild(ex);
     }
     s3.appendChild(row);
   });
+  s3.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; save(); renderExercises();
+    };
+  });
   body.appendChild(s3);
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; save(); renderExercises();
+}
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1.filter(x=>x.changing&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((sent,si)=>si).filter(si=>EX3ANS[si]===EX3[si].right));
+  const total=EX1DONE.size+EX2DONE.size+EX3DONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true; ex2sel=null;
+  save(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.changing?'changing':'still',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+  exRevealed=false;
+  save(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 /* ================= language switching ================= */
 function setLang(m){
-  lang=m; save(); applyStatic(); renderStep(); renderConsole();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; save();
+  applyStatic(); renderStep(); renderConsole();
   if($('exModal').classList.contains('open')) renderExercises();
-  if(qOpen&&qPhase==='play') showQ();
+  if(qOpen&&!qFinished) showQ();
   if(bOpen&&bPhase==='play') showB();
   refreshLabels();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderStep(); renderConsole(); refreshLabels();
+    if($('exModal').classList.contains('open')) renderExercises();
+    if(qOpen&&!qFinished) showQ();
+    if(bOpen&&bPhase==='play') showB();
+  }else renderLangSeg();
 }
 document.querySelectorAll('#langSeg button').forEach(b=>{ b.onclick=()=>setLang(b.dataset.lang); });
 /* ================= keyboard ================= */
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ closeQuiz(); closeBot(); closeEx(); return; }
   if($('quizModal').classList.contains('open')||$('botModal').classList.contains('open')||$('exModal').classList.contains('open')) return;
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled){ if(curStep===STEPS.length-1) openQuiz(); else goStep(curStep+1); } }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='8'){ const n=+e.key; if(n<=STEPS.length) goStep(n-1); }
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1002,9 +1269,11 @@ $('btnBotTop').onclick=openBot;
 $('btnExTop').onclick=openEx;
 $('exCloseBtn').onclick=closeEx;
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep===STEPS.length-1) openQuiz(); else goStep(curStep+1); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep===STEPS.length-1) openQuiz(); else goStep(curStep+1); };
 $('btnResetStep').onclick=resetStep;
 $('btnDemo').onclick=()=>demoStep(curStep);
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderStep(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); save(); renderStep(); };
 $('quizModal').addEventListener('click',e=>{ if(e.target===$('quizModal')) closeQuiz(); });
 $('botModal').addEventListener('click',e=>{ if(e.target===$('botModal')) closeBot(); });
 $('exModal').addEventListener('click',e=>{ if(e.target===$('exModal')) closeEx(); });
@@ -1025,10 +1294,12 @@ const rayc=typeof THREE!=='undefined'? new THREE.Raycaster():null;
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
 function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
 function reg(id,group){ group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+const hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
 function proxy(w,h,d,x,y,z){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-  m.position.set(x||0,y||0,z||0); return m;
+  m.position.set(x||0,y||0,z||0); hitProxies.push(m); return m;
 }
+function isShownObj(o){ while(o){ if(o.visible===false) return false; o=o.parent; } return true; }
 function makeLabelSprite(text,scale){
   const cv=document.createElement('canvas'); cv.width=512; cv.height=128;
   const tex=new THREE.CanvasTexture(cv);
@@ -1204,7 +1475,8 @@ function bounceGrp(g){
   addAnim(0.45,t=>{ g.position.y=y0+Math.sin(t*Math.PI)*0.22; },()=>{ g.position.y=y0; });
 }
 function doStepAction(i,commit){
-  const done=()=>{ if(commit){ CHG[STEPFLAG[i]]=true; save(); markDone(i); } else refreshScene(); };
+  const done=()=>{ if(commit&&stepLocked()){ refreshScene(); return; }   /* Mechanics v2: an action finishing after an anti-guess re-lock must not write evidence into the locked step */
+    if(commit){ CHG[STEPFLAG[i]]=true; save(); markDone(i); } else refreshScene(); };
   if(i===0){
     addAnim(1.3,t=>{ const e=easeIO(t); iceCubes.forEach(c=>{ const s=1-e*0.88; c.scale.set(s,s,s); c.position.y=0.32-e*0.16; });
       const ps=0.15+e*0.85; puddle.scale.set(ps,ps,ps); },done);
@@ -1234,22 +1506,30 @@ function demoStep(i){
   if(CHG[STEPFLAG[i]]){ bounceGrp(G[STEPTARGET[i][0]]); return; }
   refreshScene(); doStepAction(i,false);
 }
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[['ice'],['bowl'],['choc'],['oven'],['toast'],['lemon','apple']];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
   if(!id) return;
-  if(STEPTARGET[curStep] && STEPTARGET[curStep].indexOf(id)>=0 && !CHG[STEPFLAG[curStep]]){
-    doStepAction(curStep,true); return;
+  if(STEP_TARGETS[curStep].indexOf(id)>=0){
+    if(!CHG[STEPFLAG[curStep]]) doStepAction(curStep,true);
+    return;
   }
   if(G[id]) bounceGrp(G[id]);
   if(THINGS[id]) focusThing(id);
+  addMistake();
 }
 /* ---------- picking + orbit ---------- */
 function pickAt(cx,cy){
   if(!renderer3||!scene3) return null;
   const r=renderer3.domElement.getBoundingClientRect();
   const nx=((cx-r.left)/r.width)*2-1, ny=-((cy-r.top)/r.height)*2+1;
+  if(camera3) camera3.updateMatrixWorld();
   rayc.setFromCamera(new THREE.Vector2(nx,ny), camera3);
-  const hits=rayc.intersectObjects(scene3.children,true);
-  for(const h of hits){ let o=h.object; while(o){ if(o.userData&&o.userData.objId) return o.userData.objId; o=o.parent; } }
+  const hits=rayc.intersectObjects(hitProxies,false);
+  for(const h of hits){ if(!isShownObj(h.object)) continue; let o=h.object; while(o){ if(o.userData&&o.userData.objId) return o.userData.objId; o=o.parent; } }
   return null;
 }
 function init3D(){
@@ -1282,6 +1562,7 @@ function init3D(){
   window.addEventListener('resize',resize); resize();
   function loop(now){
     requestAnimationFrame(loop);
+    tickReadGate(); tickAckGate();   /* Mechanics v2: live countdowns on the two gates */
     try{ stepAnims(now||performance.now()); renderer3.render(scene3,camera3); }
     catch(err){ const b=$('errBox'); if(b){ b.style.display='block'; b.textContent='⚠ '+err.message; } }
   }
@@ -1293,6 +1574,7 @@ try{
   applyStatic();
   init3D();
   applyStepStart();
+  armReadGate();   /* Mechanics v2: the first step starts read-locked */
   renderStep(); renderConsole();
   saveSum();
 }catch(err){
@@ -1300,7 +1582,15 @@ try{
 }
 /* test hooks (used by headless verification) */
 window.__T={ pick:(x,y)=>pickAt(x,y), tap:id=>handleTap(id), goStep:i=>goStep(i),
-  chg:()=>CHG, done:()=>[...doneSteps], cam:()=>camera3, scene:()=>scene3, orb:()=>ORB };
+  chg:()=>CHG, done:()=>[...doneSteps], cam:()=>camera3, scene:()=>scene3, orb:()=>ORB,
+  v2:()=>({ack:[...ackSet],mist:mist.slice(),exBest:exBest,qBest:qBest,locked:stepLocked(),allAck:allStepsAcked(),rw:readWaitLeft(),aw:ackWaitLeft(),pref:prefLang,lang:lang,rev:exRevealed}),
+  exState:()=>({sel:[...EX1SEL],a2:Object.assign({},EX2ANS),a3:Object.assign({},EX3ANS)}),
+  enforce:()=>enforceLangPolicy() };
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
 <!-- CAMB-BRIDGE v1 --><script>

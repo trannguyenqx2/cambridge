@@ -126,6 +126,36 @@ button:disabled{opacity:.45;cursor:default}
 .below h2{margin:0 0 8px;font-size:20px}
 .below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
 .below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.excard.sel{border-color:var(--acc);background:#eef6ff}
+.excard.placed{border-color:var(--acc);background:#eef6ff}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.wordopt.sel{border-color:var(--acc);background:#eef6ff}
+.wordopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0;text-decoration:line-through}
+.langseg button.locked{opacity:.6}
 /* ===== quiz modal ===== */
 #quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 #quizModal.open{display:flex}
@@ -224,11 +254,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -294,6 +326,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -304,6 +338,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -366,6 +401,8 @@ button:disabled{opacity:.45;cursor:default}
     </section>
 
     <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <button id="exClose"></button>
     </div>
@@ -377,8 +414,32 @@ button:disabled{opacity:.45;cursor:default}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+/* ================= language: 3 modes — en / both (EN+VI) / vi =================
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -397,7 +458,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= UI strings ================= */
@@ -456,6 +517,21 @@ const STR={
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
   qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'}),
   ex1T:{en:'Exercise 1 · Focus — Match the rock to its job',vi:'Bài tập 1 · Focus — Nối viên đá với công dụng'},
   ex1Inst:{en:'Tap a job card, then tap the rock that does that job.',vi:'Chạm vào một thẻ công dụng, rồi chạm vào viên đá làm công dụng đó.'},
   ex2T:{en:'Exercise 2 · Practice — Finish the sentences',vi:'Bài tập 2 · Practice — Hoàn thành câu'},
@@ -656,7 +732,7 @@ const EX1JOBS=[
  {id:'j_slate', rock:'slate',   en:'A smooth rock, blue, purple or grey, for floor and roof tiles.', vi:'Một viên đá nhẵn, xanh, tím hoặc xám, cho gạch lát sàn và ngói mái.'},
  {id:'j_granite',rock:'granite',en:'A very strong rock with bits you can see, for bridges and buildings.', vi:'Một viên đá rất cứng chắc với các mảnh nhìn thấy rõ, cho cầu và nhà.'}
 ];
-const EX1_ORDER=mixOrder(EX1JOBS,j=>j.rock,2);
+let EX1_ORDER=mixOrder(EX1JOBS,j=>j.rock,2);
 const EX2=[
  {id:'s_quarry', pre:{en:'On the surface, workers use diggers and explosives to break up the',vi:'Ở mặt đất, công nhân dùng máy xúc và thuốc nổ để phá vỡ'}, post:{en:'',vi:''},
   opts:[{en:'rocks',vi:'đá (rocks)'},{en:'stones',vi:'đá nhỏ (stones)'},{en:'machines',vi:'máy móc (machines)'}], a:0,
@@ -687,18 +763,32 @@ const EX3=[
 ];
 const EX_TOTAL=EX1JOBS.length+EX2.length+EX3.length; /* 5 + 3 + 5 = 13 */
 let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null;
+/* Mechanics v2: submit-mode exercise state — the learner's current (unsubmitted)
+   answers, the best SUBMITTED score, and whether the panel shows a submitted
+   result. EX1DONE/EX2DONE/EX3DONE now hold the correct sets of the latest
+   submission only (empty until the first Submit). */
+let exBest=0, exRevealed=false;
+let EX1ANS={}, EX2ANS={}, EX3ANS={};   /* job id -> rock key · sentence id -> chosen option index */
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci2-1-4';
 let doneSteps=new Set(), curStep=0;
 let EV={uses:[], props:[], scratch:[], pred:{}, tested:[], digs:[], swirled:false};
 let qBest=0;
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0,0];                   /* persisted per-step mistake counters (anti-guess) */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+const ACK_MIN_S=30; /* minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.ev&&typeof s.ev==='object'){
       if(Array.isArray(s.ev.uses)) EV.uses=s.ev.uses;
       if(Array.isArray(s.ev.props)) EV.props=s.ev.props;
@@ -709,22 +799,104 @@ try{
       EV.swirled=!!s.ev.swirled;
     }
     if(typeof s.qBest==='number') qBest=s.qBest;
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
     if(s.ex&&typeof s.ex==='object'){
       if(Array.isArray(s.ex.x1)) EX1DONE=new Set(s.ex.x1);
       if(Array.isArray(s.ex.x2)) EX2DONE=new Set(s.ex.x2);
       if(Array.isArray(s.ex.x3)) EX3DONE=new Set(s.ex.x3);
     }
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ const j=EX1JOBS.find(x=>x.id===id); if(j&&ROCKS[s.exAns.a1[id]]) EX1ANS[id]=s.exAns.a1[id]; });
+      if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ const sn=EX2.find(x=>x.id===id), v=s.exAns.a2[id]; if(sn&&Number.isInteger(v)&&v>=0&&v<sn.opts.length) EX2ANS[id]=v; });
+      if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ const sn=EX3.find(x=>x.id===id), v=s.exAns.a3[id]; if(sn&&Number.isInteger(v)&&v>=0&&v<sn.opts.length) EX3ANS[id]=v; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1DONE.forEach(id=>{ const j=EX1JOBS.find(x=>x.id===id); if(j) EX1ANS[id]=j.rock; });
+      EX2.forEach(sn=>{ if(EX2DONE.has(sn.id)) EX2ANS[sn.id]=sn.a; });
+      EX3.forEach(sn=>{ if(EX3DONE.has(sn.id)) EX3ANS[sn.id]=sn.a; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+    }
   }
 }catch(e){}
 try{ const sm=JSON.parse(localStorage.getItem('camb:sum:sci2-1-4')||'null'); if(sm&&typeof sm.q==='number'&&sm.q>qBest) qBest=sm.q; }catch(e){}
+lang=effLang();
 function exDoneCount(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size; }
+function exScoreNow(){ return exBest; }   /* Mechanics v2: the summary e is the best SUBMITTED exercise score */
 function saveSum(){
-  try{ localStorage.setItem('camb:sum:sci2-1-4', JSON.stringify({s:doneSteps.size, st:STEPS.length, e:exDoneCount(), et:EX_TOTAL, q:qBest, qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem('camb:sum:sci2-1-4', JSON.stringify({s:acked, st:STEPS.length, e:exScoreNow(), et:EX_TOTAL, q:qBest, qt:QUIZ.length})); }catch(e){}
 }
 function save(){
-  try{ localStorage.setItem(KEY, JSON.stringify({done:[...doneSteps], cur:curStep, lang:lang, ev:EV, qBest:qBest,
+  try{ localStorage.setItem(KEY, JSON.stringify({done:[...doneSteps], cur:curStep, lang:prefLang, ev:EV, qBest:qBest, ack:[...ackSet], mist:mist, exBest:exBest, exSub:exRevealed,
+    exAns:{a1:EX1ANS, a2:EX2ANS, a3:EX3ANS},
     ex:{x1:[...EX1DONE], x2:[...EX2DONE], x3:[...EX3DONE]}})); }catch(e){}
   saveSum();
+}
+
+/* ================= Mechanics v2: gates, notice, anti-guess ================= */
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function resetStepEvidence(){
+  /* anti-guess: wipe ONLY the current step's collected evidence (via the same
+     resetStep body the Reset button uses), then flag the re-lock so the read
+     gate shows "Read the instruction again" and a fresh countdown. */
+  resetStep();
+  justReset=true; mist[curStep]=0;
+  save(); renderStep();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||checkStep(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else save();
 }
 
 /* === WORLD BUILD (pure) === */
@@ -758,10 +930,12 @@ function box(w,h,d,col,x,y,z,parent){
   if(parent) parent.add(m);
   return m;
 }
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
 function proxy(w,h,d,x,y,z,parent){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
     new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide}));
   m.position.set(x,y,z); parent.add(m);
+  m.userData.isProxy=true; hitProxies.push(m);
   return m;
 }
 const ROCKPOS={ granite:[-2.75,-1.05], marble:[-1.65,-0.28], limestone:[-0.55,-1.05], chalk:[0.55,-0.28], slate:[1.65,-1.05], coal:[2.75,-0.28] };
@@ -959,6 +1133,7 @@ function init3D(){
     requestAnimationFrame(loop);
     try{
       const dt=0.016;
+      tickReadGate(); tickAckGate();
       anims=anims.filter(a=>{ a.t+=dt; const k=Math.min(1, a.t/a.dur); a.fn(k); if(k>=1&&a.onDone) a.onDone(); return k<1; });
       for(const key of ['th','ph','r','tx','ty','tz']) ORB[key]+=(GOAL[key]-ORB[key])*0.09;
       camera.position.set(
@@ -973,15 +1148,15 @@ function init3D(){
   }
   loop();
 }
+/* Mechanics v2: raycasts test ONLY the invisible hit proxies, filtered by
+   ancestor visibility (isShown). */
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 function tapAt(cx, cy){
   const rect=renderer.domElement.getBoundingClientRect();
   const nx=((cx-rect.left)/rect.width)*2-1, ny=-((cy-rect.top)/rect.height)*2+1;
   const rc=new THREE.Raycaster(); rc.setFromCamera({x:nx, y:ny}, camera);
-  const hits=rc.intersectObjects(W.root.children, true);
-  for(const h of hits){
-    let o=h.object;
-    if(o.userData && o.userData.objId){ handleTap(o.userData.objId); return; }
-  }
+  const hits=rc.intersectObjects(hitProxies.filter(isShownObj), false);
+  if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
 }
 
 /* ================= evidence + step checks ================= */
@@ -1021,19 +1196,34 @@ function refreshDone(){
 
 /* ================= tap handling ================= */
 function hintShake(grp){ if(grp){ grp.classList&&0; bounce(grp, 0.05); } }
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['use_bridge','use_wall','use_roof','use_road'],        /* step 1: rock uses */
+  ['rock_granite','rock_slate','rock_chalk','rock_coal'], /* step 2: the rock matching the property prompt */
+  ['rock_limestone','rock_chalk'],                        /* step 3: scratch test */
+  [],                                                     /* step 4: prediction buttons — no scene targets */
+  ['rock_chalk','rock_slate'],                            /* step 5: drip test */
+  ['dig_quarry','dig_mine','dig_river'],                  /* step 6: digging places */
+  ['bowl']                                                /* step 7: sorting bowl */
+];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: the scene is inert until Start */
   const grp=ID2GRP[id];
+  const wrongTap=()=>{ if(grp) bounce(grp,0.05); addMistake(); };
   if(curStep===0){
     const u=USES.find(x=>x.id===id);
     if(u){ if(!EV.uses.includes(id)){ EV.uses.push(id); bounce(grp,0.14); flashGreen(grp); } }
-    else if(grp) bounce(grp,0.05);
+    else wrongTap();
   }
   else if(curStep===1){
     if(id.indexOf('rock_')===0){
       const rock=id.slice(5), exp=PROPS[EV.props.length];
       if(exp && rock===exp.rock){ EV.props.push(exp.key); bounce(grp,0.16); flashGreen(grp); }
-      else bounce(grp,0.05);
+      else wrongTap();
     }
+    else wrongTap();
   }
   else if(curStep===2){
     if(id==='rock_limestone'||id==='rock_chalk'){
@@ -1042,24 +1232,24 @@ function handleTap(id){
         EV.scratch.push(rock);
         scratchAnim(rock);
       }
-    } else if(grp) bounce(grp,0.05);
+    } else wrongTap();
   }
   else if(curStep===4){
     if(id==='rock_chalk'||id==='rock_slate'){
       const rock=id.slice(5);
       if(!EV.tested.includes(rock)){ EV.tested.push(rock); dripAnim(rock); }
-    } else if(grp) bounce(grp,0.05);
+    } else wrongTap();
   }
   else if(curStep===5){
     const d=DIGS.find(x=>x.id===id);
     if(d){ if(!EV.digs.includes(id)){ EV.digs.push(id); if(W.digCards[id]) W.digCards[id].visible=true; bounce(grp,0.13); flashGreen(grp); } }
-    else if(grp) bounce(grp,0.05);
+    else wrongTap();
   }
   else if(curStep===6){
-    if(id==='bowl' && !EV.swirled){ EV.swirled=true; swirlAnim(); }
-    else if(grp) bounce(grp,0.05);
+    if(id==='bowl'){ if(!EV.swirled){ EV.swirled=true; swirlAnim(); } }
+    else wrongTap();
   }
-  else { if(grp) bounce(grp,0.06); }
+  else { wrongTap(); }
   refreshDone(); save(); renderStep(); renderConsole();
 }
 function scratchAnim(rock){
@@ -1112,6 +1302,7 @@ function swirlAnim(){
 /* ================= step engine ================= */
 function goStep(i){
   curStep=Math.max(0, Math.min(STEPS.length-1, i));
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   focusCam(CAMS[curStep]);
   save(); renderStepBar(); renderStep(); renderConsole();
 }
@@ -1159,7 +1350,7 @@ function renderStep(){
   $('scSeeLbl').textContent=L(STR.seeLbl);
   $('scSee').innerHTML=biInl(s.see);
   $('stepExtra').innerHTML=stepExtraHTML();
-  document.querySelectorAll('[data-pred]').forEach(b=>{ b.onclick=()=>{ const [rk,v]=b.getAttribute('data-pred').split(':'); EV.pred[rk]=v; refreshDone(); save(); renderStep(); renderConsole(); }; });
+  document.querySelectorAll('[data-pred]').forEach(b=>{ b.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } const [rk,v]=b.getAttribute('data-pred').split(':'); EV.pred[rk]=v; refreshDone(); save(); renderStep(); renderConsole(); }; });
   $('evid').innerHTML=esc(evidText(curStep));
   if(done){
     $('conclLock').style.display='none'; $('conclBox').classList.add('open');
@@ -1175,6 +1366,13 @@ function renderStep(){
   $('btnResetStep').textContent=L(STR.resetBtn);
   $('btnPrev').textContent=L(STR.prevBtn);
   $('btnNext').textContent=curStep===STEPS.length-1? L(STR.nextQuiz) : L(STR.nextBtn);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  paintAckGate();
+  const acked=ackSet.has(curStep);
+  $('btnNext').disabled=!(done&&acked);
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   renderStepBar();
 }
 function resetStep(){
@@ -1187,6 +1385,7 @@ function resetStep(){
   if(i===5){ EV.digs=[]; if(W) DIGS.forEach(d=>{ if(W.digCards[d.id]) W.digCards[d.id].visible=false; }); }
   if(i===6){ EV.swirled=false; if(W) W.bowlStones.forEach(s=>{ s.m.position.x=s.ix; s.m.position.z=s.iz; }); }
   doneSteps.delete(i);
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: a reset re-locks the instruction */
   save(); renderStep(); renderConsole();
 }
 function demoStep(){
@@ -1225,29 +1424,58 @@ function renderConsole(){
     [STR.foundDig, EV.digs.length>=3], [STR.foundSwirl, !!EV.swirled]
   ];
   $('foundList').innerHTML=chk.map(c=>'<div class="foundrow'+(c[1]?' got':'')+'"><span class="box">'+(c[1]?'☑':'☐')+'</span><span>'+esc(L(c[0]))+'</span></div>').join('');
-  $('kwRow').innerHTML=KEYWORDS.map(k=>'<span class="kwchip">'+esc(k.en)+' · '+esc(k.vi)+'</span>').join('');
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';   /* Mechanics v2: glossary stays available in English while VI is locked */
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
   const rm=$('roadmap');
   if(rm) rm.innerHTML=STEPS.map((s,i)=>'<li><b>'+esc(L(s.tag))+'</b> — '+esc(L(s.act))+'</li>').join('');
 }
 
 /* ================= workbook exercises ================= */
-const EX2_ORDERS=EX2.map(s=>fyIdx(s.opts.length));
-const EX3_ORDERS=EX3.map(s=>fyIdx(s.opts.length));
+let EX2_ORDERS=EX2.map(s=>fyIdx(s.opts.length));
+let EX3_ORDERS=EX3.map(s=>fyIdx(s.opts.length));
+/* ================= exercises (Mechanics v2: submit-mode) =================
+   Answers are recorded WITHOUT any right/wrong feedback and can be changed
+   freely. One Submit scores everything at once, then reveals the correct
+   answers and explanations. The summary `e` value is the best SUBMITTED
+   score (EX1DONE/EX2DONE/EX3DONE hold the correct sets of the latest
+   submission — empty until the first Submit). */
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
 function renderEx(){
   $('exTitle').innerHTML=bi(STR.exTitle);
   $('exIntro').innerHTML=biInl(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  $('exScoreLine').textContent='⭐ '+exDoneCount()+' / '+EX_TOTAL+(exDoneCount()>=EX_TOTAL? ' — '+L(STR.exGreat) : '');
-  /* --- Ex1: match job card -> rock chip --- */
-  $('ex1T').innerHTML=biInl(STR.ex1T)+' <span class="exstatus">'+(EX1DONE.size>=EX1JOBS.length? L(STR.exDoneTag):L(STR.exTodoTag))+'</span>';
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    $('exScoreLine').textContent='⭐ '+exDoneCount()+' / '+EX_TOTAL+(exDoneCount()>=EX_TOTAL? ' — '+L(STR.exGreat) : '');
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* --- Ex1: match job card -> rock chip (neutral until Submit) --- */
+  $('ex1T').innerHTML=biInl(STR.ex1T)+' <span class="exstatus">'+(exRevealed&&EX1DONE.size>=EX1JOBS.length? L(STR.exDoneTag):L(STR.exTodoTag))+'</span>';
   $('ex1Inst').innerHTML=biInl(STR.ex1Inst);
-  $('exSec1').classList.toggle('done', EX1DONE.size>=EX1JOBS.length);
+  $('exSec1').classList.toggle('done', exRevealed&&EX1DONE.size>=EX1JOBS.length);
   const g1=$('ex1Grid'); g1.innerHTML='';
   EX1_ORDER.forEach(j=>{
-    const d=document.createElement('button'); d.className='excard'+(EX1DONE.has(j.id)?' right':'')+(ex1sel===j.id?' sel':'');
+    const ans=EX1ANS[j.id];
+    const d=document.createElement('button');
+    let cls='excard'+(ex1sel===j.id?' sel':'');
+    if(exRevealed){
+      if(EX1DONE.has(j.id)) cls='excard right';
+      else if(ans) cls='excard wrongsel';
+      else cls='excard missed';
+    }else if(ans) cls+=' placed';
+    d.className=cls;
     d.style.textAlign='left'; d.style.fontSize='14.5px';
-    d.innerHTML='<span class="em" style="font-size:26px">'+({chalk:'✏️',marble:'🏛️',coal:'🔥',slate:'🏠',granite:'🌉'})[j.rock]+'</span>'+esc(L(j));
-    d.onclick=()=>{ if(EX1DONE.has(j.id)) return; ex1sel=j.id; renderEx(); };
+    d.innerHTML='<span class="em" style="font-size:26px">'+({chalk:'✏️',marble:'🏛️',coal:'🔥',slate:'🏠',granite:'🌉'})[j.rock]+'</span>'+esc(L(j))
+      +(ans? '<span class="anstag">→ '+esc(L(ROCKS[ans]))+'</span>' : '')
+      +(exRevealed&&!EX1DONE.has(j.id)? '<span class="anstag">✓ '+esc(L(ROCKS[j.rock]))+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex1sel=j.id; renderEx(); };
     g1.appendChild(d);
   });
   let chipRow=$('ex1Chips');
@@ -1256,98 +1484,142 @@ function renderEx(){
   fyShuffle(Object.keys(ROCKS)).forEach(rk=>{
     const c=document.createElement('button'); c.className='wordopt'; c.textContent=L(ROCKS[rk]);
     c.onclick=()=>{
+      if(exRevealed) return;
       if(!ex1sel){ $('ex1Hint').textContent=L({en:'First tap a job card!',vi:'Hãy chạm vào một thẻ công dụng trước!'}); return; }
-      const job=EX1JOBS.find(j=>j.id===ex1sel);
-      if(job.rock===rk){ EX1DONE.add(job.id); ex1sel=null; $('ex1Hint').textContent=''; }
-      else $('ex1Hint').textContent=L({en:'Not that rock — read the job again!',vi:'Không phải viên đá đó — đọc lại công dụng nhé!'});
+      EX1ANS[ex1sel]=rk; ex1sel=null; $('ex1Hint').textContent='';
       save(); renderEx();
     };
     chipRow.appendChild(c);
   });
-  /* --- Ex2: finish the sentence (word tiles) --- */
-  $('ex2T').innerHTML=biInl(STR.ex2T)+' <span class="exstatus">'+(EX2DONE.size>=EX2.length? L(STR.exDoneTag):L(STR.exTodoTag))+'</span>';
+  /* --- Ex2: finish the sentence (word tiles; neutral until Submit) --- */
+  $('ex2T').innerHTML=biInl(STR.ex2T)+' <span class="exstatus">'+(exRevealed&&EX2DONE.size>=EX2.length? L(STR.exDoneTag):L(STR.exTodoTag))+'</span>';
   $('ex2Inst').innerHTML=biInl(STR.ex2Inst);
-  $('exSec2').classList.toggle('done', EX2DONE.size>=EX2.length);
+  $('exSec2').classList.toggle('done', exRevealed&&EX2DONE.size>=EX2.length);
   const br=document.querySelector('#exSec2 .binrow'); if(br) br.style.display='none';
   const g2=$('ex2Grid'); g2.innerHTML=''; g2.style.display='block';
   EX2.forEach((s,si)=>{
     const row=document.createElement('div'); row.className='exsent';
+    const chosen=EX2ANS[s.id];
     let h=esc(L(s.pre))+' ';
-    if(EX2DONE.has(s.id)) h+='<span class="wordopt crossed">'+esc(L(s.opts[s.a]))+'</span> '+esc(L(s.post));
-    else h+=EX2_ORDERS[si].map(oi=>'<button class="wordopt" data-ex2="'+si+':'+oi+'">'+esc(L(s.opts[oi]))+'</button>').join(' ')+' '+esc(L(s.post));
-    if(EX2DONE.has(s.id)) h+='<div class="exexpl">'+biInl(s.e)+'</div>';
+    h+=EX2_ORDERS[si].map(oi=>{
+      let cls='wordopt';
+      if(chosen===oi) cls+= exRevealed? (oi===s.a?' crossed':' wrongsel') : ' sel';
+      if(exRevealed&&oi===s.a) cls+=' rightmark';
+      return '<button class="'+cls+'" data-ex2="'+si+':'+oi+'">'+esc(L(s.opts[oi]))+'</button>';
+    }).join(' ')+' '+esc(L(s.post));
+    if(exRevealed) h+='<div class="exexpl">'+(EX2DONE.has(s.id)?'✓ ':'')+biInl(s.e)+'</div>';
     row.innerHTML=h; g2.appendChild(row);
   });
   g2.querySelectorAll('[data-ex2]').forEach(b=>{ b.onclick=()=>{
+    if(exRevealed) return;
     const [si,oi]=b.getAttribute('data-ex2').split(':').map(Number);
-    if(oi===EX2[si].a){ EX2DONE.add(EX2[si].id); } else { b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+    EX2ANS[EX2[si].id]=oi;
     save(); renderEx();
   }; });
-  /* --- Ex3: habitat sentences --- */
-  $('ex3T').innerHTML=biInl(STR.ex3T)+' <span class="exstatus">'+(EX3DONE.size>=EX3.length? L(STR.exDoneTag):L(STR.exTodoTag))+'</span>';
+  /* --- Ex3: habitat sentences (neutral until Submit) --- */
+  $('ex3T').innerHTML=biInl(STR.ex3T)+' <span class="exstatus">'+(exRevealed&&EX3DONE.size>=EX3.length? L(STR.exDoneTag):L(STR.exTodoTag))+'</span>';
   $('ex3Inst').innerHTML=biInl(STR.ex3Inst);
-  $('exSec3').classList.toggle('done', EX3DONE.size>=EX3.length);
+  $('exSec3').classList.toggle('done', exRevealed&&EX3DONE.size>=EX3.length);
   const g3=$('ex3List'); g3.innerHTML='';
   EX3.forEach((s,si)=>{
     const row=document.createElement('div'); row.className='exsent';
+    const chosen=EX3ANS[s.id];
     let h=esc(L(s.pre))+' ';
-    if(EX3DONE.has(s.id)) h+='<span class="wordopt crossed">'+esc(L(s.opts[s.a]))+'</span>';
-    else h+=EX3_ORDERS[si].map(oi=>'<button class="wordopt" data-ex3="'+si+':'+oi+'">'+esc(L(s.opts[oi]))+'</button>').join(' ');
-    if(EX3DONE.has(s.id)) h+='<div class="exexpl">'+biInl(s.e)+'</div>';
+    h+=EX3_ORDERS[si].map(oi=>{
+      let cls='wordopt';
+      if(chosen===oi) cls+= exRevealed? (oi===s.a?' crossed':' wrongsel') : ' sel';
+      if(exRevealed&&oi===s.a) cls+=' rightmark';
+      return '<button class="'+cls+'" data-ex3="'+si+':'+oi+'">'+esc(L(s.opts[oi]))+'</button>';
+    }).join(' ');
+    if(exRevealed) h+='<div class="exexpl">'+(EX3DONE.has(s.id)?'✓ ':'')+biInl(s.e)+'</div>';
     row.innerHTML=h; g3.appendChild(row);
   });
   g3.querySelectorAll('[data-ex3]').forEach(b=>{ b.onclick=()=>{
+    if(exRevealed) return;
     const [si,oi]=b.getAttribute('data-ex3').split(':').map(Number);
-    if(oi===EX3[si].a){ EX3DONE.add(EX3[si].id); } else { b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+    EX3ANS[EX3[si].id]=oi;
     save(); renderEx();
   }; });
 }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1JOBS.filter(j=>EX1ANS[j.id]===j.rock).map(j=>j.id));
+  EX2DONE=new Set(EX2.filter(s=>EX2ANS[s.id]===s.a).map(s=>s.id));
+  EX3DONE=new Set(EX3.filter(s=>EX3ANS[s.id]===s.a).map(s=>s.id));
+  const total=exDoneCount();
+  if(total>exBest) exBest=total;
+  exRevealed=true; ex1sel=null;
+  save(); renderEx();
+};
+$('exRetry').onclick=()=>{
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1JOBS,j=>j.rock,2);
+  EX2_ORDERS=EX2.map(s=>fyIdx(s.opts.length));
+  EX3_ORDERS=EX3.map(s=>fyIdx(s.opts.length));
+  exRevealed=false;
+  save(); renderEx();
+};
 
-/* ================= quiz ================= */
-let quiz=null;
+/* ================= quiz (Mechanics v2: submit-mode) =================
+   NO feedback while answering — answers can be changed freely; one Submit at
+   the end reveals the score, the correct answers and the explanations.
+   qBest only ever moves on a submitted result. */
+let qi=0, qState=[], qFinished=false;
+function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
-  rollQuizOrder();
-  quiz={idx:0, score:0, answered:false, finished:false};
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
+  qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
+  rollQuizOrder();
   renderQ();
 }
 function renderQ(){
-  const q=QUIZ[quiz.idx];
+  const q=QUIZ[qi], st=qState[qi];
   $('qTitle').innerHTML=bi(STR.quizTitle);
   $('qClose').textContent=L(STR.qClose);
-  $('qProg').textContent=(quiz.idx+1)+' / '+QUIZ.length;
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  $('qProg').textContent=(qi+1)+' / '+QUIZ.length;
   $('qText').innerHTML=bi(q.q);
+  $('qScore').textContent='';
+  $('qNext').textContent=qi<QUIZ.length-1? L(STR.qNext) : L(STR.qSubmit);
   const box=$('qOpts'); box.innerHTML='';
-  qOrder[quiz.idx].forEach(oi=>{
-    const b=document.createElement('button'); b.className='qopt'; b.innerHTML=biInl(q.o[oi]);
-    b.onclick=()=>{
-      if(quiz.answered) return; quiz.answered=true;
-      const right=oi===q.a;
-      if(right) quiz.score++;
-      b.classList.add(right?'right':'wrong');
-      if(!right) [...box.children].forEach((c,ci)=>{ if(qOrder[quiz.idx][ci]===q.a) c.classList.add('right'); });
-      const ex=$('qExpl'); ex.classList.add('open');
-      ex.innerHTML=(right? esc(L(STR.qRight)) : esc(L(STR.qWrong)))+biInl(q.e);
-      $('qNext').textContent=quiz.idx===QUIZ.length-1? L(STR.qResult) : L(STR.qNext);
-    };
+  (qOrder[qi]||q.o.map((_,i)=>i)).forEach((oi,di)=>{
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
+    b.innerHTML=biInl(q.o[oi]);
+    b.onclick=()=>{ qState[qi].chosen=di; renderQ(); };
     box.appendChild(b);
   });
   $('qExpl').classList.remove('open'); $('qExpl').innerHTML='';
-  $('qNext').textContent=L(STR.qNext);
-  $('qScore').textContent='';
 }
+function showQuizResults(){
+  qFinished=true;
+  const s=qScoreNow();
+  if(s>qBest){ qBest=s; }
+  save();
+  $('qProg').textContent='';
+  $('qText').innerHTML=bi(STR.qDone);
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').innerHTML='';
+  $('qScore').textContent='⭐ '+s+' / '+QUIZ.length+(s===QUIZ.length?' — '+L(STR.exGreat):'');
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let h='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    h+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) h+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    h+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=h; box.appendChild(d);
+  });
+  $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; renderQ(); } };
 $('qNext').onclick=()=>{
-  if(!quiz) return;
-  if(!quiz.answered && !quiz.finished) return;
-  if(quiz.idx<QUIZ.length-1){ quiz.idx++; quiz.answered=false; renderQ(); }
-  else if(!quiz.finished){
-    quiz.finished=true;
-    if(quiz.score>qBest){ qBest=quiz.score; save(); }
-    $('qText').innerHTML=esc(L(STR.qDone));
-    $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
-    $('qScore').textContent='⭐ '+quiz.score+' / '+QUIZ.length;
-    $('qNext').textContent=L(STR.qAgain);
-  } else openQuiz();
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); renderQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; renderQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=()=>$('quizModal').classList.remove('open');
 
@@ -1357,6 +1629,7 @@ let bot=null;
 function loadWallet(){ try{ const w=JSON.parse(localStorage.getItem('camb:wallet')); if(w&&typeof w.stars==='number'&&w.botWins&&w.bossWins) return w; }catch(e){} return {stars:0, botWins:{}, bossWins:{}}; }
 function saveWallet(w){ try{ localStorage.setItem('camb:wallet', JSON.stringify(w)); }catch(e){} }
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   bot={idx:0, me:0, bo:0, answered:false, finished:false, order:QUIZ.map(q=>fyIdx(q.o.length))};
   $('botModal').classList.add('open');
   renderB();
@@ -1419,7 +1692,7 @@ function renderTop(){
   $('btnBotTop').textContent=L(STR.botBtn);
   $('btnFull').textContent=L(STR.fullBtn);
 }
-$('btnExTop').onclick=()=>{ renderEx(); $('exModal').classList.add('open'); };
+$('btnExTop').onclick=()=>{ if(!allStepsAcked()){ showNotice(STR.finishSteps); return; } renderEx(); $('exModal').classList.add('open'); };
 $('exClose').onclick=()=>$('exModal').classList.remove('open');
 $('btnQuizTop').onclick=openQuiz;
 $('btnBotTop').onclick=openBot;
@@ -1427,20 +1700,33 @@ $('btnFull').onclick=()=>{ if(document.fullscreenElement) document.exitFullscree
 $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 $('btnDemo').onclick=demoStep;
 $('btnResetStep').onclick=resetStep;
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderStep(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); save(); renderStep(); };
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep===STEPS.length-1) openQuiz(); else goStep(curStep+1); };
-document.querySelectorAll('#langSeg button').forEach(b=>{
-  b.onclick=()=>{
-    lang=b.dataset.lang; save(); applyStatic(); renderTop(); renderStep(); renderConsole(); renderEx();
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep===STEPS.length-1) openQuiz(); else goStep(curStep+1); };
+function setLang(m){
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; save();
+  applyStatic(); renderTop(); renderStep(); renderConsole(); renderEx();
+  if(W) W.labels.forEach(sp=>drawLabel(sp, lang==='vi'? sp.userData.vi : sp.userData.en));
+  if($('quizModal').classList.contains('open')&&!qFinished) renderQ();
+  if($('botModal').classList.contains('open')&&bot&&!bot.finished) renderB();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderTop(); renderStep(); renderConsole(); renderEx();
     if(W) W.labels.forEach(sp=>drawLabel(sp, lang==='vi'? sp.userData.vi : sp.userData.en));
-    if($('quizModal').classList.contains('open')&&quiz&&!quiz.finished) renderQ();
+    if($('quizModal').classList.contains('open')&&!qFinished) renderQ();
     if($('botModal').classList.contains('open')&&bot&&!bot.finished) renderB();
-  };
-});
+  }else renderLangSeg();
+}
+document.querySelectorAll('#langSeg button').forEach(b=>{ b.onclick=()=>setLang(b.dataset.lang); });
 document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){ $('quizModal').classList.remove('open'); $('botModal').classList.remove('open'); $('exModal').classList.remove('open'); return; }
   if($('quizModal').classList.contains('open')||$('botModal').classList.contains('open')||$('exModal').classList.contains('open')) return;
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='7') goStep(Number(e.key)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1468,8 +1754,14 @@ renderTop();
 init3D();
 applyRestoredVisuals();
 focusCam(CAMS[curStep]);
+armReadGate();   /* Mechanics v2: the starting step begins locked behind the read gate */
 renderStepBar(); renderStep(); renderConsole(); renderEx();
 save();
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 </script>
 
 <!-- CAMB-BRIDGE v1 --><script>
