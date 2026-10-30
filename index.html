@@ -3,280 +3,401 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cambridge · B-Media — Science & Maths Adventure / Bản đồ học tập</title>
+<title>Cambridge — Science & Maths</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fdf3f7; color: #26313f; min-height: 100vh; }
-  body.subj-maths { background: #fdf3f7; }
-  body.subj-science { background: #eefaf3; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 18px; background: #fff; box-shadow: 0 1px 6px rgba(20,40,80,.09); position: sticky; top: 0; z-index: 20; }
-  .brand { font-size: 21px; font-weight: 800; white-space: nowrap; }
-  .brand span { color: #e84393; }
-  body.subj-science .brand span { color: #0aa06e; }
-  .langbar { display: flex; border: 2px solid #e84393; border-radius: 999px; overflow: hidden; flex: none; }
-  body.subj-science .langbar { border-color: #0aa06e; }
-  .langbar button { border: 0; background: #fff; color: #e84393; font-weight: 700; font-size: 13px; padding: 6px 12px; cursor: pointer; }
-  body.subj-science .langbar button { color: #0aa06e; }
-  .langbar button.on { background: #e84393; color: #fff; }
-  body.subj-science .langbar button.on { background: #0aa06e; }
-  .vi { display: block; font-size: .76em; color: #8494a9; font-weight: 600; margin-top: 1px; }
-  body.lang-en .vi { display: none; }
-  body.lang-vi .en-main { display: none; }
-  body.lang-vi .vi { font-size: 1em; color: inherit; font-weight: inherit; margin-top: 0; }
-  /* Tabs */
-  .tabs { display: flex; gap: 12px; max-width: 560px; margin: 16px auto 0; padding: 0 14px; }
-  .tab { flex: 1; border: 0; cursor: pointer; border-radius: 18px; padding: 13px 10px; font-size: 19px; font-weight: 800; color: #fff; background: #c9d4e2; box-shadow: 0 3px 0 rgba(0,0,0,.12); transition: transform .1s; }
-  .tab small { display: block; font-size: 12px; font-weight: 600; opacity: .9; }
-  .tab:active { transform: scale(.98); }
-  .tab.on[data-subj="science"] { background: linear-gradient(135deg, #0aa06e, #0d9488); }
-  .tab.on[data-subj="maths"] { background: linear-gradient(135deg, #e84393, #d6336c); }
-  /* Book chips */
-  .books { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 620px; margin: 14px auto 2px; padding: 0 12px; }
-  .book { border: 2px solid #dbe4ee; background: #fff; color: #41546b; border-radius: 999px; padding: 7px 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
-  .book.on { border-color: #e84393; background: #e84393; color: #fff; }
-  body.subj-science .book.on { border-color: #0aa06e; background: #0aa06e; }
-  .book .dot { font-size: 10px; vertical-align: super; }
-  .starbar { text-align: center; font-size: 16px; font-weight: 800; color: #7a5b00; margin: 10px 0 0; }
-  .starbar .n { color: #e8a100; }
-  /* Map */
-  .mapwrap { max-width: 520px; margin: 6px auto 70px; padding: 8px 10px 30px; position: relative; }
-  .map { position: relative; }
-  .map svg.wire { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  .map svg.wire path { fill: none; stroke: #fff; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 1 18; opacity: .95; filter: drop-shadow(0 1px 1px rgba(0,0,0,.06)); }
-  .urow { height: 46px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
-  .unit-ribbon { background: linear-gradient(135deg, #6a3df0, #4f46e5); color: #fff; font-weight: 800; font-size: 15px; border-radius: 999px; padding: 7px 18px; box-shadow: 0 3px 8px rgba(60,40,160,.25); text-align: center; }
-  body.subj-science .unit-ribbon { background: linear-gradient(135deg, #0aa06e, #067a54); }
-  .nrow { height: 124px; position: relative; z-index: 2; }
-  .node { position: absolute; top: 8px; transform: translateX(-50%); width: 74px; text-align: center; cursor: pointer; background: none; border: 0; font-family: inherit; }
-  .ball { width: 62px; height: 62px; margin: 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #fff; border: 4px solid #fff; box-shadow: 0 5px 0 rgba(0,0,0,.15), 0 8px 16px rgba(0,0,0,.12); position: relative; }
-  .node .stars { height: 17px; font-size: 14px; letter-spacing: 2px; color: #f6b73c; text-shadow: 0 1px 0 #fff; margin-bottom: 1px; }
-  .node .stars .off { color: #d7dee8; }
-  .node .lab { margin-top: 4px; font-size: 13.5px; font-weight: 700; line-height: 1.15; color: #33475e; }
-  .node .lab .code { color: #8494a9; font-weight: 800; }
-  .st-done .ball { background: radial-gradient(circle at 32% 30%, #ffe082, #f6b73c); color: #7a4d00; }
-  .st-open .ball { background: radial-gradient(circle at 32% 30%, #7ee2b8, #0aa06e); animation: pulse 1.6s infinite; }
-  body.subj-maths .st-open .ball { background: radial-gradient(circle at 32% 30%, #ff9ecb, #e84393); }
-  .st-prog .ball { background: radial-gradient(circle at 32% 30%, #a5d8ff, #4dabf7); }
-  .st-lock .ball { background: radial-gradient(circle at 32% 30%, #dbe4ee, #aebdd0); color: #8494a9; font-size: 21px; }
-  .st-soon .ball { background: #fff; border: 4px dashed #c3cedd; color: #aebdd0; font-size: 19px; box-shadow: none; }
-  .st-soon { cursor: default; }
-  .st-lock { cursor: not-allowed; }
-  @keyframes pulse { 0% { box-shadow: 0 5px 0 rgba(0,0,0,.15), 0 0 0 0 rgba(10,160,110,.45);} 70% { box-shadow: 0 5px 0 rgba(0,0,0,.15), 0 0 0 15px rgba(10,160,110,0);} 100% { box-shadow: 0 5px 0 rgba(0,0,0,.15), 0 0 0 0 rgba(10,160,110,0);} }
-  .shake { animation: shake .4s; }
-  @keyframes shake { 0%,100%{transform:translateX(-50%);} 25%{transform:translateX(calc(-50% - 6px));} 75%{transform:translateX(calc(-50% + 6px));} }
-  .deco { position: absolute; font-size: 30px; opacity: .8; z-index: 1; pointer-events: none; }
-  .empty { text-align: center; padding: 46px 22px; background: #fff; border-radius: 22px; box-shadow: 0 3px 12px rgba(20,40,80,.08); margin-top: 18px; }
-  .empty .big { font-size: 44px; }
-  .empty h3 { margin: 8px 0 4px; font-size: 19px; }
-  .empty p { color: #8494a9; font-size: 15px; }
-  #toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(80px); background: #26313f; color: #fff; font-size: 15px; font-weight: 700; padding: 11px 18px; border-radius: 999px; box-shadow: 0 8px 22px rgba(0,0,0,.3); transition: transform .25s; z-index: 50; max-width: 92vw; text-align: center; }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-  footer { text-align: center; color: #9aa7b8; font-size: 12.5px; padding: 14px 10px 26px; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family: ui-rounded, "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+         background:#f8fafc; color:#0f172a; min-height:100vh; }
+  .col { max-width:480px; margin:0 auto; padding:16px 14px 40px; display:flex; flex-direction:column; gap:14px; }
+  header.top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  h1 { font-size:24px; font-weight:900; letter-spacing:-.02em; line-height:1.15; }
+  .sub { color:#94a3b8; font-size:13px; font-weight:600; margin-top:2px; }
+  .langbar { display:flex; gap:4px; background:#e2e8f0; border-radius:999px; padding:3px; flex:none; }
+  .langbar button { border:0; background:transparent; font:inherit; font-size:12px; font-weight:800; color:#64748b;
+                    padding:5px 10px; border-radius:999px; cursor:pointer; }
+  .langbar button.on { background:#0f172a; color:#fff; }
+  .subjects { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .subj { border:0; font:inherit; text-align:left; color:#fff; padding:18px; border-radius:18px; cursor:pointer;
+          transition:transform .08s; }
+  .subj:active { transform:scale(.98); }
+  .subj .ic { display:block; font-size:34px; margin-bottom:6px; }
+  .subj .nm { display:block; font-size:19px; font-weight:900; }
+  .subj .ds { display:block; margin-top:2px; font-size:12.5px; font-weight:600; opacity:.85; }
+  .subj.sci { background:#0d9488; box-shadow:0 10px 20px rgba(13,148,136,.30); }
+  .subj.math { background:#4f46e5; box-shadow:0 10px 20px rgba(79,70,229,.30); }
+  .subj.dim { filter:saturate(.25); opacity:.55; box-shadow:none; }
+  .stars { border-radius:18px; padding:16px 18px; color:#fff; display:flex; align-items:center; justify-content:space-between;
+           background:linear-gradient(90deg,#f59e0b,#f97316); box-shadow:0 10px 20px rgba(245,158,11,.25); }
+  .stars .lb { font-size:12px; font-weight:700; opacity:.92; }
+  .stars .vl { font-size:32px; font-weight:900; line-height:1.05; }
+  .stars .br { font-size:11.5px; font-weight:600; opacity:.9; margin-top:2px; }
+  .stars .big { font-size:34px; }
+  .goal { background:#fff; border-radius:18px; padding:14px 16px; display:flex; align-items:center; gap:14px;
+          box-shadow:0 2px 10px rgba(15,23,42,.06); }
+  .ring { position:relative; width:64px; height:64px; flex:none; }
+  .ring svg { transform:rotate(-90deg); }
+  .ring .pc { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; }
+  .goal .gt { font-weight:900; font-size:15.5px; }
+  .goal .gd { color:#64748b; font-size:12.5px; font-weight:600; margin-top:2px; }
+  .books { display:flex; gap:7px; flex-wrap:wrap; }
+  .books button { border:2px solid #e2e8f0; background:#fff; font:inherit; font-size:13.5px; font-weight:800; color:#475569;
+                  padding:7px 13px; border-radius:999px; cursor:pointer; }
+  .books button.on.sci { background:#0d9488; border-color:#0d9488; color:#fff; box-shadow:0 6px 14px rgba(13,148,136,.35); }
+  .books button.on.math { background:#4f46e5; border-color:#4f46e5; color:#fff; box-shadow:0 6px 14px rgba(79,70,229,.35); }
+  .map { border-radius:22px; padding:8px 10px 22px; }
+  .map.sci { background:#ecfdf5; } .map.math { background:#f5f3ff; }
+  .ribbon { display:flex; align-items:center; gap:8px; background:#4f46e5; color:#fff; font-weight:900; font-size:14.5px;
+            border-radius:12px; padding:9px 14px; margin:16px 6px 4px; box-shadow:0 6px 14px rgba(79,70,229,.30); }
+  .ribbon .tr { margin-left:auto; font-size:15px; }
+  .path { position:relative; margin:0 4px; }
+  .path svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .node { position:absolute; transform:translate(-50%,0); width:78px; display:flex; flex-direction:column; align-items:center; gap:3px;
+          background:none; border:0; font:inherit; cursor:pointer; }
+  .bubble { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-size:19px; font-weight:900; color:#fff; border:3px solid #fff; transition:transform .08s; }
+  .node:active .bubble { transform:scale(.94); }
+  .st-done .bubble { background:linear-gradient(180deg,#fbbf24,#f59e0b); box-shadow:0 6px 0 #b45309, 0 12px 18px rgba(245,158,11,.35); }
+  .st-open .bubble { background:linear-gradient(180deg,#4ade80,#22c55e); box-shadow:0 6px 0 #15803d, 0 12px 18px rgba(34,197,94,.35); animation:pulse 1.6s infinite; }
+  .st-prog .bubble { background:linear-gradient(180deg,#60a5fa,#3b82f6); box-shadow:0 6px 0 #1d4ed8, 0 12px 18px rgba(59,130,246,.35); }
+  .st-lock .bubble { background:#cbd5e1; color:#94a3b8; box-shadow:0 6px 0 #94a3b8; }
+  .st-soon .bubble { background:#fff; color:#cbd5e1; border:3px dashed #cbd5e1; box-shadow:none; }
+  @keyframes pulse { 0%,100%{ filter:brightness(1);} 50%{ filter:brightness(1.18);} }
+  .node .lb2 { font-size:11px; font-weight:800; color:#334155; text-align:center; line-height:1.15; max-width:78px; }
+  .node .st3 { font-size:11px; letter-spacing:1px; color:#f59e0b; height:14px; }
+  .node .st3 .off { color:#cbd5e1; }
+  .shake { animation:shk .4s; } @keyframes shk { 0%,100%{transform:translate(-50%,0);} 25%{transform:translate(calc(-50% - 6px),0);} 75%{transform:translate(calc(-50% + 6px),0);} }
+  .bossnode .bubble { width:68px; height:68px; font-size:30px; }
+  .boss-ready .bubble { background:linear-gradient(180deg,#f87171,#dc2626); box-shadow:0 7px 0 #991b1b, 0 14px 22px rgba(220,38,38,.4); animation:pulse 1.6s infinite; }
+  .boss-won .bubble { background:linear-gradient(180deg,#fbbf24,#f59e0b); box-shadow:0 7px 0 #b45309, 0 14px 22px rgba(245,158,11,.4); }
+  .boss-lock .bubble { background:#cbd5e1; box-shadow:0 7px 0 #94a3b8; }
+  .deco { position:absolute; font-size:17px; opacity:.7; pointer-events:none; }
+  .soonbox { text-align:center; padding:36px 16px; color:#64748b; font-weight:700; font-size:15px; }
+  .soonbox .e { font-size:42px; display:block; margin-bottom:8px; }
+  footer { text-align:center; color:#94a3b8; font-size:12px; font-weight:600; line-height:1.5; padding:0 8px; }
+  #toast { position:fixed; left:50%; bottom:26px; transform:translate(-50%,20px); background:#0f172a; color:#fff; font-weight:700;
+           font-size:14px; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:.25s; z-index:60; max-width:92vw; text-align:center; }
+  #toast.show { opacity:1; transform:translate(-50%,0); }
+  .modal { position:fixed; inset:0; background:rgba(15,23,42,.55); display:none; align-items:center; justify-content:center; z-index:50; padding:14px; }
+  .modal.open { display:flex; }
+  .mbox { background:#fff; border-radius:20px; max-width:440px; width:100%; padding:20px; max-height:92vh; overflow:auto; box-shadow:0 24px 60px rgba(0,0,0,.35); }
+  .mbox h2 { font-size:20px; font-weight:900; }
+  .bprog { color:#64748b; font-weight:700; font-size:13px; margin:6px 0 2px; }
+  .hearts { font-size:17px; letter-spacing:2px; }
+  .bq { font-size:17.5px; font-weight:800; line-height:1.4; margin:10px 0 12px; }
+  .bopt { display:block; width:100%; text-align:left; font:inherit; font-size:15.5px; font-weight:700; padding:12px 14px; margin:8px 0;
+          border-radius:14px; border:2px solid #e2e8f0; background:#f8fafc; cursor:pointer; }
+  .bopt.right { border-color:#22c55e; background:#f0fdf4; }
+  .bopt.wrong { border-color:#ef4444; background:#fef2f2; }
+  .bopt:disabled { cursor:default; }
+  .breveal { font-weight:700; font-size:14.5px; background:#fff7ed; border:2px solid #fed7aa; border-radius:12px; padding:10px 12px; margin-top:10px; display:none; }
+  .bbtn { font:inherit; font-weight:900; font-size:15.5px; border:0; border-radius:14px; padding:12px 18px; cursor:pointer; margin-top:14px; }
+  .bbtn.go { background:#dc2626; color:#fff; box-shadow:0 6px 14px rgba(220,38,38,.35); }
+  .bbtn.ghost { background:#f1f5f9; color:#334155; }
+  .bres { text-align:center; padding:8px 0 2px; }
+  .bres .e { font-size:46px; }
+  .bres .t { font-size:20px; font-weight:900; margin:6px 0; }
+  .bres .d { color:#64748b; font-weight:600; font-size:14px; }
 </style>
 </head>
-<body class="lang-bi subj-science">
-<header>
-  <div class="brand">🎓 Cambridge <span>· B-Media</span></div>
-  <div class="langbar" role="group" aria-label="Language">
-    <button data-lang="en">EN</button>
-    <button data-lang="bi" class="on">EN+VI</button>
-    <button data-lang="vi">VI</button>
+<body>
+<div class="col">
+  <header class="top">
+    <div><h1 id="ttl"></h1><div class="sub" id="tsub"></div></div>
+    <div class="langbar" id="langbar">
+      <button data-l="en">EN</button><button data-l="mix">EN+VI</button><button data-l="vi">VI</button>
+    </div>
+  </header>
+  <div class="subjects">
+    <button class="subj sci" id="subjSci"><span class="ic">🔬</span><span class="nm">Science</span><span class="ds" id="sciDs"></span></button>
+    <button class="subj math" id="subjMath"><span class="ic">🧩</span><span class="nm">Maths</span><span class="ds" id="mathDs"></span></button>
   </div>
-</header>
-
-<div class="tabs">
-  <button class="tab on" data-subj="science">🔬 Science<small><span class="en-main">Science</span><span class="vi">Khoa học</span></small></button>
-  <button class="tab" data-subj="maths">➕ Maths<small><span class="en-main">Mathematics</span><span class="vi">Toán học</span></small></button>
+  <div class="stars">
+    <div><div class="lb" id="starLb"></div><div class="vl" id="starVl">⭐ 0</div><div class="br" id="starBr"></div></div>
+    <div class="big">🏆</div>
+  </div>
+  <div class="goal">
+    <div class="ring"><svg width="64" height="64"><circle cx="32" cy="32" r="27" fill="none" stroke="#e2e8f0" stroke-width="8"/><circle id="ringFg" cx="32" cy="32" r="27" fill="none" stroke="#f59e0b" stroke-width="8" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6" style="transition:stroke-dashoffset .6s"/></svg><div class="pc" id="ringPc">0%</div></div>
+    <div><div class="gt" id="goalT"></div><div class="gd" id="goalD"></div></div>
+  </div>
+  <div class="books" id="books"></div>
+  <div class="map sci" id="map"></div>
+  <footer id="foot"></footer>
 </div>
-
-<div class="books" id="books"></div>
-<div class="starbar" id="starbar"></div>
-<div class="mapwrap"><div class="map" id="map"></div></div>
 <div id="toast"></div>
-<footer>Cambridge Primary · Interactive lessons based on the Cambridge Learner's Books · B-Media</footer>
+<div class="modal" id="bossModal"><div class="mbox" id="bossBox"></div></div>
 
 <script>
-var DATA = {
-  science: {
-    1: { units: [
-      { t: 'Unit 1 · Living things', vi: 'Sinh vật sống', lessons: [
-        { c: '1.1', t: 'Animals and plants alive!', vi: 'Động vật và cây cối đều sống', f: 'sci1-1-1-animals-and-plants-alive.html' },
-        { c: '1.2', t: 'Parts of a plant', vi: 'Các bộ phận của cây', f: 'sci1-1-2-parts-of-a-plant.html' },
-        { c: '1.3', t: 'Plants and light', vi: 'Cây và ánh sáng', f: 'sci1-1-3-plants-and-light.html' },
-        { c: '1.4', t: 'Plants need water', vi: 'Cây cần nước', f: 'sci1-1-4-plants-need-water.html' } ] },
-      { t: 'Unit 2 · Sound', vi: 'Âm thanh', lessons: [
-        { c: '2.1', t: 'Sound sources', vi: 'Nguồn âm thanh', f: 'sci1-2-1-sound-sources.html' },
-        { c: '2.2', t: 'Loud and quiet', vi: 'To và nhỏ', f: 'sci1-2-2-loud-and-quiet.html' },
-        { c: '2.3', t: 'Sound moves', vi: 'Âm thanh di chuyển', f: 'sci1-2-3-sound-moves.html' } ] },
-      { t: 'Unit 3 · Materials in my world', vi: 'Vật liệu quanh em', lessons: [
-        { c: '3.1', t: 'Different materials', vi: 'Các vật liệu khác nhau', f: null },
-        { c: '3.2', t: 'Properties of materials', vi: 'Tính chất của vật liệu', f: null },
-        { c: '3.3', t: 'Sorting materials', vi: 'Phân loại vật liệu', f: null },
-        { c: '3.4', t: 'Changing materials', vi: 'Vật liệu thay đổi', f: null } ] },
-      { t: 'Unit 4 · The Earth', vi: 'Trái Đất', lessons: [
-        { c: '4.1', t: 'Planet Earth', vi: 'Hành tinh Trái Đất', f: null },
-        { c: '4.2', t: 'Heat and light from the Sun', vi: 'Nhiệt và ánh sáng từ Mặt Trời', f: null },
-        { c: '4.3', t: 'Rocks', vi: 'Đá', f: null },
-        { c: '4.4', t: 'Soil', vi: 'Đất', f: null } ] },
-      { t: 'Unit 5 · Humans', vi: 'Con người', lessons: [
-        { c: '5.1', t: 'Our bodies', vi: 'Cơ thể chúng ta', f: null },
-        { c: '5.2', t: 'Our amazing senses', vi: 'Các giác quan tuyệt vời', f: null },
-        { c: '5.3', t: 'Similar and different', vi: 'Giống và khác nhau', f: null },
-        { c: '5.4', t: 'Staying alive', vi: 'Sống khỏe', f: null } ] },
-      { t: 'Unit 6 · Forces', vi: 'Lực', lessons: [
-        { c: '6.1', t: 'Moving things', vi: 'Những vật chuyển động', f: null },
-        { c: '6.2', t: 'Push and pull forces', vi: 'Lực đẩy và lực kéo', f: 'sci1-6-2-push-and-pull.html' },
-        { c: '6.3', t: 'Making things move', vi: 'Làm cho vật chuyển động', f: null },
-        { c: '6.4', t: 'Floating and sinking', vi: 'Nổi và chìm', f: null },
-        { c: '6.5', t: 'Magnets can pull', vi: 'Nam châm biết kéo', f: null } ] }
-    ] },
-    2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null
-  },
-  maths: { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null }
+"use strict";
+const STR = {
+  title:{en:"Cambridge Adventure", mix:"Cambridge Adventure", vi:"Hành trình Cambridge"},
+  tsub:{en:"Science & Maths · Books 1–9", mix:"Science & Maths · Books 1–9", vi:"Khoa học & Toán · Quyển 1–9"},
+  sciDs:{en:"24–47 lessons a book", mix:"24–47 lessons a book", vi:"24–47 bài mỗi quyển"},
+  mathDs:{en:"Coming soon", mix:"Coming soon", vi:"Sắp ra mắt"},
+  starLb:{en:"Star balance", mix:"Star balance", vi:"Số dư sao"},
+  starBr:{en:(a,b)=>"Lesson stars "+a+" · Battle stars "+b, mix:(a,b)=>"Lesson stars "+a+" · Battle stars "+b, vi:(a,b)=>"Sao bài học "+a+" · Sao thi đấu "+b},
+  goalT:{en:"Book progress", mix:"Book progress", vi:"Tiến độ quyển sách"},
+  goalD:{en:(a,b)=>a+" of "+b+" lessons finished — keep going!", mix:(a,b)=>a+" of "+b+" lessons finished — keep going!", vi:(a,b)=>"Đã học xong "+a+"/"+b+" bài — cố lên!"},
+  book:{en:n=>"Book "+n, mix:n=>"Book "+n, vi:n=>"Quyển "+n},
+  soon:{en:"Lessons for this book are coming soon!", mix:"Lessons for this book are coming soon!", vi:"Các bài của quyển này sắp ra mắt!"},
+  locked:{en:"Finish the lesson before to open this one!", mix:"Finish the lesson before to open this one!", vi:"Hoàn thành bài trước để mở khóa bài này nhé!"},
+  boss:{en:"BOSS", mix:"BOSS", vi:"BOSS"},
+  bossLocked:{en:"Finish every lesson in this unit to fight the Boss!", mix:"Finish every lesson in this unit to fight the Boss!", vi:"Học xong mọi bài trong unit này để đấu Boss nhé!"},
+  bossTitle:{en:u=>"👹 BOSS — Unit "+u, mix:u=>"👹 BOSS — Unit "+u, vi:u=>"👹 BOSS — Unit "+u},
+  bossIntro:{en:"8 questions. You have 3 hearts ❤️❤️❤️ — a wrong answer loses one! The Boss answers too. Beat the Boss to win +3 ⭐", mix:"8 questions. You have 3 hearts ❤️❤️❤️ — a wrong answer loses one! The Boss answers too. Beat the Boss to win +3 ⭐", vi:"8 câu hỏi. Con có 3 tim ❤️❤️❤️ — trả lời sai mất 1 tim! Boss cũng trả lời từng câu. Thắng Boss để nhận +3 ⭐"},
+  start:{en:"Start the fight!", mix:"Start the fight!", vi:"Bắt đầu đấu!"},
+  qOf:{en:(i,n,me,bo,h)=>"Question "+i+" of "+n+" · You "+me+" — "+bo+" Boss · "+h, mix:(i,n,me,bo,h)=>"Question "+i+" of "+n+" · You "+me+" — "+bo+" Boss · "+h, vi:(i,n,me,bo,h)=>"Câu "+i+" / "+n+" · Con "+me+" — "+bo+" Boss · "+h},
+  bossRight:{en:t=>"👹 The Boss picked “"+t+"” — the Boss is right!", mix:t=>"👹 The Boss picked “"+t+"” — the Boss is right!", vi:t=>"👹 Boss đã chọn “"+t+"” — Boss đúng!"},
+  bossWrong:{en:t=>"👹 The Boss picked “"+t+"” — the Boss is wrong!", mix:t=>"👹 The Boss picked “"+t+"” — the Boss is wrong!", vi:t=>"👹 Boss đã chọn “"+t+"” — Boss sai!"},
+  right:{en:"✅ Well done — that is right!", mix:"✅ Well done — that is right!", vi:"✅ Đúng rồi — giỏi lắm!"},
+  wrong:{en:"❌ Not quite.", mix:"❌ Not quite.", vi:"❌ Chưa đúng."},
+  next:{en:"Next ▶", mix:"Next ▶", vi:"Tiếp ▶"},
+  win:{en:"🏆 YOU BEAT THE BOSS!", mix:"🏆 YOU BEAT THE BOSS!", vi:"🏆 CON ĐÃ THẮNG BOSS!"},
+  winD:{en:a=>a?"You won again — well played!":"You won +3 ⭐ and the unit trophy 🏆", mix:a=>a?"You won again — well played!":"You won +3 ⭐ and the unit trophy 🏆", vi:a=>a?"Con lại thắng rồi — giỏi lắm!":"Con nhận +3 ⭐ và cúp của unit 🏆"},
+  lose:{en:"👹 The Boss wins this time", mix:"👹 The Boss wins this time", vi:"👹 Lần này Boss thắng"},
+  loseD:{en:"Try again — you can do it!", mix:"Try again — you can do it!", vi:"Thử lại lần nữa nhé — con làm được mà!"},
+  again:{en:"Fight again", mix:"Fight again", vi:"Đấu lại"},
+  close:{en:"Close", mix:"Close", vi:"Đóng"},
+  foot:{en:"Progress is saved on this device. Lessons follow Cambridge Primary Science & Maths (2nd edition).", mix:"Progress is saved on this device. Lessons follow Cambridge Primary Science & Maths (2nd edition).", vi:"Tiến độ được lưu trên thiết bị này. Bài học bám sát Cambridge Primary Science & Maths (ấn bản 2)."}
 };
-var POS = [50, 30, 56, 74, 50, 26, 52, 70];
-var DECOS = ['🍭', '🧁', '🍬', '⭐', '🍓', '🎈'];
-var state = { subj: 'science', book: 1 };
-try { var sv = JSON.parse(localStorage.getItem('camb:hub-view') || 'null'); if (sv && DATA[sv.subj]) { state.subj = sv.subj; state.book = sv.book || 1; } } catch (e) {}
-
-function sumKey(subj, book, code) { return 'camb:sum:' + (subj === 'science' ? 'sci' : 'math') + book + '-' + code.replace('.', '-'); }
-function getSum(k) { try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return (v && typeof v === 'object') ? v : null; } catch (e) { return null; } }
-function getProgress(subj, book, code) {
-  var sm = getSum(sumKey(subj, book, code));
-  if (sm) return sm;
-  /* Fallback: derive from the lesson's own main record (progress saved before summary keys existed) */
-  try {
-    var mk = (subj === 'science' ? 'camb:sci' : 'camb:math') + book + '-' + code.replace('.', '-');
-    var m = JSON.parse(localStorage.getItem(mk) || 'null');
-    if (m && Array.isArray(m.done)) return { s: m.done.length, st: Math.max(6, m.done.length), e: 0, et: 0, q: 0, qt: 0, legacy: true };
-  } catch (e) {}
+let LANG = localStorage.getItem("camb:hub-lang") || "mix";
+const S = k => STR[k][LANG] || STR[k].en;
+function L(code,en,vi,file){ return {code,en,vi,file:file||null}; }
+const DATA = {
+  science: { 1: [
+    {u:1, en:"Living things", vi:"Sinh vật sống", items:[ L("1.1","Animals and plants alive!","Động vật và cây cối đang sống!","sci1-1-1-animals-and-plants-alive.html"), L("1.2","Parts of a plant","Các bộ phận của cây","sci1-1-2-parts-of-a-plant.html"), L("1.3","Plants and light","Cây và ánh sáng","sci1-1-3-plants-and-light.html"), L("1.4","Plants need water","Cây cần nước","sci1-1-4-plants-need-water.html") ]},
+    {u:2, en:"Sound", vi:"Âm thanh", items:[ L("2.1","Sound sources","Nguồn âm thanh","sci1-2-1-sound-sources.html"), L("2.2","Loud and quiet","To và nhỏ","sci1-2-2-loud-and-quiet.html"), L("2.3","Sound moves","Âm thanh di chuyển","sci1-2-3-sound-moves.html") ]},
+    {u:3, en:"Materials in my world", vi:"Vật liệu quanh em", items:[ L("3.1","Different materials","Các vật liệu khác nhau","sci1-3-1-different-materials.html"), L("3.2","Properties of materials","Tính chất của vật liệu","sci1-3-2-properties-of-materials.html"), L("3.3","Sorting materials","Phân loại vật liệu","sci1-3-3-sorting-materials.html"), L("3.4","Changing materials","Vật liệu biến đổi","sci1-3-4-changing-materials.html") ]},
+    {u:4, en:"The Earth", vi:"Trái Đất", items:[ L("4.1","Planet Earth","Hành tinh Trái Đất"), L("4.2","Heat and light from the Sun","Nhiệt và ánh sáng từ Mặt Trời"), L("4.3","Rocks","Đá"), L("4.4","Soil","Đất") ]},
+    {u:5, en:"Humans", vi:"Con người", items:[ L("5.1","Our bodies","Cơ thể của chúng ta"), L("5.2","Our amazing senses","Các giác quan tuyệt vời"), L("5.3","Similar and different","Giống nhau và khác nhau"), L("5.4","Staying alive","Duy trì sự sống") ]},
+    {u:6, en:"Forces", vi:"Lực", items:[ L("6.1","Moving things","Các vật chuyển động"), L("6.2","Push and pull forces","Lực đẩy và lực kéo","sci1-6-2-push-and-pull.html"), L("6.3","Making things move","Làm cho vật chuyển động"), L("6.4","Floating and sinking","Nổi và chìm"), L("6.5","Magnets can pull","Nam châm có thể hút") ]}
+  ]},
+  math: {}
+};
+function sumKey(item){ return "camb:sum:" + (item.file||"").replace(/^sci(\d)-(\d+)-(\d+).*$/, "sci$1-$2-$3"); }
+function getProgress(item){
+  if (!item.file) return null;
+  try { const s = JSON.parse(localStorage.getItem(sumKey(item))); if (s) return s; } catch(e){}
+  try { const code = item.file.match(/^sci\d-\d+-\d+/)[0]; const r = JSON.parse(localStorage.getItem("camb:"+code));
+    if (r && Array.isArray(r.done)) return {s:r.done.length, st:Math.max(6,r.done.length), e:0, et:0, q:0, qt:0}; } catch(e){}
   return null;
 }
-function starsOf(sm) {
-  if (!sm) return 0;
-  var n = 0;
-  if (sm.st > 0 && sm.s >= sm.st) n++;
-  if (sm.et > 0 && sm.e >= sm.et) n++;
-  if (sm.qt > 0 && sm.q / sm.qt >= 0.75) n++;
-  return n;
-}
-function bi(en, vi) { return '<span class="en-main">' + en + '</span><span class="vi">' + vi + '</span>'; }
-
-function renderBooks() {
-  var el = document.getElementById('books'); el.innerHTML = '';
-  for (var b = 1; b <= 9; b++) {
-    (function (b) {
-      var btn = document.createElement('button');
-      btn.className = 'book' + (state.book === b ? ' on' : '');
-      var has = !!DATA[state.subj][b];
-      btn.innerHTML = (document.body.classList.contains('lang-vi') ? 'Quyển ' : 'Book ') + b + (has ? '' : ' <span class="dot">●</span>');
-      btn.addEventListener('click', function () { state.book = b; saveView(); render(); });
-      el.appendChild(btn);
-    })(b);
-  }
-}
-function saveView() { try { localStorage.setItem('camb:hub-view', JSON.stringify(state)); } catch (e) {} }
-
-function render() {
-  document.body.classList.toggle('subj-science', state.subj === 'science');
-  document.body.classList.toggle('subj-maths', state.subj === 'maths');
-  document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('on', t.dataset.subj === state.subj); });
-  renderBooks();
-  var map = document.getElementById('map'); map.innerHTML = '';
-  var book = DATA[state.subj][state.book];
-  var bar = document.getElementById('starbar');
-  if (!book) {
-    bar.textContent = '';
-    var d = document.createElement('div'); d.className = 'empty';
-    d.innerHTML = '<div class="big">' + (state.subj === 'maths' ? '➕' : '🔬') + '</div><h3>' + bi('Coming soon!', 'Sắp có!') + '</h3><p>' +
-      (state.subj === 'maths'
-        ? bi('Maths lessons are being made — Science comes first.', 'Các bài Toán đang được sản xuất — Science làm trước.')
-        : bi('This book is being made. Please check back soon!', 'Quyển này đang được sản xuất. Mời quay lại sau nhé!')) + '</p>';
-    map.appendChild(d); return;
-  }
-  // Flatten lessons with production + progress state
-  var flat = [];
-  book.units.forEach(function (u) { u.lessons.forEach(function (l) { flat.push(l); }); });
-  flat.forEach(function (l) {
-    l._sm = l.f ? getProgress(state.subj, state.book, l.c) : null;
-    l._done = !!(l._sm && l._sm.st > 0 && l._sm.s >= l._sm.st);
-    l._prog = !!(l._sm && (l._sm.s > 0 || l._sm.e > 0 || l._sm.q > 0));
-  });
-  var prevProducedDone = true, firstProduced = true, totalStars = 0, maxStars = 0;
-  flat.forEach(function (l) {
-    if (!l.f) { l._state = 'soon'; return; }
-    maxStars += 3; totalStars += starsOf(l._sm);
-    if (l._done) l._state = 'done';
-    else if (l._prog) l._state = 'prog';
-    else if (firstProduced || prevProducedDone) l._state = 'open';
-    else l._state = 'lock';
-    if (l._done) prevProducedDone = true; else if (l.f) prevProducedDone = false;
-    firstProduced = false;
-  });
-  bar.innerHTML = '⭐ <span class="n">' + totalStars + '</span> / ' + maxStars + ' &nbsp;·&nbsp; ' + bi('Book', 'Quyển') + ' ' + state.book;
-  var idx = 0, decoIdx = 0;
-  book.units.forEach(function (u) {
-    var ur = document.createElement('div'); ur.className = 'urow';
-    ur.innerHTML = '<div class="unit-ribbon">' + bi(u.t, u.t.split('· ')[0] + '· ' + u.vi) + '</div>';
-    map.appendChild(ur);
-    u.lessons.forEach(function (l) {
-      var row = document.createElement('div'); row.className = 'nrow';
-      var x = POS[idx % POS.length]; idx++;
-      if (idx % 3 === 0) { var dc = document.createElement('div'); dc.className = 'deco'; dc.textContent = DECOS[decoIdx++ % DECOS.length]; dc.style.top = '34px'; dc.style.left = (x > 50 ? '6%' : '84%'); row.appendChild(dc); }
-      var nd = document.createElement('button');
-      nd.className = 'node st-' + l._state;
-      nd.style.left = x + '%';
-      var st = starsOf(l._sm);
-      var starsHtml = '<span>' + (st >= 1 ? '★' : '<span class="off">★</span>') + (st >= 2 ? '★' : '<span class="off">★</span>') + (st >= 3 ? '★' : '<span class="off">★</span>') + '</span>';
-      var ballTxt = l._state === 'done' ? '✓' : l._state === 'lock' ? '🔒' : l._state === 'soon' ? '…' : l.c;
-      nd.innerHTML = '<div class="stars">' + starsHtml + '</div><div class="ball">' + ballTxt + '</div><div class="lab"><span class="code">' + l.c + '</span> ' + bi(l.t, l.vi) + '</div>';
-      (function (l, nd) {
-        nd.addEventListener('click', function () {
-          if (l._state === 'soon') { toast(bi('This lesson is being made!', 'Bài này đang được sản xuất!')); return; }
-          if (l._state === 'lock') { nd.classList.remove('shake'); void nd.offsetWidth; nd.classList.add('shake'); toast(bi('Finish the lesson before to open this one!', 'Hoàn thành bài trước để mở khóa bài này nhé!')); return; }
-          location.href = l.f;
-        });
-      })(l, nd);
-      row.appendChild(nd);
-      map.appendChild(row);
+function starsOf(p){ if (!p) return 0; let n=0; if (p.st>0 && p.s>=p.st) n++; if (p.et>0 && p.e>=p.et) n++; if (p.qt>0 && p.q/p.qt>=0.75) n++; return n; }
+function complete(p){ return !!p && p.st>0 && p.s>=p.st; }
+function loadWallet(){ try { const w = JSON.parse(localStorage.getItem("camb:wallet")); if (w && typeof w.stars==="number" && w.botWins && w.bossWins) return w; } catch(e){} return {stars:0, botWins:{}, bossWins:{}}; }
+function saveWallet(w){ try { localStorage.setItem("camb:wallet", JSON.stringify(w)); } catch(e){} }
+function txt(pair){ if (!pair) return ""; if (LANG==="en") return pair[0]; if (LANG==="vi") return pair[1]; return pair[0]+" · "+pair[1]; }
+let view = {tab:"science", book:1};
+try { const v = JSON.parse(localStorage.getItem("camb:hub-view")); if (v && v.tab) view = v; } catch(e){}
+/* ============ boss question banks (from the lessons' own quizzes) ============ */
+const BANKS = {
+"sci1-u1":[
+ {q:["Which thing is alive?","Vật nào đang sống (alive)?"],o:[["The Sun","Mặt trời"],["A tree","Một cái cây"],["A chair","Một cái ghế"]],a:1},
+ {q:["Water can move. Is water alive?","Nước chuyển động được. Nước có sống (alive) không?"],o:[["Yes","Có"],["No","Không"]],a:1},
+ {q:["A cat is…","Một bạn mèo là…"],o:[["alive","đang sống (alive)"],["not alive","không sống (not alive)"]],a:0},
+ {q:["Which thing has NEVER been alive?","Vật nào CHƯA BAO GIỜ sống?"],o:[["A fish","Một con cá"],["A flower","Một bông hoa"],["A rock","Một hòn đá"]],a:2},
+ {q:["Which part of a plant makes food?","Bộ phận nào của cây làm thức ăn?"],o:[["The flower","Hoa (flower)"],["The leaf","Lá (leaf)"],["The roots","Rễ (roots)"]],a:1},
+ {q:["Which part collects water?","Bộ phận nào hút nước?"],o:[["The stem","Thân cây (stem)"],["The flower","Hoa (flower)"],["The roots","Rễ (roots)"]],a:2},
+ {q:["Which part makes the seeds?","Bộ phận nào tạo ra hạt (seeds)?"],o:[["The flower","Hoa (flower)"],["The leaf","Lá (leaf)"],["The stem","Thân cây (stem)"]],a:0},
+ {q:["What do we use to look at plant parts carefully?","Ta dùng gì để ngắm các bộ phận của cây thật kỹ?"],o:[["A big spoon","Một cái thìa to"],["A magnifying glass","Kính lúp (magnifying glass)"],["A hat","Một cái mũ"]],a:1},
+ {q:["Do plants need light to grow?","Cây có cần ánh sáng (light) để lớn lên (grow) không?"],o:[["Yes","Có"],["No","Không"]],a:0},
+ {q:["A plant with no light will have…","Một cây không có ánh sáng sẽ có…"],o:[["small yellow leaves","lá nhỏ màu vàng"],["big green leaves","lá to màu xanh"],["red flowers","hoa đỏ"]],a:0},
+ {q:["Why is the plant bent?","Vì sao cây bị cong?"],o:[["It is growing towards the light","Nó đang mọc hướng về ánh sáng"],["It wants water","Nó muốn uống nước"],["It is sleeping","Nó đang ngủ"]],a:0},
+ {q:["Why can plants not grow in a cave?","Vì sao cây không mọc được trong hang?"],o:[["There is no light","Không có ánh sáng"],["It is too quiet","Hang quá yên tĩnh"],["There are no people","Không có người"]],a:0},
+ {q:["Plants take in water through their…","Cây hút nước (water) vào qua…"],o:[["leaves","lá (leaves)"],["roots","rễ (roots)"],["flowers","hoa (flowers)"]],a:1},
+ {q:["What happens to a plant with no water?","Cây không có nước (water) sẽ ra sao?"],o:[["It grows faster","Nó lớn nhanh hơn"],["It wilts and can die","Nó héo đi và có thể chết"],["Nothing happens","Không có gì xảy ra"]],a:1},
+ {q:["Can too much water hurt a plant?","Quá nhiều nước (water) có làm hại cây không?"],o:[["No — more water is always good","Không — càng nhiều nước càng tốt"],["Yes — too much water can make a plant die","Có — quá nhiều nước có thể làm cây chết"]],a:1},
+ {q:["We write what happens each day in a…","Ta viết điều xảy ra mỗi ngày vào một…"],o:[["table","bảng (table)"],["song","bài hát (song)"],["game","trò chơi (game)"]],a:0}
+],
+"sci1-u2":[
+ {q:["A thing that makes a sound is called a…","Một vật phát ra âm thanh được gọi là…"],o:[["sound source","nguồn âm thanh (sound source)"],["picture","bức tranh (picture)"],["chair","cái ghế (chair)"]],a:0},
+ {q:["We hear sounds with our…","Chúng ta nghe âm thanh bằng…"],o:[["eyes","mắt (eyes)"],["ears","tai (ears)"],["feet","bàn chân (feet)"]],a:1},
+ {q:["Which sound source uses electricity?","Nguồn âm thanh nào dùng điện (electricity)?"],o:[["a drum","cái trống (drum)"],["a hand bell","chuông tay (bell)"],["a telephone","điện thoại (telephone)"]],a:2},
+ {q:["What we find out in an investigation is called our…","Điều ta tìm ra trong một cuộc khảo sát được gọi là…"],o:[["results","kết quả (results)"],["lunch","bữa trưa (lunch)"],["homework","bài tập về nhà (homework)"]],a:0},
+ {q:["A lion's roar is a … sound.","Tiếng sư tử gầm là âm thanh …"],o:[["loud","to (loud)"],["quiet","nhỏ (quiet)"],["no sound at all","không có âm thanh"]],a:0},
+ {q:["Very loud sounds can …","Âm thanh rất to có thể …"],o:[["damage your ears","làm tổn thương tai (damage)"],["make your ears stronger","làm tai khỏe hơn"],["help you sleep","giúp con ngủ ngon"]],a:0},
+ {q:["To hear a quiet sound better, put your …","Để nghe âm thanh nhỏ rõ hơn, hãy để …"],o:[["hand by your ear","bàn tay bên tai (hand by your ear)"],["hands over both ears","hai tay bịt cả hai tai"],["eyes closed","nhắm mắt lại"]],a:0},
+ {q:["A mouse makes a … sound.","Bạn chuột tạo ra âm thanh …"],o:[["quiet","nhỏ (quiet)"],["loud","to (loud)"],["very loud","rất to"]],a:0},
+ {q:["When you are near a sound source, the sound is…","Khi con ở gần (near) nguồn âm thanh, âm thanh sẽ…"],o:[["quieter","nhỏ hơn (quieter)"],["louder","to hơn (louder)"]],a:1},
+ {q:["Sounds move away from the…","Âm thanh di chuyển (move) ra xa khỏi…"],o:[["our ears","tai của ta"],["the sound source","nguồn âm thanh (sound source)"],["the path","con đường"]],a:1},
+ {q:["Far away from the source, the sound is…","Ở xa (far away) nguồn âm thanh, âm thanh sẽ…"],o:[["quieter","nhỏ hơn (quieter)"],["louder","to hơn (louder)"],["the same","y như cũ"]],a:0},
+ {q:["Standing very near to a very loud sound is…","Đứng rất gần một âm thanh rất to là việc…"],o:[["safe","an toàn (safe)"],["fun","vui"],["not safe — it can damage your ears","không an toàn — nó có thể làm hỏng tai"]],a:2}
+],
+"sci1-u3":[
+ {q:["A slide can be made of…","Một cầu trượt có thể làm bằng…"],o:[["paper","giấy (paper)"],["metal","kim loại (metal)"],["fabric","vải (fabric)"]],a:1},
+ {q:["A window is made of…","Một cửa sổ làm bằng…"],o:[["wood","gỗ (wood)"],["rubber","cao su (rubber)"],["glass","kính (glass)"]],a:2},
+ {q:["A tyre is made of…","Một lốp xe làm bằng…"],o:[["rubber","cao su (rubber)"],["glass","kính (glass)"],["paper","giấy (paper)"]],a:0},
+ {q:["We can name materials by looking and by…","Ta gọi tên vật liệu bằng cách nhìn và bằng cách…"],o:[["eating them","ăn chúng"],["feeling them","sờ vào chúng (feel)"],["hiding them","giấu chúng đi"]],a:1},
+ {q:["Metal is a … material.","Kim loại (metal) là vật liệu …"],o:[["strong","bền (strong)"],["soft","mềm (soft)"],["weak","yếu (weak)"]],a:0},
+ {q:["What is the opposite of shiny?","Ngược với bóng (shiny) là gì?"],o:[["smooth","mịn (smooth)"],["dull","mờ xỉn (dull)"],["rough","thô (rough)"]],a:1},
+ {q:["A plastic ruler can bend. It is …","Thước nhựa (plastic ruler) uốn cong được. Nó …"],o:[["rigid","cứng (rigid)"],["weak","yếu (weak)"],["flexible","dẻo (flexible)"]],a:2},
+ {q:["Rough fabrics have … threads.","Vải thô (rough) có sợi (threads) …"],o:[["bigger","to hơn (bigger)"],["smaller","nhỏ hơn (smaller)"],["no","không có"]],a:0},
+ {q:["We put similar things together in a…","Ta xếp các vật giống nhau vào cùng một…"],o:[["group","nhóm (group)"],["test","bài thử nghiệm (test)"],["question","câu hỏi (question)"]],a:0},
+ {q:["A plastic bottle can be…","Một chai nhựa có thể được…"],o:[["recycled","tái chế (recycled)"],["eaten","ăn (eaten)"],["planted","trồng (planted)"]],a:0},
+ {q:["Recycling makes less…","Tái chế làm giảm…"],o:[["waste","rác thải (waste)"],["water","nước (water)"],["homework","bài tập về nhà (homework)"]],a:0},
+ {q:["The planet we live on is called…","Hành tinh chúng ta sống có tên là…"],o:[["Earth","Trái Đất (Earth)"],["the Moon","Mặt Trăng (Moon)"],["Mars","Sao Hỏa (Mars)"]],a:0},
+ {q:["Rubber is an … material.","Cao su (rubber) là vật liệu …"],o:[["elastic","đàn hồi (elastic)"],["rigid","cứng (rigid)"],["long","dài (long)"]],a:0},
+ {q:["A material that does NOT change shape is…","Vật liệu KHÔNG đổi hình dạng là vật liệu…"],o:[["elastic","đàn hồi (elastic)"],["rigid","cứng (rigid)"],["stretchy","giãn được (stretchy)"]],a:1},
+ {q:["We count … to measure how far a band stretches.","Ta đếm … để đo (measure) độ giãn của một dây thun."],o:[["bricks","viên gạch (bricks)"],["books","quyển sách (books)"],["chairs","cái ghế (chairs)"]],a:0},
+ {q:["Squash is also called…","Squash còn được gọi là…"],o:[["twist","xoắn (twist)"],["bend","uốn cong (bend)"],["compress","nén (compress)"]],a:2}
+]};
+/* ============ render ============ */
+const $ = id => document.getElementById(id);
+let toastT = null;
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("show"), 2400); }
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+const DECOS = ["🍬","🍭","🌸","🍀","⭐","🦋"];
+function render(){
+  document.querySelectorAll("#langbar button").forEach(b => b.classList.toggle("on", b.dataset.l === LANG));
+  $("ttl").textContent = S("title"); $("tsub").textContent = S("tsub");
+  $("sciDs").textContent = S("sciDs"); $("mathDs").textContent = S("mathDs");
+  $("subjSci").classList.toggle("dim", view.tab !== "science");
+  $("subjMath").classList.toggle("dim", view.tab !== "math");
+  $("starLb").textContent = S("starLb"); $("goalT").textContent = S("goalT"); $("foot").textContent = S("foot");
+  /* books */
+  const bk = $("books"); bk.innerHTML = "";
+  for (let n=1;n<=9;n++){ const b = document.createElement("button"); b.textContent = S("book")(n);
+    if (n === view.book) b.className = "on " + (view.tab === "science" ? "sci" : "math");
+    b.onclick = () => { view.book = n; saveView(); render(); }; bk.appendChild(b); }
+  /* totals across produced lessons */
+  const wallet = loadWallet();
+  let lessonStars = 0, prodTotal = 0, prodDone = 0;
+  Object.values(DATA).forEach(books => Object.values(books).forEach(units => units.forEach(u => u.items.forEach(it => {
+    if (it.file){ const p = getProgress(it); lessonStars += starsOf(p); }
+  }))));
+  $("starVl").textContent = "⭐ " + (lessonStars + wallet.stars);
+  $("starBr").textContent = S("starBr")(lessonStars, wallet.stars);
+  /* map */
+  const map = $("map"); map.className = "map " + (view.tab === "science" ? "sci" : "math"); map.innerHTML = "";
+  const units = (DATA[view.tab] || {})[view.book];
+  if (!units){ map.innerHTML = '<div class="soonbox"><span class="e">🚀</span>' + S("soon") + "</div>";
+    $("ringPc").textContent = "0%"; $("ringFg").style.strokeDashoffset = 169.6; $("goalD").textContent = S("goalD")(0,0); return; }
+  /* sequential unlock over produced lessons in book order */
+  const flat = []; units.forEach(u => u.items.forEach(it => flat.push(it)));
+  const produced = flat.filter(it => it.file);
+  produced.forEach(it => { const p = getProgress(it); if (p){ prodTotal++; if (complete(p)) prodDone++; } else prodTotal++; });
+  const pct = produced.length ? Math.round(100 * produced.filter(it => complete(getProgress(it))).length / produced.length) : 0;
+  $("ringPc").textContent = pct + "%"; $("ringFg").style.strokeDashoffset = (169.6 * (1 - pct/100)).toFixed(1);
+  $("ringFg").style.stroke = view.tab === "science" ? "#0d9488" : "#4f46e5";
+  $("goalD").textContent = S("goalD")(produced.filter(it => complete(getProgress(it))).length, produced.length);
+  let prevComplete = true, firstProduced = true;
+  const openMap = {};
+  produced.forEach(it => { const p = getProgress(it); openMap[it.code] = firstProduced || prevComplete || !!p; firstProduced = false; prevComplete = complete(p); });
+  units.forEach(u => {
+    const sec = document.createElement("div");
+    const bossKey = (view.tab === "science" ? "sci" : "math") + view.book + "-u" + u.u;
+    const unitProduced = u.items.filter(it => it.file);
+    const unitAllDone = unitProduced.length === u.items.length && unitProduced.length > 0 && unitProduced.every(it => complete(getProgress(it)));
+    const bossWon = !!wallet.bossWins[bossKey];
+    const rib = document.createElement("div"); rib.className = "ribbon";
+    rib.innerHTML = "<span>Unit " + u.u + " · " + (LANG === "vi" ? u.vi : (LANG === "en" ? u.en : u.en + " · " + u.vi)) + "</span>" + (bossWon ? '<span class="tr">🏆</span>' : "");
+    sec.appendChild(rib);
+    const rows = u.items.length + ((unitProduced.length === u.items.length && BANKS[bossKey]) ? 1 : 0);
+    const H = rows * 96 + 10;
+    const path = document.createElement("div"); path.className = "path"; path.style.height = H + "px";
+    const xs = [22, 50, 78, 50];
+    let pts = [];
+    const posOf = i => ({ x: xs[i % 4], y: 46 + i * 96 });
+    u.items.forEach((it, i) => pts.push(posOf(i)));
+    if (rows > u.items.length) pts.push({ x:50, y: 46 + u.items.length * 96 });
+    let dAttr = "";
+    pts.forEach((p, i) => { dAttr += (i === 0 ? "M" : "L") + (p.x * 4.4) + "," + p.y + " "; });
+    path.innerHTML = '<svg viewBox="0 0 440 ' + H + '" preserveAspectRatio="none"><path d="' + dAttr + '" fill="none" stroke="#ffffff" stroke-width="7" stroke-dasharray="2 14" stroke-linecap="round" opacity="0.95"/></svg>';
+    pts.forEach((p, i) => { if (i % 2 === 1) { const d = document.createElement("div"); d.className = "deco"; d.textContent = DECOS[(u.u + i) % DECOS.length];
+      d.style.left = ((p.x + 26) % 92) + "%"; d.style.top = (p.y + 8) + "px"; path.appendChild(d); } });
+    u.items.forEach((it, i) => {
+      const p = posOf(i), prog = getProgress(it);
+      const node = document.createElement("button");
+      let st, face;
+      if (!it.file){ st = "st-soon"; face = "…"; }
+      else if (complete(prog)){ st = "st-done"; face = "✓"; }
+      else if (prog){ st = "st-prog"; face = it.code; }
+      else if (openMap[it.code]){ st = "st-open"; face = it.code; }
+      else { st = "st-lock"; face = "🔒"; }
+      node.className = "node " + st; node.style.left = p.x + "%"; node.style.top = (p.y - 28) + "px";
+      const st3 = it.file ? starsOf(prog) : 0;
+      node.innerHTML = '<div class="bubble">' + face + '</div><div class="st3">' +
+        (it.file ? ("★".repeat(st3) + '<span class="off">' + "★".repeat(3 - st3) + "</span>") : "") +
+        '</div><div class="lb2">' + it.code + " " + (LANG === "vi" ? it.vi : it.en) + "</div>";
+      node.onclick = () => {
+        if (!it.file){ toast(S("soon")); return; }
+        if (st === "st-lock"){ node.classList.remove("shake"); void node.offsetWidth; node.classList.add("shake"); toast(S("locked")); return; }
+        location.href = it.file;
+      };
+      path.appendChild(node);
     });
+    if (rows > u.items.length){
+      const p = pts[pts.length - 1];
+      const bn = document.createElement("button");
+      const bst = bossWon ? "boss-won" : (unitAllDone ? "boss-ready" : "boss-lock");
+      bn.className = "node bossnode " + bst; bn.style.left = p.x + "%"; bn.style.top = (p.y - 34) + "px";
+      bn.innerHTML = '<div class="bubble">' + (bossWon ? "🏆" : "👹") + '</div><div class="st3"></div><div class="lb2">' + S("boss") + "</div>";
+      bn.onclick = () => { if (!unitAllDone && !bossWon){ bn.classList.remove("shake"); void bn.offsetWidth; bn.classList.add("shake"); toast(S("bossLocked")); return; } openBoss(bossKey, u.u); };
+      path.appendChild(bn);
+    }
+    sec.appendChild(path); map.appendChild(sec);
   });
-  drawWire();
 }
-function drawWire() {
-  var map = document.getElementById('map');
-  var old = map.querySelector('svg.wire'); if (old) old.remove();
-  var nodes = map.querySelectorAll('.node .ball');
-  if (nodes.length < 2) return;
-  var mr = map.getBoundingClientRect();
-  var pts = [];
-  nodes.forEach(function (b) { var r = b.getBoundingClientRect(); pts.push({ x: r.left + r.width / 2 - mr.left, y: r.top + r.height / 2 - mr.top }); });
-  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('class', 'wire'); svg.setAttribute('width', map.offsetWidth); svg.setAttribute('height', map.offsetHeight);
-  var d = 'M ' + pts[0].x + ' ' + pts[0].y;
-  for (var i = 1; i < pts.length; i++) {
-    var p0 = pts[i - 1], p1 = pts[i], mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
-    d += ' Q ' + p0.x + ' ' + (p0.y + (p1.y - p0.y) * 0.5) + ' ' + mx + ' ' + my + ' T ' + p1.x + ' ' + p1.y;
+function saveView(){ try { localStorage.setItem("camb:hub-view", JSON.stringify(view)); } catch(e){} }
+$("subjSci").onclick = () => { view.tab = "science"; saveView(); render(); };
+$("subjMath").onclick = () => { view.tab = "math"; saveView(); render(); };
+document.querySelectorAll("#langbar button").forEach(b => b.onclick = () => { LANG = b.dataset.l; localStorage.setItem("camb:hub-lang", LANG); render(); });
+/* ============ boss fight ============ */
+let boss = null;
+function openBoss(key, unitNo){
+  boss = { key, unitNo, qs: shuffle(BANKS[key]).slice(0, 8), idx: 0, me: 0, bo: 0, hearts: 3, phase: "intro", order: null };
+  $("bossModal").classList.add("open"); renderBoss();
+}
+function closeBoss(){ $("bossModal").classList.remove("open"); boss = null; render(); }
+function heartsStr(){ return "❤️".repeat(boss.hearts) + "🖤".repeat(3 - boss.hearts); }
+function renderBoss(){
+  const box = $("bossBox");
+  if (boss.phase === "intro"){
+    box.innerHTML = "<h2>" + S("bossTitle")(boss.unitNo) + '</h2><div class="bq" style="font-weight:700;font-size:15.5px">' + S("bossIntro") +
+      '</div><button class="bbtn go" id="bStart">' + S("start") + '</button> <button class="bbtn ghost" id="bClose">' + S("close") + "</button>";
+    $("bStart").onclick = () => { boss.phase = "q"; boss.order = shuffle(boss.qs[0].o.map((_, i) => i)); renderBoss(); };
+    $("bClose").onclick = closeBoss; return;
   }
-  var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', d); svg.appendChild(path); map.prepend(svg);
+  if (boss.phase === "end"){
+    const won = boss.result === "win"; const w = loadWallet(); const again = won && !boss.firstWin;
+    box.innerHTML = '<div class="bres"><div class="e">' + (won ? "🏆" : "👹") + '</div><div class="t">' + (won ? S("win") : S("lose")) +
+      '</div><div class="d">' + (won ? S("winD")(again) : S("loseD")) + "<br>" + S("qOf")(boss.qs.length, boss.qs.length, boss.me, boss.bo, heartsStr()) +
+      '</div></div><button class="bbtn go" id="bAgain">' + S("again") + '</button> <button class="bbtn ghost" id="bClose">' + S("close") + "</button>";
+    $("bAgain").onclick = () => openBoss(boss.key, boss.unitNo);
+    $("bClose").onclick = closeBoss; return;
+  }
+  const q = boss.qs[boss.idx];
+  let html = "<h2>" + S("bossTitle")(boss.unitNo) + '</h2><div class="bprog">' + S("qOf")(boss.idx + 1, boss.qs.length, boss.me, boss.bo, heartsStr()) + "</div>";
+  html += '<div class="bq">' + txt(q.q) + "</div>";
+  boss.order.forEach(oi => { html += '<button class="bopt" data-oi="' + oi + '">' + txt(q.o[oi]) + "</button>"; });
+  html += '<div class="breveal" id="bRev"></div><div id="bNext"></div>';
+  box.innerHTML = html;
+  box.querySelectorAll(".bopt").forEach(btn => btn.onclick = () => answerBoss(parseInt(btn.dataset.oi, 10)));
 }
-var toastTimer = null;
-function toast(html) { var t = document.getElementById('toast'); t.innerHTML = html; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2400); }
-
-document.querySelectorAll('.tab').forEach(function (t) {
-  t.addEventListener('click', function () { state.subj = t.dataset.subj; state.book = 1; saveView(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-});
-function setLang(m) {
-  document.body.classList.remove('lang-en', 'lang-bi', 'lang-vi');
-  document.body.classList.add('lang-' + m);
-  document.querySelectorAll('.langbar button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === m); });
-  try { localStorage.setItem('camb:hub-lang', m); } catch (e) {}
-  render();
+function answerBoss(oi){
+  const q = boss.qs[boss.idx]; const right = oi === q.a;
+  if (right) boss.me++; else boss.hearts--;
+  const bossRight = Math.random() < 0.75;
+  let bossPick = q.a;
+  if (!bossRight){ const wrongs = q.o.map((_, i) => i).filter(i => i !== q.a); bossPick = wrongs[Math.floor(Math.random() * wrongs.length)]; }
+  if (bossRight) boss.bo++;
+  const box = $("bossBox");
+  box.querySelectorAll(".bopt").forEach(btn => { const b = parseInt(btn.dataset.oi, 10); btn.disabled = true;
+    if (b === q.a) btn.classList.add("right"); else if (b === oi) btn.classList.add("wrong"); });
+  const rev = $("bRev"); rev.style.display = "block";
+  rev.innerHTML = (right ? S("right") : S("wrong")) + "<br>" + (bossRight ? S("bossRight")(txt(q.o[bossPick])) : S("bossWrong")(txt(q.o[bossPick])));
+  const prog = box.querySelector(".bprog"); if (prog) prog.textContent = S("qOf")(boss.idx + 1, boss.qs.length, boss.me, boss.bo, heartsStr());
+  if (boss.hearts <= 0){ boss.phase = "end"; boss.result = "lose"; setTimeout(renderBoss, 900); return; }
+  $("bNext").innerHTML = '<button class="bbtn go" id="bNx">' + S("next") + "</button>";
+  $("bNx").onclick = () => { boss.idx++;
+    if (boss.idx >= boss.qs.length){ boss.phase = "end";
+      if (boss.me > boss.bo){ boss.result = "win"; const w = loadWallet();
+        if (!w.bossWins[boss.key]){ w.bossWins[boss.key] = true; w.stars += 3; saveWallet(w); boss.firstWin = true; } }
+      else boss.result = "lose";
+      renderBoss(); return; }
+    boss.order = shuffle(boss.qs[boss.idx].o.map((_, i) => i)); renderBoss(); };
 }
-document.querySelectorAll('.langbar button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.dataset.lang); }); });
-try { var sl = localStorage.getItem('camb:hub-lang'); if (sl) { document.body.classList.remove('lang-bi'); document.body.classList.add('lang-' + sl); document.querySelectorAll('.langbar button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === sl); }); } } catch (e) {}
-window.addEventListener('resize', drawWire);
+$("bossModal").addEventListener("click", e => { if (e.target === $("bossModal")) closeBoss(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && boss) closeBoss(); });
 render();
 </script>
 </body>

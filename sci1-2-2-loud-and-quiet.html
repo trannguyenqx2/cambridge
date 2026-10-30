@@ -129,6 +129,8 @@ button:disabled{opacity:.45;cursor:default}
 /* ===== quiz modal ===== */
 #quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 #quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
 .qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
 .qbox h2{margin:0 0 4px;font-size:23px}
 .qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
@@ -212,6 +214,7 @@ button:disabled{opacity:.45;cursor:default}
     <button id="btnConsole" style="display:none">🎛</button>
     <button id="btnExTop"></button>
     <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
     <button id="btnFull"></button>
   </div>
 
@@ -335,6 +338,22 @@ button:disabled{opacity:.45;cursor:default}
   </div>
 </div>
 
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
 <script>
 /* Three.js r128 — MIT License (three.js authors) */
 /**
@@ -437,6 +456,16 @@ const STR={
   nextBtn:{en:'Next ›',vi:'Tiếp ›'},
   nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
   quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
   fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
   notDone:{en:'Not done yet',vi:'Chưa làm'},
   doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
@@ -1064,6 +1093,7 @@ $('btnDemo').onclick=()=>{
 /* ============ console ============ */
 function renderChrome(){
   $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
   $('btnExTop').textContent=L(STR.exBtn);
   $('btnFull').textContent=L(STR.fullBtn);
   $('btnDemo').innerHTML=biInl(STR.demoBtn);
@@ -1077,6 +1107,8 @@ function renderChrome(){
   $('u5T').innerHTML=biInl(STR.u5T);
   $('qTitle').innerHTML=biInl(STR.quizTitle);
   $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
   renderHitControls();
 }
 function renderHitControls(){
@@ -1187,6 +1219,91 @@ $('qNext').onclick=()=>{
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
 
+/* ================= wallet (shared battle stars) ================= */
+const WALLET_KEY='camb:wallet';
+function loadWallet(){
+  try{ const w=JSON.parse(localStorage.getItem(WALLET_KEY)||'null');
+    if(w&&typeof w==='object') return {stars:(typeof w.stars==='number'&&isFinite(w.stars))?w.stars:0,
+      botWins:(w.botWins&&typeof w.botWins==='object')?w.botWins:{},
+      bossWins:(w.bossWins&&typeof w.bossWins==='object')?w.bossWins:{}};
+  }catch(e){}
+  return {stars:0,botWins:{},bossWins:{}};
+}
+function saveWallet(){ try{ localStorage.setItem(WALLET_KEY,JSON.stringify(wallet)); }catch(e){} }
+let wallet=loadWallet();
+
+/* ================= bot duel (this lesson's quiz questions) ================= */
+const BOT_CODE='2.2';
+let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
+function openBot(){
+  $('botModal').classList.add('open');
+  bq=0; bYou=0; bBot=0; bFinished=false;
+  bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
+  bOrder=QUIZ.map(q=>fyIdx(q.o.length));
+  showB();
+}
+function closeBot(){ $('botModal').classList.remove('open'); }
+function botScoreObj(){ return {en:'You '+bYou+' — '+bBot+' Bot', vi:'Con '+bYou+' — '+bBot+' Bot'}; }
+function showB(){
+  const it=QUIZ[bq], st=bState[bq];
+  const sc=botScoreObj();
+  $('bProg').innerHTML=biInl({en:'Question '+(bq+1)+' of '+QUIZ.length+' · '+sc.en,
+                              vi:'Câu '+(bq+1)+' / '+QUIZ.length+' · '+sc.vi});
+  $('bText').innerHTML=bi(it.q);
+  $('bScore').textContent='';
+  $('bNext').textContent=L(bq<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('bOpts').innerHTML='';
+  (bOrder[bq]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
+    const o=it.o[oi];
+    const b=document.createElement('button'); b.className='qopt';
+    b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
+    if(st.chosen>=0){
+      if(oi===it.a) b.classList.add('right');
+      else if(di===st.chosen) b.classList.add('wrong');
+    }
+    b.onclick=()=>{ if(bState[bq].chosen>=0) return; bState[bq].chosen=di; botReveal(); };
+    $('bOpts').appendChild(b);
+  });
+  const ex=$('bExpl');
+  if(st.chosen>=0){
+    const right=(bOrder[bq]||[])[st.chosen]===it.a;
+    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e)
+      +'<div style="margin-top:6px">🤖 <b>'+esc(L(STR.botPickLbl))+'</b> '+biInl(it.o[st.botOi])
+      +' — '+esc(L(st.botRight?STR.botOk:STR.botNo))+'</div>';
+    ex.classList.add('open');
+  }else{ ex.classList.remove('open'); ex.textContent=''; }
+}
+function botReveal(){
+  const it=QUIZ[bq], st=bState[bq];
+  if((bOrder[bq]||[])[st.chosen]===it.a) bYou++;
+  st.botRight=Math.random()<0.6;
+  if(st.botRight){ st.botOi=it.a; bBot++; }
+  else{
+    const wrongs=it.o.map((_,i)=>i).filter(i=>i!==it.a);
+    st.botOi=wrongs[Math.floor(Math.random()*wrongs.length)];
+  }
+  showB();
+}
+$('bNext').onclick=()=>{
+  if(bFinished){ openBot(); return; }
+  if(bState[bq].chosen<0) return;
+  if(bq<QUIZ.length-1){ bq++; showB(); return; }
+  bFinished=true;
+  let head;
+  if(bYou>bBot){
+    if(!wallet.botWins[BOT_CODE]){ wallet.botWins[BOT_CODE]=true; wallet.stars+=1; saveWallet(); head=STR.botWin; }
+    else head=STR.botWinHad;
+  }else if(bYou===bBot){ head=STR.botDraw; }
+  else{ head=STR.botLose; }
+  $('bProg').textContent='';
+  $('bText').innerHTML=bi(head);
+  $('bOpts').innerHTML=''; $('bExpl').classList.remove('open'); $('bExpl').textContent='';
+  $('bScore').innerHTML=biInl(botScoreObj());
+  $('bNext').textContent=L(STR.botAgain);
+};
+$('bClose').onclick=closeBot;
+$('btnBotTop').onclick=openBot;
+
 /* ============ exercises panel ============ */
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
@@ -1287,6 +1404,7 @@ function setLang(m){
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderMeter(); renderFound(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+  if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
@@ -1294,6 +1412,7 @@ $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.datas
 /* ============ keyboard ============ */
 document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
+  if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
   if(e.key==='ArrowRight') goStep(curStep+1);
   else if(e.key==='ArrowLeft') goStep(curStep-1);
