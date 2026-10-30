@@ -674,8 +674,19 @@ try{
     if(s.ex) EX=sanitizeEx(s.ex);
   }
 }catch(e){/* fresh start */}
+/* summary record for the site hub level map (additive only; main record schema unchanged) */
+const SUMKEY='camb:sum:sci1-6-2';
+let qBest=0;
+try{
+  const sm=JSON.parse(localStorage.getItem(SUMKEY)||'null');
+  if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
+}catch(e){/* no summary yet */}
+function saveSum(){
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScore(),et:20,q:qBest,qt:QUIZ.length})); }catch(e){}
+}
 function saveProg(){
   try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,pred:pred,records:records,selObj:selObj,ex:EX})); }catch(e){}
+  saveSum();
 }
 /* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
 function newTrack(){return {
@@ -1007,6 +1018,8 @@ $('qNext').onclick=()=>{
   if(qi<QUIZ.length-1){ qi++; showQ(); return; }
   qFinished=true;
   const s=qScoreNow();
+  if(s>qBest) qBest=s;
+  saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
   $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
@@ -1628,6 +1641,7 @@ function loop(now){
 }
 
 /* ================= init ================= */
+saveSum();
 applyStatic();
 renderChrome();
 renderEx();
