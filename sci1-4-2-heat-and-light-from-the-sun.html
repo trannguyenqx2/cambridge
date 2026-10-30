@@ -1471,14 +1471,32 @@ function buildHat(){
 }
 function buildStar(){
   const g=new THREE.Group();
-  const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.17,0),
+  const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.24,0),
     new THREE.MeshBasicMaterial({color:0xffe066,transparent:true,opacity:1}));
   m.scale.set(1,1.5,1); g.add(m);
-  const m2=new THREE.Mesh(new THREE.OctahedronGeometry(0.1,0),
+  const m2=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),
     new THREE.MeshBasicMaterial({color:0xfff3b0,transparent:true,opacity:1}));
   m2.rotation.z=Math.PI/4; g.add(m2);
+  /* generous invisible hit proxy — the bare octahedra are far too small to tap reliably;
+     reg() stamps every child with the star's objId, so the proxy picks as the star */
+  const proxy=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.05,1.05),
+    new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+  g.add(proxy);
   g.userData.mats=[m.material,m2.material];
+  g.userData.baseCols=[0xffe066,0xfff3b0];
   return g;
+}
+function flashStar(id){
+  const g=G[id]; if(!g||!g.userData.mats) return;
+  const mats=g.userData.mats, cols=g.userData.baseCols||[0xffe066,0xfff3b0];
+  mats.forEach(m=>m.color.setHex(0xffffff));
+  const inner=[g.children[0],g.children[1]];
+  addAnim(0.45,f=>{
+    const s=1+Math.sin(f*Math.PI)*0.55;
+    if(inner[0]) inner[0].scale.set(s,s*1.5,s);
+    if(inner[1]) inner[1].scale.set(s,s,s);
+  },()=>{ if(inner[0]) inner[0].scale.set(1,1.5,1); if(inner[1]) inner[1].scale.set(1,1,1); });
+  setTimeout(()=>{ mats.forEach((m,ix)=>m.color.setHex(cols[ix]||0xffe066)); },340);
 }
 function buildSun(){
   const g=new THREE.Group();
@@ -1597,7 +1615,7 @@ function init3D(){
   reg('cat',buildCat());
   reg('sun',buildSun());
   reg('cloud',buildCloud());
-  const starPos={star1:{x:-3.4,y:6.3,z:-6.5},star2:{x:0.4,y:7.1,z:-7.5},star3:{x:3.9,y:6.1,z:-6.2}};
+  const starPos={star1:{x:-3.6,y:4.0,z:-8.5},star2:{x:0.2,y:5.1,z:-8.5},star3:{x:4.1,y:4.0,z:-8.5}};
   Object.keys(starPos).forEach(id=>{
     const st=buildStar(); st.position.set(starPos[id].x,starPos[id].y,starPos[id].z);
     st.userData.baseY=starPos[id].y; reg(id,st);
@@ -1689,7 +1707,7 @@ function handleTap(id){
   if(!THINGS[id]) return;
   focusVisual(id);
   if(id==='star1'||id==='star2'||id==='star3'){
-    bounceThing(id);
+    bounceThing(id); flashStar(id);
     if(curStep===0&&dayTarget===0){
       T.s1stars.add(id);
       if(T.s1stars.size>=3) dayTarget=1;
@@ -1726,8 +1744,19 @@ function handleTap(id){
   bounceThing(id);
   refreshEvidence();
 }
+function tweenCam(ph,ty,r){
+  const sph=ORB.ph, sty=ORB.ty, sr=ORB.r;
+  addAnim(1.0,f=>{
+    const g=easeInOut(f);
+    ORB.ph=sph+(ph-sph)*g; ORB.ty=sty+(ty-sty)*g; ORB.r=sr+(r-sr)*g;
+  });
+}
 function applyStepStart(i){
   dayTarget=(i===0)?0:1;
+  /* Step 1 is played in the night sky: tilt the orbit up so the three stars
+     (repositioned to y 4-5.1, z -8.5) sit inside the frame; every other step
+     returns to the standard garden framing the rest of the lesson was built for. */
+  if(i===0) tweenCam(1.40,1.2,11.0); else tweenCam(1.07,0.4,9.6);
   if(i!==5){ frostTarget=0; }
   cloudCover=(i===2);
   if(i===1&&!hatOn){ /* hat waits on its stand */ }

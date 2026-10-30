@@ -1521,6 +1521,13 @@ function buildTrowel(){
   handle.rotation.z=0.7; handle.position.set(-0.1,0.18,0); g.add(handle);
   const blade=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.05,0.2),stdMat(0xb9c4cc,0.35)));
   blade.rotation.z=0.7; blade.position.set(0.14,0.02,0); g.add(blade);
+  /* generous invisible hit proxy (~2.5x the trowel's extent): the handle is a 0.045-radius
+     cylinder and the blade 0.05 thick, so real taps almost always missed them by a few px
+     and fell through to the bed group behind (id 'bed'), which just re-showed the
+     "tap the trowel first" hint. reg() stamps every child with 'trowel', proxy included. */
+  const proxy=new THREE.Mesh(new THREE.BoxGeometry(1.05,0.8,0.6),
+    new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+  proxy.position.set(0,0.15,0); g.add(proxy);
   g.position.set(-3.6,0.95,1.35); g.rotation.y=0.5; g.userData.baseY=0.95;
   return g;
 }
