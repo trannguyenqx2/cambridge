@@ -176,6 +176,36 @@ button:disabled{opacity:.45;cursor:default}
   #btnConsole{display:inline-block !important}
   #stepCard{width:340px}
 }
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+.wordopt.sel{border-color:var(--acc);background:#eef6ff}
+.wordopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.piccard.missed{border-style:dashed;border-color:#b3541e}
 </style>
 </head>
 <body>
@@ -224,11 +254,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -294,6 +326,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -304,6 +338,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -366,6 +401,8 @@ button:disabled{opacity:.45;cursor:default}
     </section>
 
     <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <button id="exClose"></button>
     </div>
@@ -378,7 +415,26 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 /* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -397,7 +453,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= bench things ================= */
@@ -489,7 +545,22 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'mixture',vi:'hỗn hợp'},
@@ -658,7 +729,7 @@ const EX2=[
  {id:'m_rice_sand',emoji:'🍚',en:'Rice and sand',vi:'Gạo và cát',through:{en:'sand',vi:'cát'},stay:{en:'rice',vi:'gạo'},size:'small'},
  {id:'m_rice_beans',emoji:'🫘',en:'Rice and beans',vi:'Gạo và đậu',through:{en:'rice',vi:'gạo'},stay:{en:'beans',vi:'đậu'},size:'med'}
 ];
-const EX2_ORDER=mixOrder(EX2,c=>c.size,3);
+let EX2_ORDER=mixOrder(EX2,c=>c.size,3);
 const EX2_SIZES=['small','med','big'];
 /* Ex3 · Challenge 4 — Zara's diagram mistakes */
 const EX3_D1={q:{en:'Diagram 1: she drew the sieve and the sand and rocks — but one thing is missing. What is the mistake?',vi:'Sơ đồ 1: bạn ấy đã vẽ cái rây, cát và đá — nhưng còn thiếu một thứ. Lỗi đó là gì?'},
@@ -673,20 +744,64 @@ const EX3_D2=[
  {id:'d2d',en:'She used the wrong mixture',vi:'Bạn ấy dùng sai hỗn hợp',right:false},
  {id:'d2e',en:'She separated the mixture too fast',vi:'Bạn ấy tách hỗn hợp quá nhanh',right:false}
 ];
-const EX3_D2_ORDER=mixOrder(EX3_D2,c=>c.right?'right':'wrong',3);
+let EX3_D2_ORDER=mixOrder(EX3_D2,c=>c.right?'right':'wrong',3);
 const EX_TOTAL=EX1A.length+4+EX2.length*2+4; /* 3 + 4 + 6 + 4 = 17 */
 let EX1DONE=new Set(), EX1BDONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+/* Mechanics v2: submit-mode exercise state — answers are stored neutrally (no
+   right/wrong feedback) and scored only when the learner taps Submit; exBest
+   is the best SUBMITTED score. The EX*DONE sets above hold the correct items
+   of the latest submission (empty until the first Submit). */
+let exBest=0, exRevealed=false;
+let EX1AANS={}, EX1BANS={}, EX2ANS_T={}, EX2ANS_S={}, EX3ANS_D1=null, EX3SEL_D2=new Set();
+let EX2_TORD={}, EX2_SORD={}, EX3_D1_ORDER=[];
+function rollExOrders(){
+  EX1A.forEach(c=>{ EX1A_ORDERS[c.id]=fyIdx(EX1A_WORDS.length); });
+  EX1B.forEach(s=>s.blanks.forEach(b=>{ EX1B_ORDERS[b.id]=fyIdx(b.opts.length); }));
+  EX2.forEach(m=>{ EX2_TORD[m.id]=fyIdx(2); EX2_SORD[m.id]=fyIdx(EX2_SIZES.length); });
+  EX2_ORDER=mixOrder(EX2,c=>c.size,3);
+  EX3_D1_ORDER=fyIdx(EX3_D1.opts.length);
+  EX3_D2_ORDER=mixOrder(EX3_D2,c=>c.right?'right':'wrong',3);
+}
+function ex3D2Score(){
+  let r=0,w=0;
+  EX3_D2.forEach(o=>{ if(EX3SEL_D2.has(o.id)){ if(o.right) r++; else w++; } });
+  return Math.max(0,r-w);
+}
+function exSubmitScore(){
+  let n=0;
+  EX1A.forEach(c=>{ if(EX1AANS[c.id]===c.ans) n++; });
+  EX1B.forEach(s=>s.blanks.forEach(b=>{ if(EX1BANS[b.id]===b.a) n++; }));
+  EX2.forEach(m=>{ if(EX2ANS_T[m.id]==='through') n++; if(EX2ANS_S[m.id]===m.size) n++; });
+  if(EX3ANS_D1){ const o=EX3_D1.opts.find(x=>x.id===EX3ANS_D1); if(o&&o.right) n++; }
+  n+=ex3D2Score();
+  return n;
+}
+rollExOrders();
 
 /* ================= state + persistence ================= */
 const KEY='camb:sci3-2-2';
 let doneSteps=new Set(), curStep=0;
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+let stepGen=0;                              /* bumped on every step entry/reset — stale callbacks check it */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 let FOUND={beans:false,soil:false,metal:false,salt:false,clips:false,rice:false};
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
     if(s.ex&&typeof s.ex==='object'){
       if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
@@ -694,8 +809,32 @@ try{
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
       if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ const c=EX1A.find(x=>x.id===id); if(c&&EX1A_WORDS.some(w=>w.en===s.exAns.a1[id])) EX1AANS[id]=s.exAns.a1[id]; });
+      if(s.exAns.b1&&typeof s.exAns.b1==='object') Object.keys(s.exAns.b1).forEach(id=>{ let bl=null; EX1B.forEach(sb=>sb.blanks.forEach(x=>{ if(x.id===id) bl=x; })); if(bl&&(s.exAns.b1[id]===0||s.exAns.b1[id]===1)) EX1BANS[id]=s.exAns.b1[id]; });
+      if(s.exAns.t2&&typeof s.exAns.t2==='object') Object.keys(s.exAns.t2).forEach(id=>{ if(EX2.some(m=>m.id===id)&&(s.exAns.t2[id]==='through'||s.exAns.t2[id]==='stay')) EX2ANS_T[id]=s.exAns.t2[id]; });
+      if(s.exAns.s2&&typeof s.exAns.s2==='object') Object.keys(s.exAns.s2).forEach(id=>{ if(EX2.some(m=>m.id===id)&&EX2_SIZES.indexOf(s.exAns.s2[id])>=0) EX2ANS_S[id]=s.exAns.s2[id]; });
+      if(typeof s.exAns.d1==='string'&&EX3_D1.opts.some(o=>o.id===s.exAns.d1)) EX3ANS_D1=s.exAns.d1;
+      if(Array.isArray(s.exAns.d2)) s.exAns.d2.forEach(id=>{ if(EX3_D2.some(o=>o.id===id)) EX3SEL_D2.add(id); });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX1BDONE.size||EX2DONE.size||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1A.forEach(c=>{ if(EX1DONE.has(c.id)) EX1AANS[c.id]=c.ans; });
+      EX1B.forEach(sb=>sb.blanks.forEach(b=>{ if(EX1BDONE.has(b.id)) EX1BANS[b.id]=b.a; }));
+      EX2.forEach(m=>{ if(EX2DONE.has(m.id+'_t')) EX2ANS_T[m.id]='through'; if(EX2DONE.has(m.id+'_s')) EX2ANS_S[m.id]=m.size; });
+      if(EX3DONE.has('d1')){ const o=EX3_D1.opts.find(x=>x.right); if(o) EX3ANS_D1=o.id; }
+      EX3_D2.forEach(o=>{ if(EX3DONE.has(o.id)) EX3SEL_D2.add(o.id); });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX1BDONE.size+EX2DONE.size+EX3DONE.size);
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
 const SUMKEY='camb:sum:sci3-2-2';
 let qBest=0;
 try{
@@ -703,10 +842,12 @@ try{
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,found:FOUND,ex:{e1:[...EX1DONE],e1b:[...EX1BDONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,found:FOUND,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:{a1:EX1AANS,b1:EX1BANS,t2:EX2ANS_T,s2:EX2ANS_S,d1:EX3ANS_D1,d2:[...EX3SEL_D2]},ex:{e1:[...EX1DONE],e1b:[...EX1BDONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
   saveSum();
 }
 /* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
@@ -717,6 +858,71 @@ function newTrack(){return {
   clips:false, rice:false
 };}
 let T=newTrack();
+
+/* ================= Mechanics v2: notice, gates, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function clearBusy(){ busy.soil=false; busy.metal=false; busy.marcus=false; busy.clips=false; busy.rice=false; }
+function resetStepEvidence(){
+  /* wipe ONLY the current step's collected evidence (the same trackers the Reset
+     button clears, plus that step's console mirror), then re-lock the instruction.
+     In-flight action animations are dropped, so their busy flags are cleared too —
+     otherwise a dropped completion callback would leave a step's action dead. */
+  anims.length=0; T=newTrack();
+  stepGen++; clearBusy();
+  if(curStep===0) FOUND.beans=false;
+  if(curStep===1) FOUND.soil=false;
+  if(curStep===2) FOUND.metal=false;
+  if(curStep===3) FOUND.salt=false;
+  if(curStep===4) FOUND.clips=false;
+  if(curStep===5) FOUND.rice=false;
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderGroups(); renderFound();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
+}
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -784,6 +990,13 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===5?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  const acked=ackSet.has(curStep);
+  paintAckGate();
+  $('btnNext').disabled=!(done&&acked);
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -846,21 +1059,27 @@ function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
   anims.length=0;
   T=newTrack();
+  stepGen++; clearBusy();   /* dropped animations never run their completion callbacks — free the action locks */
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
   anims.length=0; T=newTrack();
+  stepGen++; clearBusy();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   applyStepStart(curStep); saveProg(); renderSteps();
 };
 $('btnDemo').onclick=()=>{
   const i=curStep;
-  if(i===0){ pickBean('beanRed','demo'); setTimeout(()=>pickBean('beanWhite','demo'),700); setTimeout(()=>pickBean('beanBlack','demo'),1400); }
+  if(i===0){ const gen=stepGen, stp=curStep; pickBean('beanRed','demo'); setTimeout(()=>{ if(gen===stepGen&&curStep===stp) pickBean('beanWhite','demo'); },700); setTimeout(()=>{ if(gen===stepGen&&curStep===stp) pickBean('beanBlack','demo'); },1400); }
   else if(i===1){ doSieveSoil('demo'); }
   else if(i===2){ doMagnetMetal('demo'); }
-  else if(i===3){ focusThing('sieveTool'); setTimeout(()=>doMarcus('demo'),500); }
+  else if(i===3){ const gen=stepGen, stp=curStep; focusThing('sieveTool'); setTimeout(()=>{ if(gen===stepGen&&curStep===stp) doMarcus('demo'); },500); }
   else if(i===4){ doClips('demo'); }
   else if(i===5){ doRiceSieve('demo'); }
 };
@@ -930,6 +1149,7 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   rollQuizOrder();
   qi=0; qFinished=false;
   qState=QUIZ.map(()=>({chosen:-1}));
@@ -937,45 +1157,57 @@ function openQuiz(){
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals the score, the correct answers
+   and the explanations. qBest only ever moves on a submitted result. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
   $('qProg').textContent=(qi+1)+' / '+QUIZ.length;
   $('qText').innerHTML=bi(it.q);
+  $('qScore').textContent='';
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   const box=$('qOpts'); box.innerHTML='';
-  (qOrder[qi]||[]).forEach(oi=>{
+  (qOrder[qi]||[]).forEach((oi,di)=>{
     const b=document.createElement('button');
-    b.className='qopt';
+    b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=bi(it.o[oi]);
-    if(st.chosen>=0){
-      b.disabled=true;
-      if(oi===it.a) b.classList.add('right');
-      else if(oi===(qOrder[qi][st.chosen])) b.classList.add('wrong');
-    }
-    b.onclick=()=>{ if(qState[qi].chosen>=0) return; qState[qi].chosen=(qOrder[qi]||[]).indexOf(oi); showQ(); };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     box.appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi][st.chosen]===it.a);
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
-  $('qScore').textContent='';
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ openQuiz(); return; }
-  if(qState[qi].chosen<0) return;
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+function showQuizResults(){
   qFinished=true;
-  const sc=qScoreNow();
-  if(sc>qBest){ qBest=sc; saveProg(); }
+  const s=qScoreNow();
+  if(s>qBest) qBest=s;
+  saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML='';
+  $('qBack').style.display='none';
   $('qExpl').classList.remove('open'); $('qExpl').textContent='';
-  $('qScore').innerHTML=esc(sc+' / '+QUIZ.length)+(sc>=Math.ceil(QUIZ.length*0.75)?' ⭐':'');
+  const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
+             vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
+  $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let hh='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    hh+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) hh+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    hh+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=hh; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ openQuiz(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -992,6 +1224,7 @@ loadWallet();
 function saveWallet(){ try{ localStorage.setItem(WALLET_KEY,JSON.stringify(wallet)); }catch(e){} }
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   bOrder=QUIZ.map(q=>fyIdx(q.o.length));
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1059,45 +1292,73 @@ $('bNext').onclick=()=>{
 $('bClose').onclick=closeBot;
 $('btnBotTop').onclick=openBot;
 
-/* ================= exercises panel ================= */
-function exScoreNow(){ return EX1DONE.size+EX1BDONE.size+EX2DONE.size+EX3DONE.size; }
+/* ================= exercises panel (Mechanics v2: submit-mode) =================
+   Answers are recorded WITHOUT any right/wrong feedback and can be changed
+   freely. One Submit scores everything at once, then reveals the correct
+   answers. The summary `e` value is the best SUBMITTED score (the EX*DONE
+   sets hold the correct items of the latest submission). */
+function exScoreNow(){ return exBest; }
+function exAnsweredCount(){
+  const n=Object.keys(EX1AANS).length+Object.keys(EX1BANS).length
+    +Object.keys(EX2ANS_T).length+Object.keys(EX2ANS_S).length
+    +(EX3ANS_D1?1:0)+EX3SEL_D2.size;
+  return Math.min(EX_TOTAL,n);
+}
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
 function sizeLabel(k){ return k==='small'?STR.ex2Small : k==='med'?STR.ex2Med : STR.ex2Big; }
+function exSec3Score(){
+  let n=EX3DONE.has('d1')?1:0;
+  return n+ex3D2Score();
+}
 function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=exSubmitScore(), all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
   /* ---- Ex 1 · Focus: label cards + fill-the-word sentences ---- */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=EX1A.length&&EX1BDONE.size>=4);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=EX1A.length&&EX1BDONE.size>=4);
+  const ex1DoneAll=EX1DONE.size>=EX1A.length&&EX1BDONE.size>=4;
+  $('exSec1').classList.toggle('done',exRevealed&&ex1DoneAll);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&ex1DoneAll);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
   $('ex1Hint').innerHTML='';
   const g1=$('ex1Grid'); g1.innerHTML='';
   EX1A.forEach(card=>{
     const d=document.createElement('div');
-    d.className='excard'+(EX1DONE.has(card.id)?' right':'');
+    d.className='excard';
     d.id='excard_'+card.id;
-    let html='<span class="em">'+card.emoji+'</span>';
-    if(EX1DONE.has(card.id)){
-      html+='<div><b>'+esc(card.ans)+'</b></div>';
-    }else{
-      html+='<div>'+(EX1A_ORDERS[card.id]||[]).map(wi=>'<button class="wordopt" data-card="'+card.id+'" data-w="'+esc(EX1A_WORDS[wi].en)+'">'+biInl(EX1A_WORDS[wi])+'</button>').join(' ')+'</div>';
-    }
+    const chosen=EX1AANS[card.id];
+    let html='<span class="em">'+card.emoji+'</span><div>';
+    html+=(EX1A_ORDERS[card.id]||[]).map(wi=>{
+      const w=EX1A_WORDS[wi];
+      let cls='wordopt';
+      if(chosen===w.en) cls+=' sel';
+      if(exRevealed&&w.en===card.ans) cls+=' rightmark';
+      if(exRevealed&&chosen===w.en&&w.en!==card.ans) cls+=' wrongsel';
+      return '<button class="'+cls+'" data-card="'+card.id+'" data-w="'+esc(w.en)+'">'+biInl(w)+'</button>';
+    }).join(' ')+'</div>';
     d.innerHTML=html;
     g1.appendChild(d);
   });
   g1.querySelectorAll('.wordopt').forEach(b=>{
     b.onclick=()=>{
+      if(exRevealed) return;
       const card=EX1A.find(x=>x.id===b.dataset.card);
-      if(!card||EX1DONE.has(card.id)) return;
-      if(b.dataset.w===card.ans){ EX1DONE.add(card.id); saveProg(); renderExercises(); }
-      else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+      if(!card) return;
+      EX1AANS[card.id]=b.dataset.w;
+      saveProg(); renderExercises();
     };
   });
   let lb=$('ex1bList');
@@ -1108,11 +1369,14 @@ function renderExercises(){
     let html=biInl(s.pre)+' ';
     s.blanks.forEach((bl,bi2)=>{
       if(bi2===1) html+=biInl(s.post)+' ';
-      if(EX1BDONE.has(bl.id)){
-        html+='<button class="wordopt crossed" disabled>'+biInl(bl.opts[bl.a])+'</button> ';
-      }else{
-        html+=(EX1B_ORDERS[bl.id]||[]).map(oi=>'<button class="wordopt" data-blank="'+bl.id+'" data-o="'+oi+'">'+biInl(bl.opts[oi])+'</button>').join(' ')+' ';
-      }
+      html+=(EX1B_ORDERS[bl.id]||[]).map(oi=>{
+        const o=bl.opts[oi];
+        let cls='wordopt';
+        if(EX1BANS[bl.id]===oi) cls+=' sel';
+        if(exRevealed&&oi===bl.a) cls+=' rightmark';
+        if(exRevealed&&EX1BANS[bl.id]===oi&&oi!==bl.a) cls+=' wrongsel';
+        return '<button class="'+cls+'" data-blank="'+bl.id+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+      }).join(' ')+' ';
     });
     html+=biInl(s.post2);
     row.innerHTML=html;
@@ -1120,16 +1384,14 @@ function renderExercises(){
   });
   lb.querySelectorAll('.wordopt[data-blank]').forEach(b=>{
     b.onclick=()=>{
-      const bid=b.dataset.blank;
-      let bl=null; EX1B.forEach(s=>s.blanks.forEach(x=>{ if(x.id===bid) bl=x; }));
-      if(!bl||EX1BDONE.has(bid)) return;
-      if(parseInt(b.dataset.o,10)===bl.a){ EX1BDONE.add(bid); saveProg(); renderExercises(); }
-      else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+      if(exRevealed) return;
+      EX1BANS[b.dataset.blank]=parseInt(b.dataset.o,10);
+      saveProg(); renderExercises();
     };
   });
   /* ---- Ex 2 · Practice: through the holes ---- */
-  $('exSec2').classList.toggle('done',EX2DONE.size>=EX2.length*2);
-  $('ex2T').innerHTML=exHead(STR.ex2T,EX2DONE.size>=EX2.length*2);
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length*2);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length*2);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
   $('ex2BinLiving').style.display='none';
   $('ex2BinNon').style.display='none';
@@ -1139,22 +1401,31 @@ function renderExercises(){
     d.className='excard';
     d.style.gridColumn='1 / -1';
     d.style.textAlign='left';
-    const tDone=EX2DONE.has(m.id+'_t'), sDone=EX2DONE.has(m.id+'_s');
-    if(tDone&&sDone) d.classList.add('right');
+    const tAns=EX2ANS_T[m.id], sAns=EX2ANS_S[m.id];
+    const bothRight=EX2DONE.has(m.id+'_t')&&EX2DONE.has(m.id+'_s');
+    if(exRevealed&&bothRight) d.classList.add('right');
     let html='<span class="em" style="display:inline;font-size:26px">'+m.emoji+'</span> <b>'+biInl(m)+'</b>';
     html+='<div style="margin-top:7px">'+biInl(STR.ex2Through)+' ';
-    if(tDone){ html+='<button class="wordopt crossed" disabled>'+biInl(m.through)+'</button>'; }
-    else{
-      const pair=[{v:'through',o:m.through},{v:'stay',o:m.stay}];
-      html+=fyShuffle(pair).map(p=>'<button class="wordopt" data-mix="'+m.id+'" data-part="t" data-v="'+p.v+'">'+biInl(p.o)+'</button>').join(' ');
-    }
+    const pair=[{v:'through',o:m.through},{v:'stay',o:m.stay}];
+    html+=(EX2_TORD[m.id]||[0,1]).map(pi=>{
+      const p=pair[pi];
+      let cls='wordopt';
+      if(tAns===p.v) cls+=' sel';
+      if(exRevealed&&p.v==='through') cls+=' rightmark';
+      if(exRevealed&&tAns===p.v&&p.v!=='through') cls+=' wrongsel';
+      return '<button class="'+cls+'" data-mix="'+m.id+'" data-part="t" data-v="'+p.v+'">'+biInl(p.o)+'</button>';
+    }).join(' ');
     html+='</div><div style="margin-top:6px">'+biInl(STR.ex2Sieve)+' ';
-    if(sDone){ html+='<button class="wordopt crossed" disabled>'+biInl(sizeLabel(m.size))+'</button>'; }
-    else{
-      html+=fyShuffle(EX2_SIZES.slice()).map(k=>'<button class="wordopt" data-mix="'+m.id+'" data-part="s" data-v="'+k+'">'+biInl(sizeLabel(k))+'</button>').join(' ');
-    }
+    html+=(EX2_SORD[m.id]||[0,1,2]).map(si=>{
+      const k=EX2_SIZES[si];
+      let cls='wordopt';
+      if(sAns===k) cls+=' sel';
+      if(exRevealed&&k===m.size) cls+=' rightmark';
+      if(exRevealed&&sAns===k&&k!==m.size) cls+=' wrongsel';
+      return '<button class="'+cls+'" data-mix="'+m.id+'" data-part="s" data-v="'+k+'">'+biInl(sizeLabel(k))+'</button>';
+    }).join(' ');
     html+='</div>';
-    if(tDone&&sDone){
+    if(exRevealed&&bothRight){
       const sent={en:'The '+m.through.en+' will go through the holes but the '+m.stay.en+' will not.',
                   vi:'Vật liệu '+m.through.vi+' sẽ lọt qua các lỗ, còn '+m.stay.vi+' thì không.'};
       html+='<div class="exexpl">✓ '+bi(sent)+'</div>';
@@ -1164,57 +1435,88 @@ function renderExercises(){
   });
   g2.querySelectorAll('.wordopt').forEach(b=>{
     b.onclick=()=>{
+      if(exRevealed) return;
       const m=EX2.find(x=>x.id===b.dataset.mix); if(!m) return;
-      const key=m.id+'_'+b.dataset.part;
-      if(EX2DONE.has(key)) return;
-      const right=(b.dataset.part==='t')? (b.dataset.v==='through') : (b.dataset.v===m.size);
-      if(right){ EX2DONE.add(key); saveProg(); renderExercises(); }
-      else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+      if(b.dataset.part==='t') EX2ANS_T[m.id]=b.dataset.v;
+      else EX2ANS_S[m.id]=b.dataset.v;
+      saveProg(); renderExercises();
     };
   });
   /* ---- Ex 3 · Challenge: Zara's mistakes ---- */
-  $('exSec3').classList.toggle('done',EX3DONE.size>=4);
-  $('ex3T').innerHTML=exHead(STR.ex3T,EX3DONE.size>=4);
+  const ex3DoneAll=exSec3Score()>=4;
+  $('exSec3').classList.toggle('done',exRevealed&&ex3DoneAll);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&ex3DoneAll);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
   const list=$('ex3List'); list.innerHTML='';
   const r1=document.createElement('div'); r1.className='exsent';
   let h1='<b>1.</b> '+bi(EX3_D1.q)+'<div style="margin-top:7px">';
-  if(EX3DONE.has('d1')){
-    const right=EX3_D1.opts.find(o=>o.right);
-    h1+='<button class="wordopt crossed" disabled>'+biInl(right)+'</button>';
-  }else{
-    h1+=fyShuffle(EX3_D1.opts.slice()).map(o=>'<button class="wordopt" data-d1="'+o.id+'">'+biInl(o)+'</button>').join(' ');
-  }
+  h1+=(EX3_D1_ORDER||[]).map(oi=>{
+    const o=EX3_D1.opts[oi];
+    let cls='wordopt';
+    if(EX3ANS_D1===o.id) cls+=' sel';
+    if(exRevealed&&o.right) cls+=' rightmark';
+    if(exRevealed&&EX3ANS_D1===o.id&&!o.right) cls+=' wrongsel';
+    return '<button class="'+cls+'" data-d1="'+o.id+'">'+biInl(o)+'</button>';
+  }).join(' ');
   h1+='</div>';
   r1.innerHTML=h1;
   list.appendChild(r1);
   const r2=document.createElement('div'); r2.className='exsent';
   let h2='<b>2.</b> '+bi({en:'Diagram 2: tap the THREE mistakes.',vi:'Sơ đồ 2: chạm vào BA lỗi sai.'})+'<div class="picgrid" style="margin-top:8px">';
   EX3_D2_ORDER.forEach(o=>{
-    const done=EX3DONE.has(o.id);
-    h2+='<div class="piccard'+(done?' right':'')+'" data-d2="'+o.id+'" style="cursor:pointer"><span style="font-size:16px">'+biInl(o)+'</span></div>';
+    let cls='piccard';
+    if(EX3SEL_D2.has(o.id)) cls+=' sel';
+    if(exRevealed){
+      if(EX3DONE.has(o.id)) cls+=' right';
+      else if(EX3SEL_D2.has(o.id)) cls+=' wrong';
+      else if(o.right) cls+=' missed';
+    }
+    h2+='<div class="'+cls+'" data-d2="'+o.id+'" style="cursor:pointer"><span style="font-size:16px">'+biInl(o)+'</span></div>';
   });
   h2+='</div>';
   r2.innerHTML=h2;
   list.appendChild(r2);
   list.querySelectorAll('[data-d1]').forEach(b=>{
     b.onclick=()=>{
-      if(EX3DONE.has('d1')) return;
-      const o=EX3_D1.opts.find(x=>x.id===b.dataset.d1);
-      if(o&&o.right){ EX3DONE.add('d1'); saveProg(); renderExercises(); }
-      else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+      if(exRevealed) return;
+      EX3ANS_D1=b.dataset.d1;
+      saveProg(); renderExercises();
     };
   });
   list.querySelectorAll('[data-d2]').forEach(d=>{
     d.onclick=()=>{
-      const o=EX3_D2.find(x=>x.id===d.dataset.d2);
-      if(!o||EX3DONE.has(o.id)) return;
-      if(o.right){ EX3DONE.add(o.id); saveProg(); renderExercises(); }
-      else{ d.classList.add('shake'); setTimeout(()=>d.classList.remove('shake'),500); }
+      if(exRevealed) return;
+      const id=d.dataset.d2;
+      if(EX3SEL_D2.has(id)) EX3SEL_D2.delete(id); else EX3SEL_D2.add(id);
+      saveProg(); renderExercises();
     };
   });
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1A.filter(c=>EX1AANS[c.id]===c.ans).map(c=>c.id));
+  EX1BDONE=new Set();
+  EX1B.forEach(s=>s.blanks.forEach(b=>{ if(EX1BANS[b.id]===b.a) EX1BDONE.add(b.id); }));
+  EX2DONE=new Set();
+  EX2.forEach(m=>{ if(EX2ANS_T[m.id]==='through') EX2DONE.add(m.id+'_t'); if(EX2ANS_S[m.id]===m.size) EX2DONE.add(m.id+'_s'); });
+  EX3DONE=new Set();
+  if(EX3ANS_D1){ const o=EX3_D1.opts.find(x=>x.id===EX3ANS_D1); if(o&&o.right) EX3DONE.add('d1'); }
+  EX3_D2.forEach(o=>{ if(o.right&&EX3SEL_D2.has(o.id)) EX3DONE.add(o.id); });
+  const total=exSubmitScore();
+  if(total>exBest) exBest=total;
+  exRevealed=true;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1AANS={}; EX1BANS={}; EX2ANS_T={}; EX2ANS_S={}; EX3ANS_D1=null; EX3SEL_D2=new Set();
+  EX1DONE=new Set(); EX1BDONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  rollExOrders();
+  exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1222,12 +1524,23 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderGroups(); renderFound(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderGroups(); renderFound(); renderKeyWords();
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+    if($('exModal').classList.contains('open')) renderExercises();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1236,7 +1549,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1278,6 +1591,8 @@ function setSpriteText(sp,text){
 }
 let renderer3=null, scene3=null, camera3=null;
 let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 let lastRW=0, lastRH=0;
 const OBJ={};
 const busy={};
@@ -1287,7 +1602,7 @@ function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
 function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
 function proxy(w,h,d,y){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-  m.position.y=y||0; return m;
+  m.position.y=y||0; hitProxies.push(m); return m;
 }
 function horseshoe(R,tube,red){
   const g=new THREE.Group();
@@ -1380,6 +1695,7 @@ function buildMagnetStation(){
 function buildMarcus(){
   const bowl=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.72,0.55,0.4,22),stdMat(0x2a9d8f,0.5)));
   bowl.position.set(3.2,0.2,-1.4); scene3.add(bowl);
+  const bowlMProxy=proxy(1.55,1.05,1.55,0); bowlMProxy.position.set(3.2,0.32,-1.4); bowlMProxy.userData.objId='bowlM'; scene3.add(bowlMProxy);
   const salt=new THREE.Group(); salt.position.set(3.2,0.42,-1.4);
   for(let i=0;i<9;i++){
     const s=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),stdMat(0xffffff,0.4));
@@ -1419,7 +1735,7 @@ function buildMarcus(){
   st.userData.home=st.position.clone();
   reg('sieveTool',st);
   const mt=horseshoe(0.26,0.07,0xd23c2a);
-  mt.rotation.x=-Math.PI/2; mt.position.set(1.9,0.12,-2.3); mt.add(proxy(1.0,0.9,1.0,0));
+  mt.rotation.x=-Math.PI/2; mt.position.set(1.9,0.12,-2.3); mt.add(proxy(1.2,1.05,1.15,0.05));
   mt.userData.home=mt.position.clone();
   reg('magnetTool',mt);
   const sp=new THREE.Group(); sp.position.set(1.9,0.05,-0.15);
@@ -1427,13 +1743,14 @@ function buildMarcus(){
   hd.rotation.z=Math.PI/2; sp.add(hd);
   const bw=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,12,8),new THREE.MeshStandardMaterial({color:0xd7dde3,roughness:0.3,metalness:0.8})));
   bw.scale.set(1,0.32,0.7); bw.position.set(0.42,0,0); sp.add(bw);
-  sp.add(proxy(1.1,0.8,1.0,0.15));
+  sp.add(proxy(1.3,0.75,1.15,0.12));
   sp.userData.home=sp.position.clone();
   reg('spoonTool',sp);
 }
 function buildAmazing(){
   const bowl=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.58,0.42,22),stdMat(0xe07b24,0.5)));
   bowl.position.set(3.1,0.21,1.7); scene3.add(bowl);
+  const bowlAProxy=proxy(1.55,1.05,1.55,0); bowlAProxy.position.set(3.1,0.32,1.7); bowlAProxy.userData.objId='bowlA'; scene3.add(bowlAProxy);
   const sand=new THREE.Mesh(new THREE.CircleGeometry(0.62,22),stdMat(0xe0c184,1));
   sand.rotation.x=-Math.PI/2; sand.position.set(3.1,0.43,1.7); scene3.add(sand); OBJ.sandDisc=sand;
   const rice=new THREE.Group(); rice.position.set(3.1,0.47,1.7);
@@ -1471,7 +1788,7 @@ function buildAmazing(){
   rim.rotation.x=Math.PI/2; rim.position.y=0.52; s2.add(rim);
   const disc=new THREE.Mesh(new THREE.CircleGeometry(0.48,20),new THREE.MeshStandardMaterial({color:0xaebfca,roughness:0.35,metalness:0.65,side:THREE.DoubleSide}));
   disc.rotation.x=-Math.PI/2; disc.position.y=0.52; s2.add(disc);
-  s2.add(proxy(1.5,1.2,1.3,0.5));
+  s2.add(proxy(1.55,1.1,1.3,0.42));
   s2.userData.home=s2.position.clone();
   reg('sieve2',s2);
   const sbits=new THREE.Group();
@@ -1553,11 +1870,8 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
-      for(let h=0;h<hits.length;h++){
-        const id=hits[h].object.userData.objId;
-        if(id){ handleTap(id); break; }
-      }
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
     }
   });
   el.addEventListener('pointercancel',()=>{ dragMode=null; });
@@ -1603,6 +1917,7 @@ function bounceThing(id){
 
 /* ================= separating actions ================= */
 function pickBean(id,src){
+  const gen=stepGen;
   const g=G[id]; if(!g||g.userData.gone) return;
   g.userData.gone=true;
   const from=g.position.clone(), to=BOWL_POS[id];
@@ -1610,7 +1925,7 @@ function pickBean(id,src){
     const e=easeInOut(f);
     g.position.set(from.x+(to.x-from.x)*e, from.y+(to.y-from.y)*e+Math.sin(f*Math.PI)*0.8, from.z+(to.z-from.z)*e);
   },()=>{
-    if(src==='user'){
+    if(src==='user'&&gen===stepGen){
       T.beans.add(id);
       if(T.beans.size>=3){ FOUND.beans=true; }
       saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence();
@@ -1619,6 +1934,7 @@ function pickBean(id,src){
 }
 function doSieveSoil(src){
   if(busy.soil) return; busy.soil=true;
+  const gen=stepGen;
   const bits=OBJ.soilBits, mound=OBJ.soilMound;
   bits.visible=true;
   bits.children.forEach(c=>{ c.position.copy(c.userData.home); });
@@ -1634,11 +1950,12 @@ function doSieveSoil(src){
     if(G.sieve1) G.sieve1.position.x=-3.1;
     OBJ.soilPile.visible=true; bits.visible=false;
     busy.soil=false;
-    if(src==='user'){ T.soil=true; FOUND.soil=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
+    if(src==='user'&&gen===stepGen){ T.soil=true; FOUND.soil=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
   });
 }
 function doMagnetMetal(src){
   if(busy.metal) return; busy.metal=true;
+  const gen=stepGen;
   const mag=G.magnet1, homeY=mag.userData.home.y;
   addAnim(2.3,f=>{
     let my;
@@ -1657,11 +1974,12 @@ function doMagnetMetal(src){
     });
   },()=>{
     busy.metal=false;
-    if(src==='user'){ T.metal=true; FOUND.metal=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
+    if(src==='user'&&gen===stepGen){ T.metal=true; FOUND.metal=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
   });
 }
 function doMarcus(src){
   if(busy.marcus) return; busy.marcus=true;
+  const gen=stepGen;
   const st=G.sieveTool, from=st.userData.home.clone();
   const over=new THREE.Vector3(3.2,1.05,0.15);
   const bits=OBJ.saltBits;
@@ -1682,11 +2000,12 @@ function doMarcus(src){
     bits.visible=false;
     if(OBJ.mixSalt) OBJ.mixSalt.visible=false;
     busy.marcus=false;
-    if(src==='user'){ T.salt=true; FOUND.salt=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
+    if(src==='user'&&gen===stepGen){ T.salt=true; FOUND.salt=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
   });
 }
 function doClips(src){
   if(busy.clips) return; busy.clips=true;
+  const gen=stepGen;
   const wrap=G.magnet2, home=wrap.userData.home.clone();
   const over=new THREE.Vector3(3.1,1.5,1.7);
   const clips=OBJ.clipsA, clipsHome=OBJ.clipsAHome.clone();
@@ -1703,11 +2022,12 @@ function doClips(src){
     }
   },()=>{
     busy.clips=false;
-    if(src==='user'){ T.clips=true; FOUND.clips=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
+    if(src==='user'&&gen===stepGen){ T.clips=true; FOUND.clips=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
   });
 }
 function doRiceSieve(src){
   if(busy.rice) return; busy.rice=true;
+  const gen=stepGen;
   const s2=G.sieve2, rice=OBJ.riceGroup, rHome=OBJ.riceHome.clone();
   const rTarget=new THREE.Vector3(1.8,0.6,1.0);
   const bits=OBJ.sandBits;
@@ -1728,29 +2048,44 @@ function doRiceSieve(src){
     if(G.sieve2) G.sieve2.position.x=1.8;
     bits.visible=false;
     busy.rice=false;
-    if(src==='user'){ T.rice=true; FOUND.rice=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
+    if(src==='user'&&gen===stepGen){ T.rice=true; FOUND.rice=true; saveProg(); renderGroups(); renderFound(); renderStepExtra(); refreshEvidence(); }
   });
 }
 
 /* ================= taps ================= */
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set (STEP_TARGETS); a tap on anything else
+   is inert for evidence (it only bounces and shows the hint) and counts toward
+   the anti-guess mistake counter. In step 4 all three tools are the step's own
+   choices — picking the magnet or the spoon is that step's wrong choice, so it
+   counts as a mistake too. */
+const STEP_TARGETS=[
+  ['beanRed','beanWhite','beanBlack'],   /* step 1: pick the three kinds of bean by hand */
+  ['sieve1'],                            /* step 2: shake the sieve */
+  ['magnet1'],                           /* step 3: hold the magnet over the tray */
+  ['sieveTool','magnetTool','spoonTool'],/* step 4: choose a tool (only the sieve works) */
+  ['magnet2'],                           /* step 5: magnet the paperclips out */
+  ['sieve2']                             /* step 6: sieve the sand from the rice */
+];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
   if(!THINGS[id]) return;
   focusVisual(id);
   if(curStep===0){
     if(id==='beanRed'||id==='beanWhite'||id==='beanBlack'){ T.hint=null; pickBean(id,'user'); }
-    else{ T.hint=id; bounceThing(id); }
+    else{ T.hint=id; bounceThing(id); addMistake(); }
   }else if(curStep===1){
-    if(id==='sieve1') doSieveSoil('user'); else bounceThing(id);
+    if(id==='sieve1') doSieveSoil('user'); else { bounceThing(id); addMistake(); }
   }else if(curStep===2){
-    if(id==='magnet1') doMagnetMetal('user'); else bounceThing(id);
+    if(id==='magnet1') doMagnetMetal('user'); else { bounceThing(id); addMistake(); }
   }else if(curStep===3){
     if(id==='sieveTool'){ T.toolWrong=null; doMarcus('user'); }
-    else if(id==='magnetTool'||id==='spoonTool'){ T.toolWrong=id; bounceThing(id); }
-    else bounceThing(id);
+    else if(id==='magnetTool'||id==='spoonTool'){ T.toolWrong=id; bounceThing(id); addMistake(); }
+    else { bounceThing(id); addMistake(); }
   }else if(curStep===4){
-    if(id==='magnet2') doClips('user'); else bounceThing(id);
+    if(id==='magnet2') doClips('user'); else { bounceThing(id); addMistake(); }
   }else if(curStep===5){
-    if(id==='sieve2') doRiceSieve('user'); else bounceThing(id);
+    if(id==='sieve2') doRiceSieve('user'); else { bounceThing(id); addMistake(); }
   }
   refreshEvidence();
 }
@@ -1842,6 +2177,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderFound();
   }
@@ -1861,6 +2198,11 @@ renderFocusRow();
 init3D();
 goStep(curStep);
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 </script>
 <!-- CAMB-BRIDGE v1 --><script>
 /* CAMB-BRIDGE v1 — Cambridge <-> toan.b-media.vn: login sync + progress/stars sync.

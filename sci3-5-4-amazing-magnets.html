@@ -189,6 +189,27 @@ button:disabled{opacity:.45;cursor:default}
 .exrow:last-child{border-bottom:none}
 .expic{font-size:19px;font-weight:800;margin-bottom:4px}
 .expic .em{font-size:30px;margin-right:6px}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.predopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.predopt.missed{border-style:dashed;border-color:#b3541e}
+.langseg button.locked{opacity:.6}
 </style>
 </head>
 <body>
@@ -238,11 +259,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -308,6 +331,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -318,6 +343,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -380,6 +406,8 @@ button:disabled{opacity:.45;cursor:default}
 
     <div class="btnrow" style="margin-top:16px">
       <span class="sp" style="flex:1"></span>
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <button id="exClose"></button>
     </div>
   </div>
@@ -391,8 +419,32 @@ button:disabled{opacity:.45;cursor:default}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+/* ================= language: 3 modes — en / both (EN+VI) / vi =================
+   Mechanics v2 language policy: English is the default for EVERYONE. The
+   EN+VI / VI modes unlock only for parents — the bridge profile reports
+   testBypass (e.g. account congtuth) or the device carries the hub unlock
+   camb:test-bypass=1. `lang` is the EFFECTIVE language used for rendering;
+   `prefLang` is the stored preference (kept intact while locked). */
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -411,7 +463,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= scene things =================
@@ -516,7 +568,22 @@ const STR={
   qAgain:{en:'Try again',vi:'Làm lại'},
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
-  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'}
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
 };
 const KEYWORDS=[
   {en:'attract',vi:'hút'},
@@ -653,8 +720,8 @@ const EX1=[
  {id:'p_ss', a:'S', b:'S', label:{en:'South pole faces south pole',vi:'Cực nam hướng vào cực nam'}, ans:1},
  {id:'p_sn', a:'S', b:'N', label:{en:'South pole faces north pole',vi:'Cực nam hướng vào cực bắc'}, ans:0}
 ];
-const EX1_ORDER=mixOrder(EX1,c=>c.ans,1);
-const EX1_OPTS=EX1.map(()=>fyIdx(2));
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,1);
+let EX1_OPTS=EX1.map(()=>fyIdx(2));
 /* Ex 2 · Practice (WB p.73): Sofia's sentences — tick or cross. */
 const EX2=[
  {id:'s_arun', txt:{en:'A north pole always attracts.',vi:'Cực bắc luôn luôn hút.'}, ok:false,
@@ -668,8 +735,8 @@ const EX2=[
  {id:'s_all', txt:{en:'A magnet attracts every material.',vi:'Nam châm hút mọi vật liệu.'}, ok:false,
   expl:{en:'A magnet only attracts magnetic materials. It does not attract wood, rubber or plastic.',vi:'Nam châm chỉ hút các vật liệu có từ tính. Nó không hút gỗ, cao su hay nhựa.'}}
 ];
-const EX2_ORDER=mixOrder(EX2,c=>c.ok,1);
-const EX2_OPTS=EX2.map(()=>fyIdx(2));
+let EX2_ORDER=mixOrder(EX2,c=>c.ok,1);
+let EX2_OPTS=EX2.map(()=>fyIdx(2));
 const EX2BOOL=[{en:'✓ True',vi:'✓ Đúng'},{en:'✗ False',vi:'✗ Sai'}];
 /* Ex 3 · Challenge (WB p.74): use a known magnet to work out mystery poles. */
 const EX3=[
@@ -683,8 +750,8 @@ const EX3=[
   opts:[{en:'Because magnets are magic',vi:'Vì nam châm là phép thuật'},{en:'Because poles are always painted red and blue',vi:'Vì các cực luôn được sơn đỏ và xanh dương'},{en:'Because opposite poles attract and poles that are the same repel — every time',vi:'Vì hai cực khác nhau thì hút nhau và hai cực giống nhau thì đẩy nhau — mỗi lần đều vậy'}], ans:2,
   expl:{en:'The pattern never changes, so one known pole is enough: attract means opposite, repel means the same.',vi:'Quy luật không bao giờ thay đổi, nên chỉ cần biết một cực là đủ: hút nghĩa là khác nhau, đẩy nghĩa là giống nhau.'}}
 ];
-const EX3_OPTS=EX3.map(()=>fyIdx(3));
-const EX3_ORDER=mixOrder(EX3,c=>c.ans,2);
+let EX3_OPTS=EX3.map(()=>fyIdx(3));
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,2);
 const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 5 + 3 = 12 */
 let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
 
@@ -697,6 +764,22 @@ let TESTS=new Set();       /* pole-pair tests done: 'NN','NS','SN','SS' (persist
 let PATTERN=false;         /* pattern sentence chosen (persistent) */
 let CRANE=false;           /* crane sorted the metal can (persistent) */
 let FOUND=new Set();       /* console checklist (persistent) */
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let EX1ANS={}, EX2ANS={}, EX3ANS={};        /* exercises: the learner's current (unsubmitted) answers, keyed by card id -> chosen ORIGINAL option index */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
+let animEpoch=0;                            /* bumped on every step change/reset so a stale animation can never write evidence */
 const FOUNDDEFS=[
  {id:'f_meet', label:{en:'Met three magnets: bar, horseshoe and fridge',vi:'Đã làm quen với ba nam châm: thanh, móng ngựa và tủ lạnh'}},
  {id:'f_clips', label:{en:'Saw paper clips jump to a magnet — they are magnetic',vi:'Đã thấy kẹp giấy nhảy tới nam châm — chúng có từ tính'}},
@@ -710,7 +793,7 @@ try{
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(Array.isArray(s.meet)) MEET=new Set(s.meet.filter(id=>MEETIDS.includes(id)));
     CLIPS=!!s.clips;
     if(Array.isArray(s.tests)) TESTS=new Set(s.tests.filter(id=>COMBOS.some(c=>c.id===id)));
@@ -722,8 +805,27 @@ try{
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.filter(id=>EX2.some(c=>c.id===id)));
       if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.filter(id=>EX3.some(c=>c.id===id)));
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(s.exAns.e1&&typeof s.exAns.e1==='object') Object.keys(s.exAns.e1).forEach(id=>{ const v=s.exAns.e1[id]; if(EX1.some(c=>c.id===id)&&(v===0||v===1)) EX1ANS[id]=v; });
+      if(s.exAns.e2&&typeof s.exAns.e2==='object') Object.keys(s.exAns.e2).forEach(id=>{ const v=s.exAns.e2[id]; if(EX2.some(c=>c.id===id)&&(v===0||v===1)) EX2ANS[id]=v; });
+      if(s.exAns.e3&&typeof s.exAns.e3==='object') Object.keys(s.exAns.e3).forEach(id=>{ const v=s.exAns.e3[id]; if(EX3.some(c=>c.id===id)&&(v===0||v===1||v===2)) EX3ANS[id]=v; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1.forEach(c=>{ if(EX1DONE.has(c.id)) EX1ANS[c.id]=c.ans; });
+      EX2.forEach(c=>{ if(EX2DONE.has(c.id)) EX2ANS[c.id]=c.ok?0:1; });
+      EX3.forEach(q=>{ if(EX3DONE.has(q.id)) EX3ANS[q.id]=q.ans; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
 const SUMKEY='camb:sum:sci3-5-4';
 let qBest=0;
 try{
@@ -731,10 +833,12 @@ try{
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,meet:[...MEET],clips:CLIPS,tests:[...TESTS],pattern:PATTERN,crane:CRANE,found:[...FOUND],ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,meet:[...MEET],clips:CLIPS,tests:[...TESTS],pattern:PATTERN,crane:CRANE,found:[...FOUND],ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:{e1:EX1ANS,e2:EX2ANS,e3:EX3ANS},ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
   saveSum();
 }
 function newTrack(){return {
@@ -742,6 +846,81 @@ function newTrack(){return {
   woodHint:false
 };}
 let T=newTrack();
+
+/* ================= Mechanics v2: notice, gates, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function syncTestFound(){
+  /* keep the console checklist mirrors consistent with TESTS + PATTERN */
+  const hasA=COMBOS.some(c=>TESTS.has(c.id)&&comboResult(c)==='attract');
+  const hasR=COMBOS.some(c=>TESTS.has(c.id)&&comboResult(c)==='repel');
+  if(hasA) FOUND.add('f_attract'); else FOUND.delete('f_attract');
+  if(hasR) FOUND.add('f_repel'); else FOUND.delete('f_repel');
+  if(TESTS.size>=4&&PATTERN) FOUND.add('f_pattern'); else FOUND.delete('f_pattern');
+}
+function clearStepEvidence(i){
+  /* wipe ONLY step i's collected evidence (plus its console mirrors) and cancel
+     any in-flight action, so a stale animation callback can never land late */
+  animEpoch++;
+  anims.length=0; testAnim=false; clipAnim=false; craneAnim=false;
+  if(i===0){ MEET.clear(); FOUND.delete('f_meet'); }
+  else if(i===1){ CLIPS=false; FOUND.delete('f_clips'); }
+  else if(i===2){ TESTS.delete('NS'); syncTestFound(); }
+  else if(i===3){ TESTS.delete('NN'); syncTestFound(); }
+  else if(i===4){ PATTERN=false; TESTS.delete('SN'); TESTS.delete('SS'); syncTestFound(); }
+  else if(i===5){ CRANE=false; FOUND.delete('f_uses'); }
+}
+function resetStepEvidence(){
+  clearStepEvidence(curStep);
+  doneSteps.delete(curStep); ackSet.delete(curStep);
+  T=newTrack();
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderFound(); renderTable();
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
+}
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -820,6 +999,12 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===STEPS.length-1?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  paintAckGate();
+  $('btnNext').disabled=!(done&&ackSet.has(curStep));
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -872,7 +1057,7 @@ function renderStepExtra(){
         b.id='testchip_'+c.id;
         b.style.display='block'; b.style.width='100%'; b.style.margin='4px 0'; b.style.textAlign='left';
         b.innerHTML=esc(L(STR.testBtnPre))+biInl(c.label)+(doneIt? ' — '+esc(L(RESULTLBL[comboResult(c)]))+' ✓' : '');
-        b.onclick=()=>{ if(TESTS.has(c.id)) return; runTest(c.id); };
+        b.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } if(TESTS.has(c.id)) return; runTest(c.id); };
         box.appendChild(b);
       });
     }else if(!PATTERN){
@@ -884,8 +1069,9 @@ function renderStepExtra(){
         b.style.display='block'; b.style.width='100%'; b.style.margin='4px 0'; b.style.textAlign='left';
         b.innerHTML=bi(o.txt);
         b.onclick=()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
           if(o.id==='pat_ok'){ PATTERN=true; FOUND.add('f_pattern'); saveProg(); renderFound(); renderTable(); renderSteps(); }
-          else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+          else{ addMistake(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
         };
         box.appendChild(b);
       });
@@ -901,17 +1087,23 @@ function renderStepExtra(){
 }
 function goStep(i){
   curStep=Math.min(STEPS.length-1,Math.max(0,i));
-  anims.length=0; testAnim=false; clipAnim=false; craneAnim=false;
+  animEpoch++; anims.length=0; testAnim=false; clipAnim=false; craneAnim=false;
   T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
-  anims.length=0; testAnim=false; clipAnim=false; craneAnim=false;
+  clearStepEvidence(curStep);
+  doneSteps.delete(curStep); ackSet.delete(curStep);
   T=newTrack();
-  applyStepStart(curStep); saveProg(); renderSteps();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  applyStepStart(curStep); saveProg(); renderSteps(); renderFound(); renderTable();
 };
 $('btnDemo').onclick=()=>{
   const i=curStep;
@@ -982,58 +1174,66 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals score, correct answers and
+   explanations. qBest only ever moves on a submitted result. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
   $('qProg').innerHTML=biInl(prog);
   $('qText').innerHTML=bi(it.q);
   $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+function showQuizResults(){
   qFinished=true;
   const s=qScoreNow();
   if(s>qBest) qBest=s;
   saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
   $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let h='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    h+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) h+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    h+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=h; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -1055,6 +1255,7 @@ let wallet=loadWallet();
 const BOT_CODE='sci3-5.4';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1124,7 +1325,8 @@ $('bClose').onclick=closeBot;
 $('btnBotTop').onclick=openBot;
 
 /* ================= exercises panel ================= */
-function exScoreNow(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size; }
+function exScoreNow(){ return exBest; }
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
@@ -1136,99 +1338,143 @@ function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
-  /* Ex 1 · Focus — attract or repel for each pole pair */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=EX1.length);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=EX1.length);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — attract or repel for each pole pair (answers stay neutral until Submit) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
   const list1=$('ex1List'); list1.innerHTML='';
   EX1_ORDER.forEach(card=>{
     const ci=EX1.indexOf(card);
     const row=document.createElement('div'); row.className='exrow';
     const head=document.createElement('div'); head.className='expic';
-    head.innerHTML=poleChip(card.a)+'<span style="font-weight:800">—</span>'+poleChip(card.b)+' '+biInl(card.label)+(EX1DONE.has(card.id)?' ✓':'');
+    head.innerHTML=poleChip(card.a)+'<span style="font-weight:800">—</span>'+poleChip(card.b)+' '+biInl(card.label)+((exRevealed&&EX1DONE.has(card.id))?' ✓':'');
     row.appendChild(head);
     (EX1_OPTS[ci]||[0,1]).forEach(oi=>{
+      const chosen=EX1ANS[card.id]===oi;
       const b=document.createElement('button');
-      b.className='predopt'+(EX1DONE.has(card.id)&&oi===card.ans?' right':'');
+      let cls='predopt';
+      if(exRevealed){
+        if(oi===card.ans) cls+= chosen? ' right':' missed';
+        else if(chosen) cls+=' wrongsel';
+      }else if(chosen) cls+=' sel';
+      b.className=cls;
       b.id='ex1opt_'+card.id+'_'+oi;
       b.innerHTML=bi(EX1OPTS[oi]);
       b.onclick=()=>{
-        if(EX1DONE.has(card.id)) return;
-        if(oi===card.ans){ EX1DONE.add(card.id); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX1ANS[card.id]=oi; saveProg(); renderExercises();
       };
       row.appendChild(b);
     });
     list1.appendChild(row);
   });
-  /* Ex 2 · Practice — Sofia's sentences: true or false? */
-  $('exSec2').classList.toggle('done',EX2DONE.size>=EX2.length);
-  $('ex2T').innerHTML=exHead(STR.ex2T,EX2DONE.size>=EX2.length);
+  /* Ex 2 · Practice — Sofia's sentences: true or false? (answers stay neutral until Submit) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
   const list2=$('ex2List'); list2.innerHTML='';
   EX2_ORDER.forEach(card=>{
     const ci=EX2.indexOf(card);
     const row=document.createElement('div'); row.className='exrow';
     const head=document.createElement('div'); head.className='expic';
-    head.innerHTML='<span class="em">💬</span>'+biInl(card.txt)+(EX2DONE.has(card.id)?' ✓':'');
+    head.innerHTML='<span class="em">💬</span>'+biInl(card.txt)+((exRevealed&&EX2DONE.has(card.id))?' ✓':'');
     row.appendChild(head);
+    const rightOi=card.ok?0:1;
     (EX2_OPTS[ci]||[0,1]).forEach(oi=>{
-      const chosenTrue=(oi===0);
+      const chosen=EX2ANS[card.id]===oi;
       const b=document.createElement('button');
-      b.className='predopt'+(EX2DONE.has(card.id)&&chosenTrue===card.ok?' right':'');
+      let cls='predopt';
+      if(exRevealed){
+        if(oi===rightOi) cls+= chosen? ' right':' missed';
+        else if(chosen) cls+=' wrongsel';
+      }else if(chosen) cls+=' sel';
+      b.className=cls;
       b.id='ex2opt_'+card.id+'_'+oi;
       b.innerHTML=bi(EX2BOOL[oi]);
       b.onclick=()=>{
-        if(EX2DONE.has(card.id)) return;
-        if(chosenTrue===card.ok){ EX2DONE.add(card.id); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX2ANS[card.id]=oi; saveProg(); renderExercises();
       };
       row.appendChild(b);
     });
-    if(EX2DONE.has(card.id)){
+    if(exRevealed){
       const ex=document.createElement('div'); ex.className='exexpl';
-      ex.innerHTML='✓ '+bi(card.expl);
+      ex.innerHTML=(EX2DONE.has(card.id)?'✓ ':'')+bi(card.expl);
       row.appendChild(ex);
     }
     list2.appendChild(row);
   });
-  $('ex2Result').innerHTML=EX2DONE.size>=EX2.length? '✓ '+bi({en:'Sofia got 2 of her 5 sentences right. The pattern never changes: opposite poles attract, poles that are the same repel.',vi:'Sofia đúng 2 trong 5 câu. Quy luật không bao giờ thay đổi: hai cực khác nhau hút nhau, hai cực giống nhau đẩy nhau.'}) : '';
-  /* Ex 3 · Challenge — work out the mystery poles */
-  $('exSec3').classList.toggle('done',EX3DONE.size>=EX3.length);
-  $('ex3T').innerHTML=exHead(STR.ex3T,EX3DONE.size>=EX3.length);
+  $('ex2Result').innerHTML=exRevealed? '✓ '+bi({en:'Sofia got 2 of her 5 sentences right. The pattern never changes: opposite poles attract, poles that are the same repel.',vi:'Sofia đúng 2 trong 5 câu. Quy luật không bao giờ thay đổi: hai cực khác nhau hút nhau, hai cực giống nhau đẩy nhau.'}) : '';
+  /* Ex 3 · Challenge — work out the mystery poles (answers stay neutral until Submit) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
   const list3=$('ex3List'); list3.innerHTML='';
   EX3_ORDER.forEach(qq=>{ const qi2=EX3.indexOf(qq);
     const row=document.createElement('div'); row.className='exrow';
     const head=document.createElement('div'); head.className='expic';
-    head.innerHTML='<span class="em">'+qq.emoji+'</span>'+biInl(qq.q)+(EX3DONE.has(qq.id)?' ✓':'');
+    head.innerHTML='<span class="em">'+qq.emoji+'</span>'+biInl(qq.q)+((exRevealed&&EX3DONE.has(qq.id))?' ✓':'');
     row.appendChild(head);
     (EX3_OPTS[qi2]||[0,1,2]).forEach(oi=>{
+      const chosen=EX3ANS[qq.id]===oi;
       const b=document.createElement('button');
-      b.className='predopt'+(EX3DONE.has(qq.id)&&oi===qq.ans?' right':'');
+      let cls='predopt';
+      if(exRevealed){
+        if(oi===qq.ans) cls+= chosen? ' right':' missed';
+        else if(chosen) cls+=' wrongsel';
+      }else if(chosen) cls+=' sel';
+      b.className=cls;
       b.id='ex3opt_'+qq.id+'_'+oi;
       b.innerHTML=bi(qq.opts[oi]);
       b.onclick=()=>{
-        if(EX3DONE.has(qq.id)) return;
-        if(oi===qq.ans){ EX3DONE.add(qq.id); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX3ANS[qq.id]=oi; saveProg(); renderExercises();
       };
       row.appendChild(b);
     });
-    if(EX3DONE.has(qq.id)){
+    if(exRevealed){
       const ex=document.createElement('div'); ex.className='exexpl';
-      ex.innerHTML='✓ '+bi(qq.expl);
+      ex.innerHTML=(EX3DONE.has(qq.id)?'✓ ':'')+bi(qq.expl);
       row.appendChild(ex);
     }
     list3.appendChild(row);
   });
   $('ex3Expl').style.display='none';
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1.filter(c=>EX1ANS[c.id]===c.ans).map(c=>c.id));
+  EX2DONE=new Set(EX2.filter(c=>EX2ANS[c.id]===(c.ok?0:1)).map(c=>c.id));
+  EX3DONE=new Set(EX3.filter(q=>EX3ANS[q.id]===q.ans).map(q=>q.id));
+  const total=EX1DONE.size+EX2DONE.size+EX3DONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,1); EX1_OPTS=EX1.map(()=>fyIdx(2));
+  EX2_ORDER=mixOrder(EX2,c=>c.ok,1); EX2_OPTS=EX2.map(()=>fyIdx(2));
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,2); EX3_OPTS=EX3.map(()=>fyIdx(3));
+  exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1236,12 +1482,23 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderFound(); renderTable(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderFound(); renderTable(); renderKeyWords();
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+    if($('exModal').classList.contains('open')) renderExercises();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1250,7 +1507,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled){ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); } }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='6') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1314,9 +1571,10 @@ const FREE_X0=3.3, FREE_TOUCH=2.92, FREE_AWAY=4.05, FREE_Y=0.88;
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
 function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
 function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+let hitProxies=[];   /* Mechanics v2: pointer raycasts test ONLY these generous invisible proxies */
 function addProxy(group,w,h,d,y){
   const p=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-  p.position.y=y; group.add(p); return p;
+  p.position.y=y; group.add(p); hitProxies.push(p); return p;
 }
 /* a bar magnet: red north half on the left, blue south half on the right, N/S letter sprites */
 function buildBarMagnet(len,h,dep){
@@ -1592,7 +1850,7 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
+      const hits=ray.intersectObjects(hitProxies,false);
       for(let h=0;h<hits.length;h++){
         if(!isShown(hits[h].object)) continue;
         const id=hits[h].object.userData.objId;
@@ -1657,6 +1915,7 @@ function runTest(id){
   if(testAnim||!freeMag) return;
   const c=COMBOS.find(x=>x.id===id); if(!c) return;
   testAnim=true;
+  const ep=animEpoch;
   setPair(c.a,c.b);
   freeMag.position.x=FREE_X0; freeMag.position.y=FREE_Y;
   const res=comboResult(c);
@@ -1667,6 +1926,7 @@ function runTest(id){
     if(res==='repel') freeMag.position.y=FREE_Y+Math.sin(f*Math.PI)*0.03;
   }, ()=>{
     freeMag.position.y=FREE_Y; testAnim=false;
+    if(ep!==animEpoch) return;   /* a reset/step change superseded this test — never write stale evidence */
     markTest(id);
     renderStepExtra(); refreshEvidence();
   });
@@ -1689,6 +1949,7 @@ function applyClipsVisual(){
 function runClips(){
   if(clipAnim||CLIPS||!barMagSub) return;
   clipAnim=true;
+  const ep=animEpoch;
   addAnim(1.15, f=>{
     const bf=Math.min(1,f/0.38);
     barMagSub.position.x=0.58*easeInOut(bf);
@@ -1699,7 +1960,9 @@ function runClips(){
       cl.position.set(h.x+(t.x-h.x)*e, h.y+(t.y-h.y)*e+Math.sin(e*Math.PI)*0.22, h.z+(t.z-h.z)*e);
     });
   }, ()=>{
-    clipAnim=false; CLIPS=true; FOUND.add('f_clips');
+    clipAnim=false;
+    if(ep!==animEpoch) return;   /* superseded by a reset/step change — do not write stale evidence */
+    CLIPS=true; FOUND.add('f_clips');
     saveProg(); renderFound(); applyClipsVisual(); renderStepExtra(); refreshEvidence();
   });
 }
@@ -1711,13 +1974,16 @@ function applyCraneVisual(){
 function runCrane(){
   if(craneAnim||CRANE||!craneMag) return;
   craneAnim=true;
+  const ep=animEpoch;
   const mag=craneMag, can=canMesh;
   addAnim(0.55, f=>{ mag.position.y=1.5+(0.48-1.5)*easeInOut(f); }, ()=>{
     addAnim(0.5, f=>{ const y=0.48+(1.32-0.48)*easeInOut(f); mag.position.y=y; can.position.y=y-0.32; }, ()=>{
       addAnim(0.8, f=>{ const x=1.15*easeInOut(f); mag.position.x=x; can.position.x=x; }, ()=>{
         addAnim(0.45, f=>{ can.position.y=1.0+(0.2-1.0)*easeIn(f); }, ()=>{
           addAnim(0.6, f=>{ mag.position.x=1.15*(1-easeInOut(f)); mag.position.y=1.32+(1.5-1.32)*easeInOut(f); }, ()=>{
-            craneAnim=false; CRANE=true; FOUND.add('f_uses'); posterTarget=1;
+            craneAnim=false;
+            if(ep!==animEpoch) return;   /* superseded by a reset/step change — do not write stale evidence */
+            CRANE=true; FOUND.add('f_uses'); posterTarget=1;
             saveProg(); renderFound(); applyCraneVisual(); renderStepExtra(); refreshEvidence();
           });
         });
@@ -1731,10 +1997,23 @@ function demoCraneDip(){
   addAnim(0.9,f=>{ craneMag.position.y=1.5-Math.sin(f*Math.PI)*0.55; },()=>{ craneMag.position.y=1.5; craneAnim=false; });
 }
 /* ---- taps ---- */
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['bar1','horse','fridge'],   /* step 1: meet the three magnets */
+  ['bar1','clips'],            /* step 2: the bar magnet slides to the paper clips */
+  ['free','fixed'],            /* step 3: opposite poles attract */
+  ['free','fixed'],            /* step 4: poles the same repel */
+  ['free','fixed'],            /* step 5: test the last pairs on the test table */
+  ['crane']                    /* step 6: the crane magnet at work */
+];
 function handleTap(id){
   if(!THINGS[id]) return;
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
   focusVisual(id);
   sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
 }
 function sceneClick(id){
   if(curStep===0){
@@ -1832,6 +2111,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderFound(); renderTable();
   }
@@ -1851,6 +2132,11 @@ renderFocusRow();
 init3D();
 goStep(curStep);
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
 

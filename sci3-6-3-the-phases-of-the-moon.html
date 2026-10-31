@@ -126,6 +126,28 @@ button:disabled{opacity:.45;cursor:default}
 .below h2{margin:0 0 8px;font-size:20px}
 .below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
 .below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.predopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.phopt.sel{border-color:var(--acc);box-shadow:0 0 0 2px #7db8ec}
+.phopt.wrongsel{border-color:#e03a3a;box-shadow:0 0 0 2px #e5a3a3}
+.langseg button.locked{opacity:.6}
 /* ===== quiz modal ===== */
 #quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 #quizModal.open{display:flex}
@@ -251,11 +273,13 @@ button:disabled{opacity:.45;cursor:default}
         <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
         <div id="stepExtra"></div>
         <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
         <div id="evid"></div>
         <div id="conclLock"></div>
         <div id="conclBox">
           <p style="margin-top:0"><b id="scConclLbl"></b></p>
           <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
         </div>
         <div class="btnrow">
           <button id="btnDemo"></button>
@@ -329,6 +353,8 @@ button:disabled{opacity:.45;cursor:default}
   </section>
 </div>
 
+<div id="noticeBox"></div>
+
 <div id="quizModal">
   <div class="qbox">
     <h2 id="qTitle"></h2>
@@ -339,6 +365,7 @@ button:disabled{opacity:.45;cursor:default}
     <div class="btnrow" style="margin-top:14px">
       <button id="qClose"></button>
       <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
       <button class="primary" id="qNext"></button>
     </div>
     <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
@@ -400,6 +427,8 @@ button:disabled{opacity:.45;cursor:default}
     </section>
 
     <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
       <span class="sp" style="flex:1"></span>
       <button id="exClose"></button>
     </div>
@@ -412,7 +441,26 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 /* ================= language: 3 modes — en / both (EN+VI) / vi ================= */
-let lang='both';
+let prefLang='both';
+let lang='en';
+function viUnlocked(){
+  try{
+    if(window.CAMB_USER&&window.CAMB_USER.testBypass===true) return true;
+    if(localStorage.getItem('camb:test-bypass')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function effLang(){ return viUnlocked()? prefLang : 'en'; }
+function renderLangSeg(){
+  const un=viUnlocked();
+  document.querySelectorAll('#langSeg button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.lang===lang);
+    b.classList.toggle('locked',!un&&b.dataset.lang!=='en');
+    if(b.dataset.lang==='both') b.textContent=un? 'EN+VI' : 'EN+VI 🔒';
+    else if(b.dataset.lang==='vi') b.textContent=un? 'VI' : 'VI 🔒';
+    else b.textContent='EN';
+  });
+}
 function L(s){ return lang==='vi'? s.vi : s.en; }
 function bi(s){
   if(lang==='en') return esc(s.en);
@@ -431,7 +479,7 @@ function applyStatic(){
     else if(lang==='vi') el.textContent=vi;
     else el.innerHTML=esc(en)+'<span class="gloss inl">'+esc(vi)+'</span>';
   });
-  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderLangSeg();
 }
 
 /* ================= scene layout =================
@@ -536,6 +584,21 @@ const STR={
   qRight:{en:'Right! ',vi:'Đúng rồi! '},
   qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
   qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'}),
   pctLit:(p)=>({en:p+'% of the Moon looks lit',vi:p+'% Mặt Trăng trông sáng'}),
   hemiN:{en:'🌏 Northern hemisphere view',vi:'🌏 Góc nhìn bán cầu bắc (northern hemisphere)'},
   hemiS:{en:'🌏 Southern hemisphere view',vi:'🌏 Góc nhìn bán cầu nam (southern hemisphere)'},
@@ -715,8 +778,8 @@ const EX1=[
  {id:'nm_full', ang:Math.PI,      opts:[3,4,6], a:1},
  {id:'nm_wanc', ang:7*Math.PI/4,  opts:[7,1,2], a:0}
 ];
-const EX1_ORDER=mixOrder(EX1.slice(),c=>c.a,1);
-const EX1_OPTS=rollOptsFor(EX1);
+let EX1_ORDER=mixOrder(EX1.slice(),c=>c.a,1);
+let EX1_OPTS=rollOptsFor(EX1);
 /* Ex 2 · Practice (WB p.85): choose the picture that matches the name. opts = orbit angles. */
 const EX2=[
  {id:'dr_cres', name:{en:'a crescent Moon',vi:'một Mặt Trăng lưỡi liềm (crescent)'}, opts:[Math.PI/4,Math.PI/2,Math.PI], a:0, hemi:'N'},
@@ -724,7 +787,7 @@ const EX2=[
  {id:'dr_gibb', name:{en:'a gibbous Moon',vi:'một Mặt Trăng khuyết lồi (gibbous)'}, opts:[Math.PI/4,3*Math.PI/4,7*Math.PI/4], a:1, hemi:'N'},
  {id:'dr_fqs',  name:{en:'first quarter — from the SOUTHERN hemisphere',vi:'thượng huyền (first quarter) — nhìn từ BÁN CẦU NAM'}, opts:[Math.PI/2,Math.PI/2,3*Math.PI/2], hemis:['S','N','N'], a:0, hemi:'S'}
 ];
-const EX2_OPTS=rollOptsFor(EX2);
+let EX2_OPTS=rollOptsFor(EX2);
 /* Ex 3 · Challenge (WB p.86): Marcus's April Moon diary — rises/sets from the workbook table. */
 const DIARY_WB=[
  {d:{en:'Mon 3 Apr',vi:'T2 · 3/4'}, r:'1.36 am', s:'10.48 pm'},
@@ -749,9 +812,10 @@ const EX3=[
   o:[{en:'Friday',vi:'Thứ Sáu'},{en:'Sunday',vi:'Chủ Nhật'},{en:'Saturday',vi:'Thứ Bảy'}], a:2,
   expl:{en:'The table shows 6.29 am in the Saturday row.',vi:'Bảng cho thấy 6.29 sáng ở hàng thứ Bảy.'}}
 ];
-const EX3_OPTS=rollOptsFor(EX3);
+let EX3_OPTS=rollOptsFor(EX3);
 const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 5 + 4 + 4 = 13 */
 let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* Mechanics v2: the learner's current (unsubmitted) exercise answers — original option index per item id */
 
 /* the book's example Moon diary (LB p.173) — console record table */
 const DIARY_LB=[
@@ -775,12 +839,26 @@ let SEEN=new Set();        /* phase indices watched in the From-Earth panel (per
 let HEMI='N';              /* observer hemisphere for the panel: 'N' | 'S' (persistent) */
 let ROT=false;             /* Earth rotated for step 7 (persistent) */
 let ROTPROG=0;             /* 0..1 progress of the current rotation animation */
+/* Mechanics v2 state (all additive in the main record; old saves still load) */
+let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
+let mist=[0,0,0,0,0,0,0];                   /* persisted per-step mistake counters (anti-guess) */
+let exBest=0, exRevealed=false;             /* exercises: best SUBMITTED score + whether the panel shows a submitted result */
+let stepRead=false, everRead=new Set(), justReset=false; /* read gate (per visit, in-memory) */
+const READ_MIN_S=30; /* Mechanics v2: minimum reading time — the Start button stays disabled this long (parent-unlocked sessions exempt) */
+let readReadyAt=0, readShownSec=-1;
+function armReadGate(){ readReadyAt=Date.now()+READ_MIN_S*1000; readShownSec=-1; }
+function readWaitLeft(){ if(viUnlocked()) return 0; return Math.max(0,Math.ceil((readReadyAt-Date.now())/1000)); }
+const ACK_MIN_S=30; /* Mechanics v2: minimum time to read the conclusion before "Got it" unlocks (parent-unlocked sessions exempt) */
+let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
+function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
+function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
+function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
     doneSteps=new Set(Array.isArray(s.done)?s.done:[]);
     curStep=Math.min(STEPS.length-1,Math.max(0,s.cur|0));
-    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') lang=s.lang;
+    if(s.lang==='en'||s.lang==='both'||s.lang==='vi') prefLang=s.lang;
     if(Array.isArray(s.photos)) PHOTOS=new Set(s.photos.filter(id=>PHOTOIDS.includes(id)));
     SUNON=!!s.sunon;
     AIDX=Math.max(0,Math.min(7,s.aidx|0)); MOON_A=AIDX*Math.PI/4;
@@ -795,8 +873,27 @@ try{
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.filter(id=>EX2.some(c=>c.id===id)));
       if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.filter(id=>EX3.some(c=>c.id===id)));
     }
+    /* Mechanics v2 fields */
+    if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
+    else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
+    if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
+    if(s.exAns&&typeof s.exAns==='object'){
+      if(s.exAns.e1&&typeof s.exAns.e1==='object') Object.keys(s.exAns.e1).forEach(id=>{ const c=EX1.find(x=>x.id===id); if(c&&Number.isInteger(s.exAns.e1[id])&&s.exAns.e1[id]>=0&&s.exAns.e1[id]<c.opts.length) EX1ANS[id]=s.exAns.e1[id]; });
+      if(s.exAns.e2&&typeof s.exAns.e2==='object') Object.keys(s.exAns.e2).forEach(id=>{ const c=EX2.find(x=>x.id===id); if(c&&Number.isInteger(s.exAns.e2[id])&&s.exAns.e2[id]>=0&&s.exAns.e2[id]<c.opts.length) EX2ANS[id]=s.exAns.e2[id]; });
+      if(s.exAns.e3&&typeof s.exAns.e3==='object') Object.keys(s.exAns.e3).forEach(id=>{ const c=EX3.find(x=>x.id===id); if(c&&Number.isInteger(s.exAns.e3[id])&&s.exAns.e3[id]>=0&&s.exAns.e3[id]<c.o.length) EX3ANS[id]=s.exAns.e3[id]; });
+      exRevealed=!!s.exSub;
+    }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+      /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+      EX1.forEach(c=>{ if(EX1DONE.has(c.id)) EX1ANS[c.id]=c.a; });
+      EX2.forEach(c=>{ if(EX2DONE.has(c.id)) EX2ANS[c.id]=c.a; });
+      EX3.forEach(c=>{ if(EX3DONE.has(c.id)) EX3ANS[c.id]=c.a; });
+      exRevealed=true;
+      exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+    }
   }
 }catch(e){/* fresh start */}
+lang=effLang();
 const SUMKEY='camb:sum:sci3-6-3';
 let qBest=0;
 try{
@@ -804,10 +901,12 @@ try{
   if(sm&&typeof sm.q==='number') qBest=Math.max(0,Math.min(QUIZ.length,sm.q|0));
 }catch(e){/* no summary yet */}
 function saveSum(){
-  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:doneSteps.size,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
+  /* s counts only steps that are done AND acknowledged (Mechanics v2) */
+  const acked=[...doneSteps].filter(i=>ackSet.has(i)).length;
+  try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:lang,photos:[...PHOTOS],sunon:SUNON,aidx:AIDX,cresc:CRESC,quart:QUART,gibb:GIBB,full:FULL,wseen:[...WSEEN],newback:NEWBACK,seen:[...SEEN],hemi:HEMI,rot:ROT,ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,photos:[...PHOTOS],sunon:SUNON,aidx:AIDX,cresc:CRESC,quart:QUART,gibb:GIBB,full:FULL,wseen:[...WSEEN],newback:NEWBACK,seen:[...SEEN],hemi:HEMI,rot:ROT,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:{e1:EX1ANS,e2:EX2ANS,e3:EX3ANS},ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
   saveSum();
 }
 function newTrack(){return {
@@ -817,6 +916,72 @@ function newTrack(){return {
   rotHint:false    /* a non-earth thing tapped at step 7 */
 };}
 let T=newTrack();
+
+/* ================= Mechanics v2: notice, anti-guess, evidence reset ================= */
+let noticeT=null;
+function showNotice(s){
+  const n=$('noticeBox'); if(!n) return;
+  n.innerHTML=biInl(s); n.classList.add('show');
+  clearTimeout(noticeT); noticeT=setTimeout(()=>n.classList.remove('show'),2400);
+}
+function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function paintReadGate(){
+  const rr=$('readRow'); if(!rr) return;
+  if(doneSteps.has(curStep)||stepRead){ rr.style.display='none'; return; }
+  rr.style.display='block';
+  const b=$('btnRead'), wait=readWaitLeft(); readShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.readWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl((everRead.has(curStep)||justReset)? STR.startAgainBtn : STR.startBtn); }
+  $('readHint').innerHTML=justReset? '⚠ '+biInl(STR.readAgain) : '';
+  $('readHint').style.display=justReset? 'block':'none';
+}
+function tickReadGate(){
+  if(doneSteps.has(curStep)||stepRead) return;
+  const w=readWaitLeft();
+  if(w!==readShownSec){ readShownSec=w; paintReadGate(); }
+}
+function paintAckGate(){
+  const b=$('btnGotIt'); if(!b) return;
+  const done=doneSteps.has(curStep)||checkStep(curStep), acked=ackSet.has(curStep);
+  if(!done||acked){ b.style.display='none'; return; }
+  b.style.display='inline-block';
+  if(ackArmStep!==curStep){ ackReadyAt=Date.now()+ACK_MIN_S*1000; ackArmStep=curStep; }
+  const wait=ackWaitLeft(); ackShownSec=wait;
+  if(wait>0){ b.disabled=true; b.classList.add('dis'); b.innerHTML=biInl(STR.ackWait(wait)); }
+  else{ b.disabled=false; b.classList.remove('dis'); b.innerHTML=biInl(STR.gotItBtn); }
+}
+function tickAckGate(){
+  const done=doneSteps.has(curStep)||checkStep(curStep);
+  if(!done||ackSet.has(curStep)||ackArmStep!==curStep) return;
+  const w=ackWaitLeft();
+  if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
+}
+function resetStepEvidence(){
+  /* wipe ONLY the current step's collected evidence (the persistent stores the
+     step engine reads, plus its console mirrors), then re-lock the instruction. */
+  anims.length=0;
+  moonBusy=false; rotBusy=false;
+  T=newTrack();
+  if(curStep===0){ PHOTOS.clear(); }
+  if(curStep===1){ SUNON=false; }
+  if(curStep===2){ CRESC=false; AIDX=0; MOON_A=0; SEEN.delete(1); }
+  if(curStep===3){ QUART=false; AIDX=1; MOON_A=Math.PI/4; SEEN.delete(2); }
+  if(curStep===4){ GIBB=false; FULL=false; AIDX=2; MOON_A=Math.PI/2; SEEN.delete(3); SEEN.delete(4); }
+  if(curStep===5){ WSEEN.clear(); NEWBACK=false; AIDX=4; MOON_A=Math.PI; SEEN.delete(5); SEEN.delete(6); SEEN.delete(7); }
+  if(curStep===6){ ROT=false; ROTPROG=0; }
+  doneSteps.delete(curStep); ackSet.delete(curStep);
+  applyStepStart(curStep);
+  stepRead=false; justReset=true; armReadGate(); ackArmStep=-1;
+  mist[curStep]=0;
+  saveProg(); renderSteps(); renderFound(); renderTable();
+  viewDirty=true;
+}
+function addMistake(){
+  if(doneSteps.has(curStep)||checkStep(curStep)||stepLocked()) return;
+  mist[curStep]++;
+  if(mist[curStep]>=3) resetStepEvidence();
+  else saveProg();
+}
 
 /* ================= step engine ================= */
 function checkStep(i){
@@ -911,6 +1076,13 @@ function renderSteps(){
   $('scConclLbl').innerHTML=biInl(curStep===6?STR.icanLbl:STR.conclLbl);
   $('scPoints').innerHTML=done? STEPS[curStep].concl.map(p=>'<li>'+bi(p)+'</li>').join('') : '';
   $('btnNext').innerHTML=biInl(curStep<STEPS.length-1?STR.nextBtn:STR.nextQuiz);
+  /* Mechanics v2: read gate + conclusion acknowledgement */
+  paintReadGate();
+  $('stepExtra').classList.toggle('locked',stepLocked());
+  const acked=ackSet.has(curStep);
+  paintAckGate();
+  $('btnNext').disabled=!(done&&acked);
+  $('btnNext').classList.toggle('dis',$('btnNext').disabled);
   const pct=Math.round(100*doneSteps.size/STEPS.length);
   $('progTxt').textContent=doneSteps.size+'/'+STEPS.length+' · '+pct+'%';
   $('roadmap').innerHTML=STEPS.map((x,i)=>'<li><b>'+biInl(x.tag)+'</b> — '+biInl(x.q)+'</li>').join('');
@@ -972,16 +1144,20 @@ function goStep(i){
   anims.length=0;
   moonBusy=false; rotBusy=false;
   T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
   viewDirty=true;
 }
 $('btnPrev').onclick=()=>goStep(curStep-1);
-$('btnNext').onclick=()=>{ if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.length-1) goStep(curStep+1); else openQuiz(); };
+$('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
+$('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
   anims.length=0;
   moonBusy=false; rotBusy=false;
   T=newTrack();
+  stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   applyStepStart(curStep); saveProg(); renderSteps();
   viewDirty=true;
 };
@@ -1054,58 +1230,66 @@ $('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
 let qi=0, qState=[], qFinished=false;
 function qScoreNow(){ return qState.reduce((n,s,idx)=>n+(s&&s.chosen>=0&&qOrder[idx]&&qOrder[idx][s.chosen]===QUIZ[idx].a?1:0),0); }
 function openQuiz(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('quizModal').classList.add('open');
   qi=0; qFinished=false; qState=QUIZ.map(()=>({chosen:-1}));
   rollQuizOrder();
   showQ();
 }
 function closeQuiz(){ $('quizModal').classList.remove('open'); }
+/* Mechanics v2 submit-mode quiz: NO feedback while answering — answers can be
+   changed freely; one Submit at the end reveals score, correct answers and
+   explanations. qBest only ever moves on a submitted result. */
 function showQ(){
   const it=QUIZ[qi], st=qState[qi];
-  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-              vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()};
+  $('qBack').style.display=qi>0? 'inline-block':'none';
+  $('qBack').textContent=L(STR.qBack);
+  const prog={en:'Question '+(qi+1)+' of '+QUIZ.length,
+              vi:'Câu '+(qi+1)+' / '+QUIZ.length};
   $('qProg').innerHTML=biInl(prog);
   $('qText').innerHTML=bi(it.q);
   $('qScore').textContent='';
-  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qResult);
+  $('qNext').textContent=L(qi<QUIZ.length-1?STR.qNext:STR.qSubmit);
   $('qOpts').innerHTML='';
   (qOrder[qi]||it.o.map((_,i)=>i)).forEach((oi,di)=>{
     const o=it.o[oi];
-    const b=document.createElement('button'); b.className='qopt';
+    const b=document.createElement('button'); b.className='qopt'+(st.chosen===di?' sel':'');
     b.innerHTML=String.fromCharCode(65+di)+'. '+bi(o);
-    if(st.chosen>=0){
-      if(oi===it.a) b.classList.add('right');
-      else if(di===st.chosen) b.classList.add('wrong');
-    }
-    b.onclick=()=>{
-      if(qState[qi].chosen>=0) return;
-      qState[qi].chosen=di; showQ();
-    };
+    b.onclick=()=>{ qState[qi].chosen=di; showQ(); };
     $('qOpts').appendChild(b);
   });
-  const ex=$('qExpl');
-  if(st.chosen>=0){
-    const right=(qOrder[qi]||[])[st.chosen]===it.a;
-    ex.innerHTML='<b>'+esc(L(right?STR.qRight:STR.qWrong))+'</b>'+bi(it.e);
-    ex.classList.add('open');
-    $('qProg').innerHTML=biInl({en:'Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+qScoreNow(),
-                                 vi:'Câu '+(qi+1)+' / '+QUIZ.length+' · Điểm: '+qScoreNow()});
-  }else{ ex.classList.remove('open'); ex.textContent=''; }
+  const ex=$('qExpl'); ex.classList.remove('open'); ex.textContent='';
 }
-$('qNext').onclick=()=>{
-  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
-  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+function showQuizResults(){
   qFinished=true;
   const s=qScoreNow();
   if(s>qBest) qBest=s;
   saveSum();
   $('qProg').textContent='';
   $('qText').innerHTML=bi(STR.qDone);
-  $('qOpts').innerHTML=''; $('qExpl').classList.remove('open');
+  $('qBack').style.display='none';
+  $('qExpl').classList.remove('open'); $('qExpl').textContent='';
   const fin={en:'You got '+s+' of '+QUIZ.length+' right.'+(s===QUIZ.length?' Great work! 🎉':' Try the steps again and have another go.'),
              vi:'Con đúng '+s+' / '+QUIZ.length+' câu.'+(s===QUIZ.length?' Làm tốt lắm! 🎉':' Hãy xem lại các bước rồi thử lại nhé.')};
   $('qScore').innerHTML=bi(fin);
+  const box=$('qOpts'); box.innerHTML='';
+  QUIZ.forEach((it,idx)=>{
+    const st=qState[idx], ord=qOrder[idx]||it.o.map((_,i)=>i);
+    const chosenOi=st.chosen>=0? ord[st.chosen] : -1;
+    const d=document.createElement('div'); d.className='qrev';
+    let hh='<div class="qrevq">'+(idx+1)+'. '+bi(it.q)+'</div>';
+    hh+='<div class="qreva">✓ '+esc(L(STR.qRightAns))+biInl(it.o[it.a])+'</div>';
+    if(chosenOi!==it.a) hh+='<div class="qrevy">'+esc(L(STR.qYourAns))+(chosenOi>=0? biInl(it.o[chosenOi]) : esc(L(STR.qNoAns)))+'</div>';
+    hh+='<div class="qreve">'+bi(it.e)+'</div>';
+    d.innerHTML=hh; box.appendChild(d);
+  });
   $('qNext').textContent=L(STR.qAgain);
+}
+$('qBack').onclick=()=>{ if(!qFinished&&qi>0){ qi--; showQ(); } };
+$('qNext').onclick=()=>{
+  if(qFinished){ qFinished=false; qi=0; qState=QUIZ.map(()=>({chosen:-1})); rollQuizOrder(); showQ(); return; }
+  if(qi<QUIZ.length-1){ qi++; showQ(); return; }
+  showQuizResults();
 };
 $('qClose').onclick=closeQuiz;
 $('btnQuizTop').onclick=openQuiz;
@@ -1127,6 +1311,7 @@ let wallet=loadWallet();
 const BOT_CODE='sci3-6.3';
 let bq=0, bYou=0, bBot=0, bState=[], bOrder=[], bFinished=false;
 function openBot(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
   $('botModal').classList.add('open');
   bq=0; bYou=0; bBot=0; bFinished=false;
   bState=QUIZ.map(()=>({chosen:-1,botOi:-1,botRight:false}));
@@ -1286,25 +1471,40 @@ function drawView(){
 $('hemiBtn').onclick=()=>{ HEMI=(HEMI==='N')?'S':'N'; saveProg(); viewDirty=true; };
 
 /* ================= exercises panel ================= */
-function exScoreNow(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size; }
+function exScoreNow(){ return exBest; }
 function exHead(sec,doneNow){
   return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
 }
+/* Mechanics v2 submit-mode exercises: answers are recorded WITHOUT any
+   right/wrong feedback and can be changed freely. One Submit scores
+   everything at once, then reveals the correct answers and explanations.
+   The summary e value is the best SUBMITTED score (EX1DONE/EX2DONE/EX3DONE
+   now hold the correct sets of the latest submission — empty until the
+   first Submit). */
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
 function renderExercises(){
   $('exTitle').innerHTML=biInl(STR.exTitle);
   $('exIntro').innerHTML=bi(STR.exIntro);
   $('exClose').textContent=L(STR.exClose);
-  const sc=exScoreNow(), all=sc>=EX_TOTAL;
-  const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
-              vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
-  $('exScoreLine').innerHTML=biInl(line);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
   /* Ex 1 · Focus — name the phase in the picture */
-  $('exSec1').classList.toggle('done',EX1DONE.size>=EX1.length);
-  $('ex1T').innerHTML=exHead(STR.ex1T,EX1DONE.size>=EX1.length);
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
   $('ex1Inst').innerHTML=bi(STR.ex1Inst);
   const list1=$('ex1List'); list1.innerHTML='';
   EX1_ORDER.forEach(card=>{
-    const ci=EX1.indexOf(card), doneIt=EX1DONE.has(card.id);
+    const ci=EX1.indexOf(card);
     const row=document.createElement('div'); row.className='exrow';
     const cv=document.createElement('canvas'); cv.width=92; cv.height=92;
     cv.style.display='block'; cv.style.borderRadius='8px'; cv.style.marginBottom='6px';
@@ -1312,56 +1512,60 @@ function renderExercises(){
     paintMoonCanvas(cv,card.ang,'N');
     (EX1_OPTS[ci]||[0,1,2]).forEach(oi=>{
       const b=document.createElement('button');
-      b.className='predopt'+(doneIt&&oi===card.a?' right':'');
+      let cls='predopt';
+      if(EX1ANS[card.id]===oi) cls+=' sel';
+      if(exRevealed){ if(oi===card.a) cls+=' right'; else if(EX1ANS[card.id]===oi) cls+=' wrongsel'; }
+      b.className=cls;
       b.id='ex1opt_'+card.id+'_'+oi;
       b.style.display='inline-block'; b.style.width='auto'; b.style.margin='4px 6px 4px 0';
       b.innerHTML=bi(PHASES[card.opts[oi]]);
       b.onclick=()=>{
-        if(EX1DONE.has(card.id)) return;
-        if(oi===card.a){ EX1DONE.add(card.id); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX1ANS[card.id]=oi; saveProg(); renderExercises();
       };
       row.appendChild(b);
     });
     list1.appendChild(row);
   });
   /* Ex 2 · Practice — choose the picture that matches the name */
-  $('exSec2').classList.toggle('done',EX2DONE.size>=EX2.length);
-  $('ex2T').innerHTML=exHead(STR.ex2T,EX2DONE.size>=EX2.length);
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
   $('ex2Inst').innerHTML=bi(STR.ex2Inst);
   $('ex2Result').style.display='none';
   const list2=$('ex2List'); list2.innerHTML='';
   EX2.forEach(card=>{
-    const ci=EX2.indexOf(card), doneIt=EX2DONE.has(card.id);
+    const ci=EX2.indexOf(card);
     const row=document.createElement('div'); row.className='exrow';
     const head=document.createElement('div'); head.className='expic';
-    head.innerHTML='<span class="em">✏️</span>'+biInl(card.name)+(doneIt?' ✓':'');
+    head.innerHTML='<span class="em">✏️</span>'+biInl(card.name)+(exRevealed&&EX2DONE.has(card.id)?' ✓':'');
     row.appendChild(head);
     (EX2_OPTS[ci]||[0,1,2]).forEach(oi=>{
-      const h=card.hemis? card.hemis[oi] : card.hemi;
+      const hh=card.hemis? card.hemis[oi] : card.hemi;
       const b=document.createElement('button');
-      b.className='phopt'+(doneIt&&oi===card.a?' right':'');
+      let cls='phopt';
+      if(EX2ANS[card.id]===oi) cls+=' sel';
+      if(exRevealed){ if(oi===card.a) cls+=' right'; else if(EX2ANS[card.id]===oi) cls+=' wrongsel'; }
+      b.className=cls;
       b.id='ex2opt_'+card.id+'_'+oi;
       const cv=document.createElement('canvas'); cv.width=84; cv.height=84;
       b.appendChild(cv);
-      paintMoonCanvas(cv,card.opts[oi],h);
+      paintMoonCanvas(cv,card.opts[oi],hh);
       if(card.hemis){
         const cap=document.createElement('span'); cap.className='phcap';
-        cap.textContent=L(h==='S'? {en:'Southern view',vi:'Nhìn từ nam'} : {en:'Northern view',vi:'Nhìn từ bắc'});
+        cap.textContent=L(hh==='S'? {en:'Southern view',vi:'Nhìn từ nam'} : {en:'Northern view',vi:'Nhìn từ bắc'});
         b.appendChild(cap);
       }
       b.onclick=()=>{
-        if(EX2DONE.has(card.id)) return;
-        if(oi===card.a){ EX2DONE.add(card.id); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX2ANS[card.id]=oi; saveProg(); renderExercises();
       };
       row.appendChild(b);
     });
     list2.appendChild(row);
   });
   /* Ex 3 · Challenge — Marcus's Moon diary */
-  $('exSec3').classList.toggle('done',EX3DONE.size>=EX3.length);
-  $('ex3T').innerHTML=exHead(STR.ex3T,EX3DONE.size>=EX3.length);
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
   $('ex3Inst').innerHTML=bi(STR.ex3Inst);
   const list3=$('ex3List'); list3.innerHTML='';
   const tbl=document.createElement('div'); tbl.className='exrow';
@@ -1370,34 +1574,58 @@ function renderExercises(){
   tbl.innerHTML=th+'</table>';
   list3.appendChild(tbl);
   EX3.forEach(qq=>{
-    const ci=EX3.indexOf(qq), doneIt=EX3DONE.has(qq.id);
+    const ci=EX3.indexOf(qq);
     const row=document.createElement('div'); row.className='exrow';
     const head=document.createElement('div'); head.className='expic';
-    head.innerHTML='<span class="em">🤔</span>'+biInl(qq.q)+(doneIt?' ✓':'');
+    head.innerHTML='<span class="em">🤔</span>'+biInl(qq.q)+(exRevealed&&EX3DONE.has(qq.id)?' ✓':'');
     row.appendChild(head);
     (EX3_OPTS[ci]||[0,1,2]).forEach(oi=>{
       const b=document.createElement('button');
-      b.className='predopt'+(doneIt&&oi===qq.a?' right':'');
+      let cls='predopt';
+      if(EX3ANS[qq.id]===oi) cls+=' sel';
+      if(exRevealed){ if(oi===qq.a) cls+=' right'; else if(EX3ANS[qq.id]===oi) cls+=' wrongsel'; }
+      b.className=cls;
       b.id='ex3opt_'+qq.id+'_'+oi;
       b.style.display='inline-block'; b.style.width='auto'; b.style.margin='4px 6px 4px 0';
       b.innerHTML=bi(qq.o[oi]);
       b.onclick=()=>{
-        if(EX3DONE.has(qq.id)) return;
-        if(oi===qq.a){ EX3DONE.add(qq.id); saveProg(); renderExercises(); }
-        else{ b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        if(exRevealed) return;
+        EX3ANS[qq.id]=oi; saveProg(); renderExercises();
       };
       row.appendChild(b);
     });
-    if(doneIt){
+    if(exRevealed){
       const ex=document.createElement('div'); ex.className='exexpl';
-      ex.innerHTML='✓ '+bi(qq.expl);
+      ex.innerHTML=(EX3DONE.has(qq.id)? '✓ ' : '')+bi(qq.expl);
       row.appendChild(ex);
     }
     list3.appendChild(row);
   });
   $('ex3Expl').style.display='none';
 }
-function openEx(){ $('exModal').classList.add('open'); renderExercises(); }
+$('exSubmit').onclick=()=>{
+  EX1DONE=new Set(EX1.filter(c=>EX1ANS[c.id]===c.a).map(c=>c.id));
+  EX2DONE=new Set(EX2.filter(c=>EX2ANS[c.id]===c.a).map(c=>c.id));
+  EX3DONE=new Set(EX3.filter(c=>EX3ANS[c.id]===c.a).map(c=>c.id));
+  const total=EX1DONE.size+EX2DONE.size+EX3DONE.size;
+  if(total>exBest) exBest=total;
+  exRevealed=true;
+  saveProg(); renderExercises();
+};
+$('exRetry').onclick=()=>{
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1.slice(),c=>c.a,1);
+  EX1_OPTS=rollOptsFor(EX1);
+  EX2_OPTS=rollOptsFor(EX2);
+  EX3_OPTS=rollOptsFor(EX3);
+  exRevealed=false;
+  saveProg(); renderExercises();
+};
+function openEx(){
+  if(!allStepsAcked()){ showNotice(STR.finishSteps); return; }   /* Mechanics v2: assessments unlock after the steps */
+  $('exModal').classList.add('open'); renderExercises();
+}
 function closeEx(){ $('exModal').classList.remove('open'); }
 $('btnExTop').onclick=openEx;
 $('exClose').onclick=closeEx;
@@ -1405,13 +1633,25 @@ $('exClose').onclick=closeEx;
 /* ================= language switching ================= */
 let lastFocus=null;
 function setLang(m){
-  lang=m; saveProg();
+  if(m!=='en'&&!viUnlocked()){ showNotice(STR.viParents); renderLangSeg(); return; }
+  prefLang=m; lang=m; saveProg();
   applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderFound(); renderTable(); renderKeyWords();
   if(lastFocus) setSpriteText(nameSprite,labelTextFor(lastFocus));
   viewDirty=true;
   if($('quizModal').classList.contains('open')&&!qFinished) showQ();
   if($('botModal').classList.contains('open')&&!bFinished) showB();
   if($('exModal').classList.contains('open')) renderExercises();
+}
+function enforceLangPolicy(){
+  const e=effLang();
+  if(e!==lang){
+    lang=e;
+    applyStatic(); renderChrome(); renderSteps(); renderFocusRow(); renderFound(); renderTable(); renderKeyWords();
+    viewDirty=true;
+    if($('quizModal').classList.contains('open')&&!qFinished) showQ();
+    if($('botModal').classList.contains('open')&&!bFinished) showB();
+    if($('exModal').classList.contains('open')) renderExercises();
+  }else renderLangSeg();
 }
 $('langSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
@@ -1420,7 +1660,7 @@ document.addEventListener('keydown',e=>{
   if($('exModal').classList.contains('open')){ if(e.key==='Escape') closeEx(); return; }
   if($('botModal').classList.contains('open')){ if(e.key==='Escape') closeBot(); return; }
   if($('quizModal').classList.contains('open')){ if(e.key==='Escape') closeQuiz(); return; }
-  if(e.key==='ArrowRight') goStep(curStep+1);
+  if(e.key==='ArrowRight'){ if(!$('btnNext').disabled) goStep(curStep+1); }
   else if(e.key==='ArrowLeft') goStep(curStep-1);
   else if(e.key>='1'&&e.key<='7') goStep(parseInt(e.key,10)-1);
   else if(e.key==='q'||e.key==='Q') openQuiz();
@@ -1463,6 +1703,7 @@ function setSpriteText(sp,text){
 }
 let renderer3=null, scene3=null, camera3=null;
 let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
 let earthGlow=null, sunCoreMat=null, sunGlowMat=null, rayMat=null, sunLight=null, moonMat=null;
 let moonBusy=false, rotBusy=false, demoGlowUntil=0, sunAmt=0, moonBobY=0;
 let lastRW=0, lastRH=0;
@@ -1474,6 +1715,7 @@ function addProxy(group,w,h,d,y){
   const p=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
   p.position.y=y; group.add(p); return p;
 }
+function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
 /* ---- canvas textures ---- */
 function earthTexture(){
   const c=document.createElement('canvas'); c.width=512; c.height=256;
@@ -1637,6 +1879,18 @@ function init3D(){
   reg('moon',buildMoon());
   const tilts={'photo_full':-0.06,'photo_cres':0.08,'photo_half':0.05,'photo_gibb':-0.09};
   PHOTOIDS.forEach(id=>reg(id,buildPhoto(id,tilts[id])));
+  /* Mechanics v2: collect the builders' generous invisible hit proxies —
+     raycasts test ONLY this set (with the isShown ancestor-visibility filter).
+     The Moon's visible sphere is small (r 0.4), so it also gets a bigger proxy. */
+  Object.keys(G).forEach(id=>{
+    G[id].traverse(o=>{
+      if(o.isMesh&&o!==earthGlow&&o.material&&o.material.transparent===true&&o.material.opacity===0){
+        o.userData.objId=id; hitProxies.push(o);
+      }
+    });
+  });
+  { const p=new THREE.Mesh(new THREE.SphereGeometry(0.85,12,10),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
+    p.userData.objId='moon'; G.moon.add(p); hitProxies.push(p); }
   ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
     new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
   ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
@@ -1671,12 +1925,8 @@ function init3D(){
     dragMode=null;
     if(moved<7&&dt<600){
       castAt(e);
-      const hits=ray.intersectObjects(scene3.children,true);
-      for(let h=0;h<hits.length;h++){
-        if(!isShown(hits[h].object)) continue;
-        const id=hits[h].object.userData.objId;
-        if(id){ handleTap(id); break; }
-      }
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
     }
   });
   el.addEventListener('pointercancel',()=>{ dragMode=null; });
@@ -1770,19 +2020,28 @@ function rotateEarth(){
     refreshEvidence(); viewDirty=true;
   });
 }
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['photo_full','photo_cres','photo_half','photo_gibb'],  /* step 1: the four sky photos */
+  ['sun'],                                                /* step 2: switch on the Sun's light */
+  ['moon'],['moon'],['moon'],['moon'],                    /* steps 3-6: move the Moon along its orbit */
+  ['earth']                                               /* step 7: rotate the Earth */
+];
 function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
   if(!THINGS[id]) return;
   focusVisual(id);
   sceneClick(id);
 }
 function sceneClick(id){
   const kind=THINGS[id].kind;
-  if(kind==='photo'){
-    if(!PHOTOS.has(id)){ PHOTOS.add(id); saveProg(); renderStepExtra(); }
-    refreshEvidence(); return;
-  }
+  const isTarget=STEP_TARGETS[curStep].indexOf(id)>=0;
   if(curStep===0){
-    T.photoHint=id; bounceThing(id); renderStepExtra();
+    if(kind==='photo'){
+      if(!PHOTOS.has(id)){ PHOTOS.add(id); saveProg(); renderStepExtra(); }
+    }else{ T.photoHint=id; bounceThing(id); renderStepExtra(); }
   }else if(curStep===1){
     if(id==='sun'){
       if(!SUNON){ SUNON=true; T.sunHint=null; if(AIDX===0) SEEN.add(0); saveProg(); renderFound(); renderStepExtra(); viewDirty=true; }
@@ -1794,6 +2053,7 @@ function sceneClick(id){
     if(id==='earth') rotateEarth();
     else{ T.rotHint=true; bounceThing(id); renderStepExtra(); }
   }
+  if(!isTarget) addMistake();
   refreshEvidence();
 }
 function applyStepStart(i){
@@ -1864,6 +2124,8 @@ function renderSceneInner(){
 function loop(now){
   requestAnimationFrame(loop);
   stepAnims(now);
+  tickReadGate();
+  tickAckGate();
   if(!doneSteps.has(curStep)&&checkStep(curStep)){
     doneSteps.add(curStep); saveProg(); renderSteps(); renderFound(); renderTable();
   }
@@ -1884,6 +2146,11 @@ init3D();
 goStep(curStep);
 drawView();
 requestAnimationFrame(loop);
+/* Mechanics v2 language policy: re-check when the device unlock changes or the
+   bridge profile lands asynchronously after load. */
+window.addEventListener('storage',e=>{ if(e.key==='camb:test-bypass') enforceLangPolicy(); });
+setTimeout(enforceLangPolicy,1200);
+setTimeout(enforceLangPolicy,4000);
 
 </script>
 <!-- CAMB-BRIDGE v1 --><script>
