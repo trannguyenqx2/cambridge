@@ -33,6 +33,7 @@ button:disabled{opacity:.45;cursor:default}
 .schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
 .schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
 .schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.schip.lock{opacity:.45;filter:grayscale(.5)}
 .mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
 .mainline .mq{font-weight:800;font-size:16.5px}
 .mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
@@ -591,7 +592,8 @@ const STR={
   qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
   qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
   exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
-  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'}),
+  lockNotice:{en:'Finish the steps before this one first.',vi:'Hãy hoàn thành các bước trước đó đã.'}
 };
 const KEYWORDS=[
   {en:'even',vi:'chẵn'},
@@ -815,9 +817,19 @@ let ackReadyAt=0, ackShownSec=-1, ackArmStep=-1;
 function ackWaitLeft(){ if(viUnlocked()) return 0; if(ackArmStep!==curStep) return 0; return Math.max(0,Math.ceil((ackReadyAt-Date.now())/1000)); }
 function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
 function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
-/* per-visit ephemeral tracker (hints, selections) */
+/* Mechanics v2 fix: sequential step lock — step i opens only when every earlier
+   step is done AND acknowledged; parent-unlocked sessions bypass the lock. */
+function stepUnlocked(i){
+  if(viUnlocked()) return true;
+  for(let j=0;j<i;j++){ if(!(doneSteps.has(j)&&ackSet.has(j))) return false; }
+  return true;
+}
+/* per-step attempt trackers (hints, selections) — one track per step, kept in
+   the main save record; entering a step restores that step's own track, and
+   only that step's Reset / anti-guess wipe may clear it */
 function newTrack(){ return { sel:null, f3hint:'', pzHint:false }; }
-let T=newTrack();
+let TRKS=[]; for(let ti=0;ti<STEPS.length;ti++) TRKS.push(newTrack());
+let T=TRKS[0];
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
@@ -833,6 +845,10 @@ try{
     if(s.pz&&typeof s.pz==='object'){ PZ.round=Math.max(0,Math.min(2,s.pz.round|0)); PZ.done=Math.max(0,Math.min(2,s.pz.done|0));
       if(s.pz.opts&&typeof s.pz.opts==='object') PZ.opts=s.pz.opts; }
     if(Array.isArray(s.ring)) RING=new Set(s.ring.filter(id=>RINGN.some(c=>c.id===id)));
+    if(Array.isArray(s.trk)) s.trk.forEach((t,i)=>{ if(i<TRKS.length&&t&&typeof t==='object') TRKS[i]={ sel:(typeof t.sel==='string'&&CARDS4.some(c=>c.id===t.sel))? t.sel:null, f3hint:(t.f3hint==='even'||t.f3hint==='zero')? t.f3hint:'', pzHint:!!t.pzHint }; });
+    /* old saves have no trk field: tracks start fresh; a done step's evidence
+       display still shows its completed values via the persistent counters
+       (PR1/PR2/F3/TRACK/PZ/RING restored above) */
     if(s.ex&&typeof s.ex==='object'){
       if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(String));
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(String));
@@ -857,6 +873,7 @@ try{
     }
   }
 }catch(e){/* fresh start */}
+T=TRKS[curStep];
 lang=effLang();
 const SUMKEY='camb:sum:math1-1-5';
 let qBest=0;
@@ -872,7 +889,7 @@ function saveSum(){
 function saveProg(){
   try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,
     pr1:[...PR1],pr2:[...PR2],left2:LEFT2,f3n:F3N,f3done:F3DONE,track:[...TRACK],
-    pz:{round:PZ.round,done:PZ.done,opts:PZ.opts},ring:[...RING],
+    pz:{round:PZ.round,done:PZ.done,opts:PZ.opts},ring:[...RING],trk:TRKS,
     ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,
     exAns:{a1:EX1ANS,a2:EX2ANS,a2f:[...EX2FRAME],a3:EX3ANS},
     ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
@@ -919,7 +936,7 @@ function tickAckGate(){
   if(w!==ackShownSec){ ackShownSec=w; paintAckGate(); }
 }
 function resetStepEvidence(){
-  anims.length=0; T=newTrack();
+  anims.length=0; TRKS[curStep]=newTrack(); T=TRKS[curStep];
   if(curStep===0) PR1=new Set();
   if(curStep===1){ PR2=new Set(); LEFT2=false; }
   if(curStep===2){ F3N=0; F3DONE=false; }
@@ -985,7 +1002,7 @@ function evidenceObj(i){
 }
 function renderSteps(){
   const bar=$('stepBar');
-  bar.innerHTML='<span class="lbl">'+esc(L(STR.stepsLbl))+'</span>'+STEPS.map((s,i)=>'<button class="schip'+(i===curStep?' cur':'')+(doneSteps.has(i)?' done':'')+'" data-i="'+i+'">'+(i+1)+'. '+esc(L(s.tag))+(doneSteps.has(i)?' ✓':'')+'</button>').join('');
+  bar.innerHTML='<span class="lbl">'+esc(L(STR.stepsLbl))+'</span>'+STEPS.map((s,i)=>{ const lk=i!==curStep&&!stepUnlocked(i); return '<button class="schip'+(i===curStep?' cur':'')+(doneSteps.has(i)?' done':'')+(lk?' lock':'')+'" data-i="'+i+'">'+(i+1)+'. '+esc(L(s.tag))+(doneSteps.has(i)?' ✓':'')+(lk?' 🔒':'')+'</button>'; }).join('');
   bar.querySelectorAll('.schip').forEach(b=>b.onclick=()=>goStep(parseInt(b.dataset.i,10)));
   const s=STEPS[curStep];
   $('scTag').innerHTML=biInl({en:STR.stepWord.en+' '+(curStep+1)+' · '+s.tag.en, vi:STR.stepWord.vi+' '+(curStep+1)+' · '+s.tag.vi});
@@ -1104,7 +1121,7 @@ function renderStepExtra(){
   }else if(curStep===3){
     buildSort(box,CARDS4_ORDER,
       [{key:'even',label:STR.binEven,cls:'evenb'},{key:'odd',label:STR.binOdd,cls:'oddb'}],
-      TRACK,()=>T.sel,v=>{T.sel=v;});
+      TRACK,()=>T.sel,v=>{T.sel=v; saveProg();});
   }else if(curStep===4){
     statPills(box,[
       {emoji:'🧩',label:{en:'Round 1: 4 + 6 = 10',vi:'Lượt 1: 4 + 6 = 10'},got:PZ.done>=1},
@@ -1143,9 +1160,11 @@ function f3Check(){
   renderStepExtra(); refreshEvidence();
 }
 function goStep(i){
-  curStep=Math.min(STEPS.length-1,Math.max(0,i));
+  i=Math.min(STEPS.length-1,Math.max(0,i));
+  if(i!==curStep&&!stepUnlocked(i)){ showNotice(STR.lockNotice); return; }   /* Mechanics v2 fix: sequential step lock — a later step cannot be entered until every earlier step is done + acknowledged */
+  curStep=i;
   anims.length=0;
-  T=newTrack();
+  T=TRKS[curStep];   /* Mechanics v2 fix: restore this step's own attempt track (never wiped by navigation) */
   stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" (after the minimum reading time) */
   applyStepStart(curStep);
   saveProg(); renderSteps();
@@ -1155,7 +1174,7 @@ $('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.le
 $('btnRead').onclick=()=>{ if(readWaitLeft()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
 $('btnGotIt').onclick=()=>{ if(ackWaitLeft()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
-  anims.length=0; T=newTrack();
+  anims.length=0; TRKS[curStep]=newTrack(); T=TRKS[curStep];
   stepRead=false; justReset=false; armReadGate(); ackArmStep=-1;
   if(curStep===0) PR1=new Set();
   if(curStep===1){ PR2=new Set(); LEFT2=false; }
@@ -2034,6 +2053,7 @@ function pzTap(id){
     addAnim(0.45,f=>{ g.rotation.z=Math.sin(f*Math.PI*4)*0.12*(1-f); },()=>{ g.rotation.z=0; });
     T.pzHint=true;
     addMistake();
+    saveProg();
     renderStepExtra();
   }
 }

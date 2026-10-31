@@ -30,6 +30,7 @@ button:disabled{opacity:.45;cursor:default}
 .langseg button.on{background:#fff;color:var(--dark)}
 .stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
 .stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.stepchip.lock{opacity:.5}
 .schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
 .schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
 .schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
@@ -607,7 +608,8 @@ const STR={
   qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
   qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
   exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
-  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'}),
+  lockNotice:{en:'Finish the steps before this one first.',vi:'Hãy hoàn thành các bước trước đó đã.'}
 };
 const KEYWORDS=[
   {en:'compare',vi:'so sánh'},
@@ -815,7 +817,8 @@ let EXORD={};                          // itemId -> option display order (values
 let qBest=0, quizDone=false, qOrder=null;
 let wallet={stars:0, botWins:{}, bossWins:{}};
 let BOT_CODE='math1-1.3';
-let T=null;                            // per-visit step trackers (reset on step entry)
+let T=null;                            // current step's evidence track (aliases TRACKS[curStep])
+let TRACKS=[];                         // v2 amendment: per-step evidence tracks, persisted in the save record
 let stepRead=false, everRead=new Set(), justReset=false;      // v2 read gate (not persisted)
 const READ_MIN_S=30;                 // v2: minimum reading time (seconds) before Start unlocks (parent-unlocked sessions exempt)
 let readReadyAt=0;                   // timestamp when the Start button unlocks
@@ -856,7 +859,7 @@ function saveSum(){
   try{ localStorage.setItem('camb:sum:math1-1-3', JSON.stringify({s,st,e,et,q,qt})); }catch(err){}
 }
 function saveProg(){
-  try{ localStorage.setItem(SAVE_KEY, JSON.stringify({done:[...doneSteps], cur:curStep, lang:prefLang, pick:PICK, tiles:[...FOUND6], ack:[...ackSet], mist:mist, exBest:exBest, exSub:exRevealed, exAns:EXANS, ex:{e1:[...EX1DONE], e2:[...EX2DONE], e3:[...EX3DONE]}})); }catch(e){}
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify({done:[...doneSteps], cur:curStep, lang:prefLang, pick:PICK, tiles:[...FOUND6], ack:[...ackSet], mist:mist, exBest:exBest, exSub:exRevealed, exAns:EXANS, ex:{e1:[...EX1DONE], e2:[...EX2DONE], e3:[...EX3DONE]}, trk:TRACKS.map(t=>t? serTrack(t):null)})); }catch(e){}
   saveSum();
 }
 function loadProg(){
@@ -869,6 +872,9 @@ function loadProg(){
     if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(i=>i>=0&&i<STEPS.length));
     else ackSet=new Set(doneSteps);   // v1 save: a finished step counted as acknowledged
     if(Array.isArray(s.mist)) mist=s.mist.slice(0,STEPS.length);
+    if(Array.isArray(s.trk)){ TRACKS=s.trk.map(o=>o? deTrack(o):null); }
+    else if(FOUND6.size>0){ const t5=newTrack(); t5.s6found=new Set(FOUND6); TRACKS[5]=t5; }   // old save: seed step 6 track from the persisted tiles
+    while(TRACKS.length<STEPS.length) TRACKS.push(null);
     if(s.ex){
       if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
       if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
@@ -912,7 +918,7 @@ function flashReadBtn(){
 }
 function resetStepEvidence(){
   // three mistakes: wipe this step's evidence and send the learner back to read
-  T=newTrack();
+  TRACKS[curStep]=newTrack(); T=TRACKS[curStep];
   if(curStep===5){ FOUND6.clear(); }
   applyStepStart(curStep);
   lockRead(); justReset=true;
@@ -951,6 +957,9 @@ function newTrack(){
     s6found:new Set(), s6wrong:null, counted:new Set()};
 }
 T=newTrack();
+function trackFor(i){ if(!TRACKS[i]) TRACKS[i]=newTrack(); return TRACKS[i]; }
+function serTrack(t){ const o={}; ['s1pick','s1wrong','s2pick','s2wrong','s3ans','s4a','s4b','s5a','s5b','s5c','s6wrong'].forEach(k=>{ o[k]=t[k]; }); ['s3countA','s3countB','s4spiders','s4snails'].forEach(k=>{ o[k]=!!t[k]; }); o.s6found=[...t.s6found]; o.counted=[...t.counted]; return o; }
+function deTrack(o){ const t=newTrack(); if(!o||typeof o!=='object') return t; ['s1pick','s1wrong','s2pick','s2wrong','s3ans','s4a','s4b','s5a','s5b','s5c','s6wrong'].forEach(k=>{ if(o[k]!==undefined) t[k]=o[k]; }); ['s3countA','s3countB','s4spiders','s4snails'].forEach(k=>{ if(o[k]!==undefined) t[k]=!!o[k]; }); if(Array.isArray(o.s6found)) t.s6found=new Set(o.s6found); if(Array.isArray(o.counted)) t.counted=new Set(o.counted); return t; }
 function checkStep(i){
   if(i===0) return T.s1pick==='rowA';
   if(i===1) return T.s2pick==='trayA';
@@ -1010,9 +1019,17 @@ function prefillDone(i){
   if(i===4){ T.s5a='less'; T.s5b='6'; T.s5c='4'; }
   if(i===5){ T.s6found=new Set(FOUND6); }
 }
+function seqLocked(i){
+  // v2 amendment: a step is locked until every earlier step is done AND acknowledged
+  if(viUnlocked()) return false;                       // parent/test sessions bypass the lock
+  if(doneSteps.has(i)&&ackSet.has(i)) return false;     // finished steps stay freely navigable
+  for(let j=0;j<i;j++){ if(!(doneSteps.has(j)&&ackSet.has(j))) return true; }
+  return false;
+}
 function goStep(i){
+  if(i!==curStep && seqLocked(i)){ showNotice(STR.lockNotice); return; }
   curStep=i;
-  T=newTrack();
+  T=trackFor(i);
   prefillDone(i);
   lockRead(); justReset=false;
   applyStepStart(i);
@@ -1111,14 +1128,13 @@ function renderSteps(){
     const cls=['stepchip'];
     if(doneSteps.has(i)) cls.push(ackSet.has(i)? 'done':'needack');
     if(i===curStep) cls.push('cur');
-    const lock=i>0 && !doneSteps.has(i-1);
+    const lock=seqLocked(i);
     if(lock) cls.push('lock');
-    return '<button class="'+cls.join(' ')+'" data-step="'+i+'">'+(i+1)+' '+esc(L(s.tag))+'</button>';
+    return '<button class="'+cls.join(' ')+'" data-step="'+i+'">'+(lock?'🔒 ':'')+(i+1)+' '+esc(L(s.tag))+'</button>';
   }).join('');
   bar.querySelectorAll('.stepchip').forEach(ch=>{
     ch.addEventListener('click',()=>{
       const i=+ch.getAttribute('data-step');
-      if(i>0 && !doneSteps.has(i-1)) return;
       goStep(i);
     });
   });
@@ -1171,7 +1187,7 @@ $('btnNext').addEventListener('click',()=>{
 });
 $('btnResetStep').addEventListener('click',()=>{
   if(curStep===5){ FOUND6.clear(); }
-  T=newTrack();
+  TRACKS[curStep]=newTrack(); T=TRACKS[curStep];
   lockRead();
   mist[curStep]=0;
   applyStepStart(curStep);
@@ -1513,7 +1529,7 @@ document.addEventListener('keydown',e=>{
   const n=parseInt(e.key,10);
   if(n>=1&&n<=STEPS.length){
     const i=n-1;
-    if(i===0 || doneSteps.has(i-1)) goStep(i);
+    goStep(i);
   }
 });
 
@@ -2168,6 +2184,7 @@ renderFound();
 renderKeyWords();
 renderFocusRow();
 init3D();
+if(seqLocked(curStep)){ const fu=STEPS.findIndex((_,j)=>!(doneSteps.has(j)&&ackSet.has(j))); curStep=fu<0? STEPS.length-1 : fu; }
 goStep(curStep);
 enforceLangPolicy();           // v2: force EN unless a parent unlock is present
 requestAnimationFrame(loop);

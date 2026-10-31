@@ -623,7 +623,8 @@ const STR={
   qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
   qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
   exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
-  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'}),
+  lockNotice:{en:'Finish the steps before this one first.',vi:'Hãy hoàn thành các bước trước đó đã.'}
 };
 const KEYWORDS=WORDS.map(w=>({en:w,vi:WORDVI[w]}));
 
@@ -837,6 +838,7 @@ rollExOrders();
 /* ================= state + persistence ================= */
 const KEY='camb:math1-1-4';
 let doneSteps=new Set(), curStep=0;
+let tracks=null;   /* Mechanics v2 amendment: per-step evidence tracks (each step's own attempt track, persisted in the save record) */
 /* Mechanics v2 state (all additive in the main record; old saves still load) */
 let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
 let mist=[0,0,0,0,0,0];                     /* persisted per-step mistake counters (anti-guess) */
@@ -884,6 +886,12 @@ try{
       exRevealed=true;
       exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
     }
+    /* Mechanics v2 amendment: restore this save's per-step evidence tracks.
+       Old saves have none: seed every done step with its completed values so
+       a finished step never displays zeroed evidence counters. */
+    tracks=STEPS.map(()=>newTrack());
+    if(Array.isArray(s.trk)) s.trk.forEach((o,i)=>{ if(i<STEPS.length&&o&&typeof o==='object') tracks[i]=trackFromJSON(o); });
+    else doneSteps.forEach(i=>{ tracks[i]=seedTrack(i); });
   }
 }catch(e){/* fresh start */}
 lang=effLang();
@@ -900,7 +908,7 @@ function saveSum(){
   try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,ack:[...ackSet],mist:mist,trk:(tracks||[]).map(trackToJSON),exBest:exBest,exSub:exRevealed,
     exAns:{f:EXFANS,p:EXPANS,c:EXCANS,b:Object.keys(EXBSET).map(Number),bt:EXBTOUCH},
     ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}})); }catch(e){}
   saveSum();
@@ -914,7 +922,50 @@ function newTrack(){ return {
   matchSel:null, matched:new Set(), matchWord:{}, matchHint:'',
   sortSel:null, sortCorrect:new Set()
 };}
-let T=newTrack();
+/* Mechanics v2 amendment: per-step evidence tracks. T always aliases
+   tracks[curStep]; entering a step restores its own track, so evidence
+   survives navigation and (through saveProg) reload. Only the step's own
+   Reset button and its anti-guess wipe may clear that step's track. */
+function trackToJSON(t){ return {
+  cf:[...t.coinsFlipped], sc:[...t.spotsCounted], so:t.spotOrder.slice(), w2:!!t.word2, wh:t.wordHint,
+  fs:t.frameSel, fp:[...t.framePlaced], fh:t.frameHint,
+  ap:t.apples,
+  ms:t.matchSel, mt:[...t.matched], mw:Object.assign({},t.matchWord), mh:t.matchHint,
+  ss:t.sortSel, sg:[...t.sortCorrect]
+};}
+function trackFromJSON(o){
+  const t=newTrack();
+  const keep=(arr,ids)=>{ const out=[]; if(Array.isArray(arr)) arr.forEach(v=>{ if(ids.indexOf(v)>=0&&out.indexOf(v)<0) out.push(v); }); return out; };
+  t.coinsFlipped=new Set(keep(o.cf,COINS.map(c=>c.id)));
+  t.spotsCounted=new Set(keep(o.sc,SPOTS));
+  t.spotOrder=keep(o.so,SPOTS).filter(id=>t.spotsCounted.has(id));
+  t.word2=!!o.w2; if(typeof o.wh==='string') t.wordHint=o.wh;
+  if(typeof o.fs==='string'&&FTILES.some(x=>x.id===o.fs)) t.frameSel=o.fs;
+  t.framePlaced=new Set(keep(o.fp,CELLS));
+  if(typeof o.fh==='string') t.frameHint=o.fh;
+  if(typeof o.ap==='number'&&isFinite(o.ap)) t.apples=Math.max(0,Math.min(8,o.ap|0));
+  if(typeof o.ms==='string'&&MTILES.some(x=>x.id===o.ms)) t.matchSel=o.ms;
+  t.matched=new Set(keep(o.mt,BASKETS.map(b=>b.id)));
+  if(o.mw&&typeof o.mw==='object') BASKETS.forEach(b=>{ if(typeof o.mw[b.id]==='string') t.matchWord[b.id]=o.mw[b.id]; });
+  if(typeof o.mh==='string') t.matchHint=o.mh;
+  if(typeof o.ss==='string'&&SORTCARDS.some(c=>c.id===o.ss)) t.sortSel=o.ss;
+  t.sortCorrect=new Set(keep(o.sg,SORTCARDS.map(c=>c.id)));
+  return t;
+}
+function seedTrack(i){
+  /* a done step in an old (pre-track) save: rebuild its completed evidence
+     from the lesson's own target constants */
+  const t=newTrack();
+  if(i===0) COINS.forEach(c=>t.coinsFlipped.add(c.id));
+  else if(i===1){ SPOTS.forEach(id=>{ t.spotsCounted.add(id); t.spotOrder.push(id); }); t.word2=true; }
+  else if(i===2) FTILES.forEach(x=>t.framePlaced.add(x.cell));
+  else if(i===3) t.apples=8;
+  else if(i===4) BASKETS.forEach(b=>{ t.matched.add(b.id); t.matchWord[b.id]=b.word; });
+  else if(i===5) SORTCARDS.slice(0,9).forEach(c=>t.sortCorrect.add(c.id));
+  return t;
+}
+if(!tracks) tracks=STEPS.map(()=>newTrack());
+let T=tracks[curStep];
 
 /* ================= Mechanics v2: notice, anti-guess, evidence reset ================= */
 let noticeT=null;
@@ -926,7 +977,7 @@ function showNotice(s){
 function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
 function resetStepEvidence(){
   /* wipe ONLY the current step's collected evidence, then re-lock the instruction (read gate). */
-  anims.length=0; T=newTrack();
+  anims.length=0; T=tracks[curStep]=newTrack();   /* wipe ONLY this step's track */
   applyStepStart(curStep);
   stepRead=false; justReset=true;
   readGateUntil=performance.now()+READ_MIN_S*1000; lastReadSec=-1;   /* minimum reading time applies again after a re-lock */
@@ -1000,7 +1051,7 @@ function evidenceObj(i){
 }
 function renderSteps(){
   const bar=$('stepBar');
-  bar.innerHTML='<span class="lbl">'+esc(L(STR.stepsLbl))+'</span>'+STEPS.map((s,i)=>'<button class="schip'+(i===curStep?' cur':'')+(doneSteps.has(i)?' done':'')+'" data-i="'+i+'">'+(i+1)+'. '+esc(L(s.tag))+(doneSteps.has(i)?' ✓':'')+'</button>').join('');
+  bar.innerHTML='<span class="lbl">'+esc(L(STR.stepsLbl))+'</span>'+STEPS.map((s,i)=>{ const lk=stepSeqLocked(i); return '<button class="schip'+(i===curStep?' cur':'')+(doneSteps.has(i)?' done':'')+(lk?' lock':'')+'" data-i="'+i+'"'+(lk?' style="opacity:.45"':'')+'>'+(i+1)+'. '+esc(L(s.tag))+(doneSteps.has(i)?' ✓':'')+(lk?' 🔒':'')+'</button>'; }).join('');
   bar.querySelectorAll('.schip').forEach(b=>b.onclick=()=>goStep(parseInt(b.dataset.i,10)));
   const s=STEPS[curStep];
   $('scTag').innerHTML=biInl({en:STR.stepWord.en+' '+(curStep+1)+' · '+s.tag.en, vi:STR.stepWord.vi+' '+(curStep+1)+' · '+s.tag.vi});
@@ -1138,10 +1189,20 @@ function renderStepExtra(){
       T.sortCorrect,()=>T.sortSel,v=>{T.sortSel=v;});
   }
 }
+function stepSeqLocked(i){
+  /* Mechanics v2 amendment: sequential step lock — a step stays locked until
+     every earlier step is done AND acknowledged. Parent/test sessions
+     (viUnlocked) bypass the lock completely. */
+  if(viUnlocked()) return false;
+  for(let j=0;j<i;j++){ if(!(doneSteps.has(j)&&ackSet.has(j))) return true; }
+  return false;
+}
 function goStep(i){
-  curStep=Math.min(STEPS.length-1,Math.max(0,i));
+  i=Math.min(STEPS.length-1,Math.max(0,i));
+  if(i!==curStep&&stepSeqLocked(i)){ showNotice(STR.lockNotice); renderSteps(); return; }   /* locked step: refuse and stay */
+  curStep=i;
   anims.length=0;
-  T=newTrack();
+  T=tracks[curStep];   /* restore this step's own evidence track (never a fresh one) */
   stepRead=false; justReset=false;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" */
   readGateUntil=performance.now()+READ_MIN_S*1000; lastReadSec=-1;   /* …and Start unlocks only after the minimum reading time */
   applyStepStart(curStep);
@@ -1154,7 +1215,7 @@ $('btnRead').onclick=()=>{ if(!viUnlocked()&&performance.now()<readGateUntil) re
 $('btnGotIt').onclick=()=>{ if(!viUnlocked()&&performance.now()<(ackArm[curStep]||0)) return;   /* conclusion reading time not over yet (parent unlock exempt) */
   ackSet.add(curStep); saveProg(); renderSteps(); renderFound(); };
 $('btnResetStep').onclick=()=>{
-  anims.length=0; T=newTrack();
+  anims.length=0; T=tracks[curStep]=newTrack();   /* clear ONLY this step's track */
   stepRead=false; justReset=false;
   readGateUntil=performance.now()+READ_MIN_S*1000; lastReadSec=-1;
   applyStepStart(curStep); saveProg(); renderSteps();
@@ -1964,8 +2025,9 @@ function flipCoin(id,user){
   const g=COING[id]; if(!g||FLIPPING.has(id)) return;
   const from=g.rotation.y, to=from+Math.PI;
   FLIPPING.add(id);
+  const trk=T;   /* the flip belongs to this step's track, even if the learner navigates mid-animation */
   addAnim(0.55,f=>{ g.rotation.y=from+(to-from)*f; },()=>{ FLIPPING.delete(id);
-    if(user){ T.coinsFlipped.add(id); refreshEvidence(); } });
+    if(user){ trk.coinsFlipped.add(id); saveProg(); refreshEvidence(); } });
 }
 function demoFlipCoin(id){
   const g=COING[id]; if(!g||FLIPPING.has(id)) return;
@@ -2061,7 +2123,7 @@ function handleTap(id){
 let lastEvidHtml='';
 function refreshEvidence(){
   const html=bi(evidenceObj(curStep));
-  if(html!==lastEvidHtml){ lastEvidHtml=html; $('evid').innerHTML=html; }
+  if(html!==lastEvidHtml){ lastEvidHtml=html; $('evid').innerHTML=html; saveProg(); }   /* evidence changed: persist the per-step tracks */
 }
 
 /* ================= read-gate countdown (Mechanics v2: minimum reading time) ================= */

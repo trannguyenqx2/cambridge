@@ -33,6 +33,7 @@ button:disabled{opacity:.45;cursor:default}
 .schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
 .schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
 .schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.schip.locked{opacity:.45;filter:grayscale(.55)}
 .mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
 .mainline .mq{font-weight:800;font-size:16.5px}
 .mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
@@ -590,7 +591,8 @@ const STR={
   qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
   qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
   exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
-  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'}),
+  lockNotice:{en:'Finish the steps before this one first.',vi:'Hãy hoàn thành các bước trước đó đã.'}
 };
 const KEYWORDS=[
   {en:'after',vi:'sau'},
@@ -781,6 +783,7 @@ function exAnsText(it){ return Array.isArray(it.ans)? it.ans.slice().sort((x,y)=
 /* ================= state + persistence ================= */
 const KEY='camb:math1-1-2';
 let doneSteps=new Set(), curStep=0;
+let savedTracks=null;   /* per-step attempt tracks captured from the save record (restored below, once newTrack exists) */
 let CNT={pt:0,read:0,miss:0,swap:0,after:0,before:0};   /* console record (mirrors the step work) */
 /* Mechanics v2 state (all additive in the main record; old saves still load) */
 let ackSet=new Set();                       /* steps whose conclusion was acknowledged with "Got it" */
@@ -834,6 +837,18 @@ function updateAckBtn(){
 }
 function stepLocked(){ return !doneSteps.has(curStep)&&!stepRead; }
 function allStepsAcked(){ return STEPS.every((_,i)=>doneSteps.has(i)&&ackSet.has(i)); }
+/* Mechanics v2 amendment (rule 9): SEQUENTIAL STEP LOCK — step i is locked
+   while any earlier step is not done AND acknowledged. Sessions with the
+   parent unlock (viUnlocked()) bypass the lock completely. */
+function stepSeqLocked(i){
+  if(viUnlocked()) return false;
+  for(let j=0;j<i;j++){ if(!(doneSteps.has(j)&&ackSet.has(j))) return true; }
+  return false;
+}
+function firstOpenStep(){
+  for(let j=0;j<STEPS.length;j++){ if(!(doneSteps.has(j)&&ackSet.has(j))) return j; }
+  return STEPS.length-1;
+}
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s){
@@ -848,6 +863,7 @@ try{
     if(Array.isArray(s.ack)) ackSet=new Set(s.ack.filter(n=>Number.isInteger(n)&&n>=0&&n<STEPS.length));
     else ackSet=new Set(doneSteps);   /* old saves have no ack field: done steps count as acknowledged */
     if(Array.isArray(s.mist)) s.mist.forEach((v,i)=>{ if(i<STEPS.length&&typeof v==='number'&&isFinite(v)) mist[i]=Math.max(0,v|0); });
+    if(Array.isArray(s.tracks)) savedTracks=s.tracks;   /* Mechanics v2 amendment: per-step evidence tracks */
     if(typeof s.exBest==='number'&&isFinite(s.exBest)) exBest=Math.max(0,Math.min(EX_TOTAL,s.exBest|0));
     if(s.exAns&&typeof s.exAns==='object'){
       Object.keys(s.exAns).forEach(id=>{
@@ -880,10 +896,11 @@ function saveSum(){
   try{ localStorage.setItem(SUMKEY,JSON.stringify({s:acked,st:STEPS.length,e:exScoreNow(),et:EX_TOTAL,q:qBest,qt:QUIZ.length})); }catch(e){}
 }
 function saveProg(){
-  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,rec:CNT,ack:[...ackSet],mist:mist,exBest:exBest,exSub:exRevealed,exAns:EXANS,ex:{e1:[...EXSECDONE[1]],e2:[...EXSECDONE[2]],e3:[...EXSECDONE[3]]}})); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify({done:[...doneSteps],cur:curStep,lang:prefLang,rec:CNT,ack:[...ackSet],mist:mist,tracks:tracks,exBest:exBest,exSub:exRevealed,exAns:EXANS,ex:{e1:[...EXSECDONE[1]],e2:[...EXSECDONE[2]],e3:[...EXSECDONE[3]]}})); }catch(e){}
   saveSum();
 }
-/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+/* per-step attempt trackers — one track per step, persisted in the main record
+   (demo actions never write here as 'user') */
 function newTrack(){return {
   rhymeN:0, rhymeHint:0,
   readN:0, readHint:0,
@@ -891,7 +908,34 @@ function newTrack(){return {
   swap8:false, swap5:false, swapBack:false,
   afterN:0, beforeN:0
 };}
-let T=newTrack();
+/* Mechanics v2 amendment (rules 9–10): the attempt track is PER STEP. Each
+   step keeps its own track, restored when the step is re-entered — moving to
+   another step or reloading no longer wipes a step's collected evidence.
+   Only that step's own Reset button and its anti-guess wipe clear its track. */
+let tracks=[];
+function trackFor(i){ if(!tracks[i]) tracks[i]=newTrack(); return tracks[i]; }
+function seedDoneTrack(i){
+  /* migration for saves written before per-step tracks existed: a step that
+     is already done gets a track at its completed values, so its evidence
+     line shows the finished counts instead of zeroes. */
+  const t=newTrack();
+  if(i===0) t.rhymeN=10;
+  else if(i===1) t.readN=3;
+  else if(i===2){ t.miss1=true; t.miss2=true; }
+  else if(i===3){ t.swap8=true; t.swap5=true; t.swapBack=true; }
+  else if(i===4) t.afterN=4;
+  else if(i===5) t.beforeN=4;
+  return t;
+}
+if(savedTracks) savedTracks.forEach((st,i)=>{
+  if(i>=STEPS.length||!st||typeof st!=='object') return;
+  const t=newTrack();
+  ['rhymeN','rhymeHint','readN','readHint','afterN','beforeN'].forEach(k=>{ if(typeof st[k]==='number'&&isFinite(st[k])) t[k]=Math.max(0,st[k]|0); });
+  ['miss1','miss2','gapHint','swap8','swap5','swapBack'].forEach(k=>{ t[k]=!!st[k]; });
+  tracks[i]=t;
+});
+doneSteps.forEach(i=>{ if(!tracks[i]) tracks[i]=seedDoneTrack(i); });
+let T=trackFor(curStep);
 
 /* ================= Mechanics v2: notice, anti-guess, evidence reset ================= */
 let noticeT=null;
@@ -903,7 +947,7 @@ function showNotice(s){
 function flashReadBtn(){ const b=$('btnRead'); if(!b) return; b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
 function resetStepEvidence(){
   /* wipe ONLY the current step's collected evidence, then re-lock the instruction (read gate) */
-  anims.length=0; T=newTrack();
+  anims.length=0; tracks[curStep]=newTrack(); T=tracks[curStep];   /* clear ONLY this step's own track */
   if(curStep===0) CNT.pt=0;
   if(curStep===1) CNT.read=0;
   if(curStep===2) CNT.miss=0;
@@ -986,7 +1030,7 @@ function refreshEvidence(){
 }
 function renderSteps(){
   const bar=$('stepBar');
-  bar.innerHTML='<span class="lbl">'+esc(L(STR.stepsLbl))+'</span>'+STEPS.map((s,i)=>'<button class="schip'+(i===curStep?' cur':'')+(doneSteps.has(i)?' done':'')+'" data-i="'+i+'">'+(i+1)+'. '+esc(L(s.tag))+(doneSteps.has(i)?' ✓':'')+'</button>').join('');
+  bar.innerHTML='<span class="lbl">'+esc(L(STR.stepsLbl))+'</span>'+STEPS.map((s,i)=>{ const lk=stepSeqLocked(i); return '<button class="schip'+(i===curStep?' cur':'')+(doneSteps.has(i)?' done':'')+(lk?' locked':'')+'" data-i="'+i+'">'+(i+1)+'. '+esc(L(s.tag))+(doneSteps.has(i)?' ✓':(lk?' 🔒':''))+'</button>'; }).join('');
   bar.querySelectorAll('.schip').forEach(b=>b.onclick=()=>goStep(parseInt(b.dataset.i,10)));
   const s=STEPS[curStep];
   $('scTag').innerHTML=biInl({en:STR.stepWord.en+' '+(curStep+1)+' · '+s.tag.en, vi:STR.stepWord.vi+' '+(curStep+1)+' · '+s.tag.vi});
@@ -1110,9 +1154,18 @@ function stepChip(kind,v,el){
   }
 }
 function goStep(i){
-  curStep=Math.min(STEPS.length-1,Math.max(0,i));
+  i=Math.min(STEPS.length-1,Math.max(0,i));
+  if(stepSeqLocked(i)){
+    /* Sequential lock: refuse entry and stay on the current step, saying why.
+       A restored save that sits ON a locked step (possible from before the
+       lock existed) is moved to the first open step instead. */
+    showNotice(STR.lockNotice);
+    if(i!==curStep){ renderSteps(); return; }
+    i=firstOpenStep();
+  }
+  curStep=i;
   anims.length=0;
-  T=newTrack();
+  T=trackFor(curStep);   /* restore THIS step's own attempt track — never a fresh wipe */
   stepRead=false; justReset=false;   /* Mechanics v2: entering a step re-locks it until "I've read it — Start" */
   gateT0=Date.now();                  /* …and the minimum reading time restarts with it */
   applyStepStart(curStep);
@@ -1123,7 +1176,7 @@ $('btnNext').onclick=()=>{ if($('btnNext').disabled) return; if(curStep<STEPS.le
 $('btnRead').onclick=()=>{ if(gateRemaining()>0) return; stepRead=true; everRead.add(curStep); justReset=false; renderSteps(); };
 $('btnGotIt').onclick=()=>{ if(ackRemaining()>0) return; ackSet.add(curStep); saveProg(); renderSteps(); };
 $('btnResetStep').onclick=()=>{
-  anims.length=0; T=newTrack();
+  anims.length=0; tracks[curStep]=newTrack(); T=tracks[curStep];   /* clear ONLY this step's own track */
   stepRead=false; justReset=false;
   gateT0=Date.now();
   applyStepStart(curStep); saveProg(); renderSteps();
@@ -1816,8 +1869,8 @@ function applyStepStart(i){
   if(G.t8) G.t8.position.x=TILEX(8);
   fishAnim=null; fishJump=0;
   fishPos={x:POND.x,z:POND.z};
-  if(i===2){ setTileFace(3,'?'); setTileFace(7,'?'); }
-  if(i===3&&G.t5&&G.t8){ G.t5.position.x=TILEX(8); G.t8.position.x=TILEX(5); }
+  if(i===2){ setTileFace(3,T.miss1?'3':'?'); setTileFace(7,T.miss2?'7':'?'); }   /* gap faces follow the step's restored track */
+  if(i===3&&G.t5&&G.t8&&!(T.swap8&&T.swap5)){ G.t5.position.x=TILEX(8); G.t8.position.x=TILEX(5); }   /* a finished swap stays swapped back */
   if(i===0){ fishPos={x:TILEX(1),z:2.62}; }
 }
 
