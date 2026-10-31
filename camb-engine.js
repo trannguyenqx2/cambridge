@@ -832,3 +832,51 @@ function cambBoot(){
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cambBoot);
 else cambBoot();
+
+/* ===== [TEST 2026-10-31] Landscape fullscreen for phones — additive, removable =====
+   - Entering fullscreen (the lesson's own btnFull / F key) now tries to lock
+     landscape orientation (Android Chrome).
+   - If the Fullscreen API is unavailable (iOS Safari), btnFull falls back to a
+     pseudo-fullscreen: #app becomes a fixed overlay that rotates itself 90
+     degrees in portrait, so the lesson still fills a landscape screen.
+   - In fullscreen the concept-chain strip is hidden and the step card is
+     capped narrower so the 3D stage gets the room. */
+(function(){
+  if (window.__cambLsFull) return; window.__cambLsFull = true;
+  var css = '#app:fullscreen{width:100%;height:100%}'
+    + '#app:fullscreen .mainline{display:none}'
+    + '#app:fullscreen .topbar{padding-top:4px;padding-bottom:4px}'
+    + '#app:fullscreen .stepbar{padding-top:4px;padding-bottom:4px}'
+    + '#app:fullscreen #stepCard{width:min(330px,44%);top:8px;left:8px}'
+    + '#app:fullscreen .hintpill{bottom:6px}'
+    + '#app.ls-pseudo{position:fixed;inset:0;z-index:99999;background:#fff}'
+    + '#app.ls-pseudo .mainline{display:none}'
+    + '#app.ls-pseudo #stepCard{width:min(330px,44%);top:8px;left:8px}'
+    + '@media (orientation:portrait){#app.ls-pseudo{inset:auto;left:50%;top:50%;width:100vh;height:100vw;transform:translate(-50%,-50%) rotate(90deg)}}';
+  function inject(){
+    if (document.getElementById('camb-ls-full-css')) return;
+    var st = document.createElement('style');
+    st.id = 'camb-ls-full-css'; st.textContent = css;
+    (document.head || document.documentElement).appendChild(st);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inject); else inject();
+  function app(){ return document.getElementById('app'); }
+  function refit(){ [80, 350].forEach(function(ms){ setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} }, ms); }); }
+  document.addEventListener('fullscreenchange', function(){
+    if (document.fullscreenElement){
+      if (screen.orientation && screen.orientation.lock){ screen.orientation.lock('landscape').catch(function(){}); }
+    } else if (screen.orientation && screen.orientation.unlock){
+      try{ screen.orientation.unlock(); }catch(e){}
+    }
+    refit();
+  });
+  document.addEventListener('click', function(e){
+    var t = e.target; if (!t || t.id !== 'btnFull') return;
+    var a = app(); if (!a) return;
+    if (a.classList.contains('ls-pseudo')){ a.classList.remove('ls-pseudo'); refit(); return; }
+    if (document.fullscreenElement) return;
+    if (!a.requestFullscreen){ a.classList.add('ls-pseudo'); refit(); }
+  }, true);
+  window.addEventListener('orientationchange', refit);
+})();
+/* ===== end landscape-fullscreen test block ===== */
