@@ -1548,6 +1548,36 @@ function genQuestions(seed){
   btn.addEventListener('click', function(){ isFull()?exit():enter(); });
   document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement){ window.__LS_FULL=false; } refresh(); });
   window.addEventListener('orientationchange', function(){ setTimeout(refresh, 150); });
+  /* v2: remap pointer coords while the card is CSS-rotated (pseudo mode),
+     so the canvas raycast (clientX/Y vs rotated rect) hits the right objects;
+     plus a ResizeObserver so the renderer refits whenever the stage box
+     settles (late rotation/layout changes). */
+  function pseudoRotated(){
+    return !!(card.classList.contains('pseudo-full') && window.matchMedia && window.matchMedia('(orientation: portrait)').matches);
+  }
+  function remap(e){
+    if(!pseudoRotated()) return;
+    var t=e.target; if(!t || t.tagName!=='CANVAS') return;
+    var r=t.getBoundingClientRect(); if(!r.width||!r.height) return;
+    var sx=(e.clientX-r.left)/r.width, sy=(e.clientY-r.top)/r.height;
+    var fx=sy, fy=1-sx;
+    try{
+      Object.defineProperty(e,'clientX',{value:r.left+fx*r.width, configurable:true});
+      Object.defineProperty(e,'clientY',{value:r.top+fy*r.height, configurable:true});
+    }catch(err){}
+  }
+  ['pointerdown','pointermove','pointerup','pointercancel'].forEach(function(type){
+    document.addEventListener(type, remap, true);
+  });
+  if(window.ResizeObserver){
+    var wrapEl=document.getElementById('stageWrap'), lastW=0, lastH=0;
+    if(wrapEl){
+      new ResizeObserver(function(){
+        var w=wrapEl.clientWidth, h=wrapEl.clientHeight;
+        if(w!==lastW||h!==lastH){ lastW=w; lastH=h; if(window.__fitStage) window.__fitStage(); }
+      }).observe(wrapEl);
+    }
+  }
 })();
 </script>
 </body>

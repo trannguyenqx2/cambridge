@@ -833,14 +833,19 @@ function cambBoot(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cambBoot);
 else cambBoot();
 
-/* ===== [TEST 2026-10-31] Landscape fullscreen for phones — additive, removable =====
-   - Entering fullscreen (the lesson's own btnFull / F key) now tries to lock
+/* ===== [TEST 2026-10-31 v2] Landscape fullscreen for phones — additive, removable =====
+   - Entering fullscreen (the lesson's own btnFull / F key) tries to lock
      landscape orientation (Android Chrome).
    - If the Fullscreen API is unavailable (iOS Safari), btnFull falls back to a
      pseudo-fullscreen: #app becomes a fixed overlay that rotates itself 90
      degrees in portrait, so the lesson still fills a landscape screen.
    - In fullscreen the concept-chain strip is hidden and the step card is
-     capped narrower so the 3D stage gets the room. */
+     capped narrower so the 3D stage gets the room.
+   - v2 fix: under the CSS rotation the canvas raycast math (clientX/Y vs the
+     rotated bounding rect) lands on wrong objects. A capture-phase remapper
+     rewrites pointer clientX/Y into the app's un-rotated local frame while
+     pseudo mode is active in a portrait viewport, so taps and drags hit the
+     right objects again. Native fullscreen is untouched. */
 (function(){
   if (window.__cambLsFull) return; window.__cambLsFull = true;
   var css = '#app:fullscreen{width:100%;height:100%}'
@@ -878,5 +883,24 @@ else cambBoot();
     if (!a.requestFullscreen){ a.classList.add('ls-pseudo'); refit(); }
   }, true);
   window.addEventListener('orientationchange', refit);
+  /* --- pointer coordinate remapper for the rotated pseudo mode --- */
+  function pseudoRotated(){
+    var a = app();
+    return !!(a && a.classList.contains('ls-pseudo') && window.matchMedia && window.matchMedia('(orientation: portrait)').matches);
+  }
+  function remap(e){
+    if (!pseudoRotated()) return;
+    var t = e.target; if (!t || t.tagName !== 'CANVAS') return;
+    var r = t.getBoundingClientRect(); if (!r.width || !r.height) return;
+    var sx = (e.clientX - r.left) / r.width, sy = (e.clientY - r.top) / r.height;
+    var fx = sy, fy = 1 - sx; /* local fractions under rotate(90deg) */
+    try {
+      Object.defineProperty(e, 'clientX', { value: r.left + fx * r.width, configurable: true });
+      Object.defineProperty(e, 'clientY', { value: r.top + fy * r.height, configurable: true });
+    } catch (err) {}
+  }
+  ['pointerdown','pointermove','pointerup','pointercancel'].forEach(function(type){
+    document.addEventListener(type, remap, true);
+  });
 })();
 /* ===== end landscape-fullscreen test block ===== */
