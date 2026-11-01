@@ -1,0 +1,1518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>2.2 Thermal and electrical conductors — Dẫn nhiệt và dẫn điện · Cambridge Primary Science 6</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.cond{background:#e07b24}
+.binbtn.insul{background:#3d8bfd}
+.binbtn.elec{background:#d9930d}
+.binbtn.noelec{background:#64748b}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, option buttons, data table */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+.optbtn{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:7px 0;cursor:pointer;font-size:16.5px;background:#fff;line-height:1.4}
+.optbtn.sel{border-color:var(--acc);background:#eef6ff}
+.optbtn.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.predgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.predbtn{border:2px solid var(--line);border-radius:13px;padding:9px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;font-weight:700;line-height:1.3}
+.predbtn.sel{border-color:var(--acc);background:#eef6ff}
+.chipbtn{border:2px solid var(--line);border-radius:999px;padding:7px 13px;font-weight:700;background:#fff;cursor:pointer;margin:3px 2px;font-size:15.5px}
+.chipbtn.sel{border-color:var(--acc);background:#eef6ff}
+.chipbtn.right{border-color:#8fd3ab;background:#edf9f1}
+.datatable{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+.datatable td,.datatable th{border:1px solid var(--line);padding:4px 7px;text-align:center}
+.datatable th{background:#eef6ff}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:20px;white-space:nowrap;margin-left:8px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.wordopt.sel{border-color:var(--acc);background:#eef6ff}
+.wordopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 6" data-vi="← Môn Khoa học 6">← Science 6</a>
+    <span class="ttl i18n" data-en="2.2 Thermal and electrical conductors" data-vi="2.2 Vật dẫn nhiệt và dẫn điện (Thermal and electrical conductors)">2.2 Thermal and electrical conductors</span>
+    <span class="eqchip i18n" data-en="Unit 2 · Materials: properties and changes" data-vi="Bài 2 · Vật liệu: tính chất và biến đổi (Materials: properties and changes)">Unit 2 · Materials: properties and changes</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Which substances conduct heat and electricity?" data-vi="Những chất nào dẫn nhiệt (heat) và dẫn điện (electricity)?">Which substances conduct heat and electricity?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Heat moves — conduction" data-vi="Nhiệt truyền đi — dẫn nhiệt (conduction)">Heat moves — conduction</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Test the materials" data-vi="Thử các vật liệu (materials)">Test the materials</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Group by property" data-vi="Phân nhóm theo tính chất (property)">Group by property</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Spot the pattern" data-vi="Tìm ra quy luật (pattern)">Spot the pattern</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the science bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap things on the science bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="raceRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="testRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Primary Science 6 · Unit 2 Materials: properties and changes · Section 2.2. The bench in this lesson is a simulation — never touch real hot water or real circuits without an adult." data-vi="Khoa học Cambridge cấp 6 · Bài 2 Vật liệu: tính chất và biến đổi · Mục 2.2. Bàn thí nghiệm trong bài này là mô phỏng — ngoài đời không chạm vào nước nóng hay mạch điện thật khi không có người lớn.">Cambridge Primary Science 6 · Unit 2 Materials: properties and changes · Section 2.2. The bench in this lesson is a simulation — never touch real hot water or real circuits without an adult.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Primary Science Learner's Book 6 (2nd edition, 2021; ISBN 9781108742979), Unit 2 Materials: properties and changes, section 2.2, pages 42–48; Workbook 6 (ISBN 9781108742986), pages 23–27. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Primary Science Learner's Book 6 (bản 2, 2021; ISBN 9781108742979), Bài 2 Vật liệu: tính chất và biến đổi (Materials: properties and changes), mục 2.2, trang 42–48; Sách bài tập 6 (ISBN 9781108742986), trang 23–27. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Primary Science Learner's Book 6 (2nd edition, 2021; ISBN 9781108742979), Unit 2 Materials: properties and changes, section 2.2, pages 42–48; Workbook 6 (ISBN 9781108742986), pages 23–27. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn that conducting heat and electricity are properties of a substance; make predictions and check them against results; record observations in tables; work safely in practical investigations; suggest how to improve an investigation; draw conclusions and spot patterns in measurements; group substances by their properties and say which type of scientific enquiry an investigation uses. Key words: conduction, thermal conductor, electrical conductor, insulator, property." data-vi="Mục tiêu: biết dẫn nhiệt (thermal) và dẫn điện (electrical) là tính chất (property) của một chất; đưa ra dự đoán và đối chiếu với kết quả; ghi quan sát vào bảng; làm việc an toàn trong thí nghiệm; đề xuất cách cải tiến thí nghiệm; rút kết luận và nhận ra quy luật trong số liệu; phân nhóm các chất theo tính chất và nói được kiểu tìm hiểu khoa học đã dùng. Từ khóa: conduction (dẫn nhiệt), thermal conductor (vật dẫn nhiệt), electrical conductor (vật dẫn điện), insulator (vật cách nhiệt/cách điện), property (tính chất).">Objectives: learn that conducting heat and electricity are properties of a substance; make predictions and check them against results; record observations in tables; work safely in practical investigations; suggest how to improve an investigation; draw conclusions and spot patterns in measurements; group substances by their properties and say which type of scientific enquiry an investigation uses. Key words: conduction, thermal conductor, electrical conductor, insulator, property.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench. The bead race uses the book's own investigation materials (metal spoon, glass rod, plastic spoon, pencil, polystyrene foam, beads on petroleum jelly in hot water); the circuit test uses the book's substances and its tick scale (no ticks = lamp off, one tick = dim, two ticks = bright). The pattern step reproduces the book's Activity 1 measurements exactly (aluminium 237/37, copper 386/59, graphite 168/1, brass 150/16, steel 80/10). The lesson checks the action itself (the dark 'Show me' line) and the conclusion stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Safety note from the book: in real life, never touch hot water and take care not to knock the beaker over." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn thí nghiệm 3D. Cuộc đua hạt cườm dùng đúng vật liệu thí nghiệm trong sách (thìa kim loại, đũa thủy tinh, thìa nhựa, bút chì, xốp polystyrene, hạt cườm gắn bằng mỡ petroleum jelly trong nước nóng); phép thử mạch điện dùng đúng các chất trong sách và thang dấu tick của sách (0 tick = đèn tắt, 1 tick = đèn mờ, 2 tick = đèn sáng). Bước tìm quy luật dùng đúng số đo của Hoạt động 1 trong sách (nhôm 237/37, đồng 386/59, graphite 168/1, đồng thau 150/16, thép 80/10). Bài học tự kiểm tra hành động (dòng tối 'Căn cứ') và kết luận chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Lưu ý an toàn từ sách: ngoài đời không chạm vào nước nóng và cẩn thận không làm đổ cốc nước nóng.">How it works: each step asks for one real action on the 3D bench. The bead race uses the book's own investigation materials (metal spoon, glass rod, plastic spoon, pencil, polystyrene foam, beads on petroleum jelly in hot water); the circuit test uses the book's substances and its tick scale (no ticks = lamp off, one tick = dim, two ticks = bright). The pattern step reproduces the book's Activity 1 measurements exactly (aluminium 237/37, copper 386/59, graphite 168/1, brass 150/16, steel 80/10). The lesson checks the action itself (the dark 'Show me' line) and the conclusion stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Safety note from the book: in real life, never touch hot water and take care not to knock the beaker over.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn elec" id="ex1BinElec"></button>
+        <button class="binbtn noelec" id="ex1BinNo"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <section class="exsec" id="exSec4">
+      <h3 id="ex4T"></h3>
+      <p class="exinst" id="ex4Inst"></p>
+      <div id="ex4List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci6-2-2 "Thermal and electrical conductors"
+   (Science 6, Unit 2). Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const ITEMS={
+  mspoon:  {emoji:'🥄', name:{en:'Metal teaspoon',vi:'Thìa kim loại (metal teaspoon)'},   short:{en:'Metal spoon',vi:'Thìa kim loại'}, ring:0.55, labelY:2.0, fx:-4.0, fz:-0.2, fr:4.8},
+  pspoon:  {emoji:'🥄', name:{en:'Plastic teaspoon',vi:'Thìa nhựa (plastic teaspoon)'},  short:{en:'Plastic spoon',vi:'Thìa nhựa'},   ring:0.55, labelY:2.0, fx:-3.0, fz:-0.2, fr:4.8},
+  beaker:  {emoji:'🧪', name:{en:'Beaker of hot water',vi:'Cốc nước nóng (beaker)'},     short:{en:'Hot water beaker',vi:'Cốc nước nóng'}, ring:1.25, labelY:3.1, fx:-0.4, fz:-0.5, fr:5.4},
+  clip:    {emoji:'📎', name:{en:'Steel paper clip',vi:'Kẹp giấy thép (steel paper clip)'}, short:{en:'Steel clip',vi:'Kẹp giấy thép'}, ring:0.5, labelY:0.95, fx:-2.3, fz:1.6, fr:4.4},
+  foil:    {emoji:'⚪', name:{en:'Aluminium foil',vi:'Giấy nhôm (aluminium foil)'},      short:{en:'Aluminium foil',vi:'Giấy nhôm'},  ring:0.5, labelY:0.95, fx:-1.1, fz:1.7, fr:4.4},
+  graphite:{emoji:'✏️', name:{en:'Pencil graphite',vi:'Ruột chì graphite (graphite)'},   short:{en:'Graphite',vi:'Graphite'},         ring:0.5, labelY:0.9,  fx:0.1,  fz:1.6, fr:4.4},
+  watercup:{emoji:'🥤', name:{en:'Tap water',vi:'Nước máy (tap water)'},                 short:{en:'Tap water',vi:'Nước máy'},        ring:0.5, labelY:1.0,  fx:1.3,  fz:1.7, fr:4.4},
+  sugar:   {emoji:'🧂', name:{en:'Sugar',vi:'Đường (sugar)'},                            short:{en:'Sugar',vi:'Đường'},               ring:0.5, labelY:1.0,  fx:2.5,  fz:1.6, fr:4.4}
+};
+const FOCUSORDER=['mspoon','pspoon','beaker','clip','foil','graphite','watercup','sugar'];
+/* bead-race materials, in the order their beads fall (best conductor first) */
+const BEADMATS=[
+  {id:'metal',  en:'Metal spoon',       vi:'Thìa kim loại (metal spoon)'},
+  {id:'glass',  en:'Glass rod',         vi:'Đũa thủy tinh (glass rod)'},
+  {id:'plastic',en:'Plastic spoon',     vi:'Thìa nhựa (plastic spoon)'},
+  {id:'pencil', en:'Pencil (wood)',     vi:'Bút chì (gỗ) (pencil)'},
+  {id:'foam',   en:'Polystyrene foam',  vi:'Xốp polystyrene (polystyrene foam)'}
+];
+const RACEORDER=['metal','glass','plastic','pencil','foam'];
+/* circuit-test substances: bright = the book's tick scale (0 off, 1 dim ✓, 2 bright ✓✓) */
+const SUBS5=[
+  {id:'clip',    en:'Steel paper clip', vi:'Kẹp giấy thép (steel paper clip)', bright:2},
+  {id:'foil',    en:'Aluminium foil',   vi:'Giấy nhôm (aluminium foil)',       bright:2},
+  {id:'graphite',en:'Pencil graphite',  vi:'Ruột chì graphite (graphite)',     bright:1},
+  {id:'watercup',en:'Tap water',        vi:'Nước máy (tap water)',             bright:0},
+  {id:'sugar',   en:'Sugar',            vi:'Đường (sugar)',                    bright:0}
+];
+/* the book's Activity 1 measurements: heat / electricity (W/m−K as printed) */
+const ACT1=[
+  {id:'aluminium', en:'Aluminium', vi:'Nhôm (aluminium)', heat:237, elec:37},
+  {id:'copper',    en:'Copper',    vi:'Đồng (copper)',    heat:386, elec:59},
+  {id:'graphite',  en:'Graphite',  vi:'Graphite',         heat:168, elec:1},
+  {id:'brass',     en:'Brass',     vi:'Đồng thau (brass)',heat:150, elec:16},
+  {id:'steel',     en:'Steel',     vi:'Thép (steel)',     heat:80,  elec:10}
+];
+const PATOPTS=[
+  {key:'corr', en:'The better a substance conducts heat, the better it usually conducts electricity too', vi:'Chất nào dẫn nhiệt (heat) càng tốt thì thường cũng dẫn điện (electricity) càng tốt'},
+  {key:'none', en:'There is no pattern in the measurements at all', vi:'Không có quy luật (pattern) nào trong các số đo cả'},
+  {key:'opp',  en:'The better a substance conducts heat, the worse it conducts electricity', vi:'Chất nào dẫn nhiệt càng tốt thì dẫn điện càng kém'}
+];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not testing — to test a thing, tap it on the bench itself!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là thử — muốn thử, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'Bead race results',vi:'Kết quả cuộc đua hạt cườm'},
+  u2Brief:{en:'The order the beads fell off in the hot-water investigation. 1st = best thermal conductor.',vi:'Thứ tự các hạt cườm rơi trong thí nghiệm nước nóng. Hạng 1 = dẫn nhiệt (thermal conductor) tốt nhất.'},
+  u3T:{en:'Circuit test results',vi:'Kết quả thử mạch điện'},
+  u3Brief:{en:'Lamp scale from the book: ✓✓ bright · ✓ dim · ✗ lamp off.',vi:'Thang đèn theo sách: ✓✓ sáng · ✓ mờ · ✗ đèn tắt.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  notYet:{en:'not tested yet',vi:'chưa thử'},
+  raceNotRun:{en:'race not run yet',vi:'chưa chạy cuộc đua'},
+  binCond:{en:'THERMAL CONDUCTOR 🔥',vi:'DẪN NHIỆT 🔥 (THERMAL CONDUCTOR)'},
+  binInsul:{en:'INSULATOR 🧊',vi:'CÁCH NHIỆT 🧊 (INSULATOR)'},
+  binElec:{en:'CONDUCTS ELECTRICITY ⚡',vi:'DẪN ĐIỆN ⚡ (CONDUCTS ELECTRICITY)'},
+  binNoelec:{en:'DOES NOT CONDUCT 🚫',vi:'KHÔNG DẪN ĐIỆN 🚫 (DOES NOT CONDUCT)'},
+  predQ:{en:'Your prediction — which bead will fall off FIRST?',vi:'Dự đoán của con — hạt cườm nào sẽ rơi ĐẦU TIÊN?'},
+  predThen:{en:'Now tap the beaker of hot water on the bench to start the race!',vi:'Giờ hãy chạm vào cốc nước nóng trên bàn để bắt đầu cuộc đua!'},
+  raceDone:{en:'The race is finished — check the order in the results table (unit 2).',vi:'Cuộc đua đã xong — xem thứ tự trong bảng kết quả (mục 2).'},
+  lookCat:{en:'Look at the circuit ⚡',vi:'Ngắm mạch điện ⚡'},
+  patT:{en:'1 · Tap the statement that describes the pattern:',vi:'1 · Chạm vào câu mô tả đúng quy luật (pattern):'},
+  oddT:{en:'2 · Now tap the substance that does NOT fit the pattern:',vi:'2 · Giờ chạm vào chất KHÔNG theo quy luật:'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 2.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 2.2'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Parts of a lamp',vi:'Bài tập 1 · Focus — Các bộ phận của bóng đèn'},
+  ex1Inst:{en:'Look at a lamp (light bulb). Tap a part, then tap CONDUCTS ELECTRICITY or DOES NOT CONDUCT.',vi:'Quan sát một bóng đèn. Chạm vào một bộ phận, rồi chạm DẪN ĐIỆN (CONDUCTS ELECTRICITY) hoặc KHÔNG DẪN ĐIỆN (DOES NOT CONDUCT).'},
+  ex2T:{en:'Exercise 2 · Practice — How well do metals conduct heat?',vi:'Bài tập 2 · Practice — Kim loại dẫn nhiệt tốt đến đâu?'},
+  ex2Inst:{en:'The Workbook table (bigger number = conducts heat better): silver 420 · copper 400 · aluminium 250 · brass 109 · iron 80 · stainless steel 15. Tap the right answer in each row.',vi:'Bảng trong sách bài tập (số càng lớn = dẫn nhiệt càng tốt): bạc (silver) 420 · đồng (copper) 400 · nhôm (aluminium) 250 · đồng thau (brass) 109 · sắt (iron) 80 · thép không gỉ (stainless steel) 15. Chạm vào đáp án đúng trong mỗi hàng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Ice in two dishes',vi:'Bài tập 3 · Challenge — Nước đá trong hai chiếc đĩa'},
+  ex3Inst:{en:'Think like a thermal scientist! Tap the right answer in each row.',vi:'Hãy suy nghĩ như nhà khoa học về nhiệt! Chạm vào đáp án đúng trong mỗi hàng.'},
+  ex4T:{en:'Exercise 4 · Challenge — Is graphite an electrical conductor?',vi:'Bài tập 4 · Challenge — Graphite có dẫn điện không?'},
+  ex4Inst:{en:'Class 6 tested different lengths of graphite in a circuit and measured the lamp brightness (scale 0–5), averaging each group\u2019s results. As the graphite got longer, the lamp got dimmer — but it still lit. Tap the right answer in each row.',vi:'Lớp 6 thử các đoạn graphite (graphite) có độ dài khác nhau trong mạch điện và đo độ sáng của đèn (thang 0–5), lấy trung bình kết quả của các nhóm. Graphite càng dài, đèn càng mờ — nhưng đèn vẫn sáng. Chạm vào đáp án đúng trong mỗi hàng.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'conduction',vi:'sự dẫn nhiệt'},
+  {en:'thermal conductor',vi:'vật dẫn nhiệt'},
+  {en:'electrical conductor',vi:'vật dẫn điện'},
+  {en:'insulator',vi:'vật cách nhiệt / cách điện'},
+  {en:'property',vi:'tính chất'},
+  {en:'substance',vi:'chất'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started',vi:'Khởi động'}, word:{en:'conduction',vi:'dẫn nhiệt (conduction)'},
+  q:{en:'Why does the handle of a metal teaspoon get warm in a cup of hot tea?',vi:'Vì sao cán của thìa kim loại nóng lên khi để trong cốc trà nóng?'},
+  act:{en:'Tap the metal teaspoon in the mug of hot tea. Then tap the plastic teaspoon and compare the two handles.',vi:'Chạm vào thìa kim loại trong cốc trà nóng. Sau đó chạm vào thìa nhựa và so sánh hai cái cán.'},
+  see:{en:'Heat travels along the metal handle — it glows warm. The plastic handle stays cool.',vi:'Nhiệt truyền dọc theo cán kim loại — nó phát sáng ấm lên. Cán nhựa vẫn mát.'},
+  concl:[
+    {en:'Heat moving through a substance is called conduction.',vi:'Nhiệt truyền qua một chất gọi là dẫn nhiệt (conduction).'},
+    {en:'A substance that lets heat pass through it well is a thermal conductor. Metals conduct heat well.',vi:'Chất cho nhiệt đi qua dễ dàng là vật dẫn nhiệt (thermal conductor). Kim loại dẫn nhiệt tốt.'},
+    {en:'Plastic conducts heat badly, so the plastic handle stays much cooler.',vi:'Nhựa dẫn nhiệt kém, nên cán nhựa vẫn mát hơn nhiều.'}]},
+ {tag:{en:'Bead race investigation',vi:'Thí nghiệm cuộc đua hạt cườm'}, word:{en:'thermal conductor',vi:'vật dẫn nhiệt (thermal conductor)'},
+  q:{en:'How well do different materials conduct heat?',vi:'Các vật liệu khác nhau dẫn nhiệt (heat) tốt đến đâu?'},
+  act:{en:'First make your prediction in the step card: which bead will fall off FIRST? Then tap the beaker of hot water on the bench to start the race. (Safety: in real life, never touch hot water.)',vi:'Trước hết hãy dự đoán trong thẻ bước: hạt cườm nào sẽ rơi ĐẦU TIÊN? Rồi chạm vào cốc nước nóng trên bàn để bắt đầu cuộc đua. (An toàn: ngoài đời không bao giờ chạm vào nước nóng.)'},
+  see:{en:'The hot water warms each stick. The jelly melts fastest on the best conductor, and its bead drops first. The finishing order appears in the results table.',vi:'Nước nóng làm ấm mỗi thanh. Mỡ đông chảy nhanh nhất trên vật dẫn tốt nhất, và hạt cườm của nó rơi trước. Thứ tự về đích hiện trong bảng kết quả.'},
+  concl:[
+    {en:'The bead on the metal spoon fell first — metal conducts heat best, so its jelly melted first.',vi:'Hạt cườm trên thìa kim loại rơi đầu tiên — kim loại dẫn nhiệt tốt nhất, nên mỡ của nó chảy trước.'},
+    {en:'The bead on the polystyrene foam fell last — foam conducts heat very badly. It is an insulator.',vi:'Hạt cườm trên xốp polystyrene rơi cuối cùng — xốp dẫn nhiệt rất kém. Nó là vật cách nhiệt (insulator).'},
+    {en:'Improvement idea: time how long each bead takes to fall — then you can draw a graph of the results.',vi:'Ý tưởng cải tiến: bấm thời gian mỗi hạt cườm rơi — khi đó con có thể vẽ đồ thị kết quả.'}]},
+ {tag:{en:'Conductors and insulators',vi:'Vật dẫn và vật cách nhiệt'}, word:{en:'insulator',vi:'vật cách nhiệt (insulator)'},
+  q:{en:'Which everyday things conduct heat — and which keep heat in or out?',vi:'Những vật thường ngày nào dẫn nhiệt — và những vật nào giữ nhiệt ở trong hoặc ở ngoài?'},
+  act:{en:'Tap a card, then tap THERMAL CONDUCTOR or INSULATOR.',vi:'Chạm vào một thẻ, rồi chạm vào DẪN NHIỆT (THERMAL CONDUCTOR) hoặc CÁCH NHIỆT (INSULATOR).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Metals are good thermal conductors. Silver is the best conductor of heat of all; copper and aluminium are also very good.',vi:'Kim loại là vật dẫn nhiệt (thermal conductor) tốt. Bạc (silver) dẫn nhiệt tốt nhất; đồng (copper) và nhôm (aluminium) cũng rất tốt.'},
+    {en:'Materials that conduct heat badly are called insulators — plastic, wood and polystyrene foam are insulators.',vi:'Vật liệu dẫn nhiệt kém gọi là vật cách nhiệt (insulator) — nhựa, gỗ và xốp polystyrene đều là vật cách nhiệt.'},
+    {en:'A saucepan is metal so heat reaches the food quickly; its handle is plastic so your hand stays safe. Tea stays warm longest in a polystyrene foam cup, because foam slows the heat escaping.',vi:'Nồi làm bằng kim loại để nhiệt tới thức ăn nhanh; cán nồi bằng nhựa để tay con an toàn. Trà giữ ấm lâu nhất trong cốc xốp polystyrene, vì xốp làm nhiệt thoát ra chậm.'}]},
+ {tag:{en:'Electricity investigation',vi:'Thí nghiệm về điện'}, word:{en:'electrical conductor',vi:'vật dẫn điện (electrical conductor)'},
+  q:{en:'Which substances conduct electricity?',vi:'Những chất nào dẫn điện (electricity)?'},
+  act:{en:'Tap each substance on the front tray to test it in the circuit: the steel paper clip, the aluminium foil, the pencil graphite, the tap water and the sugar. The copper connecting wires are already in place.',vi:'Chạm vào từng chất trên khay phía trước để thử nó trong mạch điện: kẹp giấy thép, giấy nhôm, ruột chì graphite, nước máy và đường. Các dây nối bằng đồng (copper) đã được lắp sẵn.'},
+  see:{en:'The lamp gives the result on the book\u2019s scale: bright ✓✓, dim ✓, or off. Every result is recorded in the results table.',vi:'Đèn cho kết quả theo thang của sách: sáng ✓✓, mờ ✓, hoặc tắt. Mọi kết quả đều được ghi vào bảng kết quả.'},
+  concl:[
+    {en:'The steel clip and the aluminium foil made the lamp shine brightly — metals conduct electricity well.',vi:'Kẹp giấy thép và giấy nhôm làm đèn sáng rõ — kim loại dẫn điện (electricity) tốt.'},
+    {en:'Graphite made the lamp dim — graphite conducts electricity, but only a little.',vi:'Graphite làm đèn sáng mờ — graphite dẫn điện, nhưng chỉ một ít.'},
+    {en:'Sugar and tap water did not light the lamp in this circuit. Being able to conduct electricity is a property of a substance.',vi:'Đường và nước máy không làm đèn sáng trong mạch này. Khả năng dẫn điện là một tính chất (property) của chất.'}]},
+ {tag:{en:'Group the substances',vi:'Phân nhóm các chất'}, word:{en:'group',vi:'nhóm (group)'},
+  q:{en:'Can you group the substances you tested by whether they conduct electricity?',vi:'Con có phân nhóm (group) được các chất đã thử theo việc chúng có dẫn điện hay không?'},
+  act:{en:'Tap a card, then tap CONDUCTS ELECTRICITY or DOES NOT CONDUCT.',vi:'Chạm vào một thẻ, rồi chạm vào DẪN ĐIỆN (CONDUCTS ELECTRICITY) hoặc KHÔNG DẪN ĐIỆN (DOES NOT CONDUCT).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Electrical conductors in our tests: the copper wire itself, steel, aluminium foil and graphite.',vi:'Các vật dẫn điện (electrical conductor) trong thí nghiệm: chính dây đồng (copper), thép, giấy nhôm và graphite.'},
+    {en:'Tap water and sugar did not conduct enough electricity to light the lamp.',vi:'Nước máy và đường không dẫn đủ điện để làm đèn sáng.'},
+    {en:'We can group substances by their properties — conducting heat and conducting electricity are both properties of a substance.',vi:'Ta phân nhóm các chất theo tính chất (property) của chúng — dẫn nhiệt và dẫn điện đều là tính chất của một chất.'}]},
+ {tag:{en:'Spot the pattern',vi:'Tìm quy luật'}, word:{en:'pattern',vi:'quy luật (pattern)'}, word2:{en:'graph',vi:'đồ thị (graph)'},
+  q:{en:'Is there a pattern between conducting heat and conducting electricity?',vi:'Có quy luật (pattern) nào giữa dẫn nhiệt và dẫn điện không?'},
+  act:{en:'Study the measurement table in the step card (from the book\u2019s Activity 1). Tap the statement that describes the pattern, then tap the one substance that does NOT fit it.',vi:'Xem bảng số đo trong thẻ bước (từ Hoạt động 1 trong sách). Chạm vào câu mô tả đúng quy luật, rồi chạm vào chất duy nhất KHÔNG theo quy luật đó.'},
+  see:{en:'Heat / electricity values: aluminium 237 / 37 · copper 386 / 59 · graphite 168 / 1 · brass 150 / 16 · steel 80 / 10. On a scatter graph, most points climb together.',vi:'Số đo nhiệt / điện: nhôm 237 / 37 · đồng 386 / 59 · graphite 168 / 1 · đồng thau 150 / 16 · thép 80 / 10. Trên đồ thị phân tán (scatter graph), hầu hết các điểm cùng tăng lên.'},
+  concl:[
+    {en:'Copper is the best conductor of both heat and electricity in the table, and steel is the weakest at both.',vi:'Đồng (copper) dẫn cả nhiệt lẫn điện tốt nhất trong bảng, và thép (steel) yếu nhất ở cả hai.'},
+    {en:'The pattern: substances that conduct heat well usually conduct electricity well too.',vi:'Quy luật (pattern): chất nào dẫn nhiệt tốt thì thường cũng dẫn điện tốt.'},
+    {en:'Graphite does not fit the pattern — it conducts heat quite well (168) but electricity very poorly (1).',vi:'Graphite không theo quy luật — nó dẫn nhiệt khá tốt (168) nhưng dẫn điện rất kém (1).'},
+    {en:'I can say that conducting heat and electricity are properties of a substance, and I can group substances by these properties.',vi:'Con nói được rằng dẫn nhiệt và dẫn điện là tính chất (property) của một chất, và con phân nhóm được các chất theo những tính chất này.'},
+    {en:'I can record results in tables, spot patterns in measurements, and use results to say if a prediction was accurate.',vi:'Con ghi được kết quả vào bảng, nhận ra quy luật (pattern) trong số đo, và dùng kết quả để nói dự đoán có chính xác không.'}]}
+];
+const CARDS3=[
+ {id:'th_pan',emoji:'🍳',en:'Steel saucepan',vi:'Nồi thép (steel saucepan)',ans:'cond'},
+ {id:'th_copper',emoji:'🔧',en:'Copper pipe',vi:'Ống đồng (copper pipe)',ans:'cond'},
+ {id:'th_silver',emoji:'🥄',en:'Silver spoon',vi:'Thìa bạc (silver spoon)',ans:'cond'},
+ {id:'th_plastic',emoji:'🧤',en:'Plastic pan handle',vi:'Cán nồi nhựa (plastic handle)',ans:'insul'},
+ {id:'th_foam',emoji:'🥤',en:'Polystyrene foam cup',vi:'Cốc xốp polystyrene (foam cup)',ans:'insul'},
+ {id:'th_wood',emoji:'🥢',en:'Wooden spoon',vi:'Thìa gỗ (wooden spoon)',ans:'insul'}
+];
+const CARDS3_ORDER=mixOrder(CARDS3,c=>c.ans,2);
+const CARDS5=[
+ {id:'el_copper',emoji:'🧵',en:'Copper wire',vi:'Dây đồng (copper wire)',ans:'elec'},
+ {id:'el_clip',emoji:'📎',en:'Steel paper clip',vi:'Kẹp giấy thép (steel paper clip)',ans:'elec'},
+ {id:'el_foil',emoji:'⚪',en:'Aluminium foil',vi:'Giấy nhôm (aluminium foil)',ans:'elec'},
+ {id:'el_graphite',emoji:'✏️',en:'Pencil graphite',vi:'Ruột chì graphite (graphite)',ans:'elec'},
+ {id:'el_water',emoji:'💧',en:'Tap water',vi:'Nước máy (tap water)',ans:'noelec'},
+ {id:'el_sugar',emoji:'🍬',en:'Sugar',vi:'Đường (sugar)',ans:'noelec'}
+];
+const CARDS5_ORDER=mixOrder(CARDS5,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What is a thermal conductor?',vi:'Vật dẫn nhiệt (thermal conductor) là gì?'},
+  o:[{en:'A substance that stops all heat',vi:'Một chất chặn mọi nhiệt'},{en:'A substance that lets heat pass through it well',vi:'Một chất cho nhiệt đi qua dễ dàng'},{en:'A substance that makes its own heat',vi:'Một chất tự tạo ra nhiệt'}],a:1,
+  e:{en:'A thermal conductor lets heat pass through it well — metals are good thermal conductors.',vi:'Vật dẫn nhiệt (thermal conductor) cho nhiệt đi qua dễ dàng — kim loại là vật dẫn nhiệt tốt.'}},
+ {q:{en:'In the bead investigation, the bead on the metal spoon fell off FIRST because…',vi:'Trong thí nghiệm hạt cườm, hạt trên thìa kim loại rơi ĐẦU TIÊN vì…'},
+  o:[{en:'metal is the heaviest material',vi:'kim loại là vật liệu nặng nhất'},{en:'the metal spoon was the longest',vi:'thìa kim loại dài nhất'},{en:'metal conducts heat best, so its jelly melted first',vi:'kim loại dẫn nhiệt tốt nhất, nên mỡ của nó chảy trước'}],a:2,
+  e:{en:'Metal conducts heat best, so the petroleum jelly on the metal spoon melted first and its bead dropped.',vi:'Kim loại dẫn nhiệt (heat) tốt nhất, nên mỡ petroleum jelly trên thìa kim loại chảy trước và hạt cườm của nó rơi.'}},
+ {q:{en:'Which of these did NOT conduct electricity in the circuit test?',vi:'Chất nào dưới đây KHÔNG dẫn điện trong phép thử mạch điện?'},
+  o:[{en:'Sugar',vi:'Đường (sugar)'},{en:'Steel paper clip',vi:'Kẹp giấy thép (steel paper clip)'},{en:'Pencil graphite',vi:'Ruột chì graphite (graphite)'}],a:0,
+  e:{en:'Sugar did not light the lamp at all. The steel clip lit it brightly, and graphite lit it dimly.',vi:'Đường (sugar) không làm đèn sáng chút nào. Kẹp giấy thép làm đèn sáng rõ, còn graphite làm đèn sáng mờ.'}},
+ {q:{en:'Copper measures 386 for heat and 59 for electricity; steel measures 80 and 10. What pattern do these fit?',vi:'Đồng (copper) đo được 386 về nhiệt và 59 về điện; thép (steel) đo được 80 và 10. Những số này theo quy luật nào?'},
+  o:[{en:'Good heat conductors are always bad electrical conductors',vi:'Vật dẫn nhiệt tốt luôn dẫn điện kém'},{en:'Substances that conduct heat well usually conduct electricity well too',vi:'Chất dẫn nhiệt tốt thường cũng dẫn điện tốt'},{en:'There is never any pattern in measurements',vi:'Số đo không bao giờ có quy luật'}],a:1,
+  e:{en:'Copper is near the top for both properties and steel is near the bottom for both — good heat conductors usually conduct electricity well too. (Graphite is the odd one out.)',vi:'Đồng gần cao nhất ở cả hai tính chất và thép gần thấp nhất ở cả hai — chất dẫn nhiệt tốt thường cũng dẫn điện (electricity) tốt. (Graphite là trường hợp ngoại lệ.)'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+/* Ex 1 · Focus — parts of a lamp: which parts are electrical conductors? */
+const EX1=[
+ {id:'p_filament',emoji:'💡',en:'Metal filament',vi:'Dây tóc kim loại (filament)',ans:'elec'},
+ {id:'p_glass',emoji:'🫙',en:'Glass bulb',vi:'Bóng thủy tinh (glass bulb)',ans:'noelec'},
+ {id:'p_support',emoji:'🪡',en:'Support wires',vi:'Dây đỡ (support wires)',ans:'elec'},
+ {id:'p_wires',emoji:'🔌',en:'Wires',vi:'Dây điện (wires)',ans:'elec'},
+ {id:'p_cap',emoji:'🔩',en:'Screw-in metal cap',vi:'Đui xoáy kim loại (screw-in cap)',ans:'elec'},
+ {id:'p_plug',emoji:'🔲',en:'Plastic plug case',vi:'Vỏ phích cắm nhựa (plastic plug)',ans:'noelec'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+/* Ex 2 · Practice — the Workbook metals table (silver 420, copper 400, aluminium 250, brass 109, iron 80, stainless steel 15) */
+const EX2=[
+ {q:{en:'In the table, which metal conducts heat the BEST?',vi:'Trong bảng, kim loại nào dẫn nhiệt TỐT NHẤT?'},
+  opts:[{en:'Stainless steel (15)',vi:'Thép không gỉ (stainless steel) (15)'},{en:'Silver (420)',vi:'Bạc (silver) (420)'},{en:'Iron (80)',vi:'Sắt (iron) (80)'}],a:1,
+  e:{en:'Silver has the biggest value in the table — 420 — so it conducts heat best.',vi:'Bạc (silver) có giá trị lớn nhất trong bảng — 420 — nên nó dẫn nhiệt tốt nhất.'}},
+ {q:{en:'In the table, which metal conducts heat the WORST?',vi:'Trong bảng, kim loại nào dẫn nhiệt KÉM NHẤT?'},
+  opts:[{en:'Brass (109)',vi:'Đồng thau (brass) (109)'},{en:'Aluminium (250)',vi:'Nhôm (aluminium) (250)'},{en:'Stainless steel (15)',vi:'Thép không gỉ (stainless steel) (15)'}],a:2,
+  e:{en:'Stainless steel has the smallest value — 15 — so it conducts heat worst of these metals.',vi:'Thép không gỉ (stainless steel) có giá trị nhỏ nhất — 15 — nên nó dẫn nhiệt kém nhất trong các kim loại này.'}},
+ {q:{en:'Why do some cooking pots have a copper bottom?',vi:'Vì sao một số nồi nấu có đáy bằng đồng (copper)?'},
+  opts:[{en:'Copper is the cheapest metal',vi:'Đồng là kim loại rẻ nhất'},{en:'Copper conducts heat well, so heat spreads quickly and evenly to the food',vi:'Đồng dẫn nhiệt tốt, nên nhiệt lan nhanh và đều tới thức ăn'},{en:'Copper does not conduct heat at all',vi:'Đồng không dẫn nhiệt chút nào'}],a:1,
+  e:{en:'Copper is a very good thermal conductor (400 in the table), so a copper bottom spreads the heat to the food quickly.',vi:'Đồng (copper) là vật dẫn nhiệt (thermal conductor) rất tốt (400 trong bảng), nên đáy đồng lan nhiệt tới thức ăn nhanh.'}},
+ {q:{en:'If silver conducts heat even better, why are cooking pots NOT made from silver?',vi:'Bạc (silver) dẫn nhiệt còn tốt hơn, vậy vì sao nồi nấu KHÔNG làm bằng bạc?'},
+  opts:[{en:'Silver cannot conduct heat',vi:'Bạc không dẫn nhiệt được'},{en:'Silver is far too expensive',vi:'Bạc quá đắt'},{en:'Silver is a non-metal',vi:'Bạc là phi kim'}],a:1,
+  e:{en:'Silver is the best conductor in the table, but it costs far too much to make everyday pots from.',vi:'Bạc (silver) là vật dẫn tốt nhất trong bảng, nhưng quá đắt để làm nồi dùng hằng ngày.'}},
+ {q:{en:'Car radiators cool the hot engine. Why are they made from copper and brass?',vi:'Két nước ô tô làm mát động cơ nóng. Vì sao chúng làm bằng đồng (copper) và đồng thau (brass)?'},
+  opts:[{en:'Copper and brass are magnetic',vi:'Đồng và đồng thau có từ tính (magnetic)'},{en:'Copper and brass conduct heat away from the engine very well',vi:'Đồng và đồng thau dẫn nhiệt ra khỏi động cơ rất tốt'},{en:'Copper and brass melt very easily',vi:'Đồng và đồng thau rất dễ nóng chảy'}],a:1,
+  e:{en:'A radiator must move heat away from the engine fast — copper (400) and brass (109) are both good thermal conductors.',vi:'Két nước phải đưa nhiệt ra khỏi động cơ thật nhanh — đồng (copper) (400) và đồng thau (brass) (109) đều là vật dẫn nhiệt (thermal conductor) tốt.'}}
+];
+/* Ex 3 · Challenge — ice in two dishes */
+const EX3=[
+ {q:{en:'A block of ice will melt QUICKER in…',vi:'Một khối nước đá sẽ tan NHANH HƠN trong…'},
+  opts:[{en:'a plastic dish',vi:'một chiếc đĩa nhựa (plastic dish)'},{en:'a metal dish of the same size',vi:'một chiếc đĩa kim loại (metal dish) cùng kích cỡ'}],a:1,
+  e:{en:'Metal conducts heat from the warm room to the ice much faster than plastic, so the ice in the metal dish melts quicker.',vi:'Kim loại dẫn nhiệt (heat) từ phòng ấm tới đá nhanh hơn nhựa nhiều, nên đá trong đĩa kim loại tan nhanh hơn.'}},
+ {q:{en:'Both dishes hold an ice cube. You touch both dishes. Which dish feels WARMER?',vi:'Cả hai đĩa đều đựng một viên đá. Con chạm vào cả hai đĩa. Đĩa nào cảm thấy ẤM HƠN?'},
+  opts:[{en:'The metal dish',vi:'Đĩa kim loại (metal dish)'},{en:'The plastic dish',vi:'Đĩa nhựa (plastic dish)'}],a:1,
+  e:{en:'The metal dish conducts heat away from your hand quickly, so it feels colder. The plastic dish takes heat from your hand slowly, so it feels warmer (less cold).',vi:'Đĩa kim loại dẫn nhiệt ra khỏi tay con nhanh, nên cảm thấy lạnh hơn. Đĩa nhựa lấy nhiệt từ tay chậm, nên cảm thấy ấm hơn (bớt lạnh hơn).'}}
+];
+/* Ex 4 · Challenge — Class 6 and the graphite investigation */
+const EX4=[
+ {q:{en:'What is the independent variable — the thing Class 6 CHANGED?',vi:'Biến độc lập là gì — điều mà Lớp 6 đã THAY ĐỔI?'},
+  opts:[{en:'The brightness of the lamp',vi:'Độ sáng của đèn (brightness)'},{en:'The length of graphite',vi:'Độ dài của graphite (length of graphite)'},{en:'The cells in the circuit',vi:'Các pin trong mạch (cells)'}],a:1,
+  e:{en:'Class 6 changed only the length of graphite in the circuit — that is the independent variable.',vi:'Lớp 6 chỉ thay đổi độ dài của graphite trong mạch — đó là biến độc lập (independent variable).'}},
+ {q:{en:'What is the dependent variable — the thing they MEASURED?',vi:'Biến phụ thuộc là gì — điều mà các bạn đã ĐO?'},
+  opts:[{en:'The length of graphite',vi:'Độ dài của graphite (length)'},{en:'The brightness of the lamp',vi:'Độ sáng của đèn (brightness of the lamp)'},{en:'The length of the connecting wires',vi:'Độ dài của dây nối (wires)'}],a:1,
+  e:{en:'They measured how the lamp brightness changed — brightness is the dependent variable.',vi:'Các bạn đo độ sáng của đèn thay đổi ra sao — độ sáng (brightness) là biến phụ thuộc (dependent variable).'}},
+ {q:{en:'Why did they work out the AVERAGE brightness for each length?',vi:'Vì sao các bạn tính độ sáng TRUNG BÌNH cho mỗi độ dài?'},
+  opts:[{en:'To make the results more reliable',vi:'Để kết quả đáng tin cậy hơn (more reliable)'},{en:'To make the lamp shine brighter',vi:'Để đèn sáng hơn'},{en:'To make the graph longer',vi:'Để đồ thị dài hơn'}],a:0,
+  e:{en:'Averaging the groups\u2019 results evens out odd readings, so the results are more reliable.',vi:'Lấy trung bình (average) kết quả của các nhóm giúp san bằng các số đo lạ, nên kết quả đáng tin cậy hơn.'}},
+ {q:{en:'What pattern did they see in their results?',vi:'Các bạn thấy quy luật (pattern) nào trong kết quả?'},
+  opts:[{en:'Longer graphite made the lamp brighter',vi:'Graphite càng dài, đèn càng sáng'},{en:'Longer graphite made the lamp dimmer',vi:'Graphite càng dài, đèn càng mờ'},{en:'The length made no difference',vi:'Độ dài không tạo khác biệt nào'}],a:1,
+  e:{en:'The longer the piece of graphite, the dimmer the lamp — more graphite in the path means less electricity gets through.',vi:'Đoạn graphite càng dài, đèn càng mờ — càng nhiều graphite trên đường đi thì càng ít điện (electricity) qua được.'}},
+ {q:{en:'So — what is the answer to Class 6\u2019s question: is graphite an electrical conductor?',vi:'Vậy — câu trả lời cho câu hỏi của Lớp 6 là gì: graphite có phải vật dẫn điện (electrical conductor) không?'},
+  opts:[{en:'No — a conductor must always make the lamp bright',vi:'Không — vật dẫn điện phải luôn làm đèn sáng rõ'},{en:'Yes — the lamp lit, so graphite conducts electricity (but not very well)',vi:'Có — đèn đã sáng, nên graphite dẫn điện (nhưng không tốt lắm)'}],a:1,
+  e:{en:'The lamp lit with graphite in the circuit, so graphite IS an electrical conductor — just a poor one, which is why the lamp was dim.',vi:'Đèn đã sáng khi có graphite trong mạch, nên graphite ĐÚNG LÀ vật dẫn điện (electrical conductor) — chỉ là dẫn kém, vì thế đèn mới mờ.'}}
+];
+const EX_TOTAL=EX1.length+EX2.length+EX3.length+EX4.length; /* 6 + 5 + 2 + 5 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), EX4DONE=new Set(), ex1sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}, EX4ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(r=>fyIdx(r.opts.length));
+let EX3_ORD=EX3.map(r=>fyIdx(r.opts.length));
+let EX4_ORD=EX4.map(r=>fyIdx(r.opts.length));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci6-2-2';
+const SUMKEY='camb:sum:sci6-2-2';
+const BOT_CODE='sci6-2.2';
+let HEATF={metal:false,plastic:false};       /* step 1 mirror: which spoons have been tapped */
+let RACELOG={run:false,pred:null};          /* step 2 mirror: race run + the prediction made */
+let TESTLOG={};                              /* step 4 mirror: substance id -> brightness ticks */
+let SORTED=new Set();                        /* sort-card placements across steps 3 + 5 (console mirror) */
+let DONEFLAGS={pat:false,odd:false};         /* step 6 mirror */
+function newTrack(){return {
+  tMetal:false, tPlastic:false,
+  predMade:false, pred:null, raceRun:false,
+  s3correct:new Set(), s3sel:null,
+  tested:new Set(),
+  s5correct:new Set(), s5sel:null,
+  patOk:false, oddOk:false, patWrong:null, oddWrong:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.tMetal&&T.tPlastic;
+  if(i===1) return T.predMade&&T.raceRun;
+  if(i===2) return T.s3correct.size>=5;
+  if(i===3) return T.tested.size>=5;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.patOk&&T.oddOk;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Metal teaspoon tapped '+(T.tMetal?'✓ — its handle warmed up':'…')+' · Plastic teaspoon tapped '+(T.tPlastic?'✓ — its handle stayed cool':'…')+'. Tap both spoons in the mug!',
+             'Đã chạm thìa kim loại '+(T.tMetal?'✓ — cán của nó đã ấm lên':'…')+' · Đã chạm thìa nhựa '+(T.tPlastic?'✓ — cán của nó vẫn mát':'…')+'. Hãy chạm cả hai thìa trong cốc!');
+  }
+  if(i===1){
+    if(!T.predMade) return B('First make your prediction in the step card: which bead will fall first?','Trước hết hãy dự đoán trong thẻ bước: hạt cườm nào sẽ rơi trước?');
+    if(!T.raceRun) return B('Prediction made ✓. Now tap the beaker of hot water on the bench to start the race!','Đã dự đoán ✓. Giờ hãy chạm vào cốc nước nóng trên bàn để bắt đầu cuộc đua!');
+    const pm=BEADMATS.find(m=>m.id===T.pred);
+    return B('Race finished ✓. Your prediction was '+(T.pred==='metal'?'accurate — the metal spoon\u2019s bead fell first!':'checked against the results: the metal spoon\u2019s bead fell first (you predicted '+(pm?pm.en:'')+').'),
+             'Cuộc đua đã xong ✓. Dự đoán của con '+(T.pred==='metal'?'đã chính xác — hạt của thìa kim loại rơi đầu tiên!':'đã được đối chiếu với kết quả: hạt của thìa kim loại rơi đầu tiên (con đã dự đoán '+(pm?pm.vi:'')+').'));
+  }
+  if(i===2){
+    const c=T.s3sel? CARDS3.find(x=>x.id===T.s3sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap THERMAL CONDUCTOR or INSULATOR.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm DẪN NHIỆT (THERMAL CONDUCTOR) hoặc CÁCH NHIỆT (INSULATOR).');
+    return B('Cards right: '+T.s3correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s3correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===3){
+    const names=SUBS5.filter(s=>!T.tested.has(s.id)).map(s=>s.en);
+    return B('Substances tested: '+T.tested.size+' of 5.'+(names.length? ' Still to test: '+names.join(', ')+'.' : ' All tested!'),
+             'Số chất đã thử: '+T.tested.size+' / 5.'+(names.length? ' Còn phải thử: '+SUBS5.filter(s=>!T.tested.has(s.id)).map(s=>s.vi).join(', ')+'.' : ' Đã thử hết!'));
+  }
+  if(i===4){
+    const c=T.s5sel? CARDS5.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Does it conduct electricity?','Con đã chọn thẻ “'+c.vi+'”. Nó có dẫn điện (electricity) không?');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5){
+    return B('Pattern statement '+(T.patOk?'✓':'…')+' · Substance that does not fit '+(T.oddOk?'✓ — graphite':'…')+'. Use the table in the step card.',
+             'Câu quy luật '+(T.patOk?'✓':'…')+' · Chất không theo quy luật '+(T.oddOk?'✓ — graphite':'…')+'. Hãy dùng bảng trong thẻ bước.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🥄',label:{en:'Metal spoon — handle warms',vi:'Thìa kim loại — cán ấm lên'},got:T.tMetal},
+      {emoji:'🥄',label:{en:'Plastic spoon — handle stays cool',vi:'Thìa nhựa — cán vẫn mát'},got:T.tPlastic}
+    ]);
+  }else if(curStep===1){
+    const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.predQ);
+    box.appendChild(q);
+    const grid=document.createElement('div'); grid.className='predgrid';
+    BEADMATS.forEach(m=>{
+      const b=document.createElement('button');
+      b.className='predbtn'+(T.pred===m.id?' sel':'');
+      b.id='pred_'+m.id;
+      b.innerHTML=biInl(m);
+      b.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
+        T.pred=m.id; T.predMade=true; RACELOG.pred=m.id;
+        saveProg(); renderStepExtra(); refreshEvidence();
+      };
+      grid.appendChild(b);
+    });
+    box.appendChild(grid);
+    const p=document.createElement('p'); p.style.margin='8px 0 0';
+    p.innerHTML='<b>'+bi(T.raceRun? STR.raceDone : STR.predThen)+'</b>';
+    box.appendChild(p);
+  }else if(curStep===2){
+    buildSort(box,CARDS3_ORDER,
+      [{key:'cond',label:STR.binCond,cls:'cond'},{key:'insul',label:STR.binInsul,cls:'insul'}],
+      T.s3correct,()=>T.s3sel,v=>{T.s3sel=v;},null,onSortPlaced);
+  }else if(curStep===3){
+    statPills(box,SUBS5.map(s=>({
+      emoji:ITEMS[s.id].emoji,
+      label:{en:s.en+(T.tested.has(s.id)? ' — '+(s.bright===2?'✓✓ bright':s.bright===1?'✓ dim':'✗ off') : ''),vi:s.vi+(T.tested.has(s.id)? ' — '+(s.bright===2?'✓✓ sáng':s.bright===1?'✓ mờ':'✗ tắt') : '')},
+      got:T.tested.has(s.id)
+    })));
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookCat);
+    b.onclick=()=>focusThing('clip');
+    box.appendChild(b);
+  }else if(curStep===4){
+    buildSort(box,CARDS5_ORDER,
+      [{key:'elec',label:STR.binElec,cls:'elec'},{key:'noelec',label:STR.binNoelec,cls:'noelec'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    const tbl=document.createElement('table'); tbl.className='datatable';
+    tbl.innerHTML='<tr><th>'+(lang==='vi'?'Chất':'Substance')+'</th><th>'+(lang==='vi'?'Nhiệt':'Heat')+'</th><th>'+(lang==='vi'?'Điện':'Electricity')+'</th></tr>'+
+      ACT1.map(r=>'<tr><td>'+esc(lang==='vi'?r.vi:r.en)+'</td><td>'+r.heat+'</td><td>'+r.elec+'</td></tr>').join('');
+    box.appendChild(tbl);
+    const h1=document.createElement('div'); h1.className='qbig'; h1.innerHTML=bi(STR.patT); box.appendChild(h1);
+    fyShuffle(PATOPTS.slice()).forEach(o=>{
+      const b=document.createElement('button');
+      b.className='optbtn'+(T.patOk&&o.key==='corr'?' right':(T.patWrong===o.key?' wrong':''))+(T.patOk&&o.key==='corr'?' sel':'');
+      b.id='patBtn_'+o.key;
+      b.innerHTML=biInl(o);
+      b.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
+        if(o.key==='corr'){ T.patOk=true; DONEFLAGS.pat=true; T.patWrong=null; }
+        else{ T.patWrong=o.key; addMistake(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        saveProg(); renderStepExtra(); refreshEvidence();
+      };
+      box.appendChild(b);
+    });
+    const h2=document.createElement('div'); h2.className='qbig'; h2.innerHTML=bi(STR.oddT); box.appendChild(h2);
+    const row=document.createElement('div');
+    ACT1.forEach(r=>{
+      const b=document.createElement('button');
+      b.className='chipbtn'+(T.oddOk&&r.id==='graphite'?' right':(T.oddWrong===r.id?' wrong':''));
+      b.id='odd_'+r.id;
+      b.innerHTML=biInl(r);
+      b.onclick=()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
+        if(r.id==='graphite'){ T.oddOk=true; DONEFLAGS.odd=true; T.oddWrong=null; }
+        else{ T.oddWrong=r.id; addMistake(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+        saveProg(); renderStepExtra(); refreshEvidence();
+      };
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('mspoon'); bounceThing('mspoon'); setTimeout(()=>{ focusVisual('pspoon'); bounceThing('pspoon'); },900); }
+  else if(i===1){ focusThing('beaker'); runRace('demo'); }
+  else if(i===2){ demoSort(CARDS3,T.s3correct); }
+  else if(i===3){ focusVisual('clip'); testLampDemo(); }
+  else if(i===4){ demoSort(CARDS5,T.s5correct); }
+  else if(i===5){ focusVisual('beaker'); bounceThing('beaker'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); if(!row) return; row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=ITEMS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRaceTable(){
+  const el=$('raceRows'); if(!el) return;
+  el.innerHTML=BEADMATS.map((m,idx)=>{
+    const pos=RACEORDER.indexOf(m.id)+1;
+    return '<div class="grprow"><span>'+biInl(m)+'</span><b>'+(RACELOG.run? pos+'' : '—')+'</b></div>';
+  }).join('')+'<div class="small" style="margin-top:5px">'+(RACELOG.run? '' : esc(L(STR.raceNotRun)))+'</div>';
+}
+function renderTestTable(){
+  const el=$('testRows'); if(!el) return;
+  el.innerHTML=SUBS5.map(s=>{
+    const v=TESTLOG[s.id];
+    const ticks=v===undefined? '—' : (v===2?'✓✓':v===1?'✓':'✗');
+    return '<div class="foundrow'+(v!==undefined?' got':'')+'"><span class="box">'+(v!==undefined?'☑':'☐')+'</span><span>'+biInl(s)+'</span><b style="margin-left:auto">'+ticks+'</b></div>';
+  }).join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let BEADS={}, beadF=0, raceAnim=false, glowF=0;
+let lampLevel=0, lampMat=null, lampLight=null, sampleMesh=null, spoonMetalMat=null, beakerWaterMat=null;
+const ORB={r:9.6, th:0.1, ph:1.05, tx:0, ty:0.5, tz:0.3};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildMug(){
+  const g=new THREE.Group();
+  const mug=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.58,0.5,0.85,24),stdMat(0x3d8bfd,0.5)));
+  mug.position.y=0.43; g.add(mug);
+  const tea=new THREE.Mesh(new THREE.CircleGeometry(0.52,24),stdMat(0x8a5a2b,0.35));
+  tea.rotation.x=-Math.PI/2; tea.position.y=0.87; g.add(tea);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.055,10,24),stdMat(0x3d8bfd,0.5));
+  handle.position.set(0.62,0.45,0); g.add(handle);
+  g.position.set(-3.6,0,-0.5); g.userData.baseY=0;
+  return g;
+}
+function buildSpoon(mat,lean){
+  const g=new THREE.Group();
+  const bowl=new THREE.Mesh(new THREE.SphereGeometry(0.16,12,8),mat);
+  bowl.scale.set(1,0.35,1.4); bowl.position.set(lean*0.35,0.62,0); g.add(bowl);
+  const handleM=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.09,1.5,0.16),mat));
+  handleM.position.set(lean*0.62,1.3,0); handleM.rotation.z=-lean*0.42; g.add(handleM);
+  g.userData.baseY=0;
+  return g;
+}
+function buildBeaker(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(1.0,0.92,1.7,28,1,true),
+    new THREE.MeshStandardMaterial({color:0xdfeef5,roughness:0.15,metalness:0.05,transparent:true,opacity:0.35,side:THREE.DoubleSide}));
+  glass.position.y=0.85; g.add(glass);
+  const base=new THREE.Mesh(new THREE.CircleGeometry(0.92,28),stdMat(0xcfe0ea,0.4));
+  base.rotation.x=-Math.PI/2; base.position.y=0.02; g.add(base);
+  beakerWaterMat=stdMat(0x7ec8e3,0.25); beakerWaterMat.transparent=true; beakerWaterMat.opacity=0.85;
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.85,1.1,24),beakerWaterMat);
+  water.position.y=0.58; g.add(water);
+  const stickCols={metal:0xb8c0c8,glass:0xeaf6fa,plastic:0xe0483e,pencil:0xf2b53a,foam:0xf5f5f5};
+  BEADMATS.forEach((m,idx)=>{
+    const xoff=-0.6+idx*0.3, zoff=(idx%2===0? -0.18:0.2);
+    let stick;
+    if(m.id==='foam'){
+      stick=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.2,2.25,0.1),stdMat(stickCols[m.id],0.95)));
+    }else if(m.id==='metal'||m.id==='plastic'){
+      stick=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.09,2.25,0.14),stdMat(stickCols[m.id],m.id==='metal'?0.35:0.7)));
+    }else{
+      stick=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(m.id==='pencil'?0.05:0.045,m.id==='pencil'?0.05:0.045,2.25,10),stdMat(stickCols[m.id],0.8)));
+    }
+    stick.position.set(xoff,1.3,zoff); g.add(stick);
+    const jelly=new THREE.Mesh(new THREE.SphereGeometry(0.075,10,8),stdMat(0xffd94d,0.4));
+    jelly.position.set(xoff,2.42,zoff); jelly.scale.y=0.6; g.add(jelly);
+    const bead=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.095,12,10),stdMat(0xf2762e,0.45)));
+    bead.position.set(xoff,2.52,zoff); g.add(bead);
+    BEADS[m.id]=bead;
+  });
+  g.position.set(-0.4,0,-0.9); g.userData.baseY=0;
+  return g;
+}
+function buildCircuit(){
+  const g=new THREE.Group();
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.5,0.09,1.7),stdMat(0x44586e,0.9)));
+  board.position.y=0.05; g.add(board);
+  [-0.22,0.22].forEach(dx=>{
+    const cell=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.42,0.6),stdMat(0xd23c2a,0.55)));
+    cell.position.set(-0.85+dx,0.31,-0.45); g.add(cell);
+    const top=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.08,10),stdMat(0xb8c0c8,0.3));
+    top.position.set(-0.85+dx,0.56,-0.45); g.add(top);
+  });
+  const lampBase=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.2,0.14,16),stdMat(0x22384f,0.7)));
+  lampBase.position.set(0.85,0.16,-0.45); g.add(lampBase);
+  lampMat=new THREE.MeshStandardMaterial({color:0xfff2b0,roughness:0.3,metalness:0.05,emissive:0xffc93c,emissiveIntensity:0});
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.23,18,14),lampMat);
+  bulb.position.set(0.85,0.5,-0.45); g.add(bulb);
+  lampLight=new THREE.PointLight(0xffc93c,0,4); lampLight.position.set(0.85,0.7,-0.45); g.add(lampLight);
+  const wireMat=stdMat(0xd97b2b,0.45);
+  const wireTop=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.045,0.045),wireMat);
+  wireTop.position.set(0,0.14,-0.45); g.add(wireTop);
+  const wire2=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.045,0.8),wireMat);
+  wire2.position.set(0.62,0.14,-0.1); g.add(wire2);
+  sampleMesh=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.12,0.22),stdMat(0xb8c0c8,0.35));
+  sampleMesh.position.set(0.05,0.16,0.28); sampleMesh.visible=false; g.add(sampleMesh);
+  const wire3=new THREE.Mesh(new THREE.BoxGeometry(0.75,0.045,0.045),wireMat);
+  wire3.position.set(-0.45,0.14,0.28); g.add(wire3);
+  const wire4=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.045,0.78),wireMat);
+  wire4.position.set(-0.82,0.14,-0.08); g.add(wire4);
+  g.position.set(2.7,0,-0.9); g.userData.baseY=0;
+  return g;
+}
+function buildClip(){
+  const g=new THREE.Group();
+  const mat=stdMat(0xb8c0c8,0.3);
+  const t1=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.04,10,24),mat);
+  t1.rotation.x=Math.PI/2; t1.position.y=0.1; g.add(t1);
+  const t2=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.035,10,24),mat);
+  t2.rotation.x=Math.PI/2; t2.position.y=0.1; g.add(t2);
+  g.position.set(-2.3,0,1.85); g.userData.baseY=0;
+  return g;
+}
+function buildFoil(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.IcosahedronGeometry(0.21,0),stdMat(0xd7dde3,0.25)));
+  ball.position.y=0.2; g.add(ball);
+  g.position.set(-1.1,0,1.9); g.userData.baseY=0;
+  return g;
+}
+function buildGraphite(){
+  const g=new THREE.Group();
+  const rod=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.75,10),stdMat(0x3a3f46,0.5)));
+  rod.rotation.z=Math.PI/2; rod.position.y=0.1; g.add(rod);
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.13,0.1,14),stdMat(0x7a4fd0,0.7)));
+  pot.position.set(0,0.05,0.22); g.add(pot);
+  g.position.set(0.1,0,1.85); g.userData.baseY=0;
+  return g;
+}
+function buildWatercup(){
+  const g=new THREE.Group();
+  const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.17,0.38,18,1,true),
+    new THREE.MeshStandardMaterial({color:0xdfeef5,roughness:0.2,transparent:true,opacity:0.45,side:THREE.DoubleSide}));
+  cup.position.y=0.19; g.add(cup);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.16,0.3,18),stdMat(0x3fa7d6,0.3));
+  water.position.y=0.16; g.add(water);
+  g.position.set(1.3,0,1.9); g.userData.baseY=0;
+  return g;
+}
+function buildSugar(){
+  const g=new THREE.Group();
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.16,0.3,16),stdMat(0xffffff,0.6)));
+  pot.position.y=0.15; g.add(pot);
+  [[-0.07,0.36,0.03],[0.08,0.36,-0.04]].forEach(p=>{
+    const cube=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.12),stdMat(0xf7f3e8,0.8)));
+    cube.position.set(p[0],p[1],p[2]); cube.rotation.y=0.5; g.add(cube);
+  });
+  g.position.set(2.5,0,1.85); g.userData.baseY=0;
+  return g;
+}
+function buildDecor(){
+  const pot=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.36,0.4,20),stdMat(0x8d99a6,0.4)));
+  body.position.y=0.2; pot.add(body);
+  const lid=new THREE.Mesh(new THREE.CylinderGeometry(0.43,0.43,0.06,20),stdMat(0x6e7c8a,0.4));
+  lid.position.y=0.43; pot.add(lid);
+  const handleB=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.07,0.09),stdMat(0x22384f,0.8));
+  handleB.position.set(0.65,0.3,0); pot.add(handleB);
+  pot.position.set(-3.5,0,1.7); scene3.add(pot);
+  const cup=new THREE.Group();
+  const cbody=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.15,0.42,16),stdMat(0xf5f5f5,0.9)));
+  cbody.position.y=0.21; cup.add(cbody);
+  cup.position.set(4.3,0,0.9); scene3.add(cup);
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,16,30);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xdfe9f2,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.2; ground.receiveShadow=true; scene3.add(ground);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.5,0.2,5.6),stdMat(0xc9a876,1)));
+  bench.position.set(0,-0.1,0.4); bench.receiveShadow=true; scene3.add(bench);
+  const tray=shadowed(new THREE.Mesh(new THREE.BoxGeometry(6.2,0.07,1.15),stdMat(0xead9a8,1)));
+  tray.position.set(0.1,0.035,1.87); tray.receiveShadow=true; scene3.add(tray);
+  /* the things */
+  reg('mug',buildMug());
+  spoonMetalMat=stdMat(0xb8c0c8,0.3);
+  const ms=buildSpoon(spoonMetalMat,-1); ms.position.set(-4.35,0,-0.5); reg('mspoon',ms);
+  const ps=buildSpoon(stdMat(0xe0483e,0.7),1); ps.position.set(-2.85,0,-0.5); reg('pspoon',ps);
+  reg('beaker',buildBeaker());
+  reg('circuit',buildCircuit());
+  reg('clip',buildClip());
+  reg('foil',buildFoil());
+  reg('graphite',buildGraphite());
+  reg('watercup',buildWatercup());
+  reg('sugar',buildSugar());
+  buildDecor();
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.48); p.position.set(-0.28,1.35,0); addProxy('mspoon',p,G.mspoon); }
+  { const p=sphProxy(0.48); p.position.set(0.28,1.35,0); addProxy('pspoon',p,G.pspoon); }
+  { const p=sphProxy(1.12); p.position.set(0,1.15,0); addProxy('beaker',p,G.beaker); }
+  { const p=sphProxy(0.44); p.position.set(0,0.16,0); addProxy('clip',p,G.clip); }
+  { const p=sphProxy(0.42); p.position.set(0,0.2,0); addProxy('foil',p,G.foil); }
+  { const p=sphProxy(0.46); p.position.set(0,0.14,0); addProxy('graphite',p,G.graphite); }
+  { const p=sphProxy(0.44); p.position.set(0,0.22,0); addProxy('watercup',p,G.watercup); }
+  { const p=sphProxy(0.44); p.position.set(0,0.24,0); addProxy('sugar',p,G.sugar); }
+  /* highlight ring */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a thing */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=ITEMS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=ITEMS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=ITEMS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+function runRace(src){
+  if(raceAnim) return; raceAnim=true;
+  addAnim(5,f=>{ beadF=f; },()=>{
+    raceAnim=false; beadF=1;
+    if(src==='user'){
+      T.raceRun=true; RACELOG.run=true;
+      saveProg(); renderMirrors(); refreshEvidence();
+    }else{
+      beadF=RACELOG.run?1:0;
+    }
+  });
+}
+function testLampDemo(){
+  const prev=lampLevel;
+  lampLevel=2;
+  addAnim(1.4,f=>{},()=>{ lampLevel=(curStep===3&&T.tested.size)? SUBS5.filter(s=>T.tested.has(s.id)).slice(-1)[0].bright : prev; });
+}
+function testSubstance(id){
+  const s=SUBS5.find(x=>x.id===id); if(!s) return;
+  lampLevel=s.bright;
+  if(sampleMesh){
+    sampleMesh.visible=true;
+    const cols={clip:0xb8c0c8,foil:0xd7dde3,graphite:0x3a3f46,watercup:0x3fa7d6,sugar:0xf7f3e8};
+    sampleMesh.material=stdMat(cols[id]||0xb8c0c8,0.4);
+  }
+  T.tested.add(id); TESTLOG[id]=s.bright;
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step. */
+const STEP_TARGETS=[
+  ['mspoon','pspoon'],                              /* step 1: the two teaspoons */
+  ['beaker'],                                       /* step 2: start the bead race */
+  [],                                               /* step 3: card sort — no scene targets */
+  ['clip','foil','graphite','watercup','sugar'],    /* step 4: circuit tests */
+  [],                                               /* step 5: card sort — no scene targets */
+  []                                                /* step 6: pattern choices — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!ITEMS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(curStep===0){
+    if(id==='mspoon'){ T.tMetal=true; HEATF.metal=true; addAnim(1.4,f=>{ glowF=f; },()=>{ glowF=1; }); }
+    else if(id==='pspoon'){ T.tPlastic=true; HEATF.plastic=true; }
+    saveProg(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='beaker') runRace('user');
+  }else if(curStep===3){
+    if(STEP_TARGETS[3].indexOf(id)>=0) testSubstance(id);
+  }
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+  refreshEvidence();
+}
+function applyStepStart(i){
+  beadF=RACELOG.run?1:0;
+  glowF=HEATF.metal?1:0;
+  lampLevel=0;
+  if(sampleMesh) sampleMesh.visible=false;
+  if(i===3){
+    const done=SUBS5.filter(s=>TESTLOG[s.id]!==undefined);
+    if(done.length){
+      const last=done[done.length-1];
+      lampLevel=last.bright;
+      if(sampleMesh){ sampleMesh.visible=true; }
+    }
+  }
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* bead race: each bead drops when the race clock passes its melt moment */
+  const meltAt={metal:0.12,glass:0.36,plastic:0.56,pencil:0.72,foam:0.9};
+  for(const id in BEADS){
+    const bead=BEADS[id]; if(!bead) continue;
+    const local=Math.min(1,Math.max(0,(beadF-meltAt[id])/0.08));
+    bead.position.y=2.52-local*1.55;
+  }
+  /* metal spoon glow as heat conducts along it */
+  if(spoonMetalMat){
+    const c=new THREE.Color(0xb8c0c8).lerp(new THREE.Color(0xff8c42),glowF);
+    spoonMetalMat.color.copy(c);
+    spoonMetalMat.emissive=new THREE.Color(0xff6a00).multiplyScalar(glowF*0.35);
+  }
+  /* hot water shimmer */
+  if(beakerWaterMat) beakerWaterMat.color.setHSL(0.55,0.6,0.6+Math.sin(now*0.0016)*0.04);
+  /* lamp brightness (book tick scale) */
+  if(lampMat){
+    let inten=lampLevel===2?1.7:(lampLevel===1?0.55+Math.sin(now*0.03)*0.08:0);
+    lampMat.emissiveIntensity=inten;
+    if(lampLight) lampLight.intensity=lampLevel===2?0.9:(lampLevel===1?0.3:0);
+  }
+  /* label + ring follow */
+  if(lastFocus&&ITEMS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+ITEMS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exDoneCount(){ return EX1DONE.size+EX2DONE.size+EX3DONE.size+EX4DONE.size; }
+function renderChoiceList(el,rows,ansObj,ordArr,doneSet){
+  el.innerHTML='';
+  rows.forEach((r,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(r.q)+'<div style="margin-top:6px">';
+    (ordArr[si]||r.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=r.opts[oi];
+      let cls='wordopt';
+      if(ansObj[si]===oi) cls+=' sel';
+      if(exRevealed&&oi===r.a) cls+=' rightmark';
+      else if(exRevealed&&ansObj[si]===oi) cls+=' wrongsel';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos<r.opts.length-1?' ':'');
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(r.e);
+      row.appendChild(ex);
+    }
+    el.appendChild(row);
+  });
+  el.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      ansObj[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=exDoneCount(), all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — parts of a lamp (tap a part, then tap its group) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinElec').innerHTML=bi(STR.binElec);
+  $('ex1BinNo').innerHTML=bi(STR.binNoelec);
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const ans=EX1ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex1sel===it.id?' sel':'')+(exRevealed? (EX1DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='elec'?'⚡':'🚫')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex1sel=it.id; renderExercises(); };
+    g1.appendChild(d);
+  });
+  /* Ex 2 · Practice — metals table questions */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderChoiceList($('ex2List'),EX2,EX2ANS,EX2_ORD,EX2DONE);
+  /* Ex 3 · Challenge — ice in two dishes */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  renderChoiceList($('ex3List'),EX3,EX3ANS,EX3_ORD,EX3DONE);
+  /* Ex 4 · Challenge — the graphite investigation */
+  $('exSec4').classList.toggle('done',exRevealed&&EX4DONE.size>=EX4.length);
+  $('ex4T').innerHTML=exHead(STR.ex4T,exRevealed&&EX4DONE.size>=EX4.length);
+  $('ex4Inst').innerHTML=bi(STR.ex4Inst);
+  renderChoiceList($('ex4List'),EX4,EX4ANS,EX4_ORD,EX4DONE);
+}
+function exAnsweredCount(){
+  return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length+Object.keys(EX4ANS).length);
+}
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+$('ex1BinElec').onclick=()=>ex1Place('elec');
+$('ex1BinNo').onclick=()=>ex1Place('noelec');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((r,si)=>si).filter(si=>EX2ANS[si]===EX2[si].a));
+  EX3DONE=new Set(EX3.map((r,si)=>si).filter(si=>EX3ANS[si]===EX3[si].a));
+  EX4DONE=new Set(EX4.map((r,si)=>si).filter(si=>EX4ANS[si]===EX4[si].a));
+  ex1sel=null;
+  return exDoneCount();
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; EX4ANS={}; ex1sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set(); EX4DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX2_ORD=EX2.map(r=>fyIdx(r.opts.length));
+  EX3_ORD=EX3.map(r=>fyIdx(r.opts.length));
+  EX4_ORD=EX4.map(r=>fyIdx(r.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: console mirror set + per-step evidence-mirror clearing. */
+function renderMirrors(){ renderRaceTable(); renderTestTable(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ HEATF.metal=false; HEATF.plastic=false; }
+  if(step===1){ RACELOG.run=false; RACELOG.pred=null; }
+  if(step===2){ CARDS3.forEach(c=>SORTED.delete(c.id)); }
+  if(step===3){ TESTLOG={}; }
+  if(step===4){ CARDS5.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ DONEFLAGS.pat=false; DONEFLAGS.odd=false; }
+}
+
+/* ================= MIGRATION — persistence hooks + registration ================= */
+function extraSave(){
+  return {heat:HEATF, race:RACELOG, testlog:TESTLOG, sorted:[...SORTED], flags:DONEFLAGS,
+    exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS,a4:EX4ANS},
+    ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE],e4:[...EX4DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.heat&&typeof s.heat==='object') HEATF=Object.assign(HEATF,s.heat);
+  if(s.race&&typeof s.race==='object') RACELOG=Object.assign(RACELOG,s.race);
+  if(s.testlog&&typeof s.testlog==='object'){
+    TESTLOG={};
+    Object.keys(s.testlog).forEach(id=>{ if(SUBS5.some(x=>x.id===id)) TESTLOG[id]=s.testlog[id]; });
+  }
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.flags&&typeof s.flags==='object') DONEFLAGS=Object.assign(DONEFLAGS,s.flags);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+    if(Array.isArray(s.ex.e4)) EX4DONE=new Set(s.ex.e4.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX4.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    const pick=(obj,rows)=>{ const out={}; if(obj&&typeof obj==='object') Object.keys(obj).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<rows.length&&Number.isInteger(obj[k])&&obj[k]>=0&&obj[k]<rows[si].opts.length) out[si]=obj[k]; }); return out; };
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='elec'||s.exAns.a1[id]==='noelec')) EX1ANS[id]=s.exAns.a1[id]; });
+    EX2ANS=pick(s.exAns.a2,EX2); EX3ANS=pick(s.exAns.a3,EX3); EX4ANS=pick(s.exAns.a4,EX4);
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size||EX4DONE.size){
+    /* migrate an old instant-feedback save: earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((r,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=r.a; });
+    EX3.forEach((r,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=r.a; });
+    EX4.forEach((r,si)=>{ if(EX4DONE.has(si)) EX4ANS[si]=r.a; });
+    exRevealed=true;
+    exBest=Math.max(exBest,exDoneCount());
+  }
+}
+/* MIGRATION (rule 10): seed a DONE step's track for old saves that carry no trk. */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.tMetal=!!HEATF.metal; t.tPlastic=!!HEATF.plastic; }
+  else if(i===1){ t.predMade=!!RACELOG.pred; t.pred=RACELOG.pred; t.raceRun=!!RACELOG.run; }
+  else if(i===2){ CARDS3.forEach(c=>{ if(SORTED.has(c.id)) t.s3correct.add(c.id); }); }
+  else if(i===3){ Object.keys(TESTLOG).forEach(id=>t.tested.add(id)); }
+  else if(i===4){ CARDS5.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.patOk=!!DONEFLAGS.pat; t.oddOk=!!DONEFLAGS.odd; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci6-2-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

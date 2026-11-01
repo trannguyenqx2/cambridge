@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>5.4 Multiple forces — Nhiều lực cùng lúc · Cambridge Primary Science 5</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+/* ===== sci5-5-4 additions: extra bin colours + choice options ===== */
+.binbtn.back{background:#64748b}
+.binbtn.fwd{background:#0d9d58}
+.binbtn.natural{background:#0b76d1}
+.binbtn.made{background:#e07b24}
+.binbtn.helps{background:#0d9d58}
+.binbtn.falls{background:#44586e}
+.binbtn.grav{background:#44586e}
+.binbtn.liftb{background:#0d9d58}
+.binbtn.thrustb{background:#e07b24}
+.binbtn.dragb{background:#0b76d1}
+.binbtn.upthb{background:#7a4fd0}
+.binbtn.wresb{background:#00a3c8}
+.chopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:5px 12px;margin:4px 4px 2px 0;cursor:pointer;font-size:16.5px;font-weight:700;line-height:1.35}
+.chopt.sel{border-color:var(--acc);background:#eef6ff}
+.chopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.chopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 5" data-vi="← Môn Khoa học 5">← Science 5</a>
+    <span class="ttl i18n" data-en="5.4 Multiple forces" data-vi="5.4 Nhiều lực cùng lúc">5.4 Multiple forces</span>
+    <span class="eqchip i18n" data-en="Unit 5 · Forces and magnetism" data-vi="Bài 5 · Lực và từ tính (Forces and magnetism)">Unit 5 · Forces and magnetism</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How many forces can act on one thing at once?" data-vi="Có bao nhiêu lực có thể cùng tác dụng lên một vật?">How many forces can act on one thing at once?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Forces together" data-vi="Các lực cùng lúc (multiple forces)">Forces together</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="At rest and moving" data-vi="Lúc nghỉ và lúc chuyển động">At rest and moving</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Force diagrams" data-vi="Sơ đồ lực (force diagram)">Force diagrams</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Make it fly longer!" data-vi="Làm cho nó bay lâu hơn!">Make it fly longer!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things in the forces park!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trong công viên lực!">🖱 Drag to look around · Scroll to zoom · Tap things in the forces park!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Primary Science 5 · Unit 5 Forces and magnetism · Section 5.4. The forces park in this lesson is a simulation." data-vi="Khoa học Cambridge cấp 5 · Bài 5 Lực và từ tính · Mục 5.4. Công viên lực trong bài học này là mô phỏng.">Cambridge Primary Science 5 · Unit 5 Forces and magnetism · Section 5.4. The forces park in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Primary Science Learner's Book 5 (2nd edition, ISBN 9781108742955), Unit 5 Forces and magnetism, section 5.4, pages 118–122; Workbook 5 (ISBN 9781108742962), pages 72–74. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Primary Science Learner's Book 5 (bản 2, ISBN 9781108742955), Bài 5 Lực và từ tính (Forces and magnetism), mục 5.4, trang 118–122; Sách bài tập 5 (ISBN 9781108742962), trang 72–74. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Primary Science Learner's Book 5 (2nd edition, ISBN 9781108742955), Unit 5 Forces and magnetism, section 5.4, pages 118–122; Workbook 5 (ISBN 9781108742962), pages 72–74. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: identify gravity, applied forces, normal forces, upthrust, friction, air resistance and water resistance; see that an object may have multiple forces acting on it at rest and when moving; make and test a paper aeroplane; use force diagrams; make predictions and say how accurate they were; suggest how a paper aeroplane could be improved. Key words: multiple, thrust." data-vi="Mục tiêu: nhận biết lực hấp dẫn (gravity), lực tác dụng (applied force), lực pháp tuyến (normal force), lực đẩy nổi (upthrust), ma sát (friction), sức cản không khí (air resistance) và sức cản của nước (water resistance); thấy một vật có thể chịu nhiều lực (multiple forces) cả lúc nghỉ lẫn lúc chuyển động; làm và thử máy bay giấy; dùng sơ đồ lực (force diagram); đưa ra dự đoán và nhận xét độ chính xác; đề xuất cách cải tiến máy bay giấy. Từ khóa: multiple (nhiều), thrust (lực đẩy).">Objectives: identify gravity, applied forces, normal forces, upthrust, friction, air resistance and water resistance; see that an object may have multiple forces acting on it at rest and when moving; make and test a paper aeroplane; use force diagrams; make predictions and say how accurate they were; suggest how a paper aeroplane could be improved. Key words: multiple, thrust.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping things in the 3D forces park or sorting force cards. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'In the forces park' panel only move the camera; doing a step means tapping the thing itself in the park. Note: the paper aeroplane here is a simulation of the book's make-and-test activity — folding a real sheet of A4 paper and throwing it in class makes a good follow-up. The tricky ideas: a resting object still has forces on it (gravity and the normal force balance), and thrust is an applied force." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các vật trong công viên lực 3D hoặc xếp thẻ lực. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trong công viên lực' chỉ di chuyển camera; muốn làm một bước thì phải chạm vào chính vật đó trong công viên. Lưu ý: máy bay giấy ở đây là mô phỏng hoạt động làm-và-thử của sách — gấp một tờ A4 thật và ném thử trên lớp là hoạt động nối tiếp rất tốt. Các ý dễ nhầm: vật đang nằm yên vẫn có lực tác dụng (lực hấp dẫn (gravity) và lực pháp tuyến (normal force) cân bằng nhau), và lực đẩy (thrust) là một lực tác dụng (applied force).">How it works: each step asks for one real action — tapping things in the 3D forces park or sorting force cards. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'In the forces park' panel only move the camera; doing a step means tapping the thing itself in the park. Note: the paper aeroplane here is a simulation of the book's make-and-test activity — folding a real sheet of A4 paper and throwing it in class makes a good follow-up. The tricky ideas: a resting object still has forces on it (gravity and the normal force balance), and thrust is an applied force.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn grav" id="ex2BinGravity"></button>
+        <button class="binbtn liftb" id="ex2BinLift"></button>
+        <button class="binbtn thrustb" id="ex2BinThrust"></button>
+        <button class="binbtn dragb" id="ex2BinDrag"></button>
+      </div>
+      <div id="ex2QList"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn grav" id="ex3BinGravity"></button>
+        <button class="binbtn upthb" id="ex3BinUpthrust"></button>
+        <button class="binbtn thrustb" id="ex3BinThrust"></button>
+        <button class="binbtn wresb" id="ex3BinWres"></button>
+      </div>
+      <div id="ex3QList"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci5-5-4 "Multiple forces" (Science 5, Unit 5)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= scene things ================= */
+const THINGS={
+  ball: {kind:'ball', emoji:'🎾', name:{en:'Ball',vi:'Quả bóng (ball)'},                 short:{en:'Ball',vi:'Bóng'},              ring:0.5,  labelY:1.0,  fx:-3.2, fz:1.6,  fr:5.0},
+  bike: {kind:'bike', emoji:'🚲', name:{en:'Bicycle',vi:'Xe đạp (bicycle)'},            short:{en:'Bicycle',vi:'Xe đạp'},         ring:1.0,  labelY:1.35, fx:-1.5, fz:-1.9, fr:5.6},
+  plane:{kind:'plane',emoji:'✈️', name:{en:'Paper aeroplane',vi:'Máy bay giấy (paper aeroplane)'}, short:{en:'Paper aeroplane',vi:'Máy bay giấy'}, ring:0.65, labelY:1.0, fx:0.1, fz:0.7, fr:5.0},
+  car:  {kind:'car',  emoji:'🚗', name:{en:'Car',vi:'Ô tô (car)'},                      short:{en:'Car',vi:'Ô tô'},               ring:0.62, labelY:1.0,  fx:3.4,  fz:1.8,  fr:5.2},
+  boat: {kind:'boat', emoji:'⛵', name:{en:'Boat on the pond',vi:'Thuyền trên ao (boat)'}, short:{en:'Boat',vi:'Thuyền'},          ring:1.05, labelY:1.5,  fx:2.9,  fz:-1.8, fr:5.6},
+  bird: {kind:'bird', emoji:'🐦', name:{en:'Bird',vi:'Chim (bird)'},                    short:{en:'Bird',vi:'Chim'},              ring:0.5,  labelY:0.85, fx:1.6,  fz:-2.6, fr:5.4}
+};
+const FOCUSORDER=['ball','bike','plane','car','boat','bird'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the forces park',vi:'Trong công viên lực'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself in the park!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trong công viên!'},
+  u2T:{en:'Forces I spotted',vi:'Các lực con đã khám phá'},
+  u2Brief:{en:'Each tick shows a force you have seen working.',vi:'Mỗi dấu tích cho thấy một lực con đã thấy tác dụng.'},
+  u3T:{en:'My force diagrams',vi:'Sơ đồ lực của con'},
+  u3Brief:{en:'How many force cards you have sorted in each diagram.',vi:'Số thẻ lực con đã xếp đúng trong mỗi sơ đồ.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  spotBall:{en:'The ball rolled, then slowed down',vi:'Quả bóng lăn rồi chậm dần'},
+  spotBike:{en:'The bicycle was pedalled forward',vi:'Chiếc xe đạp được đạp tiến lên'},
+  spotRest:{en:'The plane at rest: gravity and normal force',vi:'Máy bay lúc nghỉ: lực hấp dẫn (gravity) và lực pháp tuyến (normal force)'},
+  spotFly:{en:'The plane was thrown and flew',vi:'Máy bay được ném và đã bay'},
+  diagBike:{en:'🚲 Forces on a bicycle',vi:'🚲 Các lực trên xe đạp (bicycle)'},
+  diagPlane:{en:'✈️ Forces on a flying plane',vi:'✈️ Các lực trên máy bay đang bay'},
+  diagImprove:{en:'⏱️ Make it stay up longer',vi:'⏱️ Làm cho nó bay lâu hơn'},
+  binBack:{en:'SLOWS THE BIKE 🐌',vi:'LÀM XE CHẬM LẠI 🐌'},
+  binFwd:{en:'HELPS IT MOVE FORWARD 🚀',vi:'GIÚP XE TIẾN LÊN 🚀'},
+  binNatural:{en:'NATURAL FORCE 🌍',vi:'LỰC TỰ NHIÊN 🌍'},
+  binMade:{en:'PROVIDED BY THE PLANE ✈️',vi:'DO MÁY BAY TẠO RA ✈️'},
+  binHelps:{en:'STAYS UP LONGER ⏱️',vi:'BAY LÂU HƠN ⏱️'},
+  binFalls:{en:'FALLS SOONER ⬇️',vi:'RƠI NHANH HƠN ⬇️'},
+  lookBike:{en:'Look at the bicycle 🚲',vi:'Ngắm chiếc xe đạp 🚲'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 5.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 5.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Circle the correct answer',vi:'Bài tập 1 · Focus — Khoanh tròn đáp án đúng'},
+  ex1Inst:{en:'Arun is riding his bicycle. Force A points DOWN from Arun, force B points UP from the ground under the wheels, and force C points BACK at the tyres. For each question, tap the correct answer.',vi:'Arun đang đạp xe. Lực A hướng XUỐNG từ Arun, lực B hướng LÊN từ mặt đất dưới bánh xe, và lực C hướng NGƯỢC LẠI ở lốp xe. Với mỗi câu, hãy chạm vào đáp án đúng.'},
+  ex2T:{en:'Exercise 2 · Practice — Label the forces on a plane and a bird',vi:'Bài tập 2 · Practice — Ghi tên các lực trên máy bay và chim'},
+  ex2Inst:{en:'Tap an arrow card, then tap the name of the force that arrow shows. Then answer the two bird questions.',vi:'Chạm vào một thẻ mũi tên, rồi chạm vào tên của lực mà mũi tên đó chỉ. Sau đó trả lời hai câu hỏi về chim.'},
+  ex3T:{en:'Exercise 3 · Challenge — Label the forces on a swimmer',vi:'Bài tập 3 · Challenge — Ghi tên các lực trên người bơi'},
+  ex3Inst:{en:'Tap an arrow card, then tap the name of the force that arrow shows. Then answer the two swimmer questions.',vi:'Chạm vào một thẻ mũi tên, rồi chạm vào tên của lực mà mũi tên đó chỉ. Sau đó trả lời hai câu hỏi về người bơi.'},
+  binGravity:{en:'GRAVITY ⬇️',vi:'LỰC HẤP DẪN (GRAVITY) ⬇️'},
+  binLift:{en:'LIFT ⬆️',vi:'LỰC NÂNG (LIFT) ⬆️'},
+  binThrust:{en:'THRUST ➡️',vi:'LỰC ĐẨY (THRUST) ➡️'},
+  binDrag:{en:'AIR RESISTANCE ⬅️',vi:'SỨC CẢN KHÔNG KHÍ (AIR RESISTANCE) ⬅️'},
+  binUpthrust:{en:'UPTHRUST ⬆️',vi:'LỰC ĐẨY NỔI (UPTHRUST) ⬆️'},
+  binWres:{en:'WATER RESISTANCE ⬅️',vi:'SỨC CẢN CỦA NƯỚC (WATER RESISTANCE) ⬅️'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'multiple forces',vi:'nhiều lực cùng lúc'},
+  {en:'gravity',vi:'lực hấp dẫn'},
+  {en:'friction',vi:'ma sát'},
+  {en:'air resistance',vi:'sức cản không khí'},
+  {en:'water resistance',vi:'sức cản của nước'},
+  {en:'upthrust',vi:'lực đẩy nổi'},
+  {en:'thrust',vi:'lực đẩy'},
+  {en:'lift',vi:'lực nâng'},
+  {en:'normal force',vi:'lực pháp tuyến'},
+  {en:'applied force',vi:'lực tác dụng'},
+  {en:'force diagram',vi:'sơ đồ lực'},
+  {en:'streamlined',vi:'thuôn gọn'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Ball and bike',vi:'Bóng và xe đạp'}, word:{en:'multiple forces',vi:'nhiều lực cùng lúc'},
+  q:{en:'How many forces can act on one thing at the same time?',vi:'Có bao nhiêu lực (force) có thể cùng tác dụng lên một vật?'},
+  act:{en:'Tap the ball in the park to push it and make it roll. Then tap the bicycle to pedal it forwards.',vi:'Chạm vào quả bóng (ball) trong công viên để đẩy nó lăn đi. Sau đó chạm vào chiếc xe đạp (bicycle) để đạp nó tiến lên.'},
+  see:{en:'The ball rolls, then slows down and stops. The bicycle moves forwards.',vi:'Quả bóng lăn, rồi chậm dần và dừng lại. Chiếc xe đạp tiến lên.'},
+  concl:[
+    {en:'More than one force can act on an object at the same time. Together they are called multiple forces.',vi:'Nhiều lực (force) có thể cùng tác dụng lên một vật. Gộp lại, chúng được gọi là nhiều lực (multiple forces).'},
+    {en:'The strongest force decides the change: a change of speed, of place or of shape.',vi:'Lực (force) mạnh nhất quyết định sự thay đổi: thay đổi tốc độ, vị trí hay hình dạng.'}]},
+ {tag:{en:'Forces on a bike',vi:'Các lực trên xe đạp'}, word:{en:'friction',vi:'ma sát'},
+  q:{en:'Which forces slow a bicycle down — and which help it to move?',vi:'Lực nào làm xe đạp chậm lại — và lực nào giúp nó di chuyển?'},
+  act:{en:'Tap a card, then tap SLOWS THE BIKE or HELPS IT MOVE FORWARD.',vi:'Chạm vào một thẻ, rồi chạm LÀM XE CHẬM LẠI hoặc GIÚP XE TIẾN LÊN.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Friction between the tyres and the road pulls the bike back, and so does air resistance.',vi:'Ma sát (friction) giữa lốp xe và mặt đường kéo xe lại, sức cản không khí (air resistance) cũng vậy.'},
+    {en:'Thrust is an applied force: pushing on the pedals pushes the bike forwards and beats friction and air resistance.',vi:'Lực đẩy (thrust) là một lực tác dụng (applied force): đạp bàn đạp đẩy xe tiến lên và thắng được ma sát (friction) và sức cản không khí (air resistance).'}]},
+ {tag:{en:'A plane at rest',vi:'Máy bay lúc nghỉ'}, word:{en:'normal force',vi:'lực pháp tuyến'},
+  q:{en:'A paper aeroplane is resting on the ground. Are any forces acting on it?',vi:'Một chiếc máy bay giấy đang nằm yên trên mặt đất. Có lực nào tác dụng lên nó không?'},
+  act:{en:'Tap the paper aeroplane resting in the park.',vi:'Chạm vào chiếc máy bay giấy (paper aeroplane) đang nằm yên trong công viên.'},
+  see:{en:'Two arrows appear: gravity pulls it down, and the ground pushes it up.',vi:'Hai mũi tên hiện ra: lực hấp dẫn (gravity) kéo nó xuống, và mặt đất đẩy nó lên.'},
+  concl:[
+    {en:'Even at rest, gravity pulls the plane down towards the Earth.',vi:'Ngay cả khi nằm yên, lực hấp dẫn (gravity) vẫn kéo máy bay xuống về phía Trái Đất.'},
+    {en:'The ground pushes back up with a normal force. The two forces balance, so the plane stays still.',vi:'Mặt đất đẩy ngược lên bằng một lực pháp tuyến (normal force). Hai lực cân bằng nhau nên máy bay đứng yên.'}]},
+ {tag:{en:'Throw the plane',vi:'Ném máy bay'}, word:{en:'thrust',vi:'lực đẩy'},
+  q:{en:'What will happen when you throw the paper aeroplane up and out?',vi:'Điều gì sẽ xảy ra khi con ném máy bay giấy lên và ra xa?'},
+  act:{en:'First say your prediction out loud: will it fly, and for how long? Then tap the paper aeroplane to throw it.',vi:'Trước hết hãy nói to dự đoán (prediction) của con: nó có bay không, và bay bao lâu? Sau đó chạm vào máy bay giấy để ném nó.'},
+  see:{en:'The plane flies through the air, then curves down and lands on the grass.',vi:'Máy bay bay qua không trung, rồi cong xuống và đáp xuống bãi cỏ.'},
+  concl:[
+    {en:'Your hand gave the plane thrust — an applied force — and its wings gave it lift, beating gravity and air resistance for a while.',vi:'Tay con tạo cho máy bay lực đẩy (thrust) — một lực tác dụng (applied force) — và đôi cánh tạo lực nâng (lift), thắng được lực hấp dẫn (gravity) và sức cản không khí (air resistance) trong một lúc.'},
+    {en:'Gravity kept pulling it down, so in the end it landed. Was your prediction right?',vi:'Lực hấp dẫn (gravity) cứ kéo nó xuống, nên cuối cùng nó đáp xuống. Dự đoán của con có đúng không?'}]},
+ {tag:{en:'Forces on a flying plane',vi:'Các lực trên máy bay đang bay'}, word:{en:'lift',vi:'lực nâng'},
+  q:{en:'Which forces on a flying plane are natural — and which does the plane provide?',vi:'Lực nào trên máy bay đang bay là lực tự nhiên — và lực nào do máy bay tạo ra?'},
+  act:{en:'Tap a card, then tap NATURAL FORCE or PROVIDED BY THE PLANE.',vi:'Chạm vào một thẻ, rồi chạm LỰC TỰ NHIÊN hoặc DO MÁY BAY TẠO RA.'},
+  see:{en:'Right cards turn green. You need all 4 right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng cả 4 thẻ.'},
+  concl:[
+    {en:'Gravity and air resistance are natural forces. Air resistance on a moving plane is also called drag.',vi:'Lực hấp dẫn (gravity) và sức cản không khí (air resistance) là các lực tự nhiên. Sức cản không khí trên máy bay đang bay còn gọi là drag.'},
+    {en:'The plane provides thrust from its engines and lift from its wings to beat the natural forces.',vi:'Máy bay tạo ra lực đẩy (thrust) từ động cơ và lực nâng (lift) từ đôi cánh để thắng các lực tự nhiên.'}]},
+ {tag:{en:'Make it fly longer',vi:'Làm cho nó bay lâu hơn'}, word:{en:'improve',vi:'cải tiến'},
+  q:{en:'How could you change a paper aeroplane so it stays in the air for longer?',vi:'Con có thể thay đổi máy bay giấy thế nào để nó ở trên không lâu hơn?'},
+  act:{en:'Tap a card, then tap STAYS UP LONGER or FALLS SOONER.',vi:'Chạm vào một thẻ, rồi chạm BAY LÂU HƠN hoặc RƠI NHANH HƠN.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can identify gravity, normal force, applied forces, friction, thrust, upthrust (lift) and air resistance (drag).',vi:'Con nhận biết được lực hấp dẫn (gravity), lực pháp tuyến (normal force), lực tác dụng (applied force), ma sát (friction), lực đẩy (thrust), lực đẩy nổi (upthrust) / lực nâng (lift) và sức cản không khí (air resistance).'},
+    {en:'I can show the name and direction of the forces acting on an object on a force diagram.',vi:'Con chỉ được tên và hướng của các lực tác dụng lên một vật trên sơ đồ lực (force diagram).'},
+    {en:'I can make a prediction using what I know about forces, and say how accurate it was.',vi:'Con dự đoán (prediction) được dựa trên kiến thức về lực, và nói được dự đoán đó chính xác tới đâu.'},
+    {en:'I can suggest changes to a paper aeroplane to make it stay in the air for longer.',vi:'Con đề xuất được các thay đổi cho máy bay giấy để nó bay lâu hơn.'}]}
+];
+const CARDS2=[
+ {id:'c_friction',emoji:'🛞',en:'Friction between the tyres and the road',vi:'Ma sát (friction) giữa lốp xe và mặt đường',ans:'back'},
+ {id:'c_airres',emoji:'💨',en:'Air resistance pushing against the rider',vi:'Sức cản không khí (air resistance) đẩy ngược người đạp',ans:'back'},
+ {id:'c_headwind',emoji:'🌬️',en:'Wind blowing into the rider’s face',vi:'Gió thổi vào mặt người đạp',ans:'back'},
+ {id:'c_thrust',emoji:'🦵',en:'Thrust from pushing on the pedals',vi:'Lực đẩy (thrust) từ việc đạp bàn đạp',ans:'fwd'},
+ {id:'c_push',emoji:'✋',en:'An applied push to set off',vi:'Một cú đẩy tác dụng (applied push) để bắt đầu đi',ans:'fwd'},
+ {id:'c_smooth',emoji:'✨',en:'Smooth tyres on a smooth road make less friction',vi:'Lốp trơn trên đường nhẵn tạo ít ma sát (friction) hơn',ans:'fwd'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const CARDS5=[
+ {id:'f_gravity',emoji:'🌍',en:'Gravity pulling the plane down',vi:'Lực hấp dẫn (gravity) kéo máy bay xuống',ans:'natural'},
+ {id:'f_drag',emoji:'💨',en:'Air resistance (drag) pulling the plane back',vi:'Sức cản không khí (air resistance) kéo máy bay lại',ans:'natural'},
+ {id:'f_thrust',emoji:'🔥',en:'Thrust pushing the plane forwards',vi:'Lực đẩy (thrust) đẩy máy bay tiến lên',ans:'made'},
+ {id:'f_lift',emoji:'🪽',en:'Lift from the wings pushing the plane up',vi:'Lực nâng (lift) từ đôi cánh đẩy máy bay lên',ans:'made'}
+];
+const CARDS5_ORDER=mixOrder(CARDS5,c=>c.ans,2);
+const CARDS6=[
+ {id:'i_wings',emoji:'🪽',en:'Bigger wings',vi:'Cánh to hơn',ans:'helps'},
+ {id:'i_folds',emoji:'📐',en:'Neat, tight folds',vi:'Các nếp gấp gọn và chặt',ans:'helps'},
+ {id:'i_throw',emoji:'🚀',en:'A stronger throw — more thrust',vi:'Ném mạnh hơn — nhiều lực đẩy (thrust) hơn',ans:'helps'},
+ {id:'i_stone',emoji:'🪨',en:'A heavy stone taped to the plane',vi:'Một hòn đá nặng dán lên máy bay',ans:'falls'},
+ {id:'i_crumpled',emoji:'🥴',en:'A crumpled, bent wing',vi:'Một cánh bị nhàu và cong',ans:'falls'},
+ {id:'i_hole',emoji:'🕳️',en:'A hole torn in one wing',vi:'Một lỗ rách trên một cánh',ans:'falls'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'Which forces are acting on the ball that Sofia rolls along the floor?',vi:'Những lực nào tác dụng lên quả bóng mà Sofia lăn trên sàn?'},
+  o:[{en:'Only gravity',vi:'Chỉ lực hấp dẫn (gravity)'},{en:'An applied push, gravity, friction and air resistance',vi:'Một cú đẩy tác dụng, lực hấp dẫn (gravity), ma sát (friction) và sức cản không khí (air resistance)'},{en:'Only magnetism',vi:'Chỉ từ tính (magnetism)'}],a:1,
+  e:{en:'Sofia pushes the ball (applied force), gravity pulls it down, and friction and air resistance slow it once it moves.',vi:'Sofia đẩy quả bóng (lực tác dụng), lực hấp dẫn (gravity) kéo nó xuống, và ma sát (friction) cùng sức cản không khí (air resistance) làm nó chậm lại khi nó chuyển động.'}},
+ {q:{en:'A paper aeroplane is resting on the ground. Which two forces balance on it?',vi:'Một chiếc máy bay giấy đang nằm yên trên mặt đất. Hai lực nào cân bằng trên nó?'},
+  o:[{en:'Gravity pulling down and the normal force pushing up',vi:'Lực hấp dẫn (gravity) kéo xuống và lực pháp tuyến (normal force) đẩy lên'},{en:'Thrust and lift',vi:'Lực đẩy (thrust) và lực nâng (lift)'},{en:'Friction and magnetism',vi:'Ma sát (friction) và từ tính (magnetism)'}],a:0,
+  e:{en:'At rest, gravity pulls the plane down and the ground pushes up with a normal force. They balance, so it stays still.',vi:'Khi nằm yên, lực hấp dẫn (gravity) kéo máy bay xuống và mặt đất đẩy lên bằng lực pháp tuyến (normal force). Chúng cân bằng nên nó đứng yên.'}},
+ {q:{en:'Which two forces on a flying aeroplane are natural forces?',vi:'Hai lực nào trên một chiếc máy bay đang bay là lực tự nhiên?'},
+  o:[{en:'Thrust and lift',vi:'Lực đẩy (thrust) và lực nâng (lift)'},{en:'Thrust and gravity',vi:'Lực đẩy (thrust) và lực hấp dẫn (gravity)'},{en:'Gravity and air resistance',vi:'Lực hấp dẫn (gravity) và sức cản không khí (air resistance)'}],a:2,
+  e:{en:'Gravity and air resistance happen naturally. The aeroplane itself provides thrust and lift.',vi:'Lực hấp dẫn (gravity) và sức cản không khí (air resistance) xảy ra tự nhiên. Chính máy bay tạo ra lực đẩy (thrust) và lực nâng (lift).'}},
+ {q:{en:'What must a swimmer do to move forwards through the water?',vi:'Người bơi phải làm gì để tiến lên trong nước?'},
+  o:[{en:'Stop moving and float',vi:'Dừng lại và trôi nổi'},{en:'Push the water backwards to make thrust, beating water resistance',vi:'Đẩy nước về phía sau để tạo lực đẩy (thrust), thắng sức cản của nước (water resistance)'},{en:'Make gravity stronger',vi:'Làm lực hấp dẫn (gravity) mạnh hơn'}],a:1,
+  e:{en:'The swimmer pushes water back with arms and legs. That applied force (thrust) beats water resistance, gravity and upthrust balance up and down.',vi:'Người bơi đẩy nước về phía sau bằng tay và chân. Lực tác dụng đó (lực đẩy (thrust)) thắng sức cản của nước (water resistance), còn lực hấp dẫn (gravity) và lực đẩy nổi (upthrust) cân bằng nhau theo chiều lên–xuống.'}}
+];
+
+/* ================= workbook exercises ================= */
+/* Ex 1 · Focus — circle the correct answer (Arun cycling + windy day) */
+const EX1Q=[
+ {q:{en:'a. Force A (pointing DOWN from Arun) is…',vi:'a. Lực A (hướng XUỐNG từ Arun) là…'},a:0,
+  opts:[{en:'Gravity',vi:'Lực hấp dẫn (gravity)'},{en:'Normal force',vi:'Lực pháp tuyến (normal force)'},{en:'Friction',vi:'Ma sát (friction)'}],
+  e:{en:'Gravity pulls everything down towards the centre of the Earth.',vi:'Lực hấp dẫn (gravity) kéo mọi vật xuống về phía tâm Trái Đất.'}},
+ {q:{en:'b. Force B (pointing UP from the ground) is…',vi:'b. Lực B (hướng LÊN từ mặt đất) là…'},a:1,
+  opts:[{en:'Gravity',vi:'Lực hấp dẫn (gravity)'},{en:'Normal force',vi:'Lực pháp tuyến (normal force)'},{en:'Friction',vi:'Ma sát (friction)'}],
+  e:{en:'The ground pushes up on the wheels with a normal force.',vi:'Mặt đất đẩy lên bánh xe bằng một lực pháp tuyến (normal force).'}},
+ {q:{en:'c. Force C (pointing BACK at the tyres) is…',vi:'c. Lực C (hướng NGƯỢC LẠI ở lốp xe) là…'},a:2,
+  opts:[{en:'Gravity',vi:'Lực hấp dẫn (gravity)'},{en:'Normal force',vi:'Lực pháp tuyến (normal force)'},{en:'Friction',vi:'Ma sát (friction)'}],
+  e:{en:'Friction between the tyres and the road pulls the bike back — and wears away the tread on the tyres.',vi:'Ma sát (friction) giữa lốp xe và mặt đường kéo xe lại — và làm mòn gai lốp.'}},
+ {q:{en:'On a windy day, which other force will slow Arun down?',vi:'Vào ngày có gió, lực nào nữa sẽ làm Arun chậm lại?'},a:0,
+  opts:[{en:'Air resistance',vi:'Sức cản không khí (air resistance)'},{en:'Upthrust',vi:'Lực đẩy nổi (upthrust)'},{en:'Normal force',vi:'Lực pháp tuyến (normal force)'}],
+  e:{en:'Wind makes air resistance stronger, pulling the rider back.',vi:'Gió làm sức cản không khí (air resistance) mạnh hơn, kéo người đạp lại.'}},
+ {q:{en:'What must Arun do to overcome that force?',vi:'Arun phải làm gì để thắng lực đó?'},a:1,
+  opts:[{en:'Stop pedalling',vi:'Ngừng đạp'},{en:'Pedal harder, to make more thrust',vi:'Đạp mạnh hơn, để tạo nhiều lực đẩy (thrust) hơn'},{en:'Sit up tall',vi:'Ngồi thẳng cao lên'}],
+  e:{en:'Pushing harder on the pedals makes more thrust — an applied force — to beat the air resistance.',vi:'Đạp bàn đạp mạnh hơn tạo nhiều lực đẩy (thrust) hơn — một lực tác dụng (applied force) — để thắng sức cản không khí (air resistance).'}}
+];
+/* Ex 2 · Practice — label the plane's arrows, then the bird questions */
+const EX2M=[
+ {id:'p_down',emoji:'⬇️',en:'Arrow pointing DOWN from the plane',vi:'Mũi tên hướng XUỐNG từ máy bay',ans:'gravity'},
+ {id:'p_up',emoji:'⬆️',en:'Arrow pointing UP under the wings',vi:'Mũi tên hướng LÊN dưới đôi cánh',ans:'lift'},
+ {id:'p_fwd',emoji:'➡️',en:'Arrow pointing FORWARD from the engines',vi:'Mũi tên hướng VỀ TRƯỚC từ động cơ',ans:'thrust'},
+ {id:'p_back',emoji:'⬅️',en:'Arrow pointing BACK against the plane',vi:'Mũi tên hướng NGƯỢC LẠI chống máy bay',ans:'drag'}
+];
+let EX2M_ORDER=mixOrder(EX2M,c=>c.ans,2);
+const EX2Q=[
+ {key:'p0',q:{en:'People learned from birds when they designed aeroplanes. Which two forces on a flying bird are natural forces?',vi:'Con người học từ chim khi thiết kế máy bay. Hai lực nào trên chim đang bay là lực tự nhiên?'},a:1,
+  opts:[{en:'Thrust and lift',vi:'Lực đẩy (thrust) và lực nâng (lift)'},{en:'Gravity and air resistance',vi:'Lực hấp dẫn (gravity) và sức cản không khí (air resistance)'},{en:'Only thrust',vi:'Chỉ lực đẩy (thrust)'}],
+  e:{en:'Gravity pulls the bird down and air resistance pulls it back — both are natural.',vi:'Lực hấp dẫn (gravity) kéo chim xuống và sức cản không khí (air resistance) kéo chim lại — cả hai đều là lực tự nhiên.'}},
+ {key:'p1',q:{en:'How does the bird overcome those natural forces to fly?',vi:'Chim thắng các lực tự nhiên đó thế nào để bay được?'},a:2,
+  opts:[{en:'It stops moving',vi:'Nó dừng chuyển động'},{en:'It waits for gravity to stop',vi:'Nó chờ lực hấp dẫn (gravity) dừng lại'},{en:'It flaps its wings to make thrust and lift',vi:'Nó vỗ cánh để tạo lực đẩy (thrust) và lực nâng (lift)'}],
+  e:{en:'Flapping wings push air back and down, making thrust and lift — just as an aeroplane uses its engines and wings.',vi:'Vỗ cánh đẩy không khí về sau và xuống dưới, tạo lực đẩy (thrust) và lực nâng (lift) — giống như máy bay dùng động cơ và cánh.'}}
+];
+/* Ex 3 · Challenge — label the swimmer's arrows, then the swimmer questions */
+const EX3M=[
+ {id:'s_down',emoji:'⬇️',en:'Arrow pointing DOWN from the swimmer',vi:'Mũi tên hướng XUỐNG từ người bơi',ans:'gravity'},
+ {id:'s_up',emoji:'⬆️',en:'Arrow pointing UP from the water',vi:'Mũi tên hướng LÊN từ nước',ans:'upthrust'},
+ {id:'s_fwd',emoji:'➡️',en:'Arrow pointing FORWARD — the way the swimmer moves',vi:'Mũi tên hướng VỀ TRƯỚC — hướng người bơi di chuyển',ans:'thrust'},
+ {id:'s_back',emoji:'⬅️',en:'Arrow pointing BACK against the swimmer',vi:'Mũi tên hướng NGƯỢC LẠI chống người bơi',ans:'wres'}
+];
+let EX3M_ORDER=mixOrder(EX3M,c=>c.ans,2);
+const EX3Q=[
+ {key:'c0',q:{en:'Which three forces acting on the swimmer are natural forces?',vi:'Ba lực nào tác dụng lên người bơi là lực tự nhiên?'},a:0,
+  opts:[{en:'Gravity, upthrust and water resistance',vi:'Lực hấp dẫn (gravity), lực đẩy nổi (upthrust) và sức cản của nước (water resistance)'},{en:'Thrust, thrust and thrust',vi:'Lực đẩy (thrust), lực đẩy và lực đẩy'},{en:'Only the swimmer’s push',vi:'Chỉ cú đẩy của người bơi'}],
+  e:{en:'Gravity, upthrust and water resistance all happen naturally. The fourth force — thrust — is made by the swimmer.',vi:'Lực hấp dẫn (gravity), lực đẩy nổi (upthrust) và sức cản của nước (water resistance) đều xảy ra tự nhiên. Lực thứ tư — lực đẩy (thrust) — do người bơi tạo ra.'}},
+ {key:'c1',q:{en:'How do swimmers make themselves more streamlined?',vi:'Người bơi làm thế nào để thuôn gọn (streamlined) hơn?'},a:1,
+  opts:[{en:'They swim sitting up',vi:'Họ bơi trong tư thế ngồi'},{en:'They wear a smooth cap and keep their body flat and narrow',vi:'Họ đội mũ trơn nhẵn và giữ cơ thể thẳng, phẳng và hẹp'},{en:'They kick as slowly as they can',vi:'Họ đạp chân càng chậm càng tốt'}],
+  e:{en:'A streamlined shape lets the water flow past easily, so water resistance is smaller.',vi:'Hình dáng thuôn gọn (streamlined) giúp nước chảy qua dễ dàng, nên sức cản của nước (water resistance) nhỏ hơn.'}}
+];
+const EX_TOTAL=EX1Q.length+EX2M.length+EX2Q.length+EX3M.length+EX3Q.length; /* 5+4+2+4+2 = 17 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), EXQDONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={}, EXQANS={};
+let ex2sel=null, ex3sel=null;
+let CHOICE_ORD={};
+function ordFor(key,n){ if(!CHOICE_ORD[key]) CHOICE_ORD[key]=fyIdx(n); return CHOICE_ORD[key]; }
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci5-5-4';
+const SUMKEY='camb:sum:sci5-5-4';
+const BOT_CODE='sci5-5.4';
+let SPOT={ball:false,bike:false,rest:false,launched:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fBall:false, fBike:false,
+  s2correct:new Set(), s2sel:null,
+  planeRest:false,
+  launched:false,
+  s5correct:new Set(), s5sel:null,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.fBall&&T.fBike;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.planeRest;
+  if(i===3) return T.launched;
+  if(i===4) return T.s5correct.size>=4;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('You did: push the ball '+(T.fBall?'✓':'…')+' · pedal the bicycle '+(T.fBike?'✓':'…')+'. Tap things in the park!',
+             'Con đã làm: đẩy quả bóng (ball) '+(T.fBall?'✓':'…')+' · đạp xe đạp (bicycle) '+(T.fBike?'✓':'…')+'. Hãy chạm vào các vật trong công viên!');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap SLOWS THE BIKE or HELPS IT MOVE FORWARD.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm LÀM XE CHẬM LẠI hoặc GIÚP XE TIẾN LÊN.');
+    return B('Cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2){
+    return B(T.planeRest? 'You tapped the resting plane. Gravity pulls it down and the normal force pushes it up — they balance.' : 'The paper aeroplane is resting in the park. Tap it!',
+             T.planeRest? 'Con đã chạm vào máy bay đang nằm yên. Lực hấp dẫn (gravity) kéo nó xuống và lực pháp tuyến (normal force) đẩy nó lên — chúng cân bằng.' : 'Máy bay giấy đang nằm yên trong công viên. Hãy chạm vào nó!');
+  }
+  if(i===3){
+    return B(T.launched? 'You threw the plane. It flew, then gravity pulled it down to land.' : 'Say your prediction out loud, then tap the paper aeroplane to throw it!',
+             T.launched? 'Con đã ném máy bay. Nó bay, rồi lực hấp dẫn (gravity) kéo nó xuống đáp đất.' : 'Hãy nói to dự đoán của con, rồi chạm vào máy bay giấy để ném nó!');
+  }
+  if(i===4){
+    const c=T.s5sel? CARDS5.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Is it a natural force, or provided by the plane?','Con đã chọn thẻ “'+c.vi+'”. Nó là lực tự nhiên, hay do máy bay tạo ra?');
+    return B('Cards right: '+T.s5correct.size+' of 4. You need all 4.','Số thẻ đúng: '+T.s5correct.size+' / 4. Con cần đúng cả 4.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Does it help the plane stay up longer, or fall sooner?','Con đã chọn thẻ “'+c.vi+'”. Nó giúp máy bay bay lâu hơn, hay rơi nhanh hơn?');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🎾',label:{en:'Push the ball',vi:'Đẩy quả bóng'},got:T.fBall},
+      {emoji:'🚲',label:{en:'Pedal the bicycle',vi:'Đạp xe đạp'},got:T.fBike}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'back',label:STR.binBack,cls:'back'},{key:'fwd',label:STR.binFwd,cls:'fwd'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===3){
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookBike);
+    b.onclick=()=>focusThing('bike');
+    box.appendChild(b);
+  }else if(curStep===4){
+    buildSort(box,CARDS5_ORDER,
+      [{key:'natural',label:STR.binNatural,cls:'natural'},{key:'made',label:STR.binMade,cls:'made'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'helps',label:STR.binHelps,cls:'helps'},{key:'falls',label:STR.binFalls,cls:'falls'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('ball'); bounceThing('ball'); setTimeout(()=>{ focusVisual('bike'); bounceThing('bike'); },900); }
+  else if(i===1){ demoSort(CARDS2,T.s2correct); }
+  else if(i===2){ focusThing('plane'); bounceThing('plane'); }
+  else if(i===3){ doLaunch('demo'); }
+  else if(i===4){ demoSort(CARDS5,T.s5correct); }
+  else if(i===5){ demoSort(CARDS6,T.s6correct); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function diagCount(ids){ return ids.filter(id=>SORTED.has(id)).length; }
+function renderDiag(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.diagBike)+'</span><b>'+diagCount(CARDS2.map(c=>c.id))+' / 6</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.diagPlane)+'</span><b>'+diagCount(CARDS5.map(c=>c.id))+' / 4</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.diagImprove)+'</span><b>'+diagCount(CARDS6.map(c=>c.id))+' / 6</b></div>';
+}
+function renderSpot(){
+  const items=[
+    {got:SPOT.ball||doneSteps.has(0),label:STR.spotBall},
+    {got:SPOT.bike||doneSteps.has(0),label:STR.spotBike},
+    {got:SPOT.rest||doneSteps.has(2),label:STR.spotRest},
+    {got:SPOT.launched||doneSteps.has(3),label:STR.spotFly}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let birdWingL=null, birdWingR=null, wheelF=null, wheelB=null;
+let arrDown=null, arrUp=null;
+let lastRW=0, lastRH=0;
+let ballOff=0, bikeOff=0, launching=false;
+const PLANE_REST={x:0.1,y:0.66,z:0.7};
+const PLANE_AIR={x:0.6,y:1.95,z:-0.4};
+let planePos={x:PLANE_REST.x,y:PLANE_REST.y,z:PLANE_REST.z};
+let planeAir=false;
+const ORB={r:9.4, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildBall(){
+  const g=new THREE.Group();
+  const b=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.28,18,14),stdMat(0x9ed13a,0.55)));
+  b.position.y=0.28; g.add(b);
+  const stripe=new THREE.Mesh(new THREE.TorusGeometry(0.28,0.02,8,32),stdMat(0xffffff,0.5));
+  stripe.position.y=0.28; stripe.rotation.x=0.6; g.add(stripe);
+  g.position.set(-3.2,0,1.6); g.userData.baseY=0;
+  return g;
+}
+function buildBike(){
+  const g=new THREE.Group();
+  const tyre=stdMat(0x222222,0.8), frame=stdMat(0xe33e2b,0.5);
+  function wheel(x){
+    const pivot=new THREE.Group(); pivot.position.set(x,0.34,0);
+    const t=new THREE.Mesh(new THREE.TorusGeometry(0.32,0.035,10,28),tyre);
+    pivot.add(t);
+    const hub=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),stdMat(0xaaaaaa,0.4));
+    pivot.add(hub);
+    for(let k=0;k<3;k++){
+      const sp=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.6,6),stdMat(0xcccccc,0.4));
+      sp.rotation.z=k*Math.PI/3; pivot.add(sp);
+    }
+    g.add(pivot); return pivot;
+  }
+  wheelB=wheel(-0.48); wheelF=wheel(0.48);
+  function bar(x1,y1,x2,y2,th){
+    const len=Math.hypot(x2-x1,y2-y1);
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(th||0.028,th||0.028,len,8),frame);
+    m.position.set((x1+x2)/2,(y1+y2)/2,0); m.rotation.z=Math.atan2(y2-y1,x2-x1)-Math.PI/2;
+    g.add(m);
+  }
+  bar(-0.48,0.34,-0.08,0.78); bar(-0.08,0.78,0.42,0.72); bar(0.42,0.72,0.48,0.34);
+  bar(-0.08,0.78,0.05,0.36); bar(0.05,0.36,0.42,0.72); bar(-0.48,0.34,0.05,0.36);
+  const seat=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.04,0.12),stdMat(0x333333,0.7));
+  seat.position.set(-0.1,0.82,0); g.add(seat);
+  const handle=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.34,8),stdMat(0x333333,0.7));
+  handle.rotation.x=Math.PI/2; handle.position.set(0.44,0.78,0); g.add(handle);
+  g.position.set(-1.5,0,-1.9); g.rotation.y=0.35; g.userData.baseY=0;
+  return g;
+}
+function buildPlane(){
+  const g=new THREE.Group();
+  const paper=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.85,side:THREE.DoubleSide});
+  const body=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.95,4),paper);
+  body.rotation.z=Math.PI/2; body.rotation.y=Math.PI/4; g.add(body);
+  [-1,1].forEach(s=>{
+    const w=new THREE.Mesh(new THREE.BoxGeometry(0.52,0.015,0.34),paper);
+    w.position.set(-0.05,0.03,s*0.17); w.rotation.x=s*0.5; g.add(w);
+  });
+  const tail=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.14,0.015),paper);
+  tail.position.set(-0.42,0.07,0); g.add(tail);
+  g.position.set(PLANE_REST.x,PLANE_REST.y,PLANE_REST.z); g.rotation.y=-0.5; g.userData.baseY=PLANE_REST.y;
+  return g;
+}
+function buildCar(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.17,0.34),stdMat(0x3d8bfd,0.5)));
+  body.position.y=0.19; g.add(body);
+  const cab=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.32,0.15,0.3),stdMat(0xbcd8f2,0.4)));
+  cab.position.set(-0.03,0.34,0); g.add(cab);
+  [[-0.2,-0.18],[0.2,-0.18],[-0.2,0.18],[0.2,0.18]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.075,0.045,12),stdMat(0x222222,0.8));
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.075,p[1]); g.add(w);
+  });
+  g.position.set(3.4,0,1.8); g.rotation.y=-0.3; g.userData.baseY=0;
+  return g;
+}
+function buildBoat(){
+  const g=new THREE.Group();
+  const hull=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.2,0.36),stdMat(0xa9743f,0.9)));
+  hull.position.y=0.12; hull.rotation.z=0.0; g.add(hull);
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.75,8),stdMat(0x8a5a2b,0.9));
+  mast.position.y=0.55; g.add(mast);
+  const shape=new THREE.Shape();
+  shape.moveTo(0,0); shape.lineTo(0,0.62); shape.lineTo(0.42,0.05); shape.lineTo(0,0);
+  const sail=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshBasicMaterial({color:0xfff6da,side:THREE.DoubleSide}));
+  sail.position.set(0.03,0.28,0); g.add(sail);
+  g.position.set(2.9,0.03,-1.8); g.rotation.y=-0.4; g.userData.baseY=0.03;
+  return g;
+}
+function buildBird(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,14,10),stdMat(0x4fa8e0,0.6)));
+  body.scale.set(1.5,0.85,0.85); g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),stdMat(0x4fa8e0,0.6));
+  head.position.set(0.22,0.06,0); g.add(head);
+  const beak=new THREE.Mesh(new THREE.ConeGeometry(0.035,0.1,8),stdMat(0xffb400,0.6));
+  beak.rotation.z=-Math.PI/2; beak.position.set(0.34,0.05,0); g.add(beak);
+  function wing(side){
+    const pivot=new THREE.Group(); pivot.position.set(0,0.08,side*0.05);
+    const geo=new THREE.PlaneGeometry(0.3,0.42);
+    geo.translate(0,0,side*0.22);
+    const w=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0x7cc0ee,side:THREE.DoubleSide}));
+    w.rotation.x=Math.PI/2; pivot.add(w); g.add(pivot);
+    return pivot;
+  }
+  birdWingR=wing(1); birdWingL=wing(-1);
+  const tail=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.02,0.14),stdMat(0x3d8bfd,0.6));
+  tail.position.set(-0.26,0.02,0); g.add(tail);
+  g.position.set(1.6,2.3,-2.6); g.userData.baseY=2.3;
+  return g;
+}
+function buildArrow(color,down){
+  const g=new THREE.Group();
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.5,10),new THREE.MeshBasicMaterial({color:color}));
+  shaft.position.y=down?0.25:-0.25; g.add(shaft);
+  const head=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.3,12),new THREE.MeshBasicMaterial({color:color}));
+  head.position.y=down?-0.12:0.12; if(!down) head.rotation.x=Math.PI;
+  g.add(head);
+  g.visible=false;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,16,30);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8fbf7f,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x8ed081,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const path=new THREE.Mesh(new THREE.BoxGeometry(10.5,0.03,1.15),stdMat(0xead9a8,1));
+  path.position.set(0,0.005,0.9); path.receiveShadow=true; scene3.add(path);
+  /* pond for the boat */
+  const pond=new THREE.Mesh(new THREE.CircleGeometry(1.2,36),stdMat(0x3fa7d6,0.35));
+  pond.rotation.x=-Math.PI/2; pond.position.set(2.9,0.02,-1.8); pond.receiveShadow=true; scene3.add(pond);
+  const rim=shadowed(new THREE.Mesh(new THREE.TorusGeometry(1.2,0.05,10,40),stdMat(0xd9c08a,0.95)));
+  rim.rotation.x=Math.PI/2; rim.position.set(2.9,0.03,-1.8); scene3.add(rim);
+  /* a low stand for the resting paper aeroplane */
+  const stand=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.5,0.5),stdMat(0xa9743f,0.95));
+  stand.position.set(PLANE_REST.x,0.25,PLANE_REST.z); stand.castShadow=true; scene3.add(stand);
+  /* clouds + grass tufts (not clickable) */
+  [[-3.5,6.2,-7],[3.8,6.8,-8]].forEach(p=>{
+    const cl=new THREE.Group();
+    [[0,0,0,0.55],[0.6,0.05,0.1,0.4],[-0.55,0.02,-0.05,0.42]].forEach(s=>{
+      const m=new THREE.Mesh(new THREE.SphereGeometry(s[3],12,8),new THREE.MeshBasicMaterial({color:0xffffff}));
+      m.position.set(s[0],s[1],s[2]); m.scale.y=0.55; cl.add(m);
+    });
+    cl.position.set(p[0],p[1],p[2]); scene3.add(cl);
+  });
+  [[-1.2,2.9],[4.4,0.9],[-4.4,0.4],[1.8,-3.0],[-0.9,-2.8]].forEach(p=>{
+    const t=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.3,6),stdMat(0x57b84c,1));
+    t.position.set(p[0],0.13,p[1]); scene3.add(t);
+  });
+  reg('ball',buildBall());
+  reg('bike',buildBike());
+  reg('plane',buildPlane());
+  reg('car',buildCar());
+  reg('boat',buildBoat());
+  reg('bird',buildBird());
+  /* force arrows for the resting plane (gravity down, normal force up) */
+  arrDown=buildArrow(0xe33e2b,true); arrDown.position.set(PLANE_REST.x,PLANE_REST.y+0.75,PLANE_REST.z); scene3.add(arrDown);
+  arrUp=buildArrow(0x0d9d58,false); arrUp.position.set(PLANE_REST.x+0.45,PLANE_REST.y-0.45,PLANE_REST.z); scene3.add(arrUp);
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.55); p.position.set(0,0.28,0); addProxy('ball',p,G.ball); }
+  { const p=sphProxy(0.9); p.position.set(0,0.45,0); addProxy('bike',p,G.bike); }
+  { const p=sphProxy(0.62); addProxy('plane',p,G.plane); }
+  { const p=sphProxy(0.6); p.position.set(0,0.25,0); addProxy('car',p,G.car); }
+  { const p=sphProxy(0.85); p.position.set(0,0.35,0); addProxy('boat',p,G.boat); }
+  { const p=sphProxy(0.55); addProxy('bird',p,G.bird); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    if(id==='bird'){ ringMesh.visible=false; }
+    else{
+      const p=thingPos(id);
+      ringMesh.position.set(p.x,0.045,p.z);
+      const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+      ringMesh.visible=true;
+    }
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  if(id==='bird'||id==='boat'||id==='plane') return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+function doRoll(src){
+  addAnim(1.8,f=>{ ballOff=1.7*easeOut(f); },()=>{});
+  if(src==='user'){ T.fBall=true; SPOT.ball=true; saveProg(); renderMirrors(); refreshEvidence(); }
+}
+function doPedal(src){
+  addAnim(1.6,f=>{ bikeOff=1.15*easeOut(f); },()=>{});
+  if(src==='user'){ T.fBike=true; SPOT.bike=true; saveProg(); renderMirrors(); refreshEvidence(); }
+}
+function doLaunch(src){
+  if(launching) return; launching=true; planeAir=false;
+  const sx=planePos.x, sy=planePos.y, sz=planePos.z;
+  addAnim(3.0,f=>{
+    if(f<0.45){ const g=easeOut(f/0.45); planePos.x=sx+(1.5-sx)*g; planePos.y=sy+(2.1-sy)*g; planePos.z=sz+(-0.5-sz)*g; }
+    else{ const g=easeInOut((f-0.45)/0.55); planePos.x=1.5+(2.7-1.5)*g; planePos.y=2.1+(0.3-2.1)*g; planePos.z=-0.5+(1.3+0.5)*g; }
+  },()=>{
+    launching=false;
+    if(src==='user'){ T.launched=true; SPOT.launched=true; saveProg(); renderMirrors(); refreshEvidence(); }
+  });
+}
+const STEP_TARGETS=[
+  ['ball','bike'],
+  [],
+  ['plane'],
+  ['plane'],
+  [],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  if(curStep===0&&id==='ball') doRoll('user');
+  else if(curStep===0&&id==='bike') doPedal('user');
+  else if(curStep===2&&id==='plane'){ T.planeRest=true; SPOT.rest=true; saveProg(); renderMirrors(); }
+  else if(curStep===3&&id==='plane') doLaunch('user');
+  else bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+  refreshEvidence();
+}
+function applyStepStart(i){
+  ballOff=0; bikeOff=0; launching=false;
+  planeAir=(i>=4);
+  if(planeAir){ planePos={x:PLANE_AIR.x,y:PLANE_AIR.y,z:PLANE_AIR.z}; }
+  else{ planePos={x:PLANE_REST.x,y:PLANE_REST.y,z:PLANE_REST.z}; }
+  if(arrDown) arrDown.visible=false;
+  if(arrUp) arrUp.visible=false;
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.ball){
+    G.ball.position.x=-3.2+ballOff;
+  }
+  if(G.bike){
+    G.bike.position.x=-1.5+bikeOff;
+    if(wheelF) wheelF.rotation.z=-bikeOff/0.32;
+    if(wheelB) wheelB.rotation.z=-bikeOff/0.32;
+  }
+  if(G.plane){
+    const bob=planeAir? Math.sin(t*1.8)*0.07 : 0;
+    G.plane.position.set(planePos.x,planePos.y+bob,planePos.z);
+    G.plane.rotation.z=planeAir? Math.sin(t*1.8)*0.05 : 0;
+  }
+  if(arrDown) arrDown.visible=(curStep===2&&T.planeRest);
+  if(arrUp) arrUp.visible=(curStep===2&&T.planeRest);
+  if(G.bird){
+    const bx=1.6+Math.cos(t*0.5)*0.7, bz=-2.6+Math.sin(t*0.5)*0.55;
+    G.bird.position.set(bx,2.3+Math.sin(t*1.6)*0.12,bz);
+    G.bird.rotation.y=Math.atan2(-Math.cos(t*0.5)*0.55,-Math.sin(t*0.5)*0.7)+Math.PI/2;
+    const flap=Math.sin(t*10)*0.6;
+    if(birdWingR) birdWingR.rotation.x=flap;
+    if(birdWingL) birdWingL.rotation.x=-flap;
+  }
+  if(G.boat){
+    G.boat.position.y=0.03+Math.sin(t*1.4)*0.03;
+    G.boat.rotation.z=Math.sin(t*1.1)*0.04;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh&&ringMesh.visible&&lastFocus==='bird'){
+      ringMesh.visible=false;
+    }
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderChoiceList(listEl,questions,ansObj,prefix,doneSet,keyOf){
+  listEl.innerHTML='';
+  questions.forEach((qq,qi)=>{
+    const key=keyOf(qi);
+    const row=document.createElement('div'); row.className='exsent';
+    const qt=document.createElement('div'); qt.innerHTML='<b>'+esc(prefix+(qi+1))+'.</b> '+biInl(qq.q);
+    row.appendChild(qt);
+    const ord=ordFor(key,qq.opts.length);
+    ord.forEach(oi=>{
+      const o=qq.opts[oi];
+      const b=document.createElement('button');
+      b.className='chopt'+(ansObj[key]===oi?' sel':'');
+      if(exRevealed){
+        if(oi===qq.a) b.classList.add('rightmark');
+        if(ansObj[key]===oi&&oi!==qq.a) b.classList.add('wrongsel');
+      }
+      b.id='exopt_'+key+'_'+oi;
+      b.innerHTML=biInl(o);
+      b.onclick=()=>{ if(exRevealed) return; ansObj[key]=oi; saveProg(); renderExercises(); };
+      row.appendChild(b);
+    });
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(key)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+}
+function renderMatchCards(gridEl,cards,order,ansObj,sel,sec,doneSet,tagOf){
+  gridEl.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansObj[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(sel===it.id?' sel':'')+(exRevealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+esc(tagOf(ans))+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(sec==='ex2') ex2sel=it.id; else ex3sel=it.id; renderExercises(); };
+    gridEl.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EXQDONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — circle the correct answer */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1Q.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1Q.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  renderChoiceList($('ex1List'),EX1Q,EX1ANS,'',new Set([...EX1DONE].map(i=>'q'+i)),qi=>'q'+qi);
+  /* Ex 2 · Practice — label the plane, then bird questions */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2M.length&&EX2Q.every(q=>EXQDONE.has(q.key)));
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2M.length&&EX2Q.every(q=>EXQDONE.has(q.key)));
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinGravity').innerHTML=bi(STR.binGravity);
+  $('ex2BinLift').innerHTML=bi(STR.binLift);
+  $('ex2BinThrust').innerHTML=bi(STR.binThrust);
+  $('ex2BinDrag').innerHTML=bi(STR.binDrag);
+  renderMatchCards($('ex2Grid'),EX2M,EX2M_ORDER,EX2ANS,ex2sel,'ex2',EX2DONE,
+    ans=>({gravity:'⬇️ gravity',lift:'⬆️ lift',thrust:'➡️ thrust',drag:'⬅️ air resistance'})[ans]||ans);
+  renderChoiceList($('ex2QList'),EX2Q,EXQANS,'',EXQDONE,qi=>EX2Q[qi].key);
+  /* Ex 3 · Challenge — label the swimmer, then swimmer questions */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3M.length&&EX3Q.every(q=>EXQDONE.has(q.key)));
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3M.length&&EX3Q.every(q=>EXQDONE.has(q.key)));
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinGravity').innerHTML=bi(STR.binGravity);
+  $('ex3BinUpthrust').innerHTML=bi(STR.binUpthrust);
+  $('ex3BinThrust').innerHTML=bi(STR.binThrust);
+  $('ex3BinWres').innerHTML=bi(STR.binWres);
+  renderMatchCards($('ex3Grid'),EX3M,EX3M_ORDER,EX3ANS,ex3sel,'ex3',EX3DONE,
+    ans=>({gravity:'⬇️ gravity',upthrust:'⬆️ upthrust',thrust:'➡️ thrust',wres:'⬅️ water resistance'})[ans]||ans);
+  renderChoiceList($('ex3QList'),EX3Q,EXQANS,'',EXQDONE,qi=>EX3Q[qi].key);
+}
+function exAnsweredCount(){
+  return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EXQANS).length+Object.keys(EX3ANS).length);
+}
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex2BinGravity').onclick=()=>ex2Place('gravity');
+$('ex2BinLift').onclick=()=>ex2Place('lift');
+$('ex2BinThrust').onclick=()=>ex2Place('thrust');
+$('ex2BinDrag').onclick=()=>ex2Place('drag');
+$('ex3BinGravity').onclick=()=>ex3Place('gravity');
+$('ex3BinUpthrust').onclick=()=>ex3Place('upthrust');
+$('ex3BinThrust').onclick=()=>ex3Place('thrust');
+$('ex3BinWres').onclick=()=>ex3Place('wres');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1Q.map((qq,qi)=>qi).filter(qi=>EX1ANS['q'+qi]===EX1Q[qi].a));
+  EX2DONE=new Set(EX2M.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3M.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  EXQDONE=new Set([].concat(EX2Q,EX3Q).filter(qq=>EXQANS[qq.key]===qq.a).map(qq=>qq.key));
+  ex2sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size+EXQDONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; EXQANS={}; ex2sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set(); EXQDONE=new Set();
+  EX2M_ORDER=mixOrder(EX2M,c=>c.ans,2);
+  EX3M_ORDER=mixOrder(EX3M,c=>c.ans,2);
+  CHOICE_ORD={};
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderDiag(); renderSpot(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ SPOT.ball=false; SPOT.bike=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ SPOT.rest=false; }
+  if(step===3){ SPOT.launched=false; }
+  if(step===4){ CARDS5.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {spot:SPOT, sorted:[...SORTED],
+    exAns:{a1:EX1ANS, aq:EXQANS, a2:EX2ANS, a3:EX3ANS},
+    ex:{e1:[...EX1DONE], eq:[...EXQDONE], e2:[...EX2DONE], e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.spot&&typeof s.spot==='object') SPOT=Object.assign(SPOT,s.spot);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1Q.length));
+    if(Array.isArray(s.ex.eq)) EXQDONE=new Set(s.ex.eq.filter(k=>EX2Q.concat(EX3Q).some(q=>q.key===k)));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const qi=Number(k.slice(1)); if(k[0]==='q'&&Number.isInteger(qi)&&qi>=0&&qi<EX1Q.length&&EX1Q[qi].opts[s.exAns.a1[k]]) EX1ANS[k]=s.exAns.a1[k]; });
+    if(s.exAns.aq&&typeof s.exAns.aq==='object') Object.keys(s.exAns.aq).forEach(k=>{ const qq=EX2Q.concat(EX3Q).find(q=>q.key===k); if(qq&&qq.opts[s.exAns.aq[k]]) EXQANS[k]=s.exAns.aq[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2M.some(x=>x.id===id)) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3M.some(x=>x.id===id)) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size||EXQDONE.size){
+    EX1DONE.forEach(qi=>{ EX1ANS['q'+qi]=EX1Q[qi].a; });
+    EXQDONE.forEach(k=>{ const qq=EX2Q.concat(EX3Q).find(q=>q.key===k); if(qq) EXQANS[k]=qq.a; });
+    EX2M.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3M.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size+EXQDONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fBall=!!SPOT.ball; t.fBike=!!SPOT.bike; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); }
+  else if(i===2){ t.planeRest=true; }
+  else if(i===3){ t.launched=true; }
+  else if(i===4){ CARDS5.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci5-5-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

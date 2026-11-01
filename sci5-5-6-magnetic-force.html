@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>5.6 Magnetic force — Lực từ · Cambridge Primary Science 5</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+.binbtn.magnet{background:#d23c2a}
+.binbtn.material{background:#0b76d1}
+.binbtn.independent{background:#7a4fd0}
+.binbtn.dependent{background:#0d9d58}
+.binbtn.control{background:#44586e}
+.wordopt.crossed{text-decoration:none;border-color:var(--acc);background:#eef6ff;color:var(--ink)}
+.wordopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 5" data-vi="← Môn Khoa học 5">← Science 5</a>
+    <span class="ttl i18n" data-en="5.6 Magnetic force" data-vi="5.6 Lực từ (Magnetic force)">5.6 Magnetic force</span>
+    <span class="eqchip i18n" data-en="Unit 5 · Forces and magnetism" data-vi="Bài 5 · Lực và từ tính (Forces and magnetism)">Unit 5 · Forces and magnetism</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Can a magnet pull without touching?" data-vi="Nam châm có hút được mà không cần chạm không?">Can a magnet pull without touching?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Look closely" data-vi="Quan sát kỹ (look)">Look closely</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Pull over a distance" data-vi="Hút từ xa (attract)">Pull over a distance</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Measure fairly" data-vi="Đo công bằng (fair test)">Measure fairly</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Compare strengths!" data-vi="So sánh độ mạnh!">Compare strengths!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the magnets, the poles and the train!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các nam châm, các cực và đoàn tàu!">🖱 Drag to look around · Scroll to zoom · Tap the magnets, the poles and the train!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Primary Science 5 · Unit 5 Forces and magnetism · Section 5.6. The magnet bench in this lesson is a simulation." data-vi="Khoa học Cambridge cấp 5 · Bài 5 Lực và từ tính · Mục 5.6. Bàn thí nghiệm nam châm trong bài học này là mô phỏng.">Cambridge Primary Science 5 · Unit 5 Forces and magnetism · Section 5.6. The magnet bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Primary Science Learner's Book 5 (2nd edition, 2021; ISBN 9781108742955), Unit 5 Forces and magnetism, section 5.6 Magnetic force, pages 128–135; Workbook 5 (ISBN 9781108742962), pages 79–83. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Primary Science Learner's Book 5 (bản 2, 2021; ISBN 9781108742955), Bài 5 Forces and magnetism (Lực và từ tính), mục 5.6 Magnetic force (Lực từ), trang 128–135; Sách bài tập 5 (Workbook, ISBN 9781108742962), trang 79–83. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Primary Science Learner's Book 5 (2nd edition, 2021; ISBN 9781108742955), Unit 5 Forces and magnetism, section 5.6 Magnetic force, pages 128–135; Workbook 5 (ISBN 9781108742962), pages 79–83. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: see that forces act over a distance between magnets, and between a magnet and a magnetic material; know that magnets can have different magnetic strengths; plan a fair test and identify the independent, dependent and control variables; take accurate measurements, repeat them for reliability, record results in a table, present them on a bar graph and make a conclusion. Key words: magnetic force, magnet, magnetic material, attract, repel, pole, strength, variable." data-vi="Mục tiêu: thấy lực tác dụng từ xa (over a distance) giữa các nam châm, và giữa nam châm với vật liệu từ (magnetic material); biết các nam châm có độ mạnh từ khác nhau; lập kế hoạch phép thử công bằng (fair test) và xác định biến độc lập (independent), biến phụ thuộc (dependent) và biến kiểm soát (control); đo chính xác, lặp lại để đáng tin hơn, ghi kết quả vào bảng, trình bày trên biểu đồ cột (bar graph) và rút ra kết luận. Từ khóa: magnetic force (lực từ), magnet (nam châm), magnetic material (vật liệu từ), attract (hút), repel (đẩy), pole (cực), strength (độ mạnh), variable (biến số).">Objectives: see that forces act over a distance between magnets, and between a magnet and a magnetic material; know that magnets can have different magnetic strengths; plan a fair test and identify the independent, dependent and control variables; take accurate measurements, repeat them for reliability, record results in a table, present them on a bar graph and make a conclusion. Key words: magnetic force, magnet, magnetic material, attract, repel, pole, strength, variable.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — sorting the book's own ideas, tapping the scene, or running the pole test on the bench. The strength test reproduces the Workbook's own example results exactly (Magnet 1: N 35/28/30 mm, mean 31; S 31/26/27 mm, mean 28 — Magnet 2: N 51/46/53 mm, mean 50; S 54/49/53 mm, mean 52), and the console table fills in only when the learner runs that pole's test. 'Show me how' only demonstrates — it never counts as done. The open research question in the Workbook Challenge (which countries use Maglev trains) is not in the exercises, because it has no single correct answer; the class project on page 133 of the Learner's Book is a visit-and-report task and is likewise left for the classroom." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — phân loại các ý của sách, chạm vào cảnh, hoặc chạy phép thử cực trên bàn. Phép thử độ mạnh tái hiện đúng kết quả ví dụ của sách bài tập (Workbook) (Nam châm 1: N 35/28/30 mm, trung bình (mean) 31; S 31/26/27 mm, trung bình 28 — Nam châm 2: N 51/46/53 mm, trung bình 50; S 54/49/53 mm, trung bình 52), và bảng ở bảng điều khiển chỉ điền khi học sinh chạy phép thử của cực đó. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Câu hỏi nghiên cứu mở trong phần Challenge của Workbook (những nước nào dùng tàu Maglev) không đưa vào bài tập, vì nó không có một đáp án đúng duy nhất; dự án lớp học ở trang 133 của sách học sinh cũng là nhiệm vụ tham quan-và-báo cáo nên để dành cho lớp học.">How it works: each step asks for one real action — sorting the book's own ideas, tapping the scene, or running the pole test on the bench. The strength test reproduces the Workbook's own example results exactly (Magnet 1: N 35/28/30 mm, mean 31; S 31/26/27 mm, mean 28 — Magnet 2: N 51/46/53 mm, mean 50; S 54/49/53 mm, mean 52), and the console table fills in only when the learner runs that pole's test. 'Show me how' only demonstrates — it never counts as done. The open research question in the Workbook Challenge (which countries use Maglev trains) is not in the exercises, because it has no single correct answer; the class project on page 133 of the Learner's Book is a visit-and-report task and is likewise left for the classroom.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci5-5-6 "Magnetic force" (Science 5, Unit 5)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= scene things ================= */
+const THINGS={
+  magnetL:{kind:'magnet', emoji:'🧲', name:{en:'Hanging magnet 1',vi:'Nam châm treo 1 (magnet)'}, short:{en:'Magnet 1',vi:'Nam châm 1'}, ring:0.7, labelY:1.0, fx:-2.6, fz:-1.7, fr:5.2},
+  magnetR:{kind:'magnet', emoji:'🧲', name:{en:'Hanging magnet 2',vi:'Nam châm treo 2 (magnet)'}, short:{en:'Magnet 2',vi:'Nam châm 2'}, ring:0.7, labelY:1.0, fx:-2.6, fz:-1.7, fr:5.2},
+  mag1n:  {kind:'pole', emoji:'🟥', name:{en:'Magnet 1 — N pole',vi:'Nam châm 1 — cực N (N pole)'}, short:{en:'Magnet 1 N',vi:'Nam châm 1 N'}, ring:0.62, labelY:0.95, fx:0, fz:1.7, fr:5.6},
+  mag1s:  {kind:'pole', emoji:'🟦', name:{en:'Magnet 1 — S pole',vi:'Nam châm 1 — cực S (S pole)'}, short:{en:'Magnet 1 S',vi:'Nam châm 1 S'}, ring:0.62, labelY:0.95, fx:0, fz:1.7, fr:5.6},
+  mag2n:  {kind:'pole', emoji:'🟥', name:{en:'Magnet 2 — N pole',vi:'Nam châm 2 — cực N (N pole)'}, short:{en:'Magnet 2 N',vi:'Nam châm 2 N'}, ring:0.62, labelY:0.95, fx:0, fz:1.7, fr:5.6},
+  mag2s:  {kind:'pole', emoji:'🟦', name:{en:'Magnet 2 — S pole',vi:'Nam châm 2 — cực S (S pole)'}, short:{en:'Magnet 2 S',vi:'Nam châm 2 S'}, ring:0.62, labelY:0.95, fx:0, fz:1.7, fr:5.6},
+  clip:   {kind:'material', emoji:'📎', name:{en:'Steel paperclip',vi:'Kẹp giấy thép (paperclip)'}, short:{en:'Paperclip',vi:'Kẹp giấy'}, ring:0.42, labelY:0.8, fx:-1.2, fz:1.75, fr:5.0},
+  ruler:  {kind:'tool', emoji:'📏', name:{en:'Plastic ruler',vi:'Thước nhựa (ruler)'}, short:{en:'Ruler',vi:'Thước'}, ring:1.2, labelY:0.8, fx:-0.4, fz:1.75, fr:5.6},
+  maglev: {kind:'train', emoji:'🚄', name:{en:'Maglev train',vi:'Tàu Maglev (Maglev train)'}, short:{en:'Maglev train',vi:'Tàu Maglev'}, ring:1.15, labelY:1.35, fx:2.3, fz:-1.9, fr:5.6}
+};
+const FOCUSORDER=['magnetL','magnetR','mag1n','mag1s','mag2n','mag2s','clip','ruler','maglev'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the stage',vi:'Trên sân khấu'},
+  u1Brief:{en:'Tap a name to LOOK at it. Looking is not doing — to do a step, tap the thing itself in the scene!',vi:'Chạm vào một tên để NGẮM nó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trong cảnh!'},
+  u2T:{en:'Results table',vi:'Bảng kết quả'},
+  u2Brief:{en:'Mean (average) pull distance for each pole, from three readings each — like Arun and Marcus in the Workbook.',vi:'Khoảng cách hút trung bình (mean) của mỗi cực, từ ba lần đo — giống Arun và Marcus trong sách bài tập (Workbook).'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your magnetism checklist.',vi:'Danh sách khám phá từ tính của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundPair:{en:'I pulled two magnets together',vi:'Con đã hút hai nam châm lại gần nhau'},
+  foundPoles:{en:'I measured all four poles',vi:'Con đã đo cả bốn cực'},
+  foundStrong:{en:'I found the strongest pole',vi:'Con đã tìm thấy cực mạnh nhất'},
+  foundWeak:{en:'I found the weakest pole',vi:'Con đã tìm thấy cực yếu nhất'},
+  foundFloat:{en:'I floated the Maglev train',vi:'Con đã làm tàu Maglev lơ lửng'},
+  binMagnet:{en:'MAGNET 🧲',vi:'NAM CHÂM (MAGNET) 🧲'},
+  binMaterial:{en:'MAGNETIC MATERIAL 📎',vi:'VẬT LIỆU TỪ (MAGNETIC MATERIAL) 📎'},
+  binInd:{en:'INDEPENDENT — I change it',vi:'ĐỘC LẬP (INDEPENDENT) — con thay đổi'},
+  binDep:{en:'DEPENDENT — I measure it',vi:'PHỤ THUỘC (DEPENDENT) — con đo nó'},
+  binCtl:{en:'CONTROL — I keep it the same',vi:'KIỂM SOÁT (CONTROL) — con giữ nguyên'},
+  lookTrain:{en:'Look at the Maglev train 🚄',vi:'Ngắm tàu Maglev 🚄'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 5.6',vi:'📝 Bài tập — Sách bài tập (Workbook) 5.6'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Find the mean readings',vi:'Bài tập 1 · Focus — Tìm số đo trung bình (mean)'},
+  ex1Inst:{en:'Arun and Marcus measured each pole three times. Tap the correct mean (average) for each row: add the three readings, then divide by 3.',vi:'Arun và Marcus đo mỗi cực ba lần. Chạm vào số trung bình (mean) đúng cho mỗi hàng: cộng ba số đo, rồi chia cho 3.'},
+  ex2T:{en:'Exercise 2 · Practice — The card test and fair testing',vi:'Bài tập 2 · Practice — Thí nghiệm qua tấm bìa và phép thử công bằng (fair test)'},
+  ex2Inst:{en:'Tap the correct answer to each question.',vi:'Chạm vào đáp án đúng cho mỗi câu hỏi.'},
+  ex3T:{en:'Exercise 3 · Challenge — Maglev trains',vi:'Bài tập 3 · Challenge — Tàu Maglev'},
+  ex3Inst:{en:'Tap the correct answer to each question about magnetic levitation trains.',vi:'Chạm vào đáp án đúng cho mỗi câu hỏi về tàu đệm từ (Maglev).'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'magnetic force',vi:'lực từ'},
+  {en:'magnet',vi:'nam châm'},
+  {en:'magnetic material',vi:'vật liệu từ'},
+  {en:'attract',vi:'hút'},
+  {en:'repel',vi:'đẩy'},
+  {en:'pole',vi:'cực (của nam châm)'},
+  {en:'strength',vi:'độ mạnh'},
+  {en:'variable',vi:'biến số'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Magnet or material?',vi:'Nam châm hay vật liệu từ?'}, word:{en:'magnetic material',vi:'vật liệu từ'},
+  q:{en:'What is the difference between a magnet and a magnetic material?',vi:'Nam châm (magnet) và vật liệu từ (magnetic material) khác nhau ở điểm nào?'},
+  act:{en:'Tap a card, then tap MAGNET or MAGNETIC MATERIAL to sort what each one can do.',vi:'Chạm vào một thẻ, rồi chạm NAM CHÂM (MAGNET) hoặc VẬT LIỆU TỪ (MAGNETIC MATERIAL) để phân loại việc mỗi loại làm được.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'A magnet has an area around it where magnetic force is active. In that area it can attract or repel other magnets, and attract magnetic materials.',vi:'Một nam châm (magnet) có một vùng xung quanh nơi lực từ (magnetic force) hoạt động. Trong vùng đó nó có thể hút hoặc đẩy các nam châm khác, và hút các vật liệu từ (magnetic material).'},
+    {en:'A magnetic material has no such area around it, so it cannot attract another magnetic material by itself.',vi:'Một vật liệu từ (magnetic material) không có vùng như vậy xung quanh, nên tự nó không thể hút một vật liệu từ khác.'}]},
+ {tag:{en:'Pull over a distance',vi:'Hút từ xa'}, word:{en:'attract',vi:'hút'},
+  q:{en:'Two magnets hang side by side with unlike poles facing. What will happen?',vi:'Hai nam châm treo cạnh nhau với các cực khác nhau hướng vào nhau. Điều gì sẽ xảy ra?'},
+  act:{en:'Tap BOTH hanging magnets in the scene, one at a time.',vi:'Chạm vào CẢ HAI nam châm treo trong cảnh, lần lượt từng cái.'},
+  see:{en:'The magnets swing towards each other across the gap and meet — nobody pushes them together.',vi:'Hai nam châm đung đưa về phía nhau qua khoảng trống và chạm nhau — không ai đẩy chúng lại gần cả.'},
+  concl:[
+    {en:'Unlike poles attract each other: a north pole pulls towards a south pole.',vi:'Các cực khác nhau hút (attract) nhau: cực bắc kéo về phía cực nam.'},
+    {en:'The magnets moved while there was still a gap between them, so magnetic force can act over a distance.',vi:'Hai nam châm đã di chuyển khi vẫn còn khoảng cách giữa chúng, nên lực từ (magnetic force) có thể tác dụng từ xa (over a distance).'},
+    {en:'A stronger magnet has a bigger area of force around it, so it can attract from a bigger distance.',vi:'Một nam châm mạnh hơn có vùng lực xung quanh lớn hơn, nên nó hút được từ khoảng cách lớn hơn.'}]},
+ {tag:{en:'Plan a fair test',vi:'Lập kế hoạch phép thử công bằng'}, word:{en:'variable',vi:'biến số'},
+  q:{en:'In our magnet-strength test, what do we change, what do we measure, and what do we keep the same?',vi:'Trong phép thử độ mạnh nam châm, ta thay đổi gì, đo gì, và giữ nguyên gì?'},
+  act:{en:'Tap a card, then tap INDEPENDENT (I change it), DEPENDENT (I measure it) or CONTROL (I keep it the same).',vi:'Chạm vào một thẻ, rồi chạm ĐỘC LẬP (INDEPENDENT — con thay đổi), PHỤ THUỘC (DEPENDENT — con đo) hoặc KIỂM SOÁT (CONTROL — con giữ nguyên).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Independent variable: the magnet and the pole we choose to test — that is what we change.',vi:'Biến độc lập (independent variable): nam châm và cực ta chọn để thử — đó là thứ ta thay đổi.'},
+    {en:'Dependent variable: the distance at which the clip jumps to the magnet — that is what we measure, and it depends on the magnet.',vi:'Biến phụ thuộc (dependent variable): khoảng cách mà kẹp giấy nhảy tới nam châm — đó là thứ ta đo, và nó phụ thuộc vào nam châm.'},
+    {en:'Control variables: the same steel paperclip, the same plastic ruler and the clip starting at 0 every time — these keep the test fair.',vi:'Biến kiểm soát (control variables): cùng một kẹp giấy thép, cùng một thước nhựa và kẹp luôn bắt đầu ở 0 — những điều này giữ phép thử công bằng (fair test).'}]},
+ {tag:{en:'Measure four poles',vi:'Đo bốn cực'}, word:{en:'strength',vi:'độ mạnh'},
+  q:{en:'From how far away can each pole pull the steel paperclip?',vi:'Mỗi cực có thể hút kẹp giấy thép từ bao xa?'},
+  act:{en:'Tap each of the four poles on the bench — Magnet 1 N and S, then Magnet 2 N and S. Each tap slowly slides that pole towards the clip, just like the book test.',vi:'Chạm vào từng cực trong bốn cực trên bàn — Nam châm 1 cực N và S, rồi Nam châm 2 cực N và S. Mỗi lần chạm, cực đó từ từ trượt về phía kẹp giấy, đúng như phép thử trong sách.'},
+  see:{en:'The clip jumps to the pole before they touch! The results table fills in that pole\u2019s three readings and its mean distance.',vi:'Kẹp giấy nhảy tới cực trước khi chúng chạm nhau! Bảng kết quả điền ba số đo của cực đó và khoảng cách trung bình (mean) của nó.'},
+  concl:[
+    {en:'The clip jumped while there was still a gap, so the force between a magnet and a magnetic material also acts over a distance.',vi:'Kẹp giấy đã nhảy khi vẫn còn khoảng cách, nên lực giữa nam châm và vật liệu từ (magnetic material) cũng tác dụng từ xa (over a distance).'},
+    {en:'We repeated each measurement three times and worked out the mean — repeating makes the data more reliable.',vi:'Ta lặp lại mỗi phép đo ba lần và tính số trung bình (mean) — lặp lại giúp dữ liệu đáng tin hơn.'},
+    {en:'We used a plastic ruler, not a steel one, because steel is a magnetic material and the magnet would attract the ruler itself.',vi:'Ta dùng thước nhựa chứ không dùng thước thép, vì thép là vật liệu từ (magnetic material) và nam châm sẽ hút chính cái thước.'}]},
+ {tag:{en:'Strongest and weakest',vi:'Mạnh nhất và yếu nhất'}, word:{en:'compare',vi:'so sánh'},
+  q:{en:'Look at the mean distances. Which pole is the strongest — and which is the weakest?',vi:'Nhìn vào các khoảng cách trung bình (mean). Cực nào mạnh nhất — và cực nào yếu nhất?'},
+  act:{en:'Tap the STRONGEST pole (the biggest mean distance). Then tap the WEAKEST pole (the smallest mean distance). Both are on the bench.',vi:'Chạm vào cực MẠNH NHẤT (khoảng cách trung bình (mean) lớn nhất). Sau đó chạm vào cực YẾU NHẤT (khoảng cách trung bình nhỏ nhất). Cả hai đều ở trên bàn.'},
+  see:{en:'Right answers bounce and get a ring. Wrong answers give you a hint.',vi:'Đáp án đúng sẽ nảy lên và có vòng tròn. Đáp án sai sẽ cho con một gợi ý.'},
+  concl:[
+    {en:'Magnet 2 (means of 50 mm and 52 mm) pulled the clip from much further away than Magnet 1 (31 mm and 28 mm), so Magnet 2 is the stronger magnet.',vi:'Nam châm 2 (trung bình (mean) 50 mm và 52 mm) hút kẹp giấy từ xa hơn hẳn Nam châm 1 (31 mm và 28 mm), nên Nam châm 2 là nam châm mạnh hơn.'},
+    {en:'The two poles of the same magnet were nearly as strong as each other.',vi:'Hai cực của cùng một nam châm mạnh gần bằng nhau.'},
+    {en:'Conclusion: magnets can have different magnetic strengths.',vi:'Kết luận: các nam châm có thể có độ mạnh từ (magnetic strength) khác nhau.'}]},
+ {tag:{en:'Maglev trains float',vi:'Tàu Maglev lơ lửng'}, word:{en:'repel',vi:'đẩy'},
+  q:{en:'How can magnets hold a whole train up in the air?',vi:'Làm sao nam châm nâng được cả một đoàn tàu lên không trung?'},
+  act:{en:'Tap the Maglev train in the scene to switch on the magnets in its track.',vi:'Chạm vào tàu Maglev trong cảnh để bật các nam châm trong đường ray của nó.'},
+  see:{en:'The train rises and floats above the track on a cushion of magnetic force.',vi:'Đoàn tàu nâng lên và lơ lửng trên đường ray trên một lớp đệm lực từ (magnetic force).'},
+  concl:[
+    {en:'Very strong magnets in the track push (repel) the train up, so a Maglev train floats about 3–15 cm above its track.',vi:'Các nam châm rất mạnh trong đường ray đẩy (repel) đoàn tàu lên, nên tàu Maglev lơ lửng cách đường ray khoảng 3–15 cm.'},
+    {en:'I can see that forces act over a distance between magnets, and between a magnet and a magnetic material.',vi:'Con thấy được lực tác dụng từ xa (over a distance) giữa các nam châm, và giữa nam châm với vật liệu từ (magnetic material).'},
+    {en:'I can see that magnets have different strengths, and I can plan a fair test, measure accurately, repeat readings, record them in a table and show them on a bar graph.',vi:'Con thấy được các nam châm có độ mạnh khác nhau, và con lập kế hoạch được một phép thử công bằng (fair test), đo chính xác, lặp lại số đo, ghi vào bảng và trình bày trên biểu đồ cột (bar graph).'}]}
+];
+const CARDS1=[
+ {id:'d_area',emoji:'🧲',en:'Has an area around it where magnetic force acts',vi:'Có một vùng xung quanh nơi lực từ hoạt động',ans:'magnet'},
+ {id:'d_pullmat',emoji:'📎',en:'Can attract a magnetic material',vi:'Hút được một vật liệu từ',ans:'magnet'},
+ {id:'d_repel',emoji:'↔️',en:'Can attract or repel another magnet',vi:'Hút hoặc đẩy được một nam châm khác',ans:'magnet'},
+ {id:'d_noarea',emoji:'⚪',en:'Has NO area of magnetic force around it',vi:'KHÔNG có vùng lực từ xung quanh',ans:'material'},
+ {id:'d_noattract',emoji:'🚫',en:'Cannot attract another magnetic material by itself',vi:'Tự nó không hút được một vật liệu từ khác',ans:'material'},
+ {id:'d_pulled',emoji:'🧲',en:'Is pulled towards a magnet, but cannot pull things itself',vi:'Bị nam châm hút về phía nó, nhưng tự nó không hút được vật khác',ans:'material'}
+];
+const CARDS1_ORDER=mixOrder(CARDS1,c=>c.ans,2);
+const CARDS3=[
+ {id:'v_magnet',emoji:'🧲',en:'The magnet I choose (Magnet 1 or Magnet 2)',vi:'Nam châm con chọn (Nam châm 1 hoặc Nam châm 2)',ans:'independent'},
+ {id:'v_pole',emoji:'🟥',en:'The pole I use (N pole or S pole)',vi:'Cực con dùng (cực N hoặc cực S)',ans:'independent'},
+ {id:'v_dist',emoji:'📏',en:'The distance when the clip jumps to the magnet',vi:'Khoảng cách khi kẹp giấy nhảy tới nam châm',ans:'dependent'},
+ {id:'v_mean',emoji:'🔢',en:'The mean distance I work out from the readings',vi:'Khoảng cách trung bình (mean) con tính từ các số đo',ans:'dependent'},
+ {id:'v_clip',emoji:'📎',en:'The same steel paperclip every time',vi:'Cùng một kẹp giấy thép trong mọi lần đo',ans:'control'},
+ {id:'v_ruler',emoji:'📐',en:'The same plastic ruler, clip starting at 0 every time',vi:'Cùng một thước nhựa, kẹp luôn bắt đầu ở 0',ans:'control'}
+];
+const CARDS3_ORDER=mixOrder(CARDS3,c=>c.ans,2);
+const POLEDATA=[
+ {id:'mag1n',mag:1,pole:'N',reads:[35,28,30],mean:31},
+ {id:'mag1s',mag:1,pole:'S',reads:[31,26,27],mean:28},
+ {id:'mag2n',mag:2,pole:'N',reads:[51,46,53],mean:50},
+ {id:'mag2s',mag:2,pole:'S',reads:[54,49,53],mean:52}
+];
+const QUIZ=[
+ {q:{en:'A steel paperclip jumps to a magnet before the two touch. What does this show?',vi:'Một kẹp giấy thép nhảy tới nam châm trước khi hai vật chạm nhau. Điều này cho thấy gì?'},
+  o:[{en:'The paperclip is a magnet',vi:'Kẹp giấy là một nam châm'},{en:'Magnetic force can act over a distance',vi:'Lực từ (magnetic force) có thể tác dụng từ xa (over a distance)'},{en:'Gravity pulls the clip sideways',vi:'Trọng lực (gravity) kéo kẹp giấy sang ngang'}],a:1,
+  e:{en:'The clip moved across a gap, so the magnetic force acted over a distance — the magnet and the clip did not need to touch.',vi:'Kẹp giấy di chuyển qua một khoảng trống, nên lực từ (magnetic force) đã tác dụng từ xa — nam châm và kẹp giấy không cần chạm nhau.'}},
+ {q:{en:'Magnet 1 pulled a clip from about 30 mm away. Magnet 2 pulled it from about 50 mm away. Which magnet is strongest?',vi:'Nam châm 1 hút kẹp giấy từ khoảng 30 mm. Nam châm 2 hút từ khoảng 50 mm. Nam châm nào mạnh nhất?'},
+  o:[{en:'Magnet 1',vi:'Nam châm 1'},{en:'They are exactly the same',vi:'Chúng mạnh hệt như nhau'},{en:'Magnet 2',vi:'Nam châm 2'}],a:2,
+  e:{en:'The stronger magnet attracts from a greater distance. Magnet 2 worked from about 50 mm, so Magnet 2 is strongest.',vi:'Nam châm mạnh hơn hút được từ khoảng cách lớn hơn. Nam châm 2 hút được từ khoảng 50 mm, nên Nam châm 2 mạnh nhất.'}},
+ {q:{en:'Why do good scientists take each measurement three times?',vi:'Vì sao các nhà khoa học giỏi đo mỗi phép đo ba lần?'},
+  o:[{en:'To get more reliable data, spot odd readings and work out a mean',vi:'Để dữ liệu đáng tin hơn, phát hiện số đo lạ và tính số trung bình (mean)'},{en:'To make the test last longer',vi:'Để phép thử kéo dài hơn'},{en:'Because one magnet needs three clips',vi:'Vì một nam châm cần ba cái kẹp giấy'}],a:0,
+  e:{en:'Repeated readings are more reliable: if one reading looks odd we can spot it, and the three readings give a mean (average) value.',vi:'Số đo lặp lại đáng tin hơn: nếu một số đo trông lạ ta phát hiện được, và ba số đo cho ra giá trị trung bình (mean).'}},
+ {q:{en:'In the magnet-strength test, what is the INDEPENDENT variable — the thing we change?',vi:'Trong phép thử độ mạnh nam châm, biến ĐỘC LẬP (independent variable) — thứ ta thay đổi — là gì?'},
+  o:[{en:'The same steel paperclip',vi:'Cùng một kẹp giấy thép'},{en:'The distance we measure',vi:'Khoảng cách ta đo'},{en:'The magnet and pole we choose to test',vi:'Nam châm và cực ta chọn để thử'}],a:2,
+  e:{en:'We change which magnet and which pole we test. The distance is the dependent variable (we measure it), and the clip and ruler are controls (we keep them the same).',vi:'Ta thay đổi nam châm và cực được thử. Khoảng cách là biến phụ thuộc (dependent) (ta đo nó), còn kẹp giấy và thước là biến kiểm soát (control) (ta giữ nguyên).'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1Q=[
+ {q:{en:'Magnet 1 – N pole · readings 35 mm, 28 mm, 30 mm · mean = ?',vi:'Nam châm 1 – cực N · số đo 35 mm, 28 mm, 30 mm · trung bình (mean) = ?'},
+  opts:[{en:'31 mm',vi:'31 mm'},{en:'28 mm',vi:'28 mm'},{en:'35 mm',vi:'35 mm'}],a:0,
+  e:{en:'35 + 28 + 30 = 93, and 93 ÷ 3 = 31 mm.',vi:'35 + 28 + 30 = 93, và 93 ÷ 3 = 31 mm.'}},
+ {q:{en:'Magnet 1 – S pole · readings 31 mm, 26 mm, 27 mm · mean = ?',vi:'Nam châm 1 – cực S · số đo 31 mm, 26 mm, 27 mm · trung bình (mean) = ?'},
+  opts:[{en:'27 mm',vi:'27 mm'},{en:'31 mm',vi:'31 mm'},{en:'28 mm',vi:'28 mm'}],a:2,
+  e:{en:'31 + 26 + 27 = 84, and 84 ÷ 3 = 28 mm.',vi:'31 + 26 + 27 = 84, và 84 ÷ 3 = 28 mm.'}},
+ {q:{en:'Magnet 2 – N pole · readings 51 mm, 46 mm, 53 mm · mean = ?',vi:'Nam châm 2 – cực N · số đo 51 mm, 46 mm, 53 mm · trung bình (mean) = ?'},
+  opts:[{en:'46 mm',vi:'46 mm'},{en:'50 mm',vi:'50 mm'},{en:'53 mm',vi:'53 mm'}],a:1,
+  e:{en:'51 + 46 + 53 = 150, and 150 ÷ 3 = 50 mm.',vi:'51 + 46 + 53 = 150, và 150 ÷ 3 = 50 mm.'}},
+ {q:{en:'Magnet 2 – S pole · readings 54 mm, 49 mm, 53 mm · mean = ?',vi:'Nam châm 2 – cực S · số đo 54 mm, 49 mm, 53 mm · trung bình (mean) = ?'},
+  opts:[{en:'49 mm',vi:'49 mm'},{en:'54 mm',vi:'54 mm'},{en:'52 mm',vi:'52 mm'}],a:2,
+  e:{en:'54 + 49 + 53 = 156, and 156 ÷ 3 = 52 mm.',vi:'54 + 49 + 53 = 156, và 156 ÷ 3 = 52 mm.'}}
+];
+const EX2Q=[
+ {q:{en:'Marcus holds a magnet over a card. The steel screw under the card sticks to the card. Why?',vi:'Marcus cầm nam châm trên một tấm bìa. Cái đinh ốc thép dưới tấm bìa dính vào bìa. Vì sao?'},
+  opts:[{en:'The card is a magnetic material',vi:'Tấm bìa là vật liệu từ (magnetic material)'},{en:'The magnetic force acts through the card and attracts the screw',vi:'Lực từ (magnetic force) tác dụng xuyên qua tấm bìa và hút đinh ốc'},{en:'The screw is a magnet',vi:'Đinh ốc là một nam châm'}],a:1,
+  e:{en:'Card is not magnetic, but magnetic force can act through it over a distance, so the screw is pulled up against the card.',vi:'Bìa không có từ tính, nhưng lực từ (magnetic force) tác dụng xuyên qua nó từ xa, nên đinh ốc bị kéo dính vào bìa.'}},
+ {q:{en:'Through three cards, magnet A still holds the screw but magnet B does not. Which magnet is strongest?',vi:'Qua ba tấm bìa, nam châm A vẫn giữ được đinh ốc nhưng nam châm B thì không. Nam châm nào mạnh nhất?'},
+  opts:[{en:'Magnet B',vi:'Nam châm B'},{en:'They are the same strength',vi:'Chúng mạnh như nhau'},{en:'Magnet A',vi:'Nam châm A'}],a:2,
+  e:{en:'Magnet A attracted the screw through a greater thickness (a greater distance), so magnet A is stronger.',vi:'Nam châm A hút được đinh ốc qua độ dày lớn hơn (khoảng cách lớn hơn), nên nam châm A mạnh hơn.'}},
+ {q:{en:'Could Marcus test magnet strength with a cork button instead of a steel screw?',vi:'Marcus có thể thử độ mạnh nam châm bằng một nút bần (cork) thay cho đinh ốc thép không?'},
+  opts:[{en:'No — cork is a non-magnetic material, so a magnet does not attract it',vi:'Không — bần (cork) là vật liệu không từ (non-magnetic), nên nam châm không hút nó'},{en:'Yes — cork is a magnetic material',vi:'Có — bần là vật liệu từ (magnetic material)'},{en:'Yes — magnets attract every material',vi:'Có — nam châm hút mọi vật liệu'}],a:0,
+  e:{en:'Magnets only attract magnetic materials such as steel. Cork is non-magnetic, so nothing would happen.',vi:'Nam châm chỉ hút vật liệu từ (magnetic material) như thép. Bần (cork) không có từ tính, nên sẽ không có gì xảy ra.'}},
+ {q:{en:'Why do Arun and Marcus use a steel drawing pin / paperclip in their strength test?',vi:'Vì sao Arun và Marcus dùng ghim / kẹp giấy bằng thép trong phép thử độ mạnh?'},
+  opts:[{en:'Steel is a magnetic material, so the magnet attracts it',vi:'Thép là vật liệu từ (magnetic material), nên nam châm hút nó'},{en:'Steel pushes magnets away',vi:'Thép đẩy nam châm ra xa'},{en:'Steel is a kind of plastic',vi:'Thép là một loại nhựa'}],a:0,
+  e:{en:'The test object must be a magnetic material — steel is attracted to a magnet, so we can measure the pull distance.',vi:'Vật được thử phải là vật liệu từ (magnetic material) — thép bị nam châm hút, nên ta đo được khoảng cách hút.'}},
+ {q:{en:'Why do they use a plastic ruler, not a steel ruler?',vi:'Vì sao họ dùng thước nhựa chứ không dùng thước thép?'},
+  opts:[{en:'Plastic is a magnetic material',vi:'Nhựa là vật liệu từ (magnetic material)'},{en:'A magnet would attract a steel ruler and spoil the measurements',vi:'Nam châm sẽ hút thước thép và làm hỏng số đo'},{en:'Plastic rulers are always longer',vi:'Thước nhựa luôn dài hơn'}],a:1,
+  e:{en:'Steel is magnetic, so the magnet would attract the ruler itself. Plastic is non-magnetic, so the ruler just measures.',vi:'Thép có từ tính, nên nam châm sẽ hút chính cái thước. Nhựa không có từ tính, nên thước chỉ dùng để đo.'}},
+ {q:{en:'Why did they take three readings for each pole of each magnet?',vi:'Vì sao họ đo ba lần cho mỗi cực của mỗi nam châm?'},
+  opts:[{en:'To finish the lesson faster',vi:'Để kết thúc bài học nhanh hơn'},{en:'To use up more paper',vi:'Để dùng nhiều giấy hơn'},{en:'Repeated readings are more reliable, and they can work out a mean',vi:'Số đo lặp lại đáng tin hơn, và họ tính được số trung bình (mean)'}],a:2,
+  e:{en:'Readings vary a little each time. Repeating them makes the results more reliable and lets us calculate a mean.',vi:'Số đo mỗi lần hơi khác nhau một chút. Lặp lại giúp kết quả đáng tin hơn và cho phép tính số trung bình (mean).'}}
+];
+const EX3Q=[
+ {q:{en:'What are Maglev train tracks made of?',vi:'Đường ray tàu Maglev được làm bằng gì?'},
+  opts:[{en:'Wooden sleepers',vi:'Tà vẹt gỗ'},{en:'Very strong magnets',vi:'Các nam châm rất mạnh'},{en:'Plastic rails',vi:'Ray nhựa'}],a:1,
+  e:{en:'A Maglev track is a completely new magnetic track, built with extremely strong magnets.',vi:'Đường ray Maglev là một đường ray từ hoàn toàn mới, được xây bằng các nam châm cực mạnh.'}},
+ {q:{en:'What keeps a Maglev train floating 3–15 cm above the track?',vi:'Điều gì giữ tàu Maglev lơ lửng cách đường ray 3–15 cm?'},
+  opts:[{en:'Magnets in the track push (repel) and lift the train',vi:'Nam châm trong đường ray đẩy (repel) và nâng đoàn tàu lên'},{en:'Its wheels lift it up',vi:'Bánh xe của nó nâng nó lên'},{en:'The wind holds it up',vi:'Gió giữ nó ở trên'}],a:0,
+  e:{en:'The track magnets repel the train upwards, so it floats on a cushion of magnetic force.',vi:'Nam châm trong đường ray đẩy (repel) đoàn tàu lên trên, nên nó lơ lửng trên một lớp đệm lực từ (magnetic force).'}},
+ {q:{en:'Give an advantage of a Maglev train over a train on metal tracks.',vi:'Nêu một ưu điểm của tàu Maglev so với tàu chạy trên ray kim loại.'},
+  opts:[{en:'It is much louder',vi:'Nó ồn hơn nhiều'},{en:'It is slower',vi:'Nó chậm hơn'},{en:'With no friction against a track, it can travel at over 500 km/h',vi:'Không có ma sát (friction) với đường ray, nó chạy được trên 500 km/h'}],a:2,
+  e:{en:'Floating means no friction with the track, so Maglev trains can exceed 500 kilometres per hour; they are also quieter (no wheels) and use about 30% less energy.',vi:'Lơ lửng nghĩa là không có ma sát (friction) với đường ray, nên tàu Maglev chạy được trên 500 km/giờ; chúng cũng êm hơn (không có bánh xe) và dùng ít hơn khoảng 30% năng lượng.'}},
+ {q:{en:'What is the main disadvantage of Maglev trains?',vi:'Nhược điểm chính của tàu Maglev là gì?'},
+  opts:[{en:'A completely new magnetic track must be built — the magnets are very expensive',vi:'Phải xây một đường ray từ hoàn toàn mới — các nam châm rất đắt'},{en:'They are too quiet',vi:'Chúng quá êm'},{en:'They use less energy',vi:'Chúng dùng ít năng lượng hơn'}],a:0,
+  e:{en:'An old track cannot be changed into a Maglev track, so a country must build a whole new magnetic track with very expensive magnets.',vi:'Đường ray cũ không thể chuyển thành đường ray Maglev, nên một quốc gia phải xây cả đường ray từ mới với các nam châm rất đắt.'}}
+];
+const EX_TOTAL=EX1Q.length+EX2Q.length+EX3Q.length; /* 4 + 6 + 4 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+let EX1_ORD=EX1Q.map(q=>fyIdx(q.opts.length));
+let EX2_ORD=EX2Q.map(q=>fyIdx(q.opts.length));
+let EX3_ORD=EX3Q.map(q=>fyIdx(q.opts.length));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci5-5-6';
+const SUMKEY='camb:sum:sci5-5-6';
+const BOT_CODE='sci5-5.6';
+let FOUND={left:false,right:false,strong:false,weak:false,float:false};
+let MEASURED=new Set();
+let SORTED1=new Set(), SORTED3=new Set();
+function newTrack(){return {
+  s1correct:new Set(), s1sel:null,
+  s2L:false, s2R:false,
+  s3correct:new Set(), s3sel:null,
+  s4poles:new Set(),
+  s5strong:false, s5weak:false, s5hint:'',
+  s6float:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.s1correct.size>=5;
+  if(i===1) return T.s2L&&T.s2R;
+  if(i===2) return T.s3correct.size>=5;
+  if(i===3) return T.s4poles.size>=4;
+  if(i===4) return T.s5strong&&T.s5weak;
+  if(i===5) return T.s6float;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    const c=T.s1sel? CARDS1.find(x=>x.id===T.s1sel) : null;
+    if(c) return B('You picked the card \u201c'+c.en+'\u201d. Now tap MAGNET or MAGNETIC MATERIAL.','Con đã chọn thẻ \u201c'+c.vi+'\u201d. Giờ hãy chạm NAM CHÂM (MAGNET) hoặc VẬT LIỆU TỪ (MAGNETIC MATERIAL).');
+    return B('Cards right: '+T.s1correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s1correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===1) return B('Hanging magnets tapped: Magnet 1 '+(T.s2L?'✓':'…')+' · Magnet 2 '+(T.s2R?'✓':'…')+'. Tap both magnets in the scene!','Nam châm treo đã chạm: Nam châm 1 '+(T.s2L?'✓':'…')+' · Nam châm 2 '+(T.s2R?'✓':'…')+'. Hãy chạm cả hai nam châm trong cảnh!');
+  if(i===2){
+    const c=T.s3sel? CARDS3.find(x=>x.id===T.s3sel) : null;
+    if(c) return B('You picked the card \u201c'+c.en+'\u201d. Is it changed, measured, or kept the same?','Con đã chọn thẻ \u201c'+c.vi+'\u201d. Nó được thay đổi, được đo, hay được giữ nguyên?');
+    return B('Cards right: '+T.s3correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s3correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===3){
+    const parts=POLEDATA.map(p=>'Magnet '+p.mag+' '+p.pole+' '+(T.s4poles.has(p.id)? p.mean+' mm ✓':'…'));
+    return B('Poles measured: '+parts.join(' · ')+'.','Các cực đã đo: '+parts.join(' · ')+'.');
+  }
+  if(i===4){
+    if(T.s5hint==='mid') return B('That pole is in the middle — not the strongest and not the weakest. Check the mean distances: 52, 50, 31, 28 mm.','Cực đó ở giữa — không mạnh nhất cũng không yếu nhất. Hãy xem các khoảng cách trung bình (mean): 52, 50, 31, 28 mm.');
+    if(T.s5hint==='notpole') return B('That is not one of the four bench poles. The answer is a pole on the bench.','Đó không phải một trong bốn cực trên bàn. Đáp án là một cực trên bàn.');
+    return B('Strongest pole '+(T.s5strong?'✓ (Magnet 2 – S, 52 mm)':'…')+' · Weakest pole '+(T.s5weak?'✓ (Magnet 1 – S, 28 mm)':'…')+'.',
+             'Cực mạnh nhất '+(T.s5strong?'✓ (Nam châm 2 – S, 52 mm)':'…')+' · Cực yếu nhất '+(T.s5weak?'✓ (Nam châm 1 – S, 28 mm)':'…')+'.');
+  }
+  if(i===5) return B(T.s6float? 'The Maglev train is floating above its track! 🚄' : 'The train is resting on its track. Tap the train in the scene to switch on the track magnets!',
+                      T.s6float? 'Tàu Maglev đang lơ lửng trên đường ray! 🚄' : 'Đoàn tàu đang nằm trên đường ray. Hãy chạm vào đoàn tàu trong cảnh để bật nam châm đường ray!');
+  return B('','');
+}
+function onSortPlaced1(c){ SORTED1.add(c.id); saveProg(); renderMirrors(); }
+function onSortPlaced3(c){ SORTED3.add(c.id); saveProg(); renderMirrors(); }
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    buildSort(box,CARDS1_ORDER,
+      [{key:'magnet',label:STR.binMagnet,cls:'magnet'},{key:'material',label:STR.binMaterial,cls:'material'}],
+      T.s1correct,()=>T.s1sel,v=>{T.s1sel=v;},null,onSortPlaced1);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🧲',label:{en:'Hanging magnet 1',vi:'Nam châm treo 1'},got:T.s2L},
+      {emoji:'🧲',label:{en:'Hanging magnet 2',vi:'Nam châm treo 2'},got:T.s2R}
+    ]);
+  }else if(curStep===2){
+    buildSort(box,CARDS3_ORDER,
+      [{key:'independent',label:STR.binInd,cls:'independent'},{key:'dependent',label:STR.binDep,cls:'dependent'},{key:'control',label:STR.binCtl,cls:'control'}],
+      T.s3correct,()=>T.s3sel,v=>{T.s3sel=v;},null,onSortPlaced3);
+  }else if(curStep===3){
+    statPills(box,POLEDATA.map(p=>({emoji:p.pole==='N'?'🟥':'🟦',label:{en:'Magnet '+p.mag+' – '+p.pole+' pole',vi:'Nam châm '+p.mag+' – cực '+p.pole},got:T.s4poles.has(p.id)})));
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'💪',label:{en:'Strongest pole',vi:'Cực mạnh nhất'},got:T.s5strong},
+      {emoji:'🔍',label:{en:'Weakest pole',vi:'Cực yếu nhất'},got:T.s5weak}
+    ]);
+  }else if(curStep===5){
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookTrain);
+    b.onclick=()=>focusThing('maglev');
+    box.appendChild(b);
+    statPills(box,[{emoji:'🚄',label:{en:'Train floating',vi:'Tàu đang lơ lửng'},got:T.s6float}]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ demoSort(CARDS1,T.s1correct); }
+  else if(i===1){ focusVisual('magnetL'); bounceThing('magnetL'); setTimeout(()=>{ focusVisual('magnetR'); bounceThing('magnetR'); },900); }
+  else if(i===2){ demoSort(CARDS3,T.s3correct); }
+  else if(i===3){ focusThing('mag1n'); bounceThing('mag1n'); setTimeout(()=>{ focusThing('clip'); },900); }
+  else if(i===4){ focusVisual('mag2s'); bounceThing('mag2s'); setTimeout(()=>{ focusVisual('mag1s'); bounceThing('mag1s'); },900); }
+  else if(i===5){ focusThing('maglev'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderResults(){
+  $('grpRows').innerHTML=POLEDATA.map(p=>{
+    const got=MEASURED.has(p.id);
+    const label={en:'Magnet '+p.mag+' – '+p.pole+' pole',vi:'Nam châm '+p.mag+' – cực '+p.pole};
+    const val=got? (p.reads.join(', ')+' → <b>'+p.mean+' mm</b>') : '—';
+    return '<div class="grprow"><span>'+biInl(label)+'</span><b style="font-size:15px">'+val+'</b></div>';
+  }).join('');
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.left&&FOUND.right||doneSteps.has(1),label:STR.foundPair},
+    {got:MEASURED.size>=4||doneSteps.has(3),label:STR.foundPoles},
+    {got:FOUND.strong||doneSteps.has(4),label:STR.foundStrong},
+    {got:FOUND.weak||doneSteps.has(4),label:STR.foundWeak},
+    {got:FOUND.float||doneSteps.has(5),label:STR.foundFloat}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+let attractK=0, clipHop=0, trainFloatK=0;
+let poleSlide={mag1n:0,mag1s:0,mag2n:0,mag2s:0};
+const POLE_BASE={mag1n:{x:0.65,z:1.15},mag1s:{x:-0.62,z:1.15},mag2n:{x:0.65,z:2.35},mag2s:{x:-0.62,z:2.35}};
+const ORB={r:9.4, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function barHalf(color,w){
+  const m=shadowed(new THREE.Mesh(new THREE.BoxGeometry(w||0.52,0.26,0.2),stdMat(color,0.55)));
+  return m;
+}
+function buildHanging(side){
+  const g=new THREE.Group();
+  const string=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.85,6),stdMat(0x44586e,0.8));
+  string.position.y=0.55; g.add(string);
+  const n=barHalf(0xe33e2b); n.position.x= side<0? 0.27 : -0.27; g.add(n);
+  const s=barHalf(0x3d8bfd); s.position.x= side<0? -0.27 : 0.27; g.add(s);
+  g.position.set(side<0? -3.05 : -2.0, 1.5, -1.7); g.userData.baseY=1.5;
+  return g;
+}
+function buildPole(id){
+  const p=POLEDATA.find(x=>x.id===id);
+  const g=new THREE.Group();
+  const body=barHalf(p.pole==='N'? 0xe33e2b : 0x3d8bfd, 1.1);
+  body.scale.y=1.15; g.add(body);
+  const cap=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.3,0.36),stdMat(0xf4f8fb,0.6));
+  cap.position.x= p.pole==='N'? 0.58 : -0.58; g.add(cap);
+  g.position.set(POLE_BASE[id].x,0.42,POLE_BASE[id].z); g.userData.baseY=0.42;
+  return g;
+}
+function buildClip(){
+  const g=new THREE.Group();
+  const loop1=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.028,8,20),stdMat(0xb9c9d8,0.35));
+  loop1.rotation.x=0.4; g.add(loop1);
+  const loop2=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.024,8,20),stdMat(0x9db8cf,0.35));
+  loop2.rotation.x=0.4; loop2.position.set(0.05,0.03,0.02); g.add(loop2);
+  g.position.set(-2.55,0.34,1.75); g.userData.baseY=0.34;
+  return g;
+}
+function buildRuler(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(4.6,0.05,0.42),stdMat(0xf2d06b,0.8)));
+  g.add(base);
+  for(let k=0;k<=11;k++){
+    const tick=new THREE.Mesh(new THREE.BoxGeometry(0.03,k%2? 0.1:0.18,0.02),stdMat(0x44586e,0.8));
+    tick.position.set(-2.1+k*0.38,0.035,0.14); g.add(tick);
+  }
+  g.position.set(-0.4,0.28,1.75); g.userData.baseY=0.28;
+  return g;
+}
+function buildMaglev(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.3,0.55,0.68),stdMat(0xf4f8fb,0.4)));
+  body.position.y=0.28; g.add(body);
+  const stripe=new THREE.Mesh(new THREE.BoxGeometry(2.32,0.14,0.7),stdMat(0x0b76d1,0.45));
+  stripe.position.y=0.36; g.add(stripe);
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(0.3,0.55,12),stdMat(0xd7e2ec,0.4));
+  nose.rotation.z=-Math.PI/2; nose.position.set(1.38,0.28,0); nose.scale.z=1.1; g.add(nose);
+  const win=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.16,0.7),stdMat(0x22384f,0.3));
+  win.position.set(-0.1,0.48,0); g.add(win);
+  g.position.set(2.3,0.62,-1.9); g.userData.baseY=0.62;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,16,30);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8fbf7f,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xa8c6a2,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  /* bench */
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(7.4,0.24,3.6),stdMat(0xa9743f,0.95)));
+  bench.position.set(0,0.12,1.75); bench.receiveShadow=true; scene3.add(bench);
+  /* hanging stand */
+  const standMat=stdMat(0x44586e,0.7);
+  [[-3.65,-1.7],[-1.4,-1.7]].forEach(p=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,2.6,10),standMat);
+    post.position.set(p[0],1.3,p[1]); scene3.add(post);
+  });
+  const cross=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,2.35,10),standMat);
+  cross.rotation.z=Math.PI/2; cross.position.set(-2.52,2.55,-1.7); scene3.add(cross);
+  /* Maglev track */
+  const track=shadowed(new THREE.Mesh(new THREE.BoxGeometry(3.6,0.2,0.6),stdMat(0x8d99a6,0.8)));
+  track.position.set(2.3,0.32,-1.9); track.receiveShadow=true; scene3.add(track);
+  for(let k=0;k<6;k++){
+    const seg=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.07,0.5),stdMat(k%2? 0x3d8bfd:0xe33e2b,0.6));
+    seg.position.set(0.85+k*0.58,0.45,-1.9); scene3.add(seg);
+  }
+  [[1.0,-1.9],[3.6,-1.9]].forEach(p=>{
+    const post=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.24,0.5),standMat);
+    post.position.set(p[0],0.12,p[1]); scene3.add(post);
+  });
+  /* the things */
+  reg('magnetL',buildHanging(-1));
+  reg('magnetR',buildHanging(1));
+  reg('mag1n',buildPole('mag1n'));
+  reg('mag1s',buildPole('mag1s'));
+  reg('mag2n',buildPole('mag2n'));
+  reg('mag2s',buildPole('mag2s'));
+  reg('clip',buildClip());
+  reg('ruler',buildRuler());
+  reg('maglev',buildMaglev());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.58); addProxy('magnetL',p,G.magnetL); }
+  { const p=sphProxy(0.58); addProxy('magnetR',p,G.magnetR); }
+  { const p=sphProxy(0.5); addProxy('mag1n',p,G.mag1n); }
+  { const p=sphProxy(0.5); addProxy('mag1s',p,G.mag1s); }
+  { const p=sphProxy(0.5); addProxy('mag2n',p,G.mag2n); }
+  { const p=sphProxy(0.5); addProxy('mag2s',p,G.mag2s); }
+  { const p=discProxy(0.34,0.06); addProxy('clip',p,G.clip); }
+  { const p=sphProxy(0.95); p.position.set(0,0.28,0); addProxy('maglev',p,G.maglev); }
+  /* highlight ring */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a thing */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+function doAttract(){
+  addAnim(1.1,f=>{ attractK=easeOut(f); },()=>{ attractK=1; });
+}
+function doPoleTest(id){
+  addAnim(1.0,f=>{ poleSlide[id]=easeOut(f); clipHop=Math.sin(f*Math.PI)*0.3; },()=>{ clipHop=0; });
+}
+function doFloat(){
+  addAnim(1.4,f=>{ trainFloatK=easeOut(f); },()=>{ trainFloatK=1; });
+}
+const STEP_TARGETS=[
+  [],
+  ['magnetL','magnetR'],
+  [],
+  ['mag1n','mag1s','mag2n','mag2s'],
+  ['mag2s','mag1s'],
+  ['maglev']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  if(id!=='maglev'&&id!=='clip') bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===1){
+    if(id==='magnetL'){ T.s2L=true; FOUND.left=true; }
+    else if(id==='magnetR'){ T.s2R=true; FOUND.right=true; }
+    if(T.s2L&&T.s2R) doAttract();
+    saveProg(); renderFound();
+  }else if(curStep===3){
+    if(POLEDATA.some(p=>p.id===id)&&!T.s4poles.has(id)){
+      T.s4poles.add(id); MEASURED.add(id); doPoleTest(id);
+      saveProg(); renderResults(); renderFound();
+    }
+  }else if(curStep===4){
+    if(id==='mag2s'){ T.s5strong=true; FOUND.strong=true; T.s5hint=''; }
+    else if(id==='mag1s'){ T.s5weak=true; FOUND.weak=true; T.s5hint=''; }
+    else if(POLEDATA.some(p=>p.id===id)){ T.s5hint='mid'; }
+    else { T.s5hint='notpole'; }
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===5){
+    if(id==='maglev'){ T.s6float=true; FOUND.float=true; doFloat(); saveProg(); renderFound(); renderStepExtra(); }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  attractK=0; clipHop=0; trainFloatK=0;
+  poleSlide={mag1n:0,mag1s:0,mag2n:0,mag2s:0};
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.magnetL){
+    const swing=Math.sin(t*1.4)*0.05*(1-attractK*0.7);
+    G.magnetL.position.x=-3.05+attractK*0.26;
+    G.magnetL.position.y=1.5+Math.sin(t*1.1)*0.02;
+    G.magnetL.rotation.z=swing+attractK*0.12;
+  }
+  if(G.magnetR){
+    const swing=Math.sin(t*1.4+1)*0.05*(1-attractK*0.7);
+    G.magnetR.position.x=-2.0-attractK*0.26;
+    G.magnetR.position.y=1.5+Math.cos(t*1.2)*0.02;
+    G.magnetR.rotation.z=swing-attractK*0.12;
+  }
+  POLEDATA.forEach(p=>{
+    const g=G[p.id]; if(!g) return;
+    g.position.x=POLE_BASE[p.id].x-poleSlide[p.id]*0.35;
+  });
+  if(G.clip) G.clip.position.y=0.34+clipHop;
+  if(G.maglev){
+    G.maglev.position.y=0.62+trainFloatK*0.42+(trainFloatK>0.9? Math.sin(t*1.8)*0.03:0);
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExList(listEl,items,ansObj,doneSet,ordArr,secNo){
+  listEl.innerHTML='';
+  items.forEach((it,ii)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    const q=document.createElement('div'); q.innerHTML='<b>'+(ii+1)+'.</b> '+biInl(it.q);
+    row.appendChild(q);
+    const optRow=document.createElement('div'); optRow.style.marginTop='6px';
+    (ordArr[ii]||it.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=it.opts[oi];
+      const b=document.createElement('button');
+      b.className='wordopt';
+      b.dataset.exsec=String(secNo); b.dataset.exi=String(ii); b.dataset.exo=String(oi);
+      if(ansObj[ii]===oi) b.classList.add('crossed');
+      if(exRevealed&&oi===it.a) b.classList.add('rightmark');
+      if(exRevealed&&ansObj[ii]===oi&&oi!==it.a) b.classList.add('wrongsel');
+      b.innerHTML=biInl(o);
+      b.onclick=()=>{
+        if(exRevealed) return;
+        ansObj[ii]=oi; saveProg(); renderExercises();
+      };
+      optRow.appendChild(b);
+    });
+    row.appendChild(optRow);
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(ii)? '✓ ' : '')+bi(it.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1Q.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1Q.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  renderExList($('ex1List'),EX1Q,EX1ANS,EX1DONE,EX1_ORD,1);
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2Q.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2Q.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderExList($('ex2List'),EX2Q,EX2ANS,EX2DONE,EX2_ORD,2);
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3Q.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3Q.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  renderExList($('ex3List'),EX3Q,EX3ANS,EX3DONE,EX3_ORD,3);
+}
+function exAnsweredCount(){
+  return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length);
+}
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1Q.map((q,ii)=>ii).filter(ii=>EX1ANS[ii]===EX1Q[ii].a));
+  EX2DONE=new Set(EX2Q.map((q,ii)=>ii).filter(ii=>EX2ANS[ii]===EX2Q[ii].a));
+  EX3DONE=new Set(EX3Q.map((q,ii)=>ii).filter(ii=>EX3ANS[ii]===EX3Q[ii].a));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1Q.map(q=>fyIdx(q.opts.length));
+  EX2_ORD=EX2Q.map(q=>fyIdx(q.opts.length));
+  EX3_ORD=EX3Q.map(q=>fyIdx(q.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderResults(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ CARDS1.forEach(c=>SORTED1.delete(c.id)); }
+  if(step===1){ FOUND.left=false; FOUND.right=false; }
+  if(step===2){ CARDS3.forEach(c=>SORTED3.delete(c.id)); }
+  if(step===3){ MEASURED.clear(); }
+  if(step===4){ FOUND.strong=false; FOUND.weak=false; }
+  if(step===5){ FOUND.float=false; }
+}
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, measured:[...MEASURED], sorted1:[...SORTED1], sorted3:[...SORTED3],
+    exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.measured)) MEASURED=new Set(s.measured.filter(id=>POLEDATA.some(p=>p.id===id)));
+  if(Array.isArray(s.sorted1)) SORTED1=new Set(s.sorted1);
+  if(Array.isArray(s.sorted3)) SORTED3=new Set(s.sorted3);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1Q.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2Q.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3Q.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    const take=(src,items)=>{ const out={}; if(src&&typeof src==='object') Object.keys(src).forEach(k=>{ const ii=Number(k); if(Number.isInteger(ii)&&ii>=0&&ii<items.length&&Number.isInteger(src[k])&&src[k]>=0&&src[k]<items[ii].opts.length) out[ii]=src[k]; }); return out; };
+    EX1ANS=take(s.exAns.a1,EX1Q); EX2ANS=take(s.exAns.a2,EX2Q); EX3ANS=take(s.exAns.a3,EX3Q);
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1Q.forEach((q,ii)=>{ if(EX1DONE.has(ii)) EX1ANS[ii]=q.a; });
+    EX2Q.forEach((q,ii)=>{ if(EX2DONE.has(ii)) EX2ANS[ii]=q.a; });
+    EX3Q.forEach((q,ii)=>{ if(EX3DONE.has(ii)) EX3ANS[ii]=q.a; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1correct=new Set(SORTED1); }
+  else if(i===1){ t.s2L=!!FOUND.left; t.s2R=!!FOUND.right; }
+  else if(i===2){ t.s3correct=new Set(SORTED3); }
+  else if(i===3){ t.s4poles=new Set(MEASURED); }
+  else if(i===4){ t.s5strong=!!FOUND.strong; t.s5weak=!!FOUND.weak; }
+  else if(i===5){ t.s6float=!!FOUND.float; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci5-5-6',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

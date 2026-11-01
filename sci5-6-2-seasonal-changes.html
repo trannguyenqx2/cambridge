@@ -1,0 +1,1352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.2 Seasonal changes — Những thay đổi theo mùa · Cambridge Primary Science 5</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 5" data-vi="← Môn Khoa học 5">← Science 5</a>
+    <span class="ttl i18n" data-en="6.2 Seasonal changes" data-vi="6.2 Những thay đổi theo mùa (Seasonal changes)">6.2 Seasonal changes</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Seasons and adaptations" data-vi="Bài 6 · Các mùa và sự thích nghi (Seasons and adaptations)">Unit 6 · Seasons and adaptations</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do living things cope when the seasons change?" data-vi="Sinh vật đối phó thế nào khi các mùa (seasons) thay đổi?">How do living things cope when the seasons change?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Sunrise → sunset" data-vi="Mặt trời mọc → lặn (sunrise → sunset)">Sunrise → sunset</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Length of day" data-vi="Độ dài ban ngày (length of day)">Length of day</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Plants adapt" data-vi="Cây thích nghi (adapt)">Plants adapt</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Animals adapt" data-vi="Động vật thích nghi (adapt)">Animals adapt</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="I can explain!" data-vi="Em giải thích được!">I can explain!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the season stage!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên sân khấu mùa!">🖱 Drag to look around · Scroll to zoom · Tap things on the season stage!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Primary Science 5 · Unit 6 Seasons and adaptations · Section 6.2. The season stage in this lesson is a simulation." data-vi="Khoa học Cambridge cấp 5 · Bài 6 Các mùa và sự thích nghi · Mục 6.2. Sân khấu mùa trong bài học này là mô phỏng.">Cambridge Primary Science 5 · Unit 6 Seasons and adaptations · Section 6.2. The season stage in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Primary Science Learner's Book 5 (2nd edition, 2021; ISBN 9781108742955), Unit 6 Seasons and adaptations, section 6.2, pages 142–148; Workbook 5 (ISBN 9781108742962), pages 88–92. All wording in this lesson is rewritten in our own words; no text is copied from the book. The Cape Town sunrise and sunset values on the data panel are the book's own example values." data-vi="Nguồn: Dựa trên sách Cambridge Primary Science Learner's Book 5 (bản 2, 2021; ISBN 9781108742955), Bài 6 Các mùa và sự thích nghi (Seasons and adaptations), mục 6.2, trang 142–148; Sách bài tập 5 (ISBN 9781108742962), trang 88–92. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Các số liệu giờ mặt trời mọc và lặn ở Cape Town trên bảng dữ liệu là số liệu ví dụ của chính cuốn sách.">Source: Based on Cambridge Primary Science Learner's Book 5 (2nd edition, 2021; ISBN 9781108742955), Unit 6 Seasons and adaptations, section 6.2, pages 142–148; Workbook 5 (ISBN 9781108742962), pages 88–92. All wording in this lesson is rewritten in our own words; no text is copied from the book. The Cape Town sunrise and sunset values on the data panel are the book's own example values.</p>
+    <p class="i18n" data-en="Objectives: describe how the tilt of the Earth can create different seasons in different places; make predictions about length of day; describe patterns in data; present and interpret data; use different sources to find information; make a conclusion based on scientific understanding. Key words: sunrise, sunset, season, adapt, chlorophyll, dormant, hibernate, hibernation, migrate, migration." data-vi="Mục tiêu: mô tả cách độ nghiêng của Trái Đất (Earth) tạo ra các mùa (seasons) khác nhau ở các nơi khác nhau; dự đoán về độ dài ban ngày (length of day); mô tả quy luật trong dữ liệu; trình bày và đọc hiểu dữ liệu; dùng nhiều nguồn để tìm thông tin; rút kết luận dựa trên hiểu biết khoa học. Từ khóa: sunrise (mặt trời mọc), sunset (mặt trời lặn), season (mùa), adapt (thích nghi), chlorophyll (diệp lục), dormant (ngủ đông / ngừng hoạt động), hibernate (ngủ đông), hibernation (sự ngủ đông), migrate (di cư), migration (sự di cư).">Objectives: describe how the tilt of the Earth can create different seasons in different places; make predictions about length of day; describe patterns in data; present and interpret data; use different sources to find information; make a conclusion based on scientific understanding. Key words: sunrise, sunset, season, adapt, chlorophyll, dormant, hibernate, hibernation, migrate, migration.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the Sun's path, sorting the data pattern, tapping the tree through autumn, meeting the hibernating bear and the migrating bird and whale, and a final hibernate-or-migrate sort. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Two ideas to watch: the Sun only SEEMS to move across the sky (the Earth spins), and Cape Town is in the southern half of the Earth, so its February days are long summer days that get shorter towards autumn. The exercises use the Workbook's own Karachi table, Doha graph questions and Arctic tern story, in submit mode." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào đường đi của Mặt trời, xếp quy luật dữ liệu, chạm vào cây qua mùa thu, gặp bạn gấu ngủ đông (hibernate) cùng bạn chim và cá voi di cư (migrate), và cuối cùng xếp nhóm ngủ đông hay di cư. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Hai ý cần lưu ý: Mặt trời chỉ DƯỜNG NHƯ di chuyển trên bầu trời (thật ra Trái Đất tự quay), và Cape Town nằm ở nửa phía nam của Trái Đất nên những ngày tháng Hai ở đó là ngày hè dài, ngắn dần khi thu sang. Phần bài tập dùng chính bảng số liệu Karachi, các câu hỏi về đồ thị Doha và câu chuyện chim nhạn Bắc Cực (Arctic tern) của Sách bài tập, theo chế độ nộp bài.">How it works: each step asks for one real action — tapping the Sun's path, sorting the data pattern, tapping the tree through autumn, meeting the hibernating bear and the migrating bird and whale, and a final hibernate-or-migrate sort. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Two ideas to watch: the Sun only SEEMS to move across the sky (the Earth spins), and Cape Town is in the southern half of the Earth, so its February days are long summer days that get shorter towards autumn. The exercises use the Workbook's own Karachi table, Doha graph questions and Arctic tern story, in submit mode.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="exgrid" id="ex3Grid"></div>
+      <div class="exhint" id="ex3Hint"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci5-6-2 "Seasonal changes" (Science 5, Unit 6)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= stage things ================= */
+const THINGS={
+  sunrise:{kind:'sunpath', emoji:'🌅', name:{en:'Sun at sunrise',vi:'Mặt trời lúc mọc (sunrise)'}, short:{en:'Sunrise',vi:'Mặt trời mọc'}, ring:0.95, labelY:1.25, fx:-5.4, fz:-4.6, fr:7.5},
+  noon:   {kind:'sunpath', emoji:'☀️', name:{en:'Sun at midday',vi:'Mặt trời giữa trưa (midday)'}, short:{en:'Midday',vi:'Giữa trưa'}, ring:0.95, labelY:1.25, fx:0, fz:-5.2, fr:8.5},
+  sunset: {kind:'sunpath', emoji:'🌇', name:{en:'Sun at sunset',vi:'Mặt trời lúc lặn (sunset)'}, short:{en:'Sunset',vi:'Mặt trời lặn'}, ring:0.95, labelY:1.25, fx:5.4, fz:-4.6, fr:7.5},
+  globe:  {kind:'model',   emoji:'🌍', name:{en:'Tilted Earth model',vi:'Mô hình Trái Đất nghiêng (tilt)'}, short:{en:'Tilted Earth',vi:'Trái Đất nghiêng'}, ring:0.85, labelY:1.95, fx:0.6, fz:2.6, fr:5.2},
+  tree:   {kind:'plant',   emoji:'🌳', name:{en:'Tree',vi:'Cây (tree)'}, short:{en:'Tree',vi:'Cây'}, ring:0.95, labelY:3.35, fx:-2.6, fz:-1.7, fr:6.2},
+  den:    {kind:'place',   emoji:'🕳️', name:{en:'Den (a cave home)',vi:'Hang ổ (den)'}, short:{en:'Den',vi:'Hang ổ'}, ring:1.1, labelY:1.6, fx:-4.4, fz:0.9, fr:6.0},
+  bear:   {kind:'animal',  emoji:'🐻', name:{en:'Bear',vi:'Gấu (bear)'}, short:{en:'Bear',vi:'Gấu'}, ring:0.6, labelY:1.05, fx:-2.9, fz:2.6, fr:5.0},
+  bird:   {kind:'animal',  emoji:'🕊️', name:{en:'Migrating bird',vi:'Chim di cư (migrate)'}, short:{en:'Bird',vi:'Chim'}, ring:0.5, labelY:0.75, fx:2.1, fz:-2.1, fr:5.4},
+  whale:  {kind:'animal',  emoji:'🐋', name:{en:'Grey whale',vi:'Cá voi xám (grey whale)'}, short:{en:'Grey whale',vi:'Cá voi xám'}, ring:0.95, labelY:0.95, fx:3.2, fz:1.3, fr:5.6}
+};
+const FOCUSORDER=['sunrise','noon','sunset','globe','tree','den','bear','bird','whale'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the stage',vi:'Trên sân khấu'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Length of day — Cape Town',vi:'Độ dài ban ngày — Cape Town'},
+  u2Brief:{en:'Sunrise and sunset times from the book. Length of day = sunset time − sunrise time.',vi:'Giờ mặt trời mọc và lặn theo sách. Độ dài ban ngày (length of day) = giờ lặn − giờ mọc.'},
+  dataPattern:{en:'Pattern: the days get shorter ↓',vi:'Quy luật: ngày ngắn dần ↓'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your season checklist.',vi:'Danh sách khám phá mùa của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundSun:{en:'Sunrise and sunset',vi:'Mặt trời mọc và lặn'},
+  foundAutumn:{en:'Leaves changed colour',vi:'Lá đã đổi màu'},
+  foundDormant:{en:'The dormant tree',vi:'Cây ngủ đông (dormant)'},
+  foundBear:{en:'A bear ready to hibernate',vi:'Gấu sẵn sàng ngủ đông (hibernate)'},
+  foundBird:{en:'A migrating bird',vi:'Chim đang di cư (migrate)'},
+  foundWhale:{en:'A migrating grey whale',vi:'Cá voi xám đang di cư (migrate)'},
+  binTrue:{en:'TRUE PATTERN ✓',vi:'QUY LUẬT ĐÚNG ✓'},
+  binNot:{en:'NOT THE PATTERN ✗',vi:'KHÔNG PHẢI QUY LUẬT ✗'},
+  binHib:{en:'HIBERNATE 😴',vi:'NGỦ ĐÔNG 😴 (hibernate)'},
+  binMig:{en:'MIGRATE 🕊️',vi:'DI CƯ 🕊️ (migrate)'},
+  tapTree:{en:'👆 Tap the tree on the stage — once for each change!',vi:'👆 Chạm vào cây trên sân khấu — mỗi lần chạm là một thay đổi!'},
+  stageColour:{en:'Leaves change colour',vi:'Lá đổi màu'},
+  stageFall:{en:'Leaves fall off',vi:'Lá rụng'},
+  stageDormant:{en:'Tree dormant in winter',vi:'Cây ngủ đông (dormant) vào mùa đông'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.2'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Karachi: complete the length of day',vi:'Bài tập 1 · Focus — Karachi: điền độ dài ban ngày (length of day)'},
+  ex1Inst:{en:'Sunrise and sunset in Karachi, Pakistan, starting on 16 March (06:40 → 18:41 = 12 h 01 min). For each later date, tap the correct length of day. The days are getting longer — Karachi is going from spring towards summer.',vi:'Giờ mặt trời mọc và lặn ở Karachi, Pakistan, bắt đầu từ 16 tháng Ba (06:40 → 18:41 = 12 h 01 phút). Với mỗi ngày sau, chạm vào độ dài ban ngày (length of day) đúng. Ngày đang dài ra — Karachi đang đi từ mùa xuân sang mùa hè.'},
+  ex2T:{en:'Exercise 2 · Practice — The Doha sunrise and sunset graph',vi:'Bài tập 2 · Practice — Đồ thị mặt trời mọc và lặn ở Doha'},
+  ex2Inst:{en:'The Workbook graph plots sunrise and sunset times in Doha, Qatar, for every month. The shaded band between the two lines is the length of day. Answer each question.',vi:'Đồ thị trong Sách bài tập vẽ giờ mặt trời mọc và lặn ở Doha, Qatar, cho từng tháng. Dải tô đậm giữa hai đường là độ dài ban ngày (length of day). Hãy trả lời từng câu.'},
+  ex3T:{en:'Exercise 3 · Challenge — Arctic terns: tap the TRUE sentences',vi:'Bài tập 3 · Challenge — Chim nhạn Bắc Cực (Arctic tern): chạm vào các câu ĐÚNG'},
+  ex3Inst:{en:'Arctic terns hatch in Greenland in summer, fly over the Atlantic Ocean to the Antarctic in September, feed on small fish in the Weddell Sea in the Antarctic summer, and fly back in April. Tap every sentence that is TRUE.',vi:'Chim nhạn Bắc Cực (Arctic tern) nở ở Greenland vào mùa hè, bay qua Đại Tây Dương (Atlantic Ocean) tới Nam Cực vào tháng Chín, ăn cá nhỏ ở biển Weddell vào mùa hè Nam Cực, và bay trở lại vào tháng Tư. Hãy chạm vào mọi câu ĐÚNG.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'sunrise',vi:'mặt trời mọc'},
+  {en:'sunset',vi:'mặt trời lặn'},
+  {en:'season',vi:'mùa'},
+  {en:'adapt',vi:'thích nghi'},
+  {en:'chlorophyll',vi:'diệp lục'},
+  {en:'dormant',vi:'ngủ đông / ngừng hoạt động'},
+  {en:'hibernate',vi:'ngủ đông'},
+  {en:'migrate',vi:'di cư'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Sunrise and sunset',vi:'Mặt trời mọc và lặn'}, word:{en:'sunrise',vi:'mặt trời mọc'},
+  q:{en:'Where does the Sun seem to rise, and where does it set?',vi:'Mặt trời dường như mọc ở đâu, và lặn ở đâu?'},
+  act:{en:'Tap the Sun at sunrise, then at midday, then at sunset — follow its path across the sky.',vi:'Chạm vào Mặt trời lúc mọc (sunrise), rồi giữa trưa, rồi lúc lặn (sunset) — đi theo đường đi của nó trên bầu trời.'},
+  see:{en:'Each Sun you tap bounces and shows its name: sunrise, midday, sunset.',vi:'Mỗi Mặt trời con chạm sẽ nảy lên và hiện tên: mọc (sunrise), giữa trưa, lặn (sunset).'},
+  concl:[
+    {en:'The Sun seems to rise in the east, move across the sky, and set in the west.',vi:'Mặt trời dường như mọc ở phía đông, di chuyển qua bầu trời, và lặn ở phía tây.'},
+    {en:'The Sun does not really move across the sky. The Earth spins round, and that spinning makes day and night.',vi:'Mặt trời không thật sự di chuyển qua bầu trời. Trái Đất (Earth) tự quay, và sự quay đó tạo ra ngày và đêm.'}]},
+ {tag:{en:'Length of day data',vi:'Dữ liệu độ dài ban ngày'}, word:{en:'length of day',vi:'độ dài ban ngày'},
+  q:{en:'What pattern do the Cape Town sunrise and sunset times show?',vi:'Các giờ mặt trời mọc và lặn ở Cape Town cho thấy quy luật gì?'},
+  act:{en:'Look at the data panel on the right: 1 February — 13 h 43 min, 20 March — 12 h 08 min. Tap a card, then tap TRUE PATTERN or NOT THE PATTERN. You need 5 or more right.',vi:'Nhìn bảng dữ liệu bên phải: 1 tháng Hai — 13 h 43 phút, 20 tháng Ba — 12 h 08 phút. Chạm vào một thẻ, rồi chạm QUY LUẬT ĐÚNG (TRUE PATTERN) hoặc KHÔNG PHẢI QUY LUẬT. Con cần đúng từ 5 thẻ trở lên.'},
+  see:{en:'Right cards turn green. Wrong cards shake — check the data panel again!',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Thẻ sai sẽ rung — hãy kiểm tra lại bảng dữ liệu!'},
+  concl:[
+    {en:'From February to March in Cape Town, sunrise gets later and sunset gets earlier, so each day is shorter than the one before.',vi:'Từ tháng Hai đến tháng Ba ở Cape Town, mặt trời mọc muộn hơn và lặn sớm hơn, nên mỗi ngày ngắn hơn ngày trước.'},
+    {en:'Cape Town is having summer in February. By March, autumn is coming and the days shrink. We can predict April will keep getting shorter — and test that prediction with new data.',vi:'Cape Town đang là mùa hè vào tháng Hai. Đến tháng Ba, mùa thu đang tới và ngày ngắn dần. Ta dự đoán (predict) tháng Tư sẽ tiếp tục ngắn hơn — và kiểm chứng dự đoán đó bằng dữ liệu mới.'}]},
+ {tag:{en:'Plants in autumn',vi:'Cây vào mùa thu'}, word:{en:'chlorophyll',vi:'diệp lục'},
+  q:{en:'How do trees adapt when autumn comes?',vi:'Cây thích nghi (adapt) thế nào khi mùa thu tới?'},
+  act:{en:'Tap the tree on the stage again and again. Watch the leaves after every tap: colours change, leaves fall, then the tree rests.',vi:'Chạm vào cây trên sân khấu nhiều lần. Quan sát lá sau mỗi lần chạm: lá đổi màu, lá rụng, rồi cây nghỉ ngơi.'},
+  see:{en:'First the green leaves turn yellow and red, then they fall off, and in winter the bare tree rests under a dusting of snow.',vi:'Đầu tiên lá xanh chuyển vàng và đỏ, rồi lá rụng, và vào mùa đông cây trơ cành nghỉ ngơi dưới một lớp tuyết mỏng.'},
+  concl:[
+    {en:'In autumn the days get shorter and there is less sunlight, so the leaves can no longer make food for the tree.',vi:'Vào mùa thu ngày ngắn hơn và ít nắng hơn, nên lá không còn làm được thức ăn cho cây.'},
+    {en:'The chlorophyll in the leaves breaks down, the leaves change colour and then fall off.',vi:'Chất diệp lục (chlorophyll) trong lá bị phân hủy, lá đổi màu rồi rụng.'},
+    {en:'In winter the tree is dormant — it rests. In spring, new leaf buds grow, and by summer it is covered in green leaves again.',vi:'Vào mùa đông cây ngủ đông (dormant) — nó nghỉ ngơi. Sang xuân, chồi lá mới mọc, và đến hè cây lại phủ đầy lá xanh.'}]},
+ {tag:{en:'Hibernation',vi:'Ngủ đông'}, word:{en:'hibernate',vi:'ngủ đông'},
+  q:{en:'How do some animals survive the cold winter?',vi:'Một số động vật sống sót qua mùa đông lạnh bằng cách nào?'},
+  act:{en:'Tap the bear, then tap its den (the cave). In autumn the bear eats a lot of food, then it sleeps deeply in its den all winter.',vi:'Chạm vào bạn gấu, rồi chạm vào hang ổ (den) của nó. Vào mùa thu gấu ăn rất nhiều, rồi ngủ say trong hang suốt mùa đông.'},
+  see:{en:'The bear bounces and gets a ring, and the den shows the home where it will hibernate.',vi:'Bạn gấu nảy lên và có vòng tròn, còn hang ổ cho thấy ngôi nhà nơi nó sẽ ngủ đông (hibernate).'},
+  concl:[
+    {en:'Hibernation is a deep sleep that lasts a long time. The body slows down: the heart beats slower, breathing slows and body temperature drops.',vi:'Ngủ đông (hibernation) là một giấc ngủ sâu kéo dài. Cơ thể chậm lại: tim đập chậm hơn, hơi thở chậm lại và thân nhiệt giảm.'},
+    {en:'Extra fat from all that autumn food helps the animal survive until spring, when it wakes up.',vi:'Lớp mỡ (fat) thêm từ thức ăn mùa thu giúp con vật sống sót tới mùa xuân, khi nó tỉnh dậy.'}]},
+ {tag:{en:'Migration',vi:'Di cư'}, word:{en:'migrate',vi:'di cư'},
+  q:{en:'What do animals do when winter takes their food away?',vi:'Động vật làm gì khi mùa đông lấy mất thức ăn của chúng?'},
+  act:{en:'Tap the bird and the grey whale. Both travel a very long way to find food and warm water.',vi:'Chạm vào bạn chim và cá voi xám (grey whale). Cả hai đều đi một quãng đường rất dài để tìm thức ăn và vùng nước ấm.'},
+  see:{en:'The bird flaps on its long flight and the whale swims through the sea — both of them are migrating.',vi:'Bạn chim vỗ cánh trên chuyến bay dài và cá voi bơi qua biển — cả hai đều đang di cư (migrate).'},
+  concl:[
+    {en:'Migration is a long journey to a place where there is food. Wildebeest walk about 3 000 km each year to find new grass where the rains fall.',vi:'Di cư (migration) là một chuyến đi dài tới nơi có thức ăn. Linh dương đầu bò (wildebeest) đi bộ khoảng 3 000 km mỗi năm để tìm cỏ mới nơi có mưa.'},
+    {en:'Grey whales swim about 8 000 km from the cold Arctic to warm water near Mexico, where their babies are born. Siberian cranes fly south to India at the end of summer.',vi:'Cá voi xám bơi khoảng 8 000 km từ Bắc Cực lạnh tới vùng nước ấm gần Mexico, nơi con non của chúng sinh ra. Sếu Siberia (Siberian cranes) bay về phía nam tới Ấn Độ vào cuối mùa hè.'}]},
+ {tag:{en:'Hibernate or migrate?',vi:'Ngủ đông hay di cư?'}, word:{en:'migration',vi:'sự di cư'},
+  q:{en:'Can you sort the animals by how they cope with the seasons?',vi:'Con có xếp được các động vật theo cách chúng đối phó với các mùa không?'},
+  act:{en:'Tap a card, then tap HIBERNATE or MIGRATE. You need 3 or more right.',vi:'Chạm vào một thẻ, rồi chạm NGỦ ĐÔNG (HIBERNATE) hoặc DI CƯ (MIGRATE). Con cần đúng từ 3 thẻ trở lên.'},
+  see:{en:'Right cards turn green.',vi:'Thẻ đúng sẽ chuyển màu xanh lá.'},
+  concl:[
+    {en:'I can make predictions about length of day and describe patterns in data.',vi:'Con dự đoán được về độ dài ban ngày (length of day) và mô tả được quy luật trong dữ liệu.'},
+    {en:'I can describe how the tilt of the Earth can create different seasons in different places.',vi:'Con mô tả được cách độ nghiêng (tilt) của Trái Đất tạo ra các mùa (seasons) khác nhau ở các nơi khác nhau.'},
+    {en:'I can say how plants adapt to the seasons: leaves change colour and fall, and trees are dormant in winter.',vi:'Con nói được cây thích nghi (adapt) với các mùa thế nào: lá đổi màu và rụng, cây ngủ đông (dormant) vào mùa đông.'},
+    {en:'I can explain hibernation and migration, and give an example of each.',vi:'Con giải thích được ngủ đông (hibernation) và di cư (migration), và nêu được một ví dụ cho mỗi loại.'}]}
+];
+const CARDS2=[
+ {id:'p_later',emoji:'🌅',en:'Sunrise gets later',vi:'Mặt trời mọc muộn hơn',ans:'truep'},
+ {id:'p_earlierset',emoji:'🌇',en:'Sunset gets earlier',vi:'Mặt trời lặn sớm hơn',ans:'truep'},
+ {id:'p_shorter',emoji:'📉',en:'The length of day gets shorter',vi:'Độ dài ban ngày ngắn hơn',ans:'truep'},
+ {id:'p_longer',emoji:'📈',en:'The length of day gets longer',vi:'Độ dài ban ngày dài hơn',ans:'notp'},
+ {id:'p_same',emoji:'➖',en:'The length of day stays the same',vi:'Độ dài ban ngày không đổi',ans:'notp'},
+ {id:'p_riseearly',emoji:'⏰',en:'Sunrise gets earlier',vi:'Mặt trời mọc sớm hơn',ans:'notp'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const CARDS6=[
+ {id:'a_bear',emoji:'🐻',en:'Bear',vi:'Gấu',ans:'hib'},
+ {id:'a_mouse',emoji:'🐭',en:'Mouse (stores nuts, sleeps underground)',vi:'Chuột (trữ hạt, ngủ dưới lòng đất)',ans:'hib'},
+ {id:'a_crane',emoji:'🕊️',en:'Siberian crane',vi:'Sếu Siberia',ans:'mig'},
+ {id:'a_whale',emoji:'🐋',en:'Grey whale',vi:'Cá voi xám',ans:'mig'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'Why do different places on Earth have different seasons?',vi:'Vì sao các nơi khác nhau trên Trái Đất có các mùa (seasons) khác nhau?'},
+  o:[{en:'The Moon moves around the Earth',vi:'Mặt Trăng di chuyển quanh Trái Đất'},{en:'The Earth’s axis is tilted as the Earth moves around the Sun',vi:'Trục Trái Đất nghiêng (tilt) khi Trái Đất di chuyển quanh Mặt trời'},{en:'The Sun moves across the sky',vi:'Mặt trời di chuyển qua bầu trời'}],a:1,
+  e:{en:'Seasons happen because the Earth’s axis is tilted on its journey around the Sun, so each half of the Earth leans towards the Sun at different times of year.',vi:'Các mùa xảy ra vì trục Trái Đất nghiêng (tilt) trên hành trình quanh Mặt trời, nên mỗi nửa Trái Đất hướng về phía Mặt trời vào các thời điểm khác nhau trong năm.'}},
+ {q:{en:'In Cape Town, from February to March, the length of day…',vi:'Ở Cape Town, từ tháng Hai đến tháng Ba, độ dài ban ngày (length of day)…'},
+  o:[{en:'gets longer',vi:'dài hơn'},{en:'stays the same',vi:'không đổi'},{en:'gets shorter',vi:'ngắn hơn'}],a:2,
+  e:{en:'Sunrise gets later (06:10 → 06:46) and sunset gets earlier (19:50 → 19:03), so the day shrinks from 13 h 40 min to 12 h 17 min.',vi:'Mặt trời mọc muộn hơn (06:10 → 06:46) và lặn sớm hơn (19:50 → 19:03), nên ngày ngắn lại từ 13 h 40 phút còn 12 h 17 phút.'}},
+ {q:{en:'In autumn, what happens when the chlorophyll in leaves breaks down?',vi:'Vào mùa thu, điều gì xảy ra khi chất diệp lục (chlorophyll) trong lá bị phân hủy?'},
+  o:[{en:'The leaves change colour and then fall off the tree',vi:'Lá đổi màu rồi rụng khỏi cây'},{en:'The leaves make much more food',vi:'Lá làm ra nhiều thức ăn hơn'},{en:'The leaves turn green and grow bigger',vi:'Lá chuyển xanh và to hơn'}],a:0,
+  e:{en:'With less sunlight the leaves cannot make food. The green chlorophyll breaks down, the leaves turn yellow, red and brown, and after a few weeks they fall.',vi:'Khi ít nắng hơn, lá không làm được thức ăn. Chất diệp lục (chlorophyll) xanh bị phân hủy, lá chuyển vàng, đỏ và nâu, và sau vài tuần lá rụng.'}},
+ {q:{en:'Arctic terns fly from Greenland to the Antarctic every year. This is an example of…',vi:'Chim nhạn Bắc Cực bay từ Greenland tới Nam Cực mỗi năm. Đây là ví dụ của…'},
+  o:[{en:'hibernation',vi:'ngủ đông (hibernation)'},{en:'migration',vi:'di cư (migration)'},{en:'being dormant',vi:'ngủ đông / ngừng hoạt động (dormant)'}],a:1,
+  e:{en:'The terns travel a long way to find food — that is migration. They even enjoy two summers: one in the Arctic and one in the Antarctic.',vi:'Chim nhạn đi một quãng đường dài để tìm thức ăn — đó là di cư (migration). Chúng còn được hưởng hai mùa hè: một ở Bắc Cực và một ở Nam Cực.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+/* Ex 1 · Focus — Karachi table (WB p.88): pick the correct length of day for each later date.
+   16 March 06:40→18:41 = 12:01 is given in the book; the rest are worked out from its sunrise/sunset values. */
+const EX1ROWS=[
+ {pre:{en:'+ 1 day — sunrise 06:39, sunset 18:42 → length of day =',vi:'+ 1 ngày — mọc 06:39, lặn 18:42 → độ dài ban ngày ='},
+  opts:[{en:'12 h 03 min',vi:'12 h 03 phút'},{en:'11 h 03 min',vi:'11 h 03 phút'},{en:'12 h 33 min',vi:'12 h 33 phút'}],a:0,
+  e:{en:'18:42 − 06:39 = 12 h 03 min. The day is already 2 minutes longer than on 16 March.',vi:'18:42 − 06:39 = 12 h 03 phút. Ngày đã dài hơn ngày 16 tháng Ba 2 phút.'}},
+ {pre:{en:'+ 1 week — sunrise 06:33, sunset 18:44 → length of day =',vi:'+ 1 tuần — mọc 06:33, lặn 18:44 → độ dài ban ngày ='},
+  opts:[{en:'13 h 11 min',vi:'13 h 11 phút'},{en:'12 h 11 min',vi:'12 h 11 phút'},{en:'12 h 01 min',vi:'12 h 01 phút'}],a:1,
+  e:{en:'18:44 − 06:33 = 12 h 11 min. Sunrise is earlier and sunset is later, so the day grows.',vi:'18:44 − 06:33 = 12 h 11 phút. Mặt trời mọc sớm hơn và lặn muộn hơn, nên ngày dài ra.'}},
+ {pre:{en:'+ 1 month — sunrise 06:10, sunset 18:54 → length of day =',vi:'+ 1 tháng — mọc 06:10, lặn 18:54 → độ dài ban ngày ='},
+  opts:[{en:'11 h 44 min',vi:'11 h 44 phút'},{en:'12 h 14 min',vi:'12 h 14 phút'},{en:'12 h 44 min',vi:'12 h 44 phút'}],a:2,
+  e:{en:'18:54 − 06:10 = 12 h 44 min.',vi:'18:54 − 06:10 = 12 h 44 phút.'}},
+ {pre:{en:'+ 3 months — sunrise 05:42, sunset 19:22 → length of day =',vi:'+ 3 tháng — mọc 05:42, lặn 19:22 → độ dài ban ngày ='},
+  opts:[{en:'13 h 40 min',vi:'13 h 40 phút'},{en:'13 h 20 min',vi:'13 h 20 phút'},{en:'12 h 40 min',vi:'12 h 40 phút'}],a:0,
+  e:{en:'19:22 − 05:42 = 13 h 40 min. Between March and June the Karachi days keep getting longer: spring is turning into summer.',vi:'19:22 − 05:42 = 13 h 40 phút. Từ tháng Ba đến tháng Sáu ngày ở Karachi cứ dài ra: mùa xuân đang chuyển thành mùa hè.'}}
+];
+/* Ex 2 · Practice — questions about the Workbook's Doha graph (WB p.90). */
+const EX2ROWS=[
+ {pre:{en:'What causes sunrise and sunset?',vi:'Điều gì gây ra mặt trời mọc (sunrise) và lặn (sunset)?'},
+  opts:[{en:'The Earth spins round',vi:'Trái Đất tự quay'},{en:'The Sun travels around the Earth',vi:'Mặt trời đi vòng quanh Trái Đất'},{en:'The Moon covers the Sun',vi:'Mặt Trăng che Mặt trời'}],a:0,
+  e:{en:'Sunrise and sunset happen because the Earth spins. The Sun only seems to move across the sky.',vi:'Mặt trời mọc và lặn xảy ra vì Trái Đất tự quay. Mặt trời chỉ dường như di chuyển qua bầu trời.'}},
+ {pre:{en:'On the graph, what does the shaded area between the sunrise and sunset lines show?',vi:'Trên đồ thị, vùng tô đậm giữa hai đường mọc và lặn cho thấy điều gì?'},
+  opts:[{en:'The night time',vi:'Thời gian ban đêm'},{en:'The length of day',vi:'Độ dài ban ngày (length of day)'},{en:'The temperature',vi:'Nhiệt độ'}],a:1,
+  e:{en:'The band between sunrise and sunset is the daylight part of each day — the length of day.',vi:'Dải giữa giờ mọc và giờ lặn là phần ban ngày của mỗi ngày — độ dài ban ngày (length of day).'}},
+ {pre:{en:'What pattern does the graph show between January and June in Doha?',vi:'Đồ thị cho thấy quy luật gì từ tháng Một đến tháng Sáu ở Doha?'},
+  opts:[{en:'Sunrise gets later and sunset gets earlier',vi:'Mặt trời mọc muộn hơn và lặn sớm hơn'},{en:'Nothing changes',vi:'Không có gì thay đổi'},{en:'Sunrise gets earlier and sunset gets later, so days get longer',vi:'Mặt trời mọc sớm hơn và lặn muộn hơn, nên ngày dài hơn'}],a:2,
+  e:{en:'From January to June the sunrise line falls and the sunset line rises: the shaded band widens, so Doha’s days get longer towards summer.',vi:'Từ tháng Một đến tháng Sáu đường mọc đi xuống và đường lặn đi lên: dải tô đậm rộng ra, nên ngày ở Doha dài dần về phía mùa hè.'}},
+ {pre:{en:'What causes the pattern on the graph?',vi:'Điều gì gây ra quy luật trên đồ thị?'},
+  opts:[{en:'Clouds hiding the Sun',vi:'Mây che Mặt trời'},{en:'The tilt of the Earth as it moves around the Sun',vi:'Độ nghiêng (tilt) của Trái Đất khi nó di chuyển quanh Mặt trời'},{en:'The Moon pulling the sea',vi:'Mặt Trăng kéo nước biển'}],a:1,
+  e:{en:'The changing length of day through the year is caused by the tilt of the Earth’s axis on its journey around the Sun.',vi:'Sự thay đổi độ dài ban ngày trong năm là do độ nghiêng (tilt) của trục Trái Đất trên hành trình quanh Mặt trời.'}}
+];
+/* Ex 3 · Challenge — Arctic terns (WB pp.91–92): tap the TRUE sentences. */
+const EX3CARDS=[
+ {id:'t_km',emoji:'🗺️',en:'Arctic terns fly about 40 000 km each year',vi:'Chim nhạn Bắc Cực bay khoảng 40 000 km mỗi năm',tru:true},
+ {id:'t_summers',emoji:'☀️',en:'They have summer in the Arctic and summer in the Antarctic',vi:'Chúng có mùa hè ở Bắc Cực và mùa hè ở Nam Cực',tru:true},
+ {id:'t_hib',emoji:'😴',en:'Arctic terns hibernate in Greenland',vi:'Chim nhạn Bắc Cực ngủ đông (hibernate) ở Greenland',tru:false},
+ {id:'t_fish',emoji:'🐟',en:'They feed on small fish in the Weddell Sea',vi:'Chúng ăn cá nhỏ ở biển Weddell',tru:true},
+ {id:'t_april',emoji:'🌸',en:'They fly back to the Arctic in April',vi:'Chúng bay trở lại Bắc Cực vào tháng Tư',tru:true},
+ {id:'t_pacific',emoji:'🌊',en:'They fly over the Pacific Ocean',vi:'Chúng bay qua Thái Bình Dương (Pacific Ocean)',tru:false}
+];
+const EX_TOTAL=EX1ROWS.length+EX2ROWS.length+EX3CARDS.filter(x=>x.tru).length; /* 4 + 4 + 4 = 12 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3SEL=new Set();
+let EX1_ORD=EX1ROWS.map(r=>fyIdx(r.opts.length));
+let EX2_ORD=EX2ROWS.map(r=>fyIdx(r.opts.length));
+let EX3_ORDER=mixOrder(EX3CARDS,c=>c.tru?'true':'false',3);
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci5-6-2';
+const SUMKEY='camb:sum:sci5-6-2';
+const BOT_CODE='sci5-6.2';
+let FOUND={rise:false,noon:false,set:false,autumn:false,dormant:false,bear:false,den:false,bird:false,whale:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1rise:false, s1noon:false, s1set:false,
+  s2correct:new Set(), s2sel:null,
+  s3stage:0,
+  s4bear:false, s4den:false,
+  s5bird:false, s5whale:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1rise&&T.s1noon&&T.s1set;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.s3stage>=3;
+  if(i===3) return T.s4bear&&T.s4den;
+  if(i===4) return T.s5bird&&T.s5whale;
+  if(i===5) return T.s6correct.size>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('You tapped: sunrise '+(T.s1rise?'✓':'…')+' · midday '+(T.s1noon?'✓':'…')+' · sunset '+(T.s1set?'✓':'…')+'. Tap the three Suns on the stage!',
+             'Con đã chạm: mọc (sunrise) '+(T.s1rise?'✓':'…')+' · giữa trưa '+(T.s1noon?'✓':'…')+' · lặn (sunset) '+(T.s1set?'✓':'…')+'. Hãy chạm ba Mặt trời trên sân khấu!');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap TRUE PATTERN or NOT THE PATTERN.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm QUY LUẬT ĐÚNG (TRUE PATTERN) hoặc KHÔNG PHẢI QUY LUẬT.');
+    return B('Cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2){
+    if(T.s3stage===0) return B('The tree is full of green summer leaves. Tap the tree!','Cây đang đầy lá xanh mùa hè. Hãy chạm vào cây!');
+    if(T.s3stage===1) return B('The chlorophyll is breaking down — the leaves are yellow and red. Tap the tree again!','Chất diệp lục (chlorophyll) đang phân hủy — lá đã vàng và đỏ. Chạm vào cây nữa!');
+    if(T.s3stage===2) return B('The leaves have fallen off. Tap the tree one more time!','Lá đã rụng hết. Chạm vào cây một lần nữa!');
+    return B('The bare tree is dormant, resting through the winter.','Cây trơ cành đang ngủ đông (dormant), nghỉ ngơi suốt mùa đông.');
+  }
+  if(i===3){
+    return B('Bear tapped '+(T.s4bear?'✓':'…')+' · Den tapped '+(T.s4den?'✓':'…')+'.',
+             'Đã chạm gấu '+(T.s4bear?'✓':'…')+' · Đã chạm hang ổ (den) '+(T.s4den?'✓':'…')+'.');
+  }
+  if(i===4){
+    return B('Bird tapped '+(T.s5bird?'✓':'…')+' · Grey whale tapped '+(T.s5whale?'✓':'…')+'.',
+             'Đã chạm chim '+(T.s5bird?'✓':'…')+' · Đã chạm cá voi xám (grey whale) '+(T.s5whale?'✓':'…')+'.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Does it hibernate, or migrate?','Con đã chọn thẻ “'+c.vi+'”. Nó ngủ đông (hibernate), hay di cư (migrate)?');
+    return B('Cards right: '+T.s6correct.size+' of 4. You need 3 or more.','Số thẻ đúng: '+T.s6correct.size+' / 4. Con cần đúng từ 3 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🌅',label:{en:'Sunrise',vi:'Mặt trời mọc (sunrise)'},got:T.s1rise},
+      {emoji:'☀️',label:{en:'Midday',vi:'Giữa trưa'},got:T.s1noon},
+      {emoji:'🌇',label:{en:'Sunset',vi:'Mặt trời lặn (sunset)'},got:T.s1set}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'truep',label:STR.binTrue,cls:'living'},{key:'notp',label:STR.binNot,cls:'nonliving'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===2){
+    const p=document.createElement('p'); p.style.margin='2px 0 6px'; p.innerHTML='<b>'+bi(STR.tapTree)+'</b>';
+    box.appendChild(p);
+    statPills(box,[
+      {emoji:'🍂',label:STR.stageColour,got:T.s3stage>=1},
+      {emoji:'🍃',label:STR.stageFall,got:T.s3stage>=2},
+      {emoji:'❄️',label:STR.stageDormant,got:T.s3stage>=3}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🐻',label:{en:'The bear',vi:'Bạn gấu'},got:T.s4bear},
+      {emoji:'🕳️',label:{en:'Its den',vi:'Hang ổ (den) của nó'},got:T.s4den}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🕊️',label:{en:'The bird',vi:'Bạn chim'},got:T.s5bird},
+      {emoji:'🐋',label:{en:'The grey whale',vi:'Cá voi xám (grey whale)'},got:T.s5whale}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'hib',label:STR.binHib,cls:'used'},{key:'mig',label:STR.binMig,cls:'never'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('sunrise'); bounceThing('sunrise'); setTimeout(()=>{ focusVisual('sunset'); bounceThing('sunset'); },900); }
+  else if(i===1){ demoSort(CARDS2,T.s2correct); }
+  else if(i===2){ focusThing('tree'); bounceThing('tree'); }
+  else if(i===3){ focusVisual('bear'); bounceThing('bear'); setTimeout(()=>focusVisual('den'),900); }
+  else if(i===4){ focusVisual('bird'); setTimeout(()=>focusVisual('whale'),900); }
+  else if(i===5){ demoSort(CARDS6,T.s6correct); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderData(){
+  const rows=[
+    {d:{en:'1 February',vi:'1 tháng Hai'},v:'13 h 43 min'},
+    {d:{en:'7 February',vi:'7 tháng Hai'},v:'13 h 33 min'},
+    {d:{en:'14 March',vi:'14 tháng Ba'},v:'12 h 21 min'},
+    {d:{en:'20 March',vi:'20 tháng Ba'},v:'12 h 08 min'}
+  ];
+  $('grpRows').innerHTML=rows.map(r=>'<div class="grprow"><span>'+biInl(r.d)+'</span><b style="font-size:17px">'+r.v+'</b></div>').join('')+
+    '<div class="grprow"><span>'+biInl(STR.dataPattern)+'</span><b>↓</b></div>';
+}
+function renderFound(){
+  const items=[
+    {got:(FOUND.rise&&FOUND.set)||doneSteps.has(0),label:STR.foundSun},
+    {got:FOUND.autumn||doneSteps.has(2),label:STR.foundAutumn},
+    {got:FOUND.dormant||doneSteps.has(2),label:STR.foundDormant},
+    {got:(FOUND.bear&&FOUND.den)||doneSteps.has(3),label:STR.foundBear},
+    {got:FOUND.bird||doneSteps.has(4),label:STR.foundBird},
+    {got:FOUND.whale||doneSteps.has(4),label:STR.foundWhale}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let leafMat=null, foliageG=null, fallenG=null, snowG=null, wingL=null, wingR=null;
+let treeStageVis=0, whaleBob=0;
+let lastRW=0, lastRH=0;
+const POND={x:3.2,z:1.3};
+const ORB={r:9.4, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildSunAt(x,y,z){
+  const g=new THREE.Group();
+  const s=new THREE.Mesh(new THREE.SphereGeometry(0.5,18,14),new THREE.MeshBasicMaterial({color:0xffd94d}));
+  g.add(s);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.72,18,14),new THREE.MeshBasicMaterial({color:0xffe98a,transparent:true,opacity:0.35}));
+  g.add(glow);
+  g.position.set(x,y,z); g.userData.baseY=y;
+  return g;
+}
+function buildGlobe(){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.55,10),stdMat(0x8a5a2b,0.9));
+  pole.position.y=0.27; g.add(pole);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.4,0.08,18),stdMat(0x8a5a2b,0.9));
+  base.position.y=0.04; g.add(base);
+  const tilt=new THREE.Group(); tilt.position.y=1.05; tilt.rotation.z=0.41; g.add(tilt);
+  const earth=new THREE.Mesh(new THREE.SphereGeometry(0.52,20,16),stdMat(0x2f7fd0,0.55));
+  tilt.add(earth);
+  [[0.25,0.28,0.4,0.16],[-0.3,0.1,0.4,0.13],[0.05,-0.32,0.42,0.14],[-0.15,0.38,-0.33,0.12]].forEach(p=>{
+    const c=new THREE.Mesh(new THREE.SphereGeometry(p[3],10,8),stdMat(0x4caf50,0.8));
+    c.position.set(p[0],p[1],p[2]); tilt.add(c);
+  });
+  const axis=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,1.5,8),stdMat(0x444444,0.6));
+  tilt.add(axis);
+  g.position.set(0.6,0,2.6); g.userData.baseY=0;
+  return g;
+}
+function buildTree(){
+  const g=new THREE.Group();
+  const trunk=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.23,1.5,10),stdMat(0x8a5a2b,0.95)));
+  trunk.position.y=0.75; g.add(trunk);
+  leafMat=stdMat(0x3f9e4d,0.9);
+  foliageG=new THREE.Group();
+  [[0,2.15,0,1.0],[-0.6,1.75,0.12,0.72],[0.6,1.8,-0.1,0.75],[0.1,2.6,-0.15,0.62]].forEach(p=>{
+    const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(p[3],16,12),leafMat));
+    s.position.set(p[0],p[1],p[2]); foliageG.add(s);
+  });
+  g.add(foliageG);
+  fallenG=new THREE.Group();
+  const fallCols=[0xe0912f,0xc25e2e,0x8a5a2b,0xd9a441];
+  [[-0.7,0.3],[0.5,-0.4],[0.9,0.5],[-0.3,-0.8],[0.2,0.9],[-0.9,-0.5],[0.7,0.05],[-0.1,0.2]].forEach((p,fi)=>{
+    const lf=new THREE.Mesh(new THREE.SphereGeometry(0.16,10,8),stdMat(fallCols[fi%4],0.95));
+    lf.scale.y=0.25; lf.position.set(p[0],0.04,p[1]); fallenG.add(lf);
+  });
+  fallenG.visible=false; g.add(fallenG);
+  snowG=new THREE.Group();
+  const sn=new THREE.Mesh(new THREE.CircleGeometry(0.95,24),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.9}));
+  sn.rotation.x=-Math.PI/2; sn.position.y=0.025; snowG.add(sn);
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.3,10,8),new THREE.MeshBasicMaterial({color:0xffffff}));
+  cap.scale.y=0.35; cap.position.set(0,1.52,0); snowG.add(cap);
+  snowG.visible=false; g.add(snowG);
+  g.position.set(-2.6,0,-1.7); g.userData.baseY=0;
+  return g;
+}
+function buildDen(){
+  const g=new THREE.Group();
+  const cave=shadowed(new THREE.Mesh(new THREE.SphereGeometry(1.05,18,12,0,Math.PI*2,0,Math.PI/2),stdMat(0x8d99a6,0.95)));
+  cave.scale.y=0.78; g.add(cave);
+  const mouth=new THREE.Mesh(new THREE.CircleGeometry(0.42,20),new THREE.MeshBasicMaterial({color:0x1c2733}));
+  mouth.position.set(0,0.34,0.88); mouth.rotation.x=-0.15; g.add(mouth);
+  [[-0.95,0.75],[0.9,0.8],[0.4,1.0]].forEach(p=>{
+    const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.22,0),stdMat(0x77828e,0.95)));
+    r.position.set(p[0],0.12,p[1]); g.add(r);
+  });
+  g.position.set(-4.4,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildBear(){
+  const g=new THREE.Group();
+  const fur=stdMat(0x7a5230,0.95);
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,16,12),fur));
+  body.scale.set(1.15,0.9,0.9); body.position.y=0.32; g.add(body);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19,14,12),fur));
+  head.position.set(0.34,0.5,0); g.add(head);
+  [-0.09,0.09].forEach(dz=>{
+    const ear=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),fur);
+    ear.position.set(0.3,0.67,dz); g.add(ear);
+  });
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6),stdMat(0x2b2b2b,0.6));
+  nose.position.set(0.52,0.47,0); g.add(nose);
+  g.position.set(-2.9,0,2.6); g.userData.baseY=0;
+  return g;
+}
+function buildBird(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.14,12,10),stdMat(0xf2f4f6,0.7)));
+  body.scale.set(1.6,0.8,0.8); g.add(body);
+  const beak=new THREE.Mesh(new THREE.ConeGeometry(0.035,0.16,8),stdMat(0xf2a03d,0.6));
+  beak.rotation.z=-Math.PI/2; beak.position.x=0.28; g.add(beak);
+  function wingB(side){
+    const pivot=new THREE.Group();
+    const geo=new THREE.PlaneGeometry(0.34,0.2);
+    geo.translate(0,0,side*0.18);
+    const w=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0xdfe7ee,side:THREE.DoubleSide}));
+    pivot.add(w); g.add(pivot);
+    return pivot;
+  }
+  wingR=wingB(1); wingL=wingB(-1);
+  g.position.set(2.1,1.75,-2.1); g.userData.baseY=1.75;
+  return g;
+}
+function buildPond(){
+  const g=new THREE.Group();
+  const disc=new THREE.Mesh(new THREE.CircleGeometry(1.25,36),stdMat(0x3fa7d6,0.35));
+  disc.rotation.x=-Math.PI/2; disc.position.y=0.02; disc.receiveShadow=true; g.add(disc);
+  const rim=shadowed(new THREE.Mesh(new THREE.TorusGeometry(1.25,0.055,10,40),stdMat(0xd9c08a,0.95)));
+  rim.rotation.x=Math.PI/2; rim.position.y=0.03; g.add(rim);
+  g.position.set(POND.x,0,POND.z); g.userData.baseY=0;
+  return g;
+}
+function buildWhale(){
+  const g=new THREE.Group();
+  const skin=stdMat(0x7d8fa3,0.6);
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,16,12),skin));
+  body.scale.set(1.7,0.72,0.8); body.position.y=0.05; g.add(body);
+  const tail=new THREE.Group(); tail.position.x=-0.55;
+  [-0.16,0.16].forEach(dz=>{
+    const fl=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.3,8),skin);
+    fl.rotation.x=dz>0? Math.PI/2.6 : -Math.PI/2.6; fl.position.set(0,0.05,dz); tail.add(fl);
+  });
+  g.add(tail);
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(0.025,6,6),stdMat(0x222222,0.5));
+  eye.position.set(0.38,0.12,0.18); g.add(eye);
+  g.position.set(POND.x,0.12,POND.z); g.userData.baseY=0.12;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,16,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8fbf7f,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x8ed081,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const path=new THREE.Mesh(new THREE.BoxGeometry(10.5,0.03,1.15),stdMat(0xead9a8,1));
+  path.position.set(0,0.005,0.75); path.receiveShadow=true; scene3.add(path);
+  [[-3.5,6.4,-8],[3.8,7.0,-9]].forEach(p=>{
+    const cl=new THREE.Group();
+    [[0,0,0,0.55],[0.6,0.05,0.1,0.4],[-0.55,0.02,-0.05,0.42]].forEach(s=>{
+      const m=new THREE.Mesh(new THREE.SphereGeometry(s[3],12,8),new THREE.MeshBasicMaterial({color:0xffffff}));
+      m.position.set(s[0],s[1],s[2]); m.scale.y=0.55; cl.add(m);
+    });
+    cl.position.set(p[0],p[1],p[2]); scene3.add(cl);
+  });
+  [[-1.2,3.1],[4.6,0.4],[-4.6,-1.2],[1.6,-3.2],[-0.6,-2.9],[4.8,-1.4]].forEach(p=>{
+    const t=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.3,6),stdMat(0x57b84c,1));
+    t.position.set(p[0],0.13,p[1]); scene3.add(t);
+  });
+  reg('sunrise',buildSunAt(-5.4,2.0,-4.6));
+  reg('noon',buildSunAt(0,5.8,-5.2));
+  reg('sunset',buildSunAt(5.4,2.0,-4.6));
+  reg('globe',buildGlobe());
+  reg('tree',buildTree());
+  reg('den',buildDen());
+  reg('bear',buildBear());
+  reg('bird',buildBird());
+  scene3.add(buildPond());
+  reg('whale',buildWhale());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.95); addProxy('sunrise',p,G.sunrise); }
+  { const p=sphProxy(0.95); addProxy('noon',p,G.noon); }
+  { const p=sphProxy(0.95); addProxy('sunset',p,G.sunset); }
+  { const p=sphProxy(0.8); p.position.set(0,0.95,0); addProxy('globe',p,G.globe); }
+  { const p=sphProxy(1.0); p.position.set(0,1.9,0); addProxy('tree',p,G.tree); }
+  { const p=sphProxy(1.0); p.position.set(0,0.5,0); addProxy('den',p,G.den); }
+  { const p=sphProxy(0.55); p.position.set(0,0.35,0); addProxy('bear',p,G.bear); }
+  { const p=sphProxy(0.5); addProxy('bird',p,G.bird); }
+  { const p=sphProxy(0.8); p.position.set(0,0.1,0); addProxy('whale',p,G.whale); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  if(id==='whale'){ addAnim(0.7,f=>{ whaleBob=Math.sin(f*Math.PI)*0.3; },()=>{ whaleBob=0; }); return; }
+  if(id==='bird'){ addAnim(0.6,f=>{ const s=1+Math.sin(f*Math.PI)*0.25; g.scale.set(s,s,s); },()=>g.scale.set(1,1,1)); return; }
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step. */
+const STEP_TARGETS=[
+  ['sunrise','noon','sunset'],
+  [],
+  ['tree'],
+  ['bear','den'],
+  ['bird','whale'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='sunrise'){ T.s1rise=true; FOUND.rise=true; }
+    else if(id==='noon'){ T.s1noon=true; FOUND.noon=true; }
+    else if(id==='sunset'){ T.s1set=true; FOUND.set=true; }
+    if(id==='sunrise'||id==='noon'||id==='sunset'){ saveProg(); renderFound(); renderStepExtra(); }
+  }else if(curStep===2&&id==='tree'){
+    if(T.s3stage<3) T.s3stage++;
+    treeStageVis=T.s3stage;
+    if(T.s3stage>=1) FOUND.autumn=true;
+    if(T.s3stage>=3) FOUND.dormant=true;
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='bear'){ T.s4bear=true; FOUND.bear=true; }
+    else if(id==='den'){ T.s4den=true; FOUND.den=true; }
+    if(id==='bear'||id==='den'){ saveProg(); renderFound(); renderStepExtra(); }
+  }else if(curStep===4){
+    if(id==='bird'){ T.s5bird=true; FOUND.bird=true; }
+    else if(id==='whale'){ T.s5whale=true; FOUND.whale=true; }
+    if(id==='bird'||id==='whale'){ saveProg(); renderFound(); renderStepExtra(); }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  if(i===2) treeStageVis=T? T.s3stage : 0;
+  else if(i>2) treeStageVis=3;
+  else treeStageVis=0;
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* tree through the seasons */
+  if(leafMat){
+    if(treeStageVis===1) leafMat.color.setHex(0xe0912f); else leafMat.color.setHex(0x3f9e4d);
+  }
+  if(foliageG) foliageG.visible=treeStageVis<2;
+  if(fallenG) fallenG.visible=treeStageVis>=2;
+  if(snowG) snowG.visible=treeStageVis>=3;
+  /* bird flight + wing flap */
+  if(G.bird){
+    const bx=2.1+Math.cos(t*0.5)*0.75, bz=-2.1+Math.sin(t*0.5)*0.75;
+    G.bird.position.set(bx,1.75+Math.sin(t*1.3)*0.12,bz);
+    G.bird.rotation.y=Math.atan2(-Math.cos(t*0.5)*0.75,-Math.sin(t*0.5)*0.75);
+    const flap=0.25+Math.sin(t*14)*0.55;
+    if(wingR) wingR.rotation.x=flap;
+    if(wingL) wingL.rotation.x=-flap;
+  }
+  /* whale swim */
+  if(G.whale){
+    const a=now*0.0007;
+    G.whale.position.set(POND.x+Math.cos(a)*0.5,0.12+whaleBob,POND.z+Math.sin(a)*0.5);
+    G.whale.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a));
+  }
+  /* label + ring follow */
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh&&ringMesh.visible&&(lastFocus==='bird'||lastFocus==='whale')){
+      ringMesh.position.set(p.x,0.045,p.z);
+    }
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderOptRows(listEl,rows,ansObj,ordArr,doneSet){
+  listEl.innerHTML='';
+  rows.forEach((r,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(r.pre)+' ';
+    (ordArr[si]||r.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=r.opts[oi];
+      let cls='wordopt';
+      if(ansObj[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===r.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos<r.opts.length-1?' / ':'');
+    });
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(r.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+  listEl.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10);
+      saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — Karachi length-of-day rows */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1ROWS.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1ROWS.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  renderOptRows($('ex1List'),EX1ROWS,EX1ANS,EX1_ORD,EX1DONE);
+  /* Ex 2 · Practice — Doha graph questions */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2ROWS.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2ROWS.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderOptRows($('ex2List'),EX2ROWS,EX2ANS,EX2_ORD,EX2DONE);
+  /* Ex 3 · Challenge — Arctic terns: tap the TRUE sentences */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=4);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=4);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3Hint').innerHTML='';
+  const g3=$('ex3Grid'); g3.innerHTML='';
+  EX3_ORDER.forEach(it=>{
+    const sel=EX3SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.tru) b.className='excard right';
+      else if(sel&&!it.tru) b.className='excard wrongsel';
+      else if(!sel&&it.tru) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX3SEL.has(it.id)) EX3SEL.delete(it.id); else EX3SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g3.appendChild(b);
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+EX3SEL.size); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1ROWS.map((r,si)=>si).filter(si=>EX1ANS[si]===EX1ROWS[si].a));
+  EX2DONE=new Set(EX2ROWS.map((r,si)=>si).filter(si=>EX2ANS[si]===EX2ROWS[si].a));
+  EX3DONE=new Set(EX3CARDS.filter(x=>x.tru&&EX3SEL.has(x.id)).map(x=>x.id));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3SEL=new Set();
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1ROWS.map(r=>fyIdx(r.opts.length));
+  EX2_ORD=EX2ROWS.map(r=>fyIdx(r.opts.length));
+  EX3_ORDER=mixOrder(EX3CARDS,c=>c.tru?'true':'false',3);
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderData(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.rise=false; FOUND.noon=false; FOUND.set=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.autumn=false; FOUND.dormant=false; }
+  if(step===3){ FOUND.bear=false; FOUND.den=false; }
+  if(step===4){ FOUND.bird=false; FOUND.whale=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= MIGRATION — persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,s3:[...EX3SEL]}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1ROWS.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2ROWS.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.filter(id=>EX3CARDS.some(x=>x.id===id)));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1ROWS.length&&EX1ROWS[si].opts[s.exAns.a1[k]]) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2ROWS.length&&EX2ROWS[si].opts[s.exAns.a2[k]]) EX2ANS[si]=s.exAns.a2[k]; });
+    if(Array.isArray(s.exAns.s3)) EX3SEL=new Set(s.exAns.s3.filter(id=>EX3CARDS.some(x=>x.id===id)));
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1DONE.forEach(si=>{ EX1ANS[si]=EX1ROWS[si].a; });
+    EX2DONE.forEach(si=>{ EX2ANS[si]=EX2ROWS[si].a; });
+    EX3SEL=new Set(EX3DONE);
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1rise=!!FOUND.rise; t.s1noon=!!FOUND.noon; t.s1set=!!FOUND.set; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); }
+  else if(i===2){ t.s3stage=3; }
+  else if(i===3){ t.s4bear=true; t.s4den=true; }
+  else if(i===4){ t.s5bird=!!FOUND.bird; t.s5whale=!!FOUND.whale; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci5-6-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>
