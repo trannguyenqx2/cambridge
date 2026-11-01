@@ -1,0 +1,1361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>1.4 Respiration — Hô hấp tế bào · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="1.4 Respiration" data-vi="1.4 Hô hấp tế bào">1.4 Respiration</span>
+    <span class="eqchip i18n" data-en="Unit 1 · Respiration" data-vi="Bài 1 · Hô hấp (Respiration)">Unit 1 · Respiration</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does every living cell get the energy it needs?" data-vi="Mọi tế bào sống lấy năng lượng cần thiết bằng cách nào?">How does every living cell get the energy it needs?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Food → glucose" data-vi="Thức ăn → glucose (glucose)">Food → glucose</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Mitochondria release energy" data-vi="Ti thể giải phóng năng lượng (mitochondria)">Mitochondria release energy</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Some energy becomes heat" data-vi="Một phần năng lượng thành nhiệt (heat)">Some energy becomes heat</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Breathing ≠ respiration" data-vi="Thở ≠ hô hấp (breathing ≠ respiration)">Breathing ≠ respiration</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 1 Respiration · Section 1.4. The bench, flasks and temperatures in this lesson are a simulation." data-vi="Khoa học Cambridge Trung học cơ sở 8 · Bài 1 Hô hấp (Respiration) · Mục 1.4. Bàn thí nghiệm, các bình và nhiệt độ trong bài này là mô phỏng.">Cambridge Lower Secondary Science 8 · Unit 1 Respiration · Section 1.4. The bench, flasks and temperatures in this lesson are a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 1 Respiration, section 1.4, pages 19–24; Workbook 8 (ISBN 9781108742856), pages 13–15. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 1 Respiration (Hô hấp), mục 1.4, trang 19–24; Workbook 8 (ISBN 9781108742856), trang 13–15. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 1 Respiration, section 1.4, pages 19–24; Workbook 8 (ISBN 9781108742856), pages 13–15. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: explain how every living cell gets the energy it needs; investigate how respiration releases some energy as heat; explain the difference between breathing and respiration. Key words: glucose, mitochondria (plus aerobic respiration, reactants, products, breathing)." data-vi="Mục tiêu: giải thích cách mọi tế bào sống lấy năng lượng cần thiết; khảo sát việc hô hấp giải phóng một phần năng lượng thành nhiệt; giải thích sự khác nhau giữa thở (breathing) và hô hấp (respiration). Từ khóa: glucose (glucose), mitochondria (ti thể), aerobic respiration (hô hấp hiếu khí), reactants (chất phản ứng), products (sản phẩm), breathing (thở).">Objectives: explain how every living cell gets the energy it needs; investigate how respiration releases some energy as heat; explain the difference between breathing and respiration. Key words: glucose, mitochondria (plus aerobic respiration, reactants, products, breathing).</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping things on the 3D bench, sorting the equation cards, or measuring the pea flasks. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The pea-flask temperatures (both flasks start at 18 °C; the live flask reaches 23 °C) are illustrative simulation values: the book's investigation asks learners to record their own measurements over time and plot them as a line graph. Excluded from the interactive steps: the thermogram discussion and the group poster/presentation activity from the book are covered in the conclusions and exercises instead (a photograph discussion and a group presentation cannot be machine-checked); the self-assessment checklist is reflected in the final step's 'I can…' conclusion." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm các vật trên bàn 3D, xếp thẻ phương trình, hoặc đo hai bình đậu. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Nhiệt độ hai bình đậu (cả hai bắt đầu ở 18 °C; bình sống đạt 23 °C) là số liệu mô phỏng minh họa: thí nghiệm trong sách yêu cầu học sinh tự ghi số đo theo thời gian và vẽ đồ thị đường. Không đưa vào các bước tương tác: phần thảo luận ảnh nhiệt (thermogram) và hoạt động nhóm làm poster/thuyết trình của sách được thay bằng kết luận và bài tập (thảo luận ảnh và thuyết trình nhóm không thể kiểm tra bằng máy); bảng tự đánh giá được phản ánh trong kết luận 'I can…' của bước cuối.">How it works: each step asks for one real action — tapping things on the 3D bench, sorting the equation cards, or measuring the pea flasks. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The pea-flask temperatures (both flasks start at 18 °C; the live flask reaches 23 °C) are illustrative simulation values: the book's investigation asks learners to record their own measurements over time and plot them as a line graph. Excluded from the interactive steps: the thermogram discussion and the group poster/presentation activity from the book are covered in the conclusions and exercises instead (a photograph discussion and a group presentation cannot be machine-checked); the self-assessment checklist is reflected in the final step's 'I can…' conclusion.</p>
+    </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1AppList"></div>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex3BinBreath"></button>
+        <button class="binbtn nonliving" id="ex3BinResp"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-1-4 "Respiration" (Science 8, Unit 1)
+   Shared-engine shell + inline content script (see API.md / BUILDER-BRIEF).
+   Book: Cambridge Lower Secondary Science Stage 8, 2nd ed.
+   LB 1.4 pp.19-24 · WB 1.4 pp.13-15. All wording paraphrased.
+   ===================================================================== */
+
+/* ================= scene things ================= */
+const THINGS={
+  food:     {emoji:'🍞', name:{en:'Food with carbohydrate',vi:'Thức ăn có carbohydrate'}, short:{en:'Food',vi:'Thức ăn'}, ring:0.8, labelY:1.15, fx:-4.2, fz:0.6, fr:5.2},
+  glucose:  {emoji:'🍬', name:{en:'Glucose',vi:'Glucose (glucose)'}, short:{en:'Glucose',vi:'Glucose'}, ring:0.7, labelY:1.05, fx:-2.8, fz:-1.5, fr:4.6},
+  blood:    {emoji:'🩸', name:{en:'Blood vessel',vi:'Mạch máu (blood)'}, short:{en:'Blood',vi:'Máu'}, ring:0.9, labelY:1.0, fx:-1.4, fz:1.5, fr:5.0},
+  cell:     {emoji:'🦠', name:{en:'A living cell',vi:'Một tế bào sống (cell)'}, short:{en:'Cell',vi:'Tế bào'}, ring:1.0, labelY:1.6, fx:0.2, fz:-0.7, fr:5.0},
+  mito:     {emoji:'⚡', name:{en:'Mitochondrion (enlarged)',vi:'Ti thể (mitochondrion) — phóng to'}, short:{en:'Mitochondrion',vi:'Ti thể'}, ring:0.75, labelY:1.1, fx:1.9, fz:1.4, fr:4.6},
+  oxygen:   {emoji:'🔵', name:{en:'Oxygen',vi:'Oxygen (oxygen)'}, short:{en:'Oxygen',vi:'Oxygen'}, ring:0.6, labelY:1.0, fx:2.0, fz:-2.0, fr:4.6},
+  flaskLive:{emoji:'🌱', name:{en:'Flask A — live germinating peas',vi:'Bình A — đậu sống đang nảy mầm'}, short:{en:'Live peas flask',vi:'Bình đậu sống'}, ring:0.85, labelY:1.7, fx:-4.4, fz:-2.2, fr:5.2},
+  flaskDead:{emoji:'⚪', name:{en:'Flask B — dead peas',vi:'Bình B — đậu đã chết'}, short:{en:'Dead peas flask',vi:'Bình đậu chết'}, ring:0.85, labelY:1.7, fx:-1.2, fz:-2.6, fr:5.2},
+  person:   {emoji:'🧍', name:{en:'A person breathing',vi:'Một người đang thở (breathing)'}, short:{en:'Person',vi:'Người'}, ring:0.8, labelY:2.1, fx:3.8, fz:0.4, fr:5.4},
+  chairObj: {emoji:'🪑', name:{en:'Chair',vi:'Ghế (chair)'}, short:{en:'Chair',vi:'Ghế'}, ring:0.6, labelY:1.3, fx:4.5, fz:-1.6, fr:5.0}
+};
+const FOCUSORDER=['food','glucose','blood','cell','mito','oxygen','flaskLive','flaskDead','person','chairObj'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to collect evidence, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn có căn cứ, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'Respiration record',vi:'Sổ ghi hô hấp (respiration)'},
+  u2Brief:{en:'What you have collected and measured so far.',vi:'Những gì con đã thu thập và đo được.'},
+  recChain:{en:'🍞 Energy chain to the cells',vi:'🍞 Chuỗi năng lượng tới tế bào (cell)'},
+  recSorted:{en:'🧪 Equation cards sorted',vi:'🧪 Thẻ phương trình đã xếp'},
+  recFlasks:{en:'🌡 Flask temperatures',vi:'🌡 Nhiệt độ hai bình'},
+  recLive:{en:'Live peas flask',vi:'Bình đậu sống'},
+  recDead:{en:'Dead peas flask',vi:'Bình đậu chết'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your respiration checklist.',vi:'Danh sách kiểm tra hô hấp của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundFood:{en:'I traced energy from food',vi:'Con đã theo dấu năng lượng từ thức ăn'},
+  foundMito:{en:'I found a mitochondrion',vi:'Con đã tìm thấy ti thể (mitochondrion)'},
+  foundFlasks:{en:'I set up both pea flasks',vi:'Con đã lắp cả hai bình đậu'},
+  foundHeat:{en:'I measured the heat from respiration',vi:'Con đã đo nhiệt từ hô hấp (respiration)'},
+  foundDiff:{en:'I separated breathing from respiration',vi:'Con đã phân biệt thở (breathing) và hô hấp (respiration)'},
+  binReact:{en:'REACTANTS ➡ in',vi:'CHẤT PHẢN ỨNG ➡ vào'},
+  binProd:{en:'PRODUCTS ➡ made',vi:'SẢN PHẨM ➡ tạo ra'},
+  binRel:{en:'ENERGY RELEASED ⚡',vi:'NĂNG LƯỢNG GIẢI PHÓNG ⚡'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 1.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 1.4'},
+  exIntro:{en:'Workbook-style tasks about respiration by yeast, plus the breathing–respiration check. They do not change your steps.',vi:'Các bài kiểu sách bài tập (Workbook) về hô hấp của nấm men (yeast), cộng thêm phần phân biệt thở và hô hấp. Chúng không ảnh hưởng tới các bước học.'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Respiration by yeast: apparatus and thermometer',vi:'Bài tập 1 · Focus — Hô hấp của nấm men: dụng cụ và nhiệt kế (thermometer)'},
+  ex1Inst:{en:'Sofia mixes yeast with water, measures 25 cm³ into an insulated cup and adds 25 cm³ of sugar solution. (a) Choose the missing apparatus she needs to measure those volumes accurately. (b) Tick every CORRECT way to use the thermometer.',vi:'Sofia trộn nấm men (yeast) với nước, đong 25 cm³ cho vào cốc cách nhiệt rồi thêm 25 cm³ dung dịch đường. (a) Chọn dụng cụ còn thiếu để đong chính xác các thể tích đó. (b) Đánh dấu mọi cách dùng nhiệt kế (thermometer) ĐÚNG.'},
+  ex2T:{en:'Exercise 2 · Practice — Predict, explain, and spot the missing control',vi:'Bài tập 2 · Practice — Dự đoán, giải thích và tìm phần đối chứng còn thiếu'},
+  ex2Inst:{en:'Choose the best answer to each question about Sofia\u2019s yeast cup.',vi:'Chọn đáp án tốt nhất cho mỗi câu về cốc nấm men của Sofia.'},
+  ex3T:{en:'Exercise 3 · Challenge — Test a hypothesis, and breathing or respiration?',vi:'Bài tập 3 · Challenge — Kiểm tra một giả thuyết, và thở hay hô hấp?'},
+  ex3Inst:{en:'(a) Choose the best design choice for each row, to test: “The more sugar the yeast is given, the faster it will respire.” (b) Sort the cards: tap a card, then tap BREATHING or RESPIRATION.',vi:'(a) Chọn cách thiết kế tốt nhất cho mỗi hàng để kiểm tra: “Nấm men được cho càng nhiều đường thì hô hấp càng nhanh.” (b) Xếp thẻ: chạm một thẻ rồi chạm THỞ (BREATHING) hoặc HÔ HẤP (RESPIRATION).'},
+  binBreath:{en:'BREATHING 🌬',vi:'THỞ 🌬 (breathing)'},
+  binResp:{en:'RESPIRATION ⚡',vi:'HÔ HẤP ⚡ (respiration)'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'glucose',vi:'glucose — đường đơn từ carbohydrate'},
+  {en:'mitochondria',vi:'ti thể (mitochondria) — nơi hô hấp diễn ra'},
+  {en:'aerobic respiration',vi:'hô hấp hiếu khí (aerobic respiration) — dùng oxygen'},
+  {en:'reactants',vi:'chất phản ứng (reactants)'},
+  {en:'products',vi:'sản phẩm (products)'},
+  {en:'breathing',vi:'thở (breathing) — đưa không khí ra vào phổi'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Energy from food',vi:'Năng lượng từ thức ăn'}, word:{en:'glucose',vi:'glucose'},
+  q:{en:'How does energy from food reach every cell in your body?',vi:'Năng lượng từ thức ăn tới mọi tế bào (cell) trong cơ thể bằng cách nào?'},
+  act:{en:'On the bench, tap the food, then the glucose, then the blood vessel — follow the energy on its journey.',vi:'Trên bàn, chạm vào thức ăn, rồi glucose (glucose), rồi mạch máu (blood) — theo hành trình của năng lượng.'},
+  see:{en:'Each thing you tap bounces and gets a ring, and your record fills in.',vi:'Mỗi vật con chạm sẽ nảy lên, có vòng tròn và sổ ghi của con được điền thêm.'},
+  concl:[
+    {en:'Carbohydrates in food are broken down to a sugar called glucose.',vi:'Carbohydrate (carbohydrates) trong thức ăn được phân giải thành một loại đường gọi là glucose (glucose).'},
+    {en:'The blood carries glucose to every cell in the body.',vi:'Máu (blood) đưa glucose tới mọi tế bào trong cơ thể.'},
+    {en:'We need energy to move, to send signals along neurones, and to keep warm.',vi:'Ta cần năng lượng để vận động, để truyền tín hiệu dọc tế bào thần kinh (neurones) và để giữ ấm.'}]},
+ {tag:{en:'The respiration equation',vi:'Phương trình hô hấp'}, word:{en:'aerobic respiration',vi:'hô hấp hiếu khí'},
+  q:{en:'What goes into respiration, what is made, and what is released?',vi:'Cái gì đi vào hô hấp (respiration), cái gì được tạo ra, và cái gì được giải phóng?'},
+  act:{en:'Tap a card, then tap REACTANTS, PRODUCTS or ENERGY RELEASED. Sort at least 5 cards correctly.',vi:'Chạm một thẻ rồi chạm CHẤT PHẢN ỨNG (REACTANTS), SẢN PHẨM (PRODUCTS) hoặc NĂNG LƯỢNG GIẢI PHÓNG (ENERGY RELEASED). Xếp đúng ít nhất 5 thẻ.'},
+  see:{en:'Right cards turn green and stay in place.',vi:'Thẻ đúng sẽ chuyển xanh và ở yên.'},
+  concl:[
+    {en:'Word equation: glucose + oxygen → carbon dioxide + water.',vi:'Phương trình chữ: glucose + oxygen (oxygen) → carbon dioxide (carbon dioxide) + nước (water).'},
+    {en:'Glucose and oxygen are the reactants; carbon dioxide and water are the products.',vi:'Glucose và oxygen là chất phản ứng (reactants); carbon dioxide và nước là sản phẩm (products).'},
+    {en:'Energy is released in small, controlled amounts — just what the cell needs.',vi:'Năng lượng được giải phóng từng chút một, có kiểm soát — vừa đủ nhu cầu của tế bào.'}]},
+ {tag:{en:'Inside the mitochondrion',vi:'Bên trong ti thể'}, word:{en:'mitochondria',vi:'ti thể'},
+  q:{en:'Where inside the cell is energy released from glucose?',vi:'Năng lượng được giải phóng từ glucose ở đâu bên trong tế bào?'},
+  act:{en:'Tap the enlarged mitochondrion, then tap the oxygen, then tap the glucose that it uses.',vi:'Chạm vào ti thể (mitochondrion) phóng to, rồi chạm oxygen (oxygen), rồi chạm glucose mà nó sử dụng.'},
+  see:{en:'The mitochondrion glows as the reactants arrive.',vi:'Ti thể sáng lên khi các chất phản ứng tới nơi.'},
+  concl:[
+    {en:'Respiration happens inside tiny structures called mitochondria, found in cells.',vi:'Hô hấp (respiration) diễn ra bên trong các cấu trúc nhỏ gọi là ti thể (mitochondria) nằm trong tế bào.'},
+    {en:'Aerobic respiration uses oxygen — that is what “aerobic” means.',vi:'Hô hấp hiếu khí (aerobic respiration) sử dụng oxygen — “aerobic” nghĩa là như vậy.'},
+    {en:'Cells that need a lot of energy, like neurones, contain more mitochondria than cells like cheek cells.',vi:'Tế bào cần nhiều năng lượng, như tế bào thần kinh (neurones), chứa nhiều ti thể hơn tế bào má (cheek cells).'}]},
+ {tag:{en:'Set up the pea flasks',vi:'Lắp hai bình đậu'}, word:{en:'germinating',vi:'đang nảy mầm'},
+  q:{en:'How do we test whether respiring seeds release heat?',vi:'Làm sao kiểm tra hạt đang hô hấp có tỏa nhiệt không?'},
+  act:{en:'Tap Flask A (live, germinating peas) and Flask B (dead peas). Everything else — flask, cotton wool, insulation, thermometer — is kept exactly the same.',vi:'Chạm Bình A (đậu sống, đang nảy mầm (germinating)) và Bình B (đậu đã chết). Mọi thứ còn lại — bình, bông, lớp cách nhiệt, nhiệt kế — giữ giống hệt nhau.'},
+  see:{en:'Both flasks start at 18 °C in this simulation.',vi:'Cả hai bình đều bắt đầu ở 18 °C trong mô phỏng này.'},
+  concl:[
+    {en:'The only variable changed is whether the peas are alive and germinating.',vi:'Biến duy nhất thay đổi là đậu còn sống và đang nảy mầm hay không.'},
+    {en:'Variables kept the same include the number of peas, the flask, the insulation and the thermometer.',vi:'Các biến giữ nguyên gồm số hạt đậu, bình, lớp cách nhiệt và nhiệt kế (thermometer).'},
+    {en:'The variable measured is the temperature inside each flask.',vi:'Biến được đo là nhiệt độ bên trong mỗi bình.'}]},
+ {tag:{en:'Measure the heat',vi:'Đo nhiệt tỏa ra'}, word:{en:'heat energy',vi:'năng lượng nhiệt'},
+  q:{en:'After some time, which flask has warmed up — and why?',vi:'Sau một thời gian, bình nào đã ấm lên — và vì sao?'},
+  act:{en:'Time has passed in the simulation. Tap Flask A to take its temperature, then tap Flask B to take its temperature.',vi:'Thời gian đã trôi qua trong mô phỏng. Chạm Bình A để đo nhiệt độ của nó, rồi chạm Bình B để đo nhiệt độ.'},
+  see:{en:'The live peas flask reads 23 °C; the dead peas flask still reads 18 °C (illustrative simulation values).',vi:'Bình đậu sống chỉ 23 °C; bình đậu chết vẫn chỉ 18 °C (số liệu mô phỏng minh họa).'},
+  concl:[
+    {en:'Germinating peas respire fast because they need a lot of energy to grow.',vi:'Đậu đang nảy mầm hô hấp nhanh vì chúng cần nhiều năng lượng để lớn lên.'},
+    {en:'In respiration, some of the energy from glucose is changed to heat — so respiring cells grow a little warmer than their surroundings.',vi:'Trong hô hấp (respiration), một phần năng lượng từ glucose biến thành nhiệt (heat) — nên tế bào đang hô hấp ấm hơn xung quanh một chút.'},
+    {en:'That is also why your body is warmer than the chair you sit on.',vi:'Đó cũng là lý do cơ thể con ấm hơn chiếc ghế con ngồi.'}]},
+ {tag:{en:'Breathing ≠ respiration',vi:'Thở ≠ hô hấp'}, word:{en:'breathing',vi:'thở'},
+  q:{en:'Are breathing and respiration the same thing?',vi:'Thở (breathing) và hô hấp (respiration) có phải là cùng một việc không?'},
+  act:{en:'Tap the breathing person, then tap the living cell — find one example of each process.',vi:'Chạm vào người đang thở, rồi chạm vào tế bào sống — tìm một ví dụ của mỗi quá trình.'},
+  see:{en:'The person\u2019s chest rises and falls; the cell glows as it releases energy.',vi:'Ngực của người phồng lên xẹp xuống; tế bào sáng lên khi giải phóng năng lượng.'},
+  concl:[
+    {en:'Breathing is moving air in and out of the lungs — a body movement.',vi:'Thở (breathing) là đưa không khí ra vào phổi — một cử động của cơ thể.'},
+    {en:'Respiration is a chemical reaction inside every living cell that releases energy from glucose.',vi:'Hô hấp (respiration) là phản ứng hóa học bên trong mọi tế bào sống, giải phóng năng lượng từ glucose.'},
+    {en:'I can explain that respiration releases useful energy from glucose in a controlled way, write its word equation, and state that it happens in mitochondria in every living cell.',vi:'Con giải thích được rằng hô hấp giải phóng năng lượng hữu ích từ glucose một cách có kiểm soát, viết được phương trình chữ của nó, và nêu được nó diễn ra trong ti thể (mitochondria) ở mọi tế bào sống.'}]}
+];
+const CARDS2=[
+ {id:'eq_glucose',emoji:'🍬',en:'Glucose',vi:'Glucose (glucose)',ans:'reactant'},
+ {id:'eq_oxygen',emoji:'🔵',en:'Oxygen',vi:'Oxygen (oxygen)',ans:'reactant'},
+ {id:'eq_co2',emoji:'⚫',en:'Carbon dioxide',vi:'Carbon dioxide (carbon dioxide)',ans:'product'},
+ {id:'eq_water',emoji:'💧',en:'Water',vi:'Nước (water)',ans:'product'},
+ {id:'eq_useful',emoji:'⚡',en:'Useful energy for the cell',vi:'Năng lượng hữu ích cho tế bào',ans:'released'},
+ {id:'eq_heat',emoji:'🌡',en:'Heat energy',vi:'Năng lượng nhiệt (heat)',ans:'released'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What is the word equation for aerobic respiration?',vi:'Phương trình chữ của hô hấp hiếu khí (aerobic respiration) là gì?'},
+  o:[{en:'glucose + oxygen → carbon dioxide + water',vi:'glucose + oxygen (oxygen) → carbon dioxide (carbon dioxide) + nước (water)'},{en:'carbon dioxide + water → glucose + oxygen',vi:'carbon dioxide + nước → glucose + oxygen'},{en:'glucose + carbon dioxide → oxygen + water',vi:'glucose + carbon dioxide → oxygen + nước'}],a:0,
+  e:{en:'Glucose and oxygen are the reactants; carbon dioxide and water are the products, and energy is released.',vi:'Glucose và oxygen là chất phản ứng (reactants); carbon dioxide và nước là sản phẩm (products), và năng lượng được giải phóng.'}},
+ {q:{en:'Where in the cell does aerobic respiration happen?',vi:'Hô hấp hiếu khí diễn ra ở đâu trong tế bào?'},
+  o:[{en:'In the nucleus',vi:'Trong nhân (nucleus)'},{en:'In the cell membrane',vi:'Ở màng tế bào (cell membrane)'},{en:'In the mitochondria',vi:'Trong ti thể (mitochondria)'}],a:2,
+  e:{en:'Mitochondria release energy from glucose, in a controlled way, inside living cells.',vi:'Ti thể (mitochondria) giải phóng năng lượng từ glucose, một cách có kiểm soát, bên trong tế bào sống.'}},
+ {q:{en:'Why does the air you breathe out contain more carbon dioxide than the air you breathe in?',vi:'Vì sao không khí thở ra chứa nhiều carbon dioxide hơn không khí hít vào?'},
+  o:[{en:'Respiration in your cells makes carbon dioxide as a product',vi:'Hô hấp (respiration) trong tế bào tạo ra carbon dioxide như một sản phẩm (product)'},{en:'The lungs make carbon dioxide from the air',vi:'Phổi tạo carbon dioxide từ không khí'},{en:'Carbon dioxide is stored in the nose',vi:'Carbon dioxide được trữ trong mũi'}],a:0,
+  e:{en:'Your cells respire using oxygen and glucose, producing carbon dioxide, which the blood carries to the lungs to be breathed out.',vi:'Tế bào hô hấp bằng oxygen và glucose, tạo ra carbon dioxide, được máu đưa tới phổi để thở ra.'}},
+ {q:{en:'In the germinating peas experiment, why did the live peas flask get warmer?',vi:'Trong thí nghiệm đậu nảy mầm, vì sao bình đậu sống ấm lên?'},
+  o:[{en:'The insulation heated the peas up',vi:'Lớp cách nhiệt làm đậu nóng lên'},{en:'Respiration in the peas released some energy as heat',vi:'Hô hấp (respiration) trong hạt đậu giải phóng một phần năng lượng thành nhiệt (heat)'},{en:'The thermometer was faulty',vi:'Nhiệt kế bị hỏng'}],a:1,
+  e:{en:'Respiring cells change some of the energy in glucose to heat, so the germinating peas warmed their flask; the dead peas did not respire.',vi:'Tế bào đang hô hấp biến một phần năng lượng trong glucose thành nhiệt, nên đậu nảy mầm làm ấm bình; đậu đã chết không hô hấp.'}}
+];
+
+/* ================= workbook exercises ================= */
+/* Ex1a: missing apparatus (single choice) */
+const EX1APP={q:{en:'Missing apparatus — to measure 25 cm³ accurately, Sofia needs a…',vi:'Dụng cụ còn thiếu — để đong chính xác 25 cm³, Sofia cần một…'},
+ opts:[{en:'Measuring cylinder',vi:'Ống đong (measuring cylinder)'},{en:'Ruler',vi:'Thước kẻ (ruler)'},{en:'Top-pan balance only',vi:'Chỉ một cái cân (balance)'},{en:'Second insulated cup',vi:'Một cốc cách nhiệt thứ hai'}],a:0,
+ e:{en:'Volumes of liquid are measured accurately with a measuring cylinder, reading the meniscus at eye level.',vi:'Thể tích chất lỏng được đong chính xác bằng ống đong (measuring cylinder), đọc vạch chia (meniscus) ngang tầm mắt.'}};
+let EX1APP_ORD=fyIdx(EX1APP.opts.length);
+/* Ex1b: tick the correct thermometer statements */
+const EX1TICK=[
+ {id:'t_stir',en:'Hold the thermometer in the mixture and stir gently',vi:'Giữ nhiệt kế trong hỗn hợp và khuấy nhẹ',ok:true},
+ {id:'t_out',en:'Lift the thermometer out of the liquid to read it',vi:'Nhấc nhiệt kế ra khỏi chất lỏng để đọc',ok:false},
+ {id:'t_bottom',en:'Stand the thermometer resting on the bottom of the cup',vi:'Dựng nhiệt kế tựa vào đáy cốc',ok:false},
+ {id:'t_stay',en:'Read the scale while the thermometer is still in the mixture, at eye level',vi:'Đọc vạch chia khi nhiệt kế vẫn còn trong hỗn hợp, ngang tầm mắt',ok:true},
+ {id:'t_offbottom',en:'Keep the bulb off the bottom and sides of the cup',vi:'Giữ bầu nhiệt kế không chạm đáy và thành cốc',ok:true},
+ {id:'t_shake',en:'Shake the thermometer down before every reading',vi:'Vẩy nhiệt kế xuống trước mỗi lần đọc',ok:false}
+];
+let EX1TICK_ORDER=mixOrder(EX1TICK,c=>c.ok?'ok':'no',3);
+/* Ex2: practice MCQs */
+const EX2=[
+ {q:{en:'Predict: what will happen to the temperature of the yeast and sugar mixture?',vi:'Dự đoán: nhiệt độ của hỗn hợp nấm men và đường sẽ thế nào?'},
+  opts:[{en:'It will rise',vi:'Sẽ tăng'},{en:'It will fall',vi:'Sẽ giảm'},{en:'It will stay exactly the same',vi:'Sẽ giữ nguyên hoàn toàn'}],a:0,
+  e:{en:'Yeast respires using the sugar, and some of the released energy is changed to heat, so the temperature rises.',vi:'Nấm men hô hấp bằng đường, và một phần năng lượng giải phóng biến thành nhiệt (heat), nên nhiệt độ tăng.'}},
+ {q:{en:'Why will it change that way?',vi:'Vì sao nó thay đổi như vậy?'},
+  opts:[{en:'The cup makes heat by itself',vi:'Cốc tự tạo ra nhiệt'},{en:'Respiration in the yeast releases some energy as heat',vi:'Hô hấp (respiration) trong nấm men giải phóng một phần năng lượng thành nhiệt'},{en:'Sugar solution is always warm',vi:'Dung dịch đường luôn ấm'}],a:1,
+  e:{en:'As with germinating peas, respiring yeast warms its surroundings a little because some energy becomes heat.',vi:'Như đậu nảy mầm, nấm men đang hô hấp làm ấm xung quanh một chút vì một phần năng lượng biến thành nhiệt.'}},
+ {q:{en:'What important part has Sofia missed out, to be sure any change is due only to the yeast respiring?',vi:'Sofia đã thiếu phần quan trọng nào, để chắc chắn mọi thay đổi chỉ do nấm men hô hấp gây ra?'},
+  opts:[{en:'A second thermometer in the same cup',vi:'Một nhiệt kế thứ hai trong cùng cốc'},{en:'A comparison (control) cup with no live yeast — for example boiled yeast — set up in the same way',vi:'Một cốc đối chứng (control) không có nấm men sống — ví dụ nấm men đã đun sôi — lắp giống hệt'},{en:'A larger insulated cup',vi:'Một cốc cách nhiệt to hơn'}],a:1,
+  e:{en:'A control cup, identical except for the live yeast, shows whether the temperature change is really caused by respiration.',vi:'Một cốc đối chứng (control), giống hệt trừ nấm men sống, cho thấy thay đổi nhiệt độ có thật do hô hấp gây ra hay không.'}}
+];
+let EX2_ORD=EX2.map(q=>fyIdx(q.opts.length));
+/* Ex3a: hypothesis design MCQs */
+const EX3=[
+ {q:{en:'Change (the independent variable):',vi:'Thay đổi (biến độc lập):'},
+  opts:[{en:'The mass / concentration of sugar given to the yeast',vi:'Khối lượng / nồng độ đường cho nấm men'},{en:'The volume of yeast mixture',vi:'Thể tích hỗn hợp nấm men'},{en:'The size of the cup',vi:'Kích thước cốc'}],a:0,
+  e:{en:'To test the effect of sugar, sugar is the one variable you change.',vi:'Để kiểm tra tác động của đường, đường là biến duy nhất cần thay đổi.'}},
+ {q:{en:'Keep the same in every cup:',vi:'Giữ nguyên ở mọi cốc:'},
+  opts:[{en:'The temperature rise',vi:'Mức tăng nhiệt độ'},{en:'The volume of yeast mixture and the starting temperature',vi:'Thể tích hỗn hợp nấm men và nhiệt độ ban đầu'},{en:'The amount of sugar',vi:'Lượng đường'}],a:1,
+  e:{en:'Everything except the sugar must be kept the same, so the comparison is fair.',vi:'Mọi thứ trừ đường phải giữ nguyên, để phép so sánh công bằng.'}},
+ {q:{en:'Measure, over the same time in each cup:',vi:'Đo, trong cùng khoảng thời gian ở mỗi cốc:'},
+  opts:[{en:'The colour of the mixture',vi:'Màu của hỗn hợp'},{en:'The temperature rise',vi:'Mức tăng nhiệt độ (temperature rise)'},{en:'The mass of the cup',vi:'Khối lượng của cốc'}],a:1,
+  e:{en:'A faster respiration releases heat faster, so a bigger temperature rise in the same time means faster respiration.',vi:'Hô hấp nhanh hơn tỏa nhiệt nhanh hơn, nên mức tăng nhiệt độ lớn hơn trong cùng thời gian nghĩa là hô hấp nhanh hơn.'}}
+];
+let EX3_ORD=EX3.map(q=>fyIdx(q.opts.length));
+/* Ex3b: breathing or respiration sort */
+const EX3CARDS=[
+ {id:'b_air',emoji:'🌬',en:'Moving air in and out of the lungs',vi:'Đưa không khí ra vào phổi',ans:'breathing'},
+ {id:'b_chest',emoji:'🫁',en:'The chest moves up and down',vi:'Lồng ngực phồng lên xẹp xuống',ans:'breathing'},
+ {id:'b_glucose',emoji:'🍬',en:'Releasing energy from glucose in a cell',vi:'Giải phóng năng lượng từ glucose trong tế bào',ans:'respiration'},
+ {id:'b_mito',emoji:'⚡',en:'A chemical reaction inside mitochondria',vi:'Phản ứng hóa học bên trong ti thể (mitochondria)',ans:'respiration'}
+];
+let EX3C_ORDER=mixOrder(EX3CARDS,c=>c.ans,2);
+const EX_TOTAL=1+3+3+3+4; /* app 1 + tick 3 + ex2 3 + ex3 design 3 + sort 4 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), EX3CDONE=new Set();
+let EX1SEL=new Set(), EX1APPANS=-1, EX2ANS={}, EX3ANS={}, EX3CANS={}, ex3sel=null;
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-1-4';
+const SUMKEY='camb:sum:sci8-1-4';
+const BOT_CODE='sci8-1.4';
+let FOUND={food:false,glucose:false,blood:false,mito:false,oxygen:false,liveFlask:false,deadFlask:false,heatLive:false,heatDead:false,person:false,cell:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1food:false,s1glucose:false,s1blood:false,s1hint:null,
+  s2correct:new Set(),s2sel:null,
+  s3mito:false,s3oxygen:false,s3glucose:false,
+  s4live:false,s4dead:false,
+  s5live:false,s5dead:false,
+  s6person:false,s6cell:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.s1food&&T.s1glucose&&T.s1blood;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.s3mito&&T.s3oxygen&&T.s3glucose;
+  if(i===3) return T.s4live&&T.s4dead;
+  if(i===4) return T.s5live&&T.s5dead;
+  if(i===5) return T.s6person&&T.s6cell;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){ const t=THINGS[T.s1hint]; return B('That is '+t.name.en+'. It is not on the food → glucose → blood journey. Try again!','Đó là '+t.name.vi+'. Nó không nằm trên hành trình thức ăn → glucose → máu. Thử lại nào!'); }
+    return B('Energy journey: food '+(T.s1food?'✓':'…')+' · glucose '+(T.s1glucose?'✓':'…')+' · blood '+(T.s1blood?'✓':'…')+'. Tap things on the bench!','Hành trình năng lượng: thức ăn '+(T.s1food?'✓':'…')+' · glucose '+(T.s1glucose?'✓':'…')+' · máu '+(T.s1blood?'✓':'…')+'. Hãy chạm các vật trên bàn!');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap REACTANTS, PRODUCTS or ENERGY RELEASED.','Con đã chọn “'+c.vi+'”. Giờ chạm CHẤT PHẢN ỨNG, SẢN PHẨM hoặc NĂNG LƯỢNG GIẢI PHÓNG.');
+    return B('Cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2) return B('Mitochondrion '+(T.s3mito?'✓':'…')+' · oxygen '+(T.s3oxygen?'✓':'…')+' · glucose '+(T.s3glucose?'✓':'…')+'.','Ti thể (mitochondrion) '+(T.s3mito?'✓':'…')+' · oxygen '+(T.s3oxygen?'✓':'…')+' · glucose '+(T.s3glucose?'✓':'…')+'.');
+  if(i===3) return B('Flask A set up '+(T.s4live?'✓':'…')+' · Flask B set up '+(T.s4dead?'✓':'…')+'. Both start at 18 °C.','Bình A đã lắp '+(T.s4live?'✓':'…')+' · Bình B đã lắp '+(T.s4dead?'✓':'…')+'. Cả hai bắt đầu ở 18 °C.');
+  if(i===4) return B('Flask A measured '+(T.s5live?'✓ 23 °C':'…')+' · Flask B measured '+(T.s5dead?'✓ 18 °C':'…')+'.','Bình A đã đo '+(T.s5live?'✓ 23 °C':'…')+' · Bình B đã đo '+(T.s5dead?'✓ 18 °C':'…')+'.');
+  if(i===5) return B('Breathing — the person '+(T.s6person?'✓':'…')+' · Respiration — the cell '+(T.s6cell?'✓':'…')+'.','Thở (breathing) — người '+(T.s6person?'✓':'…')+' · Hô hấp (respiration) — tế bào '+(T.s6cell?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🍞',label:{en:'Food',vi:'Thức ăn'},got:T.s1food},
+      {emoji:'🍬',label:{en:'Glucose',vi:'Glucose'},got:T.s1glucose},
+      {emoji:'🩸',label:{en:'Blood',vi:'Máu (blood)'},got:T.s1blood}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'reactant',label:STR.binReact,cls:'living'},{key:'product',label:STR.binProd,cls:'nonliving'},{key:'released',label:STR.binRel,cls:'used'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlacedResp);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'⚡',label:{en:'Mitochondrion',vi:'Ti thể'},got:T.s3mito},
+      {emoji:'🔵',label:{en:'Oxygen',vi:'Oxygen'},got:T.s3oxygen},
+      {emoji:'🍬',label:{en:'Glucose',vi:'Glucose'},got:T.s3glucose}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🌱',label:{en:'Flask A — live peas',vi:'Bình A — đậu sống'},got:T.s4live},
+      {emoji:'⚪',label:{en:'Flask B — dead peas',vi:'Bình B — đậu chết'},got:T.s4dead}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🌱',label:{en:'Flask A: '+(T.s5live?'23 °C':'18 °C → ?'),vi:'Bình A: '+(T.s5live?'23 °C':'18 °C → ?')},got:T.s5live},
+      {emoji:'⚪',label:{en:'Flask B: '+(T.s5dead?'18 °C':'18 °C → ?'),vi:'Bình B: '+(T.s5dead?'18 °C':'18 °C → ?')},got:T.s5dead}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🧍',label:{en:'Breathing — person',vi:'Thở — người'},got:T.s6person},
+      {emoji:'🦠',label:{en:'Respiration — cell',vi:'Hô hấp — tế bào'},got:T.s6cell}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('food'); bounceThing('food'); setTimeout(()=>{ focusVisual('glucose'); bounceThing('glucose'); },900); }
+  else if(i===1){
+    const c=CARDS2.find(x=>!T.s2correct.has(x.id));
+    if(c){ const el=$('card_'+c.id); if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+      const bins=document.querySelectorAll('#stepExtra .binbtn'); const bi2=['reactant','product','released'].indexOf(c.ans);
+      if(bins[bi2]){ bins[bi2].style.outline='4px solid #f2762e'; setTimeout(()=>{bins[bi2].style.outline='';},1400); } }
+  }
+  else if(i===2){ focusVisual('mito'); bounceThing('mito'); setTimeout(()=>{ focusVisual('oxygen'); bounceThing('oxygen'); },900); }
+  else if(i===3){ focusVisual('flaskLive'); bounceThing('flaskLive'); setTimeout(()=>{ focusVisual('flaskDead'); bounceThing('flaskDead'); },900); }
+  else if(i===4){ focusVisual('flaskLive'); bounceThing('flaskLive'); }
+  else if(i===5){ focusVisual('person'); bounceThing('person'); setTimeout(()=>{ focusVisual('cell'); bounceThing('cell'); },900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); if(!row) return; row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const el=$('grpRows'); if(!el) return;
+  const chain=(FOUND.food?1:0)+(FOUND.glucose?1:0)+(FOUND.blood?1:0);
+  const liveT=(doneSteps.has(4)||FOUND.heatLive)?'23 °C':'18 °C';
+  const deadT='18 °C';
+  el.innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recChain)+'</span><b>'+chain+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recSorted)+'</span><b>'+SORTED.size+' / 6</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recLive)+'</span><b>'+liveT+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recDead)+'</span><b>'+deadT+'</b></div>';
+}
+function renderFound(){
+  const el=$('foundList'); if(!el) return;
+  const items=[
+    {got:FOUND.food&&FOUND.glucose&&FOUND.blood||doneSteps.has(0),label:STR.foundFood},
+    {got:FOUND.mito||doneSteps.has(2),label:STR.foundMito},
+    {got:(FOUND.liveFlask&&FOUND.deadFlask)||doneSteps.has(3),label:STR.foundFlasks},
+    {got:(FOUND.heatLive&&FOUND.heatDead)||doneSteps.has(4),label:STR.foundHeat},
+    {got:(FOUND.person&&FOUND.cell)||doneSteps.has(5),label:STR.foundDiff}
+  ];
+  el.innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null, hitProxies=[];
+let lastRW=0, lastRH=0;
+let chestMesh=null, cellGrp=null, bloodDots=[], liveFlaskMat=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildFood(){
+  const g=new THREE.Group();
+  const plate=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.42,0.09,20),stdMat(0xf2f5f8,0.5)));
+  plate.position.y=0.12; g.add(plate);
+  const bread=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.3,0.42),stdMat(0xd9a05a,0.9)));
+  bread.position.y=0.32; g.add(bread);
+  const crust=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.31,12,8),stdMat(0xb97c36,0.9)));
+  crust.scale.set(1,0.55,0.68); crust.position.y=0.47; g.add(crust);
+  const apple=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,12,10),stdMat(0xd23c2a,0.6)));
+  apple.position.set(0.42,0.28,0.25); g.add(apple);
+  const table=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.5,0.08,1.1),stdMat(0x8a5a2b,0.95)));
+  table.position.y=0.02; g.add(table);
+  g.position.set(-4.2,0,0.6); g.userData.baseY=0; return g;
+}
+function buildGlucose(){
+  const g=new THREE.Group();
+  const cols=[0xffd94d,0xff8c42,0xffffff];
+  for(let k=0;k<6;k++){
+    const a=k/6*Math.PI*2;
+    const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),stdMat(cols[k%3],0.6)));
+    s.position.set(Math.cos(a)*0.26,0.35,Math.sin(a)*0.26); g.add(s);
+  }
+  const c=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.15,10,8),stdMat(0x3d8bfd,0.6)));
+  c.position.y=0.35; g.add(c);
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.5,0.08,16),stdMat(0xe8eef4,0.8)));
+  base.position.y=0.04; g.add(base);
+  g.position.set(-2.8,0,-1.5); g.userData.baseY=0; return g;
+}
+function buildBlood(){
+  const g=new THREE.Group();
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,1.5,14,1,true),new THREE.MeshStandardMaterial({color:0xff9d9d,roughness:0.4,transparent:true,opacity:0.55,side:THREE.DoubleSide}));
+  tube.rotation.z=Math.PI/2; tube.position.y=0.45; g.add(tube);
+  bloodDots=[];
+  for(let k=0;k<4;k++){
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.11,8,6),stdMat(0xd23c2a,0.5));
+    d.scale.set(1,0.6,1); d.position.set(-0.55+k*0.36,0.45,0); g.add(d); bloodDots.push(d);
+  }
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.5,0.07,0.5),stdMat(0x64748b,0.8)));
+  stand.position.y=0.04; g.add(stand);
+  g.position.set(-1.4,0,1.5); g.userData.baseY=0; return g;
+}
+function buildCell(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.72,18,14),new THREE.MeshStandardMaterial({color:0x9fe8a9,roughness:0.5,transparent:true,opacity:0.75})));
+  body.position.y=0.78; body.scale.set(1,0.9,1); g.add(body);
+  const nuc=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.26,12,10),stdMat(0x7a4fd0,0.6)));
+  nuc.position.set(-0.15,0.85,0.12); g.add(nuc);
+  for(let k=0;k<3;k++){
+    const m=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),stdMat(0xf2762e,0.6)));
+    m.scale.set(1.6,0.8,0.8); m.position.set(0.3-Math.cos(k*2.1)*0.25,0.6+k*0.18,Math.sin(k*2.1)*0.3); g.add(m);
+  }
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.88,0.07,18),stdMat(0xe8eef4,0.8)));
+  base.position.y=0.03; g.add(base);
+  g.position.set(0.2,0,-0.7); g.userData.baseY=0; cellGrp=g; return g;
+}
+function buildMito(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.42,14,10),stdMat(0xf2762e,0.6)));
+  body.scale.set(1.5,0.85,0.85); body.position.y=0.5; g.add(body);
+  for(let k=0;k<3;k++){
+    const fold=new THREE.Mesh(new THREE.TorusGeometry(0.2,0.045,8,18),stdMat(0xffd94d,0.6));
+    fold.position.set(-0.25+k*0.25,0.5,0); fold.rotation.y=Math.PI/2; g.add(fold);
+  }
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.68,0.07,16),stdMat(0xe8eef4,0.8)));
+  base.position.y=0.03; g.add(base);
+  g.position.set(1.9,0,1.4); g.userData.baseY=0; return g;
+}
+function buildOxygen(){
+  const g=new THREE.Group();
+  [-0.17,0.17].forEach(dx=>{
+    const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.21,12,10),stdMat(0x3d8bfd,0.55)));
+    s.position.set(dx,0.42,0); g.add(s);
+  });
+  const bond=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.34,8),stdMat(0x9db8cf,0.7));
+  bond.rotation.z=Math.PI/2; bond.position.y=0.42; g.add(bond);
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.48,0.07,14),stdMat(0xe8eef4,0.8)));
+  base.position.y=0.03; g.add(base);
+  g.position.set(2.0,0,-2.0); g.userData.baseY=0; return g;
+}
+function buildFlask(live){
+  const g=new THREE.Group();
+  const wrap=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.05,0.95,1.05),stdMat(live?0xbfe3c8:0xd7e2ec,0.95)));
+  wrap.position.y=0.48; g.add(wrap);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.44,0.85,14),new THREE.MeshStandardMaterial({color:0xdff3ff,roughness:0.25,transparent:true,opacity:0.6}));
+  glass.position.y=0.55; g.add(glass);
+  liveFlaskMat=null;
+  const peaCol=live?0x57b84c:0x9a8f7a;
+  for(let k=0;k<7;k++){
+    const p=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.09,8,6),stdMat(peaCol,0.8)));
+    p.position.set(-0.2+(k%3)*0.2,0.22+Math.floor(k/3)*0.13,-0.12+((k*7)%3)*0.14); g.add(p);
+  }
+  if(live){
+    const shoot=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.035,0.35,6),stdMat(0x2e8b3a,0.8));
+    shoot.position.set(0.05,0.5,0); g.add(shoot);
+  }
+  const wool=new THREE.Mesh(new THREE.SphereGeometry(0.2,10,8),stdMat(0xffffff,1));
+  wool.scale.set(1,0.5,1); wool.position.y=1.0; g.add(wool);
+  const therm=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.75,8),stdMat(0xf2f5f8,0.4));
+  therm.position.set(0.14,1.25,0); g.add(therm);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),stdMat(0xd23c2a,0.5));
+  bulb.position.set(0.14,0.9,0); g.add(bulb);
+  const merc=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,0.4,6),stdMat(0xd23c2a,0.5));
+  merc.position.set(0.14,1.3,0); g.add(merc);
+  if(live) g.userData.isLive=true;
+  return g;
+}
+function buildFlaskLive(){ const g=buildFlask(true); g.position.set(-4.4,0,-2.2); g.userData.baseY=0; return g; }
+function buildFlaskDead(){ const g=buildFlask(false); g.position.set(-1.2,0,-2.6); g.userData.baseY=0; return g; }
+function buildPerson(){
+  const g=new THREE.Group();
+  const legs=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.55,0.26),stdMat(0x44586e,0.85)));
+  legs.position.y=0.28; g.add(legs);
+  chestMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10),stdMat(0x3d8bfd,0.7)));
+  chestMesh.scale.set(1,1.25,0.75); chestMesh.position.y=1.0; g.add(chestMesh);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.21,14,10),stdMat(0xf2c79b,0.7)));
+  head.position.y=1.62; g.add(head);
+  [-0.45,0.45].forEach(dx=>{
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.6,8),stdMat(0x3d8bfd,0.7));
+    arm.position.set(dx,1.0,0); arm.rotation.z=dx>0?-0.25:0.25; g.add(arm);
+  });
+  g.position.set(3.8,0,0.4); g.userData.baseY=0; return g;
+}
+function buildChairObj(){
+  const g=new THREE.Group(); const wood=stdMat(0xa9743f,0.9);
+  const seat=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.05,0.5),wood));
+  seat.position.y=0.45; g.add(seat);
+  const back=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.62,0.05),wood));
+  back.position.set(0,0.78,-0.23); g.add(back);
+  [[-0.24,-0.2],[0.24,-0.2],[-0.24,0.2],[0.24,0.2]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.028,0.45,8),wood);
+    leg.position.set(p[0],0.225,p[1]); g.add(leg);
+  });
+  g.position.set(4.5,0,-1.6); g.rotation.y=-0.4; g.userData.baseY=0; return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8fbf7f,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xdfe9f2,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(11,0.06,5.6),stdMat(0xead9a8,1));
+  bench.position.set(0,0.0,0.2); bench.receiveShadow=true; scene3.add(bench);
+  reg('food',buildFood());
+  reg('glucose',buildGlucose());
+  reg('blood',buildBlood());
+  reg('cell',buildCell());
+  reg('mito',buildMito());
+  reg('oxygen',buildOxygen());
+  reg('flaskLive',buildFlaskLive());
+  reg('flaskDead',buildFlaskDead());
+  reg('person',buildPerson());
+  reg('chairObj',buildChairObj());
+  { const p=sphProxy(0.85); p.position.set(0,0.35,0); addProxy('food',p,G.food); }
+  { const p=sphProxy(0.62); p.position.set(0,0.35,0); addProxy('glucose',p,G.glucose); }
+  { const p=sphProxy(0.8); p.position.set(0,0.45,0); addProxy('blood',p,G.blood); }
+  { const p=sphProxy(1.0); p.position.set(0,0.78,0); addProxy('cell',p,G.cell); }
+  { const p=sphProxy(0.8); p.position.set(0,0.5,0); addProxy('mito',p,G.mito); }
+  { const p=sphProxy(0.62); p.position.set(0,0.42,0); addProxy('oxygen',p,G.oxygen); }
+  { const p=sphProxy(0.95); p.position.set(0,0.75,0); addProxy('flaskLive',p,G.flaskLive); }
+  { const p=sphProxy(0.95); p.position.set(0,0.75,0); addProxy('flaskDead',p,G.flaskDead); }
+  { const p=sphProxy(0.85); p.position.set(0,1.0,0); addProxy('person',p,G.person); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('chairObj',p,G.chairObj); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.06; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){ const g=G[id]; if(!g) return {x:0,y:0,z:0}; return g.position; }
+function labelTextFor(id){
+  if(!THINGS[id]) return '';
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.06,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['food','glucose','blood'],
+  [],
+  ['mito','oxygen','glucose'],
+  ['flaskLive','flaskDead'],
+  ['flaskLive','flaskDead'],
+  ['person','cell']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='food'){ T.s1food=true; FOUND.food=true; T.s1hint=null; }
+    else if(id==='glucose'){ T.s1glucose=true; FOUND.glucose=true; T.s1hint=null; }
+    else if(id==='blood'){ T.s1blood=true; FOUND.blood=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderMirrors();
+  }else if(curStep===2){
+    if(id==='mito'){ T.s3mito=true; FOUND.mito=true; }
+    else if(id==='oxygen'){ T.s3oxygen=true; FOUND.oxygen=true; }
+    else if(id==='glucose'){ T.s3glucose=true; FOUND.glucose=true; }
+    saveProg(); renderMirrors();
+  }else if(curStep===3){
+    if(id==='flaskLive'){ T.s4live=true; FOUND.liveFlask=true; }
+    else if(id==='flaskDead'){ T.s4dead=true; FOUND.deadFlask=true; }
+    saveProg(); renderMirrors();
+  }else if(curStep===4){
+    if(id==='flaskLive'){ T.s5live=true; FOUND.heatLive=true; }
+    else if(id==='flaskDead'){ T.s5dead=true; FOUND.heatDead=true; }
+    saveProg(); renderMirrors();
+  }else if(curStep===5){
+    if(id==='person'){ T.s6person=true; FOUND.person=true; }
+    else if(id==='cell'){ T.s6cell=true; FOUND.cell=true; }
+    saveProg(); renderMirrors();
+  }
+  renderStepExtra();
+  refreshEvidence();
+}
+function applyStepStart(i){ /* all bench objects stay visible; temperatures read from the track in the step card */ }
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  bloodDots.forEach((d,k)=>{ d.position.x=-0.55+(((t*0.35+k*0.36)%1.5)); });
+  if(G.oxygen) G.oxygen.position.y=Math.sin(t*1.6)*0.05;
+  if(cellGrp){ const s=1+Math.sin(t*1.8)*0.02; cellGrp.scale.set(s,s,s); }
+  if(chestMesh){ const s=1+Math.sin(t*1.4)*0.07; chestMesh.scale.set(s,1.25*s,0.75); }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function mcqRows(listEl,qs,ansObj,ordArr,doneSet){
+  listEl.innerHTML='';
+  qs.forEach((qq,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(qq.q)+' ';
+    (ordArr[si]||qq.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=qq.opts[oi];
+      let cls='wordopt';
+      if(ansObj[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos<qq.opts.length-1?' / ':'');
+    });
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+  listEl.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3CDONE.size+((EX1APPANS===EX1APP.a)?1:0);
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(sc>=EX_TOTAL?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(sc>=EX_TOTAL?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex1 */
+  const ex1DoneNow=exRevealed&&EX1DONE.size>=3&&EX1APPANS===EX1APP.a;
+  $('exSec1').classList.toggle('done',ex1DoneNow);
+  $('ex1T').innerHTML=exHead(STR.ex1T,ex1DoneNow);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  /* 1a apparatus MCQ */
+  const appList=$('ex1AppList'); appList.innerHTML='';
+  {
+    const row=document.createElement('div'); row.className='exsent';
+    let html=biInl(EX1APP.q)+' ';
+    EX1APP_ORD.forEach((oi,pos)=>{
+      const o=EX1APP.opts[oi];
+      let cls='wordopt';
+      if(EX1APPANS===oi) cls+=' crossed';
+      if(exRevealed&&oi===EX1APP.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos<EX1APP.opts.length-1?' / ':'');
+    });
+    row.innerHTML=html;
+    if(exRevealed){ const ex=document.createElement('div'); ex.className='exexpl'; ex.innerHTML=(EX1APPANS===EX1APP.a?'✓ ':'')+bi(EX1APP.e); row.appendChild(ex); }
+    appList.appendChild(row);
+    appList.querySelectorAll('.wordopt').forEach(b=>{
+      b.onclick=()=>{ if(exRevealed) return; EX1APPANS=parseInt(b.dataset.o,10); saveProg(); renderExercises(); };
+    });
+  }
+  /* 1b tick cards */
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1TICK_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.ok) b.className='excard right';
+      else if(sel&&!it.ok) b.className='excard wrongsel';
+      else if(!sel&&it.ok) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+(it.ok?'🌡':'🌡')+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  $('ex1Hint').innerHTML='';
+  /* Ex2 */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  mcqRows($('ex2List'),EX2,EX2ANS,EX2_ORD,EX2DONE);
+  /* Ex3 */
+  const ex3DoneNow=exRevealed&&EX3DONE.size>=EX3.length&&EX3CDONE.size>=EX3CARDS.length;
+  $('exSec3').classList.toggle('done',ex3DoneNow);
+  $('ex3T').innerHTML=exHead(STR.ex3T,ex3DoneNow);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  mcqRows($('ex3List'),EX3,EX3ANS,EX3_ORD,EX3DONE);
+  $('ex3BinBreath').innerHTML=bi(STR.binBreath);
+  $('ex3BinResp').innerHTML=bi(STR.binResp);
+  const g3=$('ex3Grid'); g3.innerHTML='';
+  EX3C_ORDER.forEach(it=>{
+    const ans=EX3CANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex3sel===it.id?' sel':'')+(exRevealed? (EX3CDONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='breathing'?'🌬':'⚡')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex3sel=it.id; renderExercises(); };
+    g3.appendChild(d);
+  });
+}
+function exAnsweredCount(){
+  return Math.min(EX_TOTAL,(EX1APPANS>=0?1:0)+Math.min(3,EX1SEL.size)+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length+Object.keys(EX3CANS).length);
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3CANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex3BinBreath').onclick=()=>ex3Place('breathing');
+$('ex3BinResp').onclick=()=>ex3Place('respiration');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1TICK.filter(x=>x.ok&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,si)=>si).filter(si=>EX2ANS[si]===EX2[si].a));
+  EX3DONE=new Set(EX3.map((qq,si)=>si).filter(si=>EX3ANS[si]===EX3[si].a));
+  EX3CDONE=new Set(EX3CARDS.filter(x=>EX3CANS[x.id]===x.ans).map(x=>x.id));
+  ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3CDONE.size+((EX1APPANS===EX1APP.a)?1:0);
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX1APPANS=-1; EX2ANS={}; EX3ANS={}; EX3CANS={}; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set(); EX3CDONE=new Set();
+  EX1APP_ORD=fyIdx(EX1APP.opts.length);
+  EX1TICK_ORDER=mixOrder(EX1TICK,c=>c.ok?'ok':'no',3);
+  EX2_ORD=EX2.map(q=>fyIdx(q.opts.length));
+  EX3_ORD=EX3.map(q=>fyIdx(q.opts.length));
+  EX3C_ORDER=mixOrder(EX3CARDS,c=>c.ans,2);
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlacedResp(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.food=false; FOUND.glucose=false; FOUND.blood=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.mito=false; FOUND.oxygen=false; }
+  if(step===3){ FOUND.liveFlask=false; FOUND.deadFlask=false; }
+  if(step===4){ FOUND.heatLive=false; FOUND.heatDead=false; }
+  if(step===5){ FOUND.person=false; FOUND.cell=false; }
+}
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{tick:[...EX1SEL],app:EX1APPANS,a2:EX2ANS,a3:EX3ANS,c3:EX3CANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE],c3:[...EX3CDONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+    if(Array.isArray(s.ex.c3)) EX3CDONE=new Set(s.ex.c3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.tick)) EX1SEL=new Set(s.exAns.tick.filter(id=>EX1TICK.some(x=>x.id===id)));
+    if(typeof s.exAns.app==='number') EX1APPANS=s.exAns.app;
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length) EX3ANS[si]=s.exAns.a3[k]; });
+    if(s.exAns.c3&&typeof s.exAns.c3==='object') Object.keys(s.exAns.c3).forEach(id=>{ if(EX3CARDS.some(x=>x.id===id)) EX3CANS[id]=s.exAns.c3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size||EX3CDONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach((qq,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=qq.a; });
+    EX3.forEach((qq,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=qq.a; });
+    EX3CARDS.forEach(it=>{ if(EX3CDONE.has(it.id)) EX3CANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size+EX3CDONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1food=!!FOUND.food; t.s1glucose=!!FOUND.glucose; t.s1blood=!!FOUND.blood; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); if(t.s2correct.size<5&&doneSteps.has(1)){ CARDS2.slice(0,5).forEach(c=>t.s2correct.add(c.id)); } }
+  else if(i===2){ t.s3mito=!!FOUND.mito; t.s3oxygen=!!FOUND.oxygen; t.s3glucose=true; }
+  else if(i===3){ t.s4live=!!FOUND.liveFlask; t.s4dead=!!FOUND.deadFlask; }
+  else if(i===4){ t.s5live=!!FOUND.heatLive; t.s5dead=!!FOUND.heatDead; }
+  else if(i===5){ t.s6person=!!FOUND.person; t.s6cell=!!FOUND.cell; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-1-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>9.3 Measuring the flow of current — Đo cường độ dòng điện · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+.binbtn.useful{background:#0d9d58}
+.binbtn.wasted{background:#b03a3a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="9.3 Measuring the flow of current" data-vi="9.3 Đo cường độ dòng điện (Measuring the flow of current)">9.3 Measuring the flow of current</span>
+    <span class="eqchip i18n" data-en="Unit 9 · Electricity" data-vi="Bài 9 · Điện (Electricity)">Unit 9 · Electricity</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/7 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do we measure the flow of current — and is it the same all the way round?" data-vi="Ta đo dòng điện như thế nào — và nó có như nhau khắp vòng mạch không?">How do we measure the flow of current — and is it the same all the way round?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Electrons flow" data-vi="Electron chảy (electrons)">Electrons flow</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Ammeter in series" data-vi="Ampe kế mắc nối tiếp (ammeter in series)">Ammeter in series</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Read it in amps" data-vi="Đọc số đo bằng ampe (amps)">Read it in amps</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Same all the way round!" data-vi="Như nhau khắp vòng mạch!">Same all the way round!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 9 Electricity · Section 9.3. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 9 · Điện (Electricity) · Mục 9.3. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 9 Electricity · Section 9.3. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 9 Electricity, section 9.3, pages 298–303; Workbook 7 (ISBN 9781108742818), pages 170–171. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 9 · Điện (Electricity), mục 9.3, trang 298–303; Sách bài tập 7 (ISBN 9781108742818), trang 170–171. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 9 Electricity, section 9.3, pages 298–303; Workbook 7 (ISBN 9781108742818), pages 170–171. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn the unit for measuring current; learn how to measure current; learn a rule about current in series circuits. Key words: amps, in series. The section opens with a Getting started recall (the particles that move in wires, and the component that measures current) and ends with the book's own self-check list." data-vi="Mục tiêu: học đơn vị đo cường độ dòng điện; học cách đo cường độ dòng điện; học một quy tắc về dòng điện trong mạch nối tiếp (series circuits). Từ khóa: amps (ampe), in series (mắc nối tiếp). Mục học mở đầu bằng phần ôn Khởi động (Getting started) (các hạt chuyển động trong dây dẫn, và dụng cụ đo cường độ dòng điện) và kết thúc bằng danh sách tự kiểm tra của chính sách.">Objectives: learn the unit for measuring current; learn how to measure current; learn a rule about current in series circuits. Key words: amps, in series.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — naming the electrons and the ammeter, giving the unit amps (A), reading the three ammeter scales of Activity 9.3.1 (4 A, 2.0 A, 1.7 A), connecting the ammeter correctly for Marcus's cell–lamp–buzzer circuit (in series, red terminal towards the positive), building the book's two-lamp series circuit and recording an honest prediction, then testing it by measuring at positions X, Y and Z. In this simulation the current is 0.5 A at every position, so the series rule — the same all the way round — comes from the learner's own readings. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D — gọi tên các electron và ampe kế, nêu đơn vị ampe (amps) (A), đọc ba thang ampe kế của Hoạt động 9.3.1 (4 A, 2.0 A, 1.7 A), nối ampe kế đúng cách cho mạch pin–đèn–chuông của Marcus (nối tiếp (in series), đầu đỏ hướng về cực dương), lắp mạch nối tiếp hai bóng đèn của sách và ghi lại một dự đoán thật lòng, rồi kiểm tra nó bằng cách đo ở các vị trí X, Y và Z. Trong mô phỏng này cường độ dòng điện là 0.5 A ở mọi vị trí, nên quy tắc mạch nối tiếp — như nhau khắp vòng mạch — đến từ chính số đo của người học. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D bench or with choice buttons. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-9-3 "Measuring the flow of current"
+   (Science 7, Unit 9 · Electricity)
+   Loaded between camb-engine.js and camb-bridge.js.
+   Book section 9.3 covers the amp as the unit of current, the ammeter
+   and how to connect it (in series, red terminal towards the positive
+   terminal), drawing and reading ammeter scales (Activity 9.3.1 uses
+   4 A, 2.0 A and 1.7 A), and the Think like a scientist investigation:
+   predict, then measure the current at positions X, Y and Z in a
+   series circuit. In this simulation every position reads 0.5 A.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  dialA:{kind:'dial', emoji:'🎛️', name:{en:'Ammeter scale A',vi:'Thang đo ampe kế A (ammeter scale)'}, short:{en:'Scale A · 4 A',vi:'Thang A · 4 A'}, labelY:1.55, fx:-4.8, fz:-1.9, fr:5.2},
+  dialB:{kind:'dial', emoji:'🎛️', name:{en:'Ammeter scale B',vi:'Thang đo ampe kế B (ammeter scale)'}, short:{en:'Scale B · 2.0 A',vi:'Thang B · 2.0 A'}, labelY:1.55, fx:-3.35, fz:-1.9, fr:5.2},
+  dialC:{kind:'dial', emoji:'🎛️', name:{en:'Ammeter scale C',vi:'Thang đo ampe kế C (ammeter scale)'}, short:{en:'Scale C · 1.7 A',vi:'Thang C · 1.7 A'}, labelY:1.55, fx:-1.9, fz:-1.9, fr:5.2},
+  ammeter:{kind:'ammeter', emoji:'⏲️', name:{en:'Ammeter',vi:'Ampe kế (ammeter)'}, short:{en:'Ammeter',vi:'Ampe kế'}, labelY:1.6, fx:-0.35, fz:-1.9, fr:5.2},
+  buzzer:{kind:'buzzer', emoji:'🔔', name:{en:'Buzzer',vi:'Chuông điện (buzzer)'}, short:{en:'Buzzer',vi:'Chuông điện'}, labelY:1.4, fx:1.15, fz:-1.9, fr:5.2},
+  switchLever:{kind:'switch', emoji:'🔀', name:{en:'Switch',vi:'Công tắc (switch)'}, short:{en:'Switch',vi:'Công tắc'}, labelY:1.4, fx:2.75, fz:-1.9, fr:5.2},
+  cell:{kind:'cell', emoji:'🔋', name:{en:'Cell (+ terminal on the right)',vi:'Pin (cell) (cực + ở bên phải)'}, short:{en:'Cell',vi:'Pin'}, labelY:1.45, fx:4.45, fz:-1.9, fr:5.2},
+  lamp1:{kind:'lamp', emoji:'💡', name:{en:'Lamp 1',vi:'Bóng đèn 1 (lamp)'}, short:{en:'Lamp 1',vi:'Đèn 1'}, labelY:1.55, fx:-4.5, fz:1.75, fr:5.2},
+  lamp2:{kind:'lamp', emoji:'💡', name:{en:'Lamp 2',vi:'Bóng đèn 2 (lamp)'}, short:{en:'Lamp 2',vi:'Đèn 2'}, labelY:1.55, fx:-2.9, fz:1.75, fr:5.2},
+  ammeterX:{kind:'posdial', emoji:'🇽', name:{en:'Ammeter at position X',vi:'Ampe kế ở vị trí X (position X)'}, short:{en:'Position X · 0.5 A',vi:'Vị trí X · 0.5 A'}, labelY:1.55, fx:-1.15, fz:1.75, fr:5.2},
+  ammeterY:{kind:'posdial', emoji:'🇾', name:{en:'Ammeter at position Y',vi:'Ampe kế ở vị trí Y (position Y)'}, short:{en:'Position Y · 0.5 A',vi:'Vị trí Y · 0.5 A'}, labelY:1.55, fx:0.45, fz:1.75, fr:5.2},
+  ammeterZ:{kind:'posdial', emoji:'🇿', name:{en:'Ammeter at position Z',vi:'Ampe kế ở vị trí Z (position Z)'}, short:{en:'Position Z · 0.5 A',vi:'Vị trí Z · 0.5 A'}, labelY:1.55, fx:2.05, fz:1.75, fr:5.2},
+  electrons:{kind:'electrons', emoji:'🔵', name:{en:'Electrons moving in a wire',vi:'Các electron (electrons) chuyển động trong dây dẫn'}, short:{en:'Electrons',vi:'Electron'}, labelY:1.45, fx:3.9, fz:1.75, fr:5.2}
+};
+const FOCUSORDER=['electrons','ammeter','dialA','dialB','dialC','cell','lamp1','lamp2','switchLever','buzzer','ammeterX','ammeterY','ammeterZ'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to measure or connect, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn đo hay nối mạch, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My current record',vi:'Bản ghi dòng điện của con'},
+  u2Brief:{en:'What you have named, read and measured about current.',vi:'Những điều con đã gọi tên, đọc và đo được về dòng điện (current).'},
+  rowComp:{en:'Getting-started parts named',vi:'Bộ phận mở đầu đã gọi tên'},
+  rowScale:{en:'Ammeter scales read',vi:'Thang ampe kế đã đọc'},
+  rowBuild:{en:'Series circuit parts connected',vi:'Bộ phận mạch nối tiếp đã nối'},
+  rowMeas:{en:'Positions measured (X, Y, Z)',vi:'Vị trí đã đo (X, Y, Z)'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundFlow:{en:'I named the particles that flow and the meter that measures them',vi:'Con đã gọi tên hạt chuyển động và dụng cụ đo chúng'},
+  foundUnit:{en:'I know the unit of current: amps (A)',vi:'Con biết đơn vị của cường độ dòng điện (current): ampe (amps) (A)'},
+  foundScales:{en:'I read ammeter scales: 4 A, 2.0 A and 1.7 A',vi:'Con đã đọc các thang ampe kế: 4 A, 2.0 A và 1.7 A'},
+  foundConnect:{en:'I can connect an ammeter correctly, in series',vi:'Con biết nối ampe kế (ammeter) đúng cách, mắc nối tiếp (in series)'},
+  foundSeries:{en:'I built a series circuit and made a prediction',vi:'Con đã lắp mạch nối tiếp (series circuit) và đưa ra dự đoán'},
+  foundRule:{en:'I measured at X, Y and Z — the current is the same all the way round',vi:'Con đã đo ở X, Y và Z — cường độ dòng điện như nhau khắp vòng mạch'},
+  tapAmmeterU:{en:'👆 Tap the ammeter on the bench first!',vi:'👆 Trước tiên hãy chạm vào ampe kế (ammeter) trên bàn!'},
+  qUnit:{en:'Current is measured in which unit?',vi:'Cường độ dòng điện (current) được đo bằng đơn vị nào?'},
+  chVolts:{en:'Volts (V)',vi:'Vôn (volts) (V)'},
+  chAmps:{en:'Amps (A)',vi:'Ampe (amps) (A)'},
+  chNewtons:{en:'Newtons (N)',vi:'Newton (newtons) (N)'},
+  tapAmmeterC:{en:'👆 Tap the ammeter on the bench first — Marcus wants to add it to his circuit!',vi:'👆 Trước tiên hãy chạm vào ampe kế (ammeter) trên bàn — Marcus muốn thêm nó vào mạch của mình!'},
+  qConnect:{en:'Marcus has a cell, a lamp and a buzzer in a loop. What is the CORRECT way to connect the ammeter?',vi:'Marcus có một pin, một bóng đèn và một chuông điện trong một vòng mạch. Cách nối ampe kế (ammeter) ĐÚNG là gì?'},
+  chParallel:{en:'Across the lamp, in its own branch',vi:'Mắc song song ngang qua bóng đèn, trong một nhánh riêng'},
+  chSeries:{en:'In series in the loop, red terminal towards the positive terminal',vi:'Mắc nối tiếp (in series) trong vòng mạch, đầu đỏ hướng về cực dương (positive terminal)'},
+  chReplace:{en:'In place of the lamp, so the lamp comes out',vi:'Thay vào vị trí của bóng đèn, bỏ bóng đèn ra'},
+  predQ:{en:'Circuit built! Now predict: you will move the ammeter to positions X, Y and Z around this series circuit. What will happen to the current?',vi:'Đã lắp xong mạch! Giờ hãy dự đoán: con sẽ chuyển ampe kế tới các vị trí X, Y và Z quanh mạch nối tiếp này. Cường độ dòng điện sẽ thế nào?'},
+  predA:{en:'A · It stays the same all the way round',vi:'A · Nó giữ nguyên như nhau khắp vòng mạch'},
+  predB:{en:'B · It gets smaller as it goes round',vi:'B · Nó nhỏ dần khi đi quanh mạch'},
+  predC:{en:'C · It gets bigger as it goes round',vi:'C · Nó lớn dần khi đi quanh mạch'},
+  predMade:{en:'Prediction recorded ✓ — next step, test it by measuring at X, Y and Z!',vi:'Đã ghi dự đoán ✓ — bước tiếp theo, hãy kiểm tra nó bằng cách đo ở X, Y và Z!'},
+  predFirst:{en:'First connect lamp 1, lamp 2 and the switch into the series loop — tap all three on the bench.',vi:'Trước tiên hãy nối bóng đèn 1, bóng đèn 2 và công tắc vào vòng mạch nối tiếp — chạm cả ba thứ trên bàn.'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 9.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 9.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Current in circuits (Workbook 9.3)',vi:'Bài tập 1 · Focus — Dòng điện trong mạch (Workbook 9.3)'},
+  ex1Inst:{en:'Sofia measures a current and writes down just the number 2, with no unit. Help her: choose the right word or unit each time.',vi:'Sofia đo một cường độ dòng điện và chỉ ghi số 2, không ghi đơn vị. Hãy giúp cô ấy: chọn đúng từ hoặc đơn vị mỗi lần.'},
+  ex2T:{en:'Exercise 2 · Practice — Connecting an ammeter (Workbook 9.3)',vi:'Bài tập 2 · Practice — Nối ampe kế (Workbook 9.3)'},
+  ex2Inst:{en:'Arun has a cell and a lamp and wants to measure the current. Choose the correct way to connect the ammeter each time.',vi:'Arun có một pin và một bóng đèn và muốn đo cường độ dòng điện. Hãy chọn cách nối ampe kế (ammeter) đúng mỗi lần.'},
+  ex3T:{en:'Exercise 3 · Challenge — The multimeter and the series rule (Workbook 9.3)',vi:'Bài tập 3 · Challenge — Đồng hồ đa năng và quy tắc mạch nối tiếp (Workbook 9.3)'},
+  ex3Inst:{en:'Sofia switches a multimeter to measure current, and you test the rule for current in a series circuit.',vi:'Sofia chuyển một đồng hồ đa năng (multimeter) sang chế độ đo dòng điện, và con kiểm tra quy tắc về dòng điện trong mạch nối tiếp (series circuit).'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'amps',vi:'ampe (đơn vị của dòng điện)'},
+  {en:'in series',vi:'mắc nối tiếp'},
+  {en:'ammeter',vi:'ampe kế'},
+  {en:'current',vi:'dòng điện / cường độ dòng điện'},
+  {en:'electrons',vi:'các electron'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started',vi:'Khởi động'}, word:{en:'electrons',vi:'các electron (electrons)'},
+  q:{en:'When a current flows in a wire, what is actually moving — and what do we measure it with?',vi:'Khi dòng điện chạy trong một dây dẫn, cái gì thực sự chuyển động — và ta dùng gì để đo nó?'},
+  act:{en:'Tap the electrons moving inside the wire on the bench. Then tap the ammeter — the component built for measuring current.',vi:'Chạm vào các electron (electrons) đang chuyển động trong dây dẫn trên bàn. Sau đó chạm vào ampe kế (ammeter) — dụng cụ chuyên dùng để đo cường độ dòng điện.'},
+  see:{en:'Tiny blue electrons stream along the wire. Beside them stands the ammeter, the meter whose job is to measure current.',vi:'Các electron nhỏ màu xanh dương chảy dọc dây dẫn. Bên cạnh chúng là ampe kế, dụng cụ mà nhiệm vụ của nó là đo cường độ dòng điện (current).'},
+  concl:[
+    {en:'The particles that move in wires when current flows are electrons. The faster they flow, the greater the current.',vi:'Các hạt chuyển động trong dây dẫn khi dòng điện chạy là electron (electrons). Chúng chảy càng nhanh, cường độ dòng điện càng lớn.'},
+    {en:'The component used to measure current is the ammeter. On a circuit diagram it is drawn as a circle with the letter A inside.',vi:'Dụng cụ dùng để đo cường độ dòng điện là ampe kế (ammeter). Trên sơ đồ mạch điện, nó được vẽ là một vòng tròn có chữ A bên trong.'}]},
+ {tag:{en:'Amps — the unit',vi:'Ampe — đơn vị'}, word:{en:'amps',vi:'ampe (amps)'},
+  q:{en:'A number like “2” is not a measurement yet. What unit turns it into a current?',vi:'Một con số như “2” chưa phải là một phép đo. Đơn vị nào biến nó thành một cường độ dòng điện?'},
+  act:{en:'Tap the ammeter on the bench. Then answer: current is measured in which unit?',vi:'Chạm vào ampe kế (ammeter) trên bàn. Sau đó trả lời: cường độ dòng điện được đo bằng đơn vị nào?'},
+  see:{en:'Every ammeter measures in the same unit, and its dial is marked with the unit symbol A.',vi:'Mọi ampe kế đều đo cùng một đơn vị, và mặt số của nó được đánh dấu ký hiệu đơn vị A.'},
+  concl:[
+    {en:'Current is measured in amps. The symbol for amps is A — so a full reading looks like 2 A.',vi:'Cường độ dòng điện (current) được đo bằng ampe (amps). Ký hiệu của ampe là A — nên một số đo đầy đủ trông như 2 A.'},
+    {en:'A reading without its unit is incomplete: always write the number and the A together.',vi:'Một số đo không có đơn vị là chưa đầy đủ: luôn viết số và chữ A cùng nhau.'}]},
+ {tag:{en:'Reading ammeter scales',vi:'Đọc thang ampe kế'}, word:{en:'ammeter',vi:'ampe kế (ammeter)'},
+  q:{en:'In the book activity you draw ammeter scales and swap drawings so a partner can place the pointer. Can you read three pointers?',vi:'Trong hoạt động của sách, con vẽ các thang ampe kế và đổi bản vẽ để bạn cùng học đặt kim chỉ. Con đọc được ba kim chỉ này không?'},
+  act:{en:'Tap scale A, scale B and scale C on the bench and read each pointer: A is set at a whole number, B at a round decimal and C at a trickier decimal.',vi:'Chạm vào thang A, thang B và thang C trên bàn và đọc từng kim chỉ: A ở một số nguyên, B ở một số thập phân tròn và C ở một số thập phân khó hơn.'},
+  see:{en:'Scale A reads 4 A. Scale B reads 2.0 A. Scale C reads 1.7 A — count the small divisions between the whole numbers carefully.',vi:'Thang A chỉ 4 A. Thang B chỉ 2.0 A. Thang C chỉ 1.7 A — hãy đếm cẩn thận các vạch chia nhỏ giữa các số nguyên.'},
+  concl:[
+    {en:'Read an ammeter by finding where the pointer rests against its scale — here 4 A, 2.0 A and 1.7 A.',vi:'Đọc ampe kế bằng cách tìm vị trí kim chỉ dừng trên thang của nó — ở đây là 4 A, 2.0 A và 1.7 A.'},
+    {en:'Decimal readings need the right number of divisions between whole numbers: 1.7 A sits seven small steps past 1 A on a scale split into tenths.',vi:'Các số đo thập phân cần đúng số vạch chia giữa các số nguyên: 1.7 A nằm bảy bước nhỏ sau 1 A trên thang chia thành phần mười.'}]},
+ {tag:{en:'Connecting an ammeter',vi:'Nối ampe kế'}, word:{en:'in series',vi:'mắc nối tiếp (in series)'},
+  q:{en:'Marcus wants to measure the current in his circuit of a cell, a lamp and a buzzer. Where does the ammeter belong?',vi:'Marcus muốn đo cường độ dòng điện trong mạch gồm pin, bóng đèn và chuông điện của mình. Ampe kế thuộc về vị trí nào?'},
+  act:{en:'Tap the ammeter on the bench. Then choose the CORRECT way to connect it into Marcus’s circuit.',vi:'Chạm vào ampe kế (ammeter) trên bàn. Sau đó chọn cách nối ĐÚNG để đưa nó vào mạch của Marcus.'},
+  see:{en:'The ammeter joins the single loop, end to end with the other components. Its red terminal faces the positive terminal of the cell, through the loop.',vi:'Ampe kế nhập vào vòng mạch duy nhất, nối đầu-nối-đuôi với các bộ phận khác. Đầu đỏ của nó hướng về cực dương (positive terminal) của pin, thông qua vòng mạch.'},
+  concl:[
+    {en:'An ammeter is always connected in series: end to end in the loop with the other components, with no branch of its own.',vi:'Ampe kế (ammeter) luôn được mắc nối tiếp (in series): nối đầu-nối-đuôi trong vòng mạch với các bộ phận khác, không có nhánh riêng.'},
+    {en:'The red terminal of the ammeter must lead, directly or through other components, to the positive terminal of the power supply; the black terminal leads to the negative side.',vi:'Đầu đỏ của ampe kế phải dẫn, trực tiếp hoặc qua các bộ phận khác, tới cực dương của nguồn điện; đầu đen dẫn về phía cực âm.'},
+    {en:'On a circuit diagram the two ends of the ammeter symbol look the same — you do not draw the red and black terminals.',vi:'Trên sơ đồ mạch điện, hai đầu của ký hiệu ampe kế trông giống nhau — con không cần vẽ đầu đỏ và đầu đen.'}]},
+ {tag:{en:'Predict the current',vi:'Dự đoán dòng điện'}, word:{en:'in series',vi:'mắc nối tiếp (in series)'},
+  q:{en:'Two lamps and a switch sit in series with a cell. Does the current change as it travels round the loop?',vi:'Hai bóng đèn và một công tắc mắc nối tiếp với một pin. Cường độ dòng điện có thay đổi khi nó đi quanh vòng mạch không?'},
+  act:{en:'Tap lamp 1, lamp 2 and the switch on the bench to connect them in series with the cell. Then make your prediction by choosing statement A, B or C below — any honest prediction counts.',vi:'Chạm vào bóng đèn 1, bóng đèn 2 và công tắc trên bàn để nối chúng nối tiếp (in series) với pin. Sau đó đưa ra dự đoán của con bằng cách chọn phát biểu A, B hoặc C bên dưới — mọi dự đoán thật lòng đều được tính.'},
+  see:{en:'The lamps light in one unbroken loop: cell, lamps and switch end to end, with no branches. Electrons flow all the way round it.',vi:'Các bóng đèn sáng trong một vòng mạch không đứt đoạn: pin, các bóng đèn và công tắc nối đầu-nối-đuôi, không có nhánh nào. Các electron (electrons) chảy khắp vòng mạch đó.'},
+  concl:[
+    {en:'Your circuit is a series circuit: the cell, two lamps and the switch are connected end to end, one after another, with no branches.',vi:'Mạch của con là một mạch nối tiếp (series circuit): pin, hai bóng đèn và công tắc được nối đầu-nối-đuôi, cái này sau cái kia, không có nhánh.'},
+    {en:'Your prediction is recorded. A good scientist now tests it — by measuring the current at different positions around the circuit.',vi:'Dự đoán của con đã được ghi lại. Một nhà khoa học giỏi giờ sẽ kiểm tra nó — bằng cách đo cường độ dòng điện ở các vị trí khác nhau quanh mạch.'}]},
+ {tag:{en:'Same all the way round',vi:'Như nhau khắp vòng mạch'}, word:{en:'amps',vi:'ampe (amps)'},
+  q:{en:'Time to test the prediction: is the current really the same at every point of a series circuit?',vi:'Đã đến lúc kiểm tra dự đoán: cường độ dòng điện có thật sự như nhau ở mọi điểm của một mạch nối tiếp không?'},
+  act:{en:'Tap the ammeter at position X, then at position Y, then at position Z on the bench, and read the scale each time. Open the switch in your mind before each move, just like the book says.',vi:'Chạm vào ampe kế ở vị trí X, rồi vị trí Y, rồi vị trí Z trên bàn, và đọc thang đo mỗi lần. Hãy tưởng tượng mở công tắc trước mỗi lần chuyển, đúng như sách hướng dẫn.'},
+  see:{en:'Position X reads 0.5 A. Position Y reads 0.5 A. Position Z reads 0.5 A — the reading never changes.',vi:'Vị trí X chỉ 0.5 A. Vị trí Y chỉ 0.5 A. Vị trí Z chỉ 0.5 A — số đo không bao giờ thay đổi.'},
+  concl:[
+    {en:'In a series circuit the current is the same all the way round: 0.5 A at X, at Y and at Z.',vi:'Trong một mạch nối tiếp (series circuit), cường độ dòng điện như nhau khắp vòng mạch: 0.5 A ở X, ở Y và ở Z.'},
+    {en:'The current is not used up by the lamps. The same electrons flow all the way round the loop, so the flow is the same at every point.',vi:'Dòng điện không bị các bóng đèn “dùng hết”. Cùng những electron đó chảy khắp vòng mạch, nên dòng chảy như nhau ở mọi điểm.'},
+    {en:'I can recall the unit of current and its symbol · I can take accurate readings from an ammeter · I can draw a circuit diagram with an ammeter connected correctly · I can explain how to connect an ammeter in a circuit.',vi:'Con có thể nhớ đơn vị của dòng điện và ký hiệu của nó · Con có thể đọc chính xác số đo từ ampe kế · Con có thể vẽ sơ đồ mạch điện với ampe kế nối đúng cách · Con có thể giải thích cách nối ampe kế trong mạch.'}]}
+];
+const QUIZ=[
+ {q:{en:'What is the unit used to measure current?',vi:'Đơn vị dùng để đo cường độ dòng điện (current) là gì?'},
+  o:[{en:'Volts (V)',vi:'Vôn (volts) (V)'},{en:'Amps (A)',vi:'Ampe (amps) (A)'},{en:'Newtons (N)',vi:'Newton (newtons) (N)'}],a:1,
+  e:{en:'Current is measured in amps, symbol A. Volts measure voltage and newtons measure force.',vi:'Cường độ dòng điện được đo bằng ampe (amps), ký hiệu A. Vôn đo hiệu điện thế và newton đo lực.'}},
+ {q:{en:'How should an ammeter be connected in a circuit?',vi:'Ampe kế (ammeter) nên được nối trong mạch như thế nào?'},
+  o:[{en:'In a branch across the lamp',vi:'Trong một nhánh ngang qua bóng đèn'},{en:'In place of the lamp',vi:'Thay vào vị trí của bóng đèn'},{en:'In series, in the loop with the other components',vi:'Nối tiếp (in series), trong vòng mạch cùng các bộ phận khác'}],a:2,
+  e:{en:'Ammeters are always connected in series — end to end in the loop, never in their own branch and never instead of a component.',vi:'Ampe kế luôn được mắc nối tiếp (in series) — nối đầu-nối-đuôi trong vòng mạch, không bao giờ trong một nhánh riêng và không bao giờ thay thế một bộ phận.'}},
+ {q:{en:'An ammeter reads 0.5 A at position X in a series circuit. What does it read at positions Y and Z?',vi:'Một ampe kế chỉ 0.5 A ở vị trí X trong một mạch nối tiếp (series circuit). Nó chỉ bao nhiêu ở các vị trí Y và Z?'},
+  o:[{en:'0.5 A at both — the current is the same all the way round',vi:'0.5 A ở cả hai — cường độ dòng điện như nhau khắp vòng mạch'},{en:'Less at Y and even less at Z',vi:'Nhỏ hơn ở Y và còn nhỏ hơn nữa ở Z'},{en:'More at Y and even more at Z',vi:'Lớn hơn ở Y và còn lớn hơn nữa ở Z'}],a:0,
+  e:{en:'The current in a series circuit stays the same at every point, because the same electrons flow all the way round the loop.',vi:'Cường độ dòng điện trong mạch nối tiếp giữ nguyên ở mọi điểm, vì cùng những electron đó chảy khắp vòng mạch.'}},
+ {q:{en:'Which terminal of the ammeter must connect towards the positive terminal of the power supply?',vi:'Đầu nào của ampe kế (ammeter) phải nối hướng về cực dương (positive terminal) của nguồn điện?'},
+  o:[{en:'The black terminal',vi:'Đầu đen'},{en:'The red terminal',vi:'Đầu đỏ'},{en:'Either — it makes no difference',vi:'Đầu nào cũng được — không có khác biệt'}],a:1,
+  e:{en:'The red terminal of an ammeter must lead to the positive terminal of the power supply, directly or through other components.',vi:'Đầu đỏ của ampe kế phải dẫn tới cực dương của nguồn điện, trực tiếp hoặc qua các bộ phận khác.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'Sofia writes the number 2 for a current but leaves off the unit. The unit for current is',vi:'Sofia ghi số 2 cho một cường độ dòng điện nhưng bỏ mất đơn vị. Đơn vị của dòng điện là'},correct:0,
+  opts:[{en:'amps (A)',vi:'ampe (amps) (A)'},{en:'volts (V)',vi:'vôn (volts) (V)'}],
+  e:{en:'Current is measured in amps, symbol A — so Sofia’s full answer is 2 A. C, V and N are not units of current.',vi:'Cường độ dòng điện được đo bằng ampe (amps), ký hiệu A — nên đáp án đầy đủ của Sofia là 2 A. C, V và N không phải đơn vị của dòng điện.'}},
+ {pre:{en:'The symbol for the unit of current, amps, is',vi:'Ký hiệu của đơn vị dòng điện, ampe, là'},correct:1,
+  opts:[{en:'V',vi:'V'},{en:'A',vi:'A'}],
+  e:{en:'Amps have the symbol A. V is the symbol for volts.',vi:'Ampe (amps) có ký hiệu là A. V là ký hiệu của vôn (volts).'}},
+ {pre:{en:'When electrons flow faster in a circuit, the current is',vi:'Khi các electron (electrons) chảy nhanh hơn trong một mạch, cường độ dòng điện'},correct:0,
+  opts:[{en:'greater',vi:'lớn hơn (greater)'},{en:'smaller',vi:'nhỏ hơn (smaller)'}],
+  e:{en:'Faster-moving electrons mean a bigger current. When electrons move more slowly, the current decreases.',vi:'Electron chuyển động nhanh hơn nghĩa là dòng điện lớn hơn. Khi electron chuyển động chậm hơn, cường độ dòng điện giảm.'}},
+ {pre:{en:'The greater the current in a circuit, the … the flow of electrons.',vi:'Cường độ dòng điện trong một mạch càng lớn, dòng electron (electrons) chảy càng … .'},correct:1,
+  opts:[{en:'slower',vi:'chậm hơn (slower)'},{en:'faster',vi:'nhanh hơn (faster)'}],
+  e:{en:'Current is the flow of electrons, so a greater current means the electrons themselves are flowing faster.',vi:'Dòng điện là dòng chảy của electron, nên cường độ dòng điện lớn hơn nghĩa là chính các electron đang chảy nhanh hơn.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'Arun should connect the ammeter',vi:'Arun nên nối ampe kế (ammeter)'},correct:0,
+  opts:[{en:'in series with the cell and the lamp',vi:'nối tiếp (in series) với pin và bóng đèn'},{en:'in a branch across the lamp',vi:'trong một nhánh ngang qua bóng đèn'}],
+  e:{en:'An ammeter goes in series, in the same single loop as the cell and the lamp — anywhere in that loop works.',vi:'Ampe kế mắc nối tiếp (in series), trong cùng một vòng mạch với pin và bóng đèn — bất cứ vị trí nào trong vòng mạch đó đều được.'}},
+ {pre:{en:'The ammeter may sit between the lamp and the positive terminal of the cell, as long as it is',vi:'Ampe kế có thể đặt giữa bóng đèn và cực dương của pin, miễn là nó được'},correct:1,
+  opts:[{en:'swapped for the lamp',vi:'thay thế cho bóng đèn'},{en:'connected in series there',vi:'mắc nối tiếp (in series) ở đó'}],
+  e:{en:'Between the lamp and the positive terminal is one correct position — in series. The lamp stays in the circuit.',vi:'Giữa bóng đèn và cực dương là một vị trí đúng — mắc nối tiếp. Bóng đèn vẫn ở trong mạch.'}},
+ {pre:{en:'Another correct place for the ammeter is',vi:'Một vị trí đúng khác cho ampe kế là'},correct:0,
+  opts:[{en:'in series between the lamp and the negative of the cell',vi:'nối tiếp (in series) giữa bóng đèn và cực âm của pin'},{en:'across the cell, in parallel with it',vi:'ngang qua pin, song song với nó'}],
+  e:{en:'Anywhere in series counts: between the lamp and the negative side works just as well. Across the cell would be a parallel branch — wrong.',vi:'Bất cứ đâu mắc nối tiếp đều được: giữa bóng đèn và phía cực âm cũng tốt như vậy. Ngang qua pin sẽ là một nhánh song song — sai.'}},
+ {pre:{en:'The red terminal of the ammeter must be connected towards the … terminal of the power supply.',vi:'Đầu đỏ của ampe kế phải nối hướng về cực … của nguồn điện.'},correct:1,
+  opts:[{en:'negative',vi:'âm (negative)'},{en:'positive',vi:'dương (positive)'}],
+  e:{en:'Red goes to positive — directly, or through other components in the loop. Black leads to the negative side.',vi:'Đầu đỏ đi tới cực dương — trực tiếp, hoặc qua các bộ phận khác trong vòng mạch. Đầu đen dẫn về phía cực âm.'}},
+ {pre:{en:'To add the ammeter, Arun should',vi:'Để thêm ampe kế, Arun nên'},correct:0,
+  opts:[{en:'put it into the loop and keep the lamp in the circuit',vi:'đưa nó vào vòng mạch và giữ bóng đèn trong mạch'},{en:'replace the lamp with the ammeter',vi:'thay bóng đèn bằng ampe kế'}],
+  e:{en:'Replacing the lamp is the one wrong choice in the Workbook list: the ammeter is added in series, and every component stays.',vi:'Thay thế bóng đèn là lựa chọn sai duy nhất trong danh sách của sách bài tập: ampe kế được thêm vào mắc nối tiếp, và mọi bộ phận đều ở lại.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'Sofia switches her multimeter to measure current, so it now works as an ammeter and reads in',vi:'Sofia chuyển đồng hồ đa năng (multimeter) của mình sang đo dòng điện, nên nó giờ hoạt động như một ampe kế và đọc theo'},correct:1,
+  opts:[{en:'volts',vi:'vôn (volts)'},{en:'amps',vi:'ampe (amps)'}],
+  e:{en:'A multimeter can make different measurements. Switched to current, it uses the amps scale — the A part of its dial.',vi:'Đồng hồ đa năng có thể thực hiện nhiều phép đo khác nhau. Khi chuyển sang đo dòng điện, nó dùng thang ampe — phần A trên mặt số của nó.'}},
+ {pre:{en:'On Sofia’s multimeter the pointer stands at 2.2 on the 0–5 A scale, so the current in her circuit is',vi:'Trên đồng hồ đa năng của Sofia, kim chỉ dừng ở 2.2 trên thang 0–5 A, nên cường độ dòng điện trong mạch của cô ấy là'},correct:0,
+  opts:[{en:'2.2 A',vi:'2.2 A'},{en:'12 A',vi:'12 A'}],
+  e:{en:'Read the amps scale where the pointer rests: 2.2 A — not 60 A, 12 A or 75 A, which belong to other scales and ranges on the dial.',vi:'Đọc thang ampe ở vị trí kim chỉ dừng: 2.2 A — không phải 60 A, 12 A hay 75 A, những số thuộc về các thang và dải đo khác trên mặt số.'}},
+ {pre:{en:'You move one ammeter from position X to position Y in a series circuit. The reading',vi:'Con chuyển một ampe kế từ vị trí X sang vị trí Y trong một mạch nối tiếp. Số đo'},correct:0,
+  opts:[{en:'stays the same',vi:'giữ nguyên như cũ'},{en:'drops, because the first lamp used some current up',vi:'giảm xuống, vì bóng đèn đầu tiên đã dùng hết một phần dòng điện'}],
+  e:{en:'Current is the same all the way round a series circuit, so the reading at Y matches the one at X. Lamps do not use current up.',vi:'Cường độ dòng điện như nhau khắp một mạch nối tiếp, nên số đo ở Y khớp với số đo ở X. Bóng đèn không dùng hết dòng điện.'}},
+ {pre:{en:'The current is the same at every point of a series circuit because',vi:'Cường độ dòng điện như nhau ở mọi điểm của một mạch nối tiếp vì'},correct:1,
+  opts:[{en:'electrons are used up by the lamps as they pass',vi:'các electron (electrons) bị bóng đèn dùng hết khi đi qua'},{en:'the same electrons flow all the way round the loop',vi:'cùng những electron đó chảy khắp vòng mạch'}],
+  e:{en:'Nothing is lost on the way round: the same electrons keep flowing around the whole loop, so the flow is equal everywhere.',vi:'Không có gì mất đi trên đường đi: cùng những electron đó cứ chảy quanh toàn bộ vòng mạch, nên dòng chảy bằng nhau ở mọi nơi.'}},
+ {pre:{en:'A complete ammeter reading always includes its unit, so you write',vi:'Một số đo ampe kế đầy đủ luôn kèm đơn vị, nên con viết'},correct:0,
+  opts:[{en:'0.5 A',vi:'0.5 A'},{en:'0.5 V',vi:'0.5 V'}],
+  e:{en:'Current readings take amps: 0.5 A. V stands for volts, the unit of voltage, not of current.',vi:'Số đo dòng điện dùng ampe: 0.5 A. V là vôn (volts), đơn vị của hiệu điện thế, không phải của dòng điện.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 5 + 5 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-9-3';
+const SUMKEY='camb:sum:sci7-9-3';
+const BOT_CODE='sci7-9.3';
+let FOUND={flow:false,unit:false,scales:false,connect:false,series:false,rule:false};
+function newTrack(){return {
+  s1:new Set(),
+  s2pos:false, s2ans:false, s2wrong:false,
+  s3:new Set(),
+  s4pos:false, s4ans:false, s4wrong:false,
+  s5:new Set(), s5pred:-1,
+  s6:new Set()
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=2;
+  if(i===1) return T.s2pos&&T.s2ans;
+  if(i===2) return T.s3.size>=3;
+  if(i===3) return T.s4pos&&T.s4ans;
+  if(i===4) return T.s5.size>=3&&T.s5pred>=0;
+  if(i===5) return T.s6.size>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Named so far: '+T.s1.size+' of 2 (the moving particles are electrons · the meter is the ammeter).',
+             'Đã gọi tên: '+T.s1.size+' / 2 (hạt chuyển động là electron · dụng cụ đo là ampe kế).');
+  }
+  if(i===1){
+    if(!T.s2pos) return B('Tap the ammeter on the bench.','Hãy chạm vào ampe kế trên bàn.');
+    if(T.s2wrong&&!T.s2ans) return B('Think again! Volts (V) measure voltage and newtons (N) measure force. An ammeter dial is marked A.','Nghĩ lại nào! Vôn (V) đo hiệu điện thế và newton (N) đo lực. Mặt số ampe kế được đánh dấu A.');
+    if(!T.s2ans) return B('You tapped the ammeter. Now answer: current is measured in which unit?','Con đã chạm vào ampe kế. Giờ trả lời: cường độ dòng điện được đo bằng đơn vị nào?');
+    return B('Current is measured in amps — symbol A.','Cường độ dòng điện được đo bằng ampe (amps) — ký hiệu A.');
+  }
+  if(i===2){
+    return B('Scales read: '+T.s3.size+' of 3 (scale A = 4 A · scale B = 2.0 A · scale C = 1.7 A).',
+             'Thang đã đọc: '+T.s3.size+' / 3 (thang A = 4 A · thang B = 2.0 A · thang C = 1.7 A).');
+  }
+  if(i===3){
+    if(!T.s4pos) return B('Tap the ammeter on the bench.','Hãy chạm vào ampe kế trên bàn.');
+    if(T.s4wrong&&!T.s4ans) return B('Think again! An ammeter never gets its own branch and never replaces a component — it joins the loop itself.','Nghĩ lại nào! Ampe kế không bao giờ có nhánh riêng và không bao giờ thay thế một bộ phận — nó nhập vào chính vòng mạch.');
+    if(!T.s4ans) return B('You tapped the ammeter. Now choose the correct way to connect it for Marcus.','Con đã chạm vào ampe kế. Giờ chọn cách nối đúng cho Marcus.');
+    return B('Ammeter in series in the loop, red terminal towards the positive terminal.','Ampe kế mắc nối tiếp trong vòng mạch, đầu đỏ hướng về cực dương.');
+  }
+  if(i===4){
+    if(T.s5.size<3) return B('Series parts connected: '+T.s5.size+' of 3 (lamp 1 · lamp 2 · switch).',
+             'Bộ phận nối tiếp đã nối: '+T.s5.size+' / 3 (bóng đèn 1 · bóng đèn 2 · công tắc).');
+    if(T.s5pred<0) return B('Circuit built! Now choose your prediction: statement A, B or C.','Đã lắp xong mạch! Giờ chọn dự đoán của con: phát biểu A, B hoặc C.');
+    return B('Circuit built and prediction recorded (statement '+'ABC'[T.s5pred]+'). Next step tests it.','Đã lắp mạch và ghi dự đoán (phát biểu '+'ABC'[T.s5pred]+'). Bước tiếp theo sẽ kiểm tra nó.');
+  }
+  if(i===5){
+    return B('Positions measured: '+T.s6.size+' of 3 (X = 0.5 A · Y = 0.5 A · Z = 0.5 A — the same at every position).',
+             'Vị trí đã đo: '+T.s6.size+' / 3 (X = 0.5 A · Y = 0.5 A · Z = 0.5 A — như nhau ở mọi vị trí).');
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function markSeriesFound(){ if(T.s5.size>=3&&T.s5pred>=0) FOUND.series=true; }
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔵',label:{en:'Electrons — the moving particles',vi:'Electron — hạt chuyển động'},got:T.s1.has('electrons')},
+      {emoji:'⏲️',label:{en:'Ammeter — the current meter',vi:'Ampe kế — dụng cụ đo dòng điện'},got:T.s1.has('ammeter')}
+    ]);
+  }else if(curStep===1){
+    if(!T.s2pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapAmmeterU)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s2ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qUnit);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chVolts,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chAmps,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2ans=true; FOUND.unit=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chNewtons,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🎛️',label:{en:'Scale A reads 4 A',vi:'Thang A chỉ 4 A'},got:T.s3.has('dialA')},
+      {emoji:'🎛️',label:{en:'Scale B reads 2.0 A',vi:'Thang B chỉ 2.0 A'},got:T.s3.has('dialB')},
+      {emoji:'🎛️',label:{en:'Scale C reads 1.7 A',vi:'Thang C chỉ 1.7 A'},got:T.s3.has('dialC')}
+    ]);
+  }else if(curStep===3){
+    if(!T.s4pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapAmmeterC)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s4ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qConnect);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chParallel,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chSeries,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4ans=true; FOUND.connect=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chReplace,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'💡',label:{en:'Lamp 1 connected',vi:'Bóng đèn 1 đã nối'},got:T.s5.has('lamp1')},
+      {emoji:'💡',label:{en:'Lamp 2 connected',vi:'Bóng đèn 2 đã nối'},got:T.s5.has('lamp2')},
+      {emoji:'🔀',label:{en:'Switch connected and closed',vi:'Công tắc đã nối và đóng'},got:T.s5.has('switchLever')}
+    ]);
+    if(T.s5.size<3){
+      const p=document.createElement('p'); p.style.margin='8px 0 0'; p.innerHTML='<b>'+bi(STR.predFirst)+'</b>';
+      box.appendChild(p);
+    }else if(T.s5pred<0){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.predQ);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      [STR.predA,STR.predB,STR.predC].forEach((lab,pi)=>{
+        row.appendChild(choiceBtn(lab,pi===1?'alt':(pi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          T.s5pred=pi; markSeriesFound(); saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }else{
+      const p=document.createElement('p'); p.style.margin='8px 0 0'; p.innerHTML='<b>'+bi(STR.predMade)+'</b>';
+      box.appendChild(p);
+    }
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🇽',label:{en:'Position X — 0.5 A',vi:'Vị trí X — 0.5 A'},got:T.s6.has('ammeterX')},
+      {emoji:'🇾',label:{en:'Position Y — 0.5 A',vi:'Vị trí Y — 0.5 A'},got:T.s6.has('ammeterY')},
+      {emoji:'🇿',label:{en:'Position Z — 0.5 A',vi:'Vị trí Z — 0.5 A'},got:T.s6.has('ammeterZ')}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('electrons'); bounceThing('electrons'); setTimeout(()=>{ focusVisual('ammeter'); bounceThing('ammeter'); },900); }
+  else if(i===1){ focusThing('ammeter'); bounceThing('ammeter'); }
+  else if(i===2){ focusVisual('dialA'); bounceThing('dialA'); setTimeout(()=>{ focusVisual('dialC'); bounceThing('dialC'); },900); }
+  else if(i===3){ focusThing('ammeter'); bounceThing('ammeter'); }
+  else if(i===4){ focusVisual('lamp1'); bounceThing('lamp1'); setTimeout(()=>{ focusVisual('switchLever'); bounceThing('switchLever'); },900); }
+  else if(i===5){ focusVisual('ammeterX'); bounceThing('ammeterX'); setTimeout(()=>{ focusVisual('ammeterZ'); bounceThing('ammeterZ'); },900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowComp,(doneSteps.has(0)?2:T.s1.size),2)+
+    row(STR.rowScale,(doneSteps.has(2)?3:T.s3.size),3)+
+    row(STR.rowBuild,(doneSteps.has(4)?3:T.s5.size),3)+
+    row(STR.rowMeas,(doneSteps.has(5)?3:T.s6.size),3);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.flow||doneSteps.has(0),label:STR.foundFlow},
+    {got:FOUND.unit||doneSteps.has(1),label:STR.foundUnit},
+    {got:FOUND.scales||doneSteps.has(2),label:STR.foundScales},
+    {got:FOUND.connect||doneSteps.has(3),label:STR.foundConnect},
+    {got:FOUND.series||doneSteps.has(4),label:STR.foundSeries},
+    {got:FOUND.rule||doneSteps.has(5),label:STR.foundRule}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function mkDial(px,pz,needle,accent,terminals){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.16,0.34,0.16),stdMat(0x44586e,0.6)));
+  post.position.y=0.17; g.add(post);
+  const face=new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.44,0.09,24),stdMat(0xf7fafc,0.35));
+  face.rotation.x=Math.PI/2; face.position.y=0.68; g.add(shadowed(face));
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.44,0.035,10,28),stdMat(accent,0.4));
+  ring.position.set(0,0.68,0.05); g.add(ring);
+  for(let k=0;k<5;k++){
+    const a=(-0.9+k*0.45);
+    const tick=new THREE.Mesh(new THREE.BoxGeometry(0.035,0.11,0.02),new THREE.MeshBasicMaterial({color:0x22384f}));
+    tick.position.set(Math.sin(a)*0.33,0.68+Math.cos(a)*0.33,0.06); tick.rotation.z=-a; g.add(tick);
+  }
+  const nd=new THREE.Mesh(new THREE.BoxGeometry(0.035,0.34,0.02),new THREE.MeshBasicMaterial({color:0xd23c2a}));
+  nd.geometry.translate(0,0.13,0);
+  nd.position.set(0,0.68,0.07); nd.rotation.z=needle; g.add(nd);
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.04,12),stdMat(0x22384f,0.4));
+  hub.rotation.x=Math.PI/2; hub.position.set(0,0.68,0.07); g.add(hub);
+  if(terminals){
+    const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,0.12,10),stdMat(0xd23c2a,0.4));
+    tr.position.set(-0.2,1.16,0); g.add(tr);
+    const tb=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,0.12,10),stdMat(0x22384f,0.4));
+    tb.position.set(0.2,1.16,0); g.add(tb);
+  }
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function mkCell(px,pz){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.52,0.46),stdMat(0xf2c230,0.45)));
+  body.position.y=0.3; g.add(body);
+  const band=new THREE.Mesh(new THREE.BoxGeometry(0.95,0.16,0.47),stdMat(0x22384f,0.5));
+  band.position.y=0.48; g.add(band);
+  const tp=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.16,10),stdMat(0xd23c2a,0.4));
+  tp.position.set(0.28,0.64,0); g.add(tp);
+  const tn=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.09,10),stdMat(0x707c89,0.4));
+  tn.position.set(-0.28,0.6,0); g.add(tn);
+  const plus1=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.045,0.045),new THREE.MeshBasicMaterial({color:0xd23c2a}));
+  plus1.position.set(0.28,0.82,0); g.add(plus1);
+  const plus2=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.2,0.045),new THREE.MeshBasicMaterial({color:0xd23c2a}));
+  plus2.position.set(0.28,0.82,0); g.add(plus2);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function mkLamp(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.12,16),stdMat(0x44586e,0.5)));
+  base.position.y=0.06; g.add(base);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.3,10),stdMat(0x9aa7b4,0.4));
+  stem.position.y=0.27; g.add(stem);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.3,16,12),new THREE.MeshStandardMaterial({color:0xffe9a3,roughness:0.25,emissive:0xa87b12,emissiveIntensity:0.55,transparent:true,opacity:0.92}));
+  bulb.position.y=0.72; g.add(bulb);
+  const fil=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.02,8,16),new THREE.MeshBasicMaterial({color:0xf2762e}));
+  fil.position.set(0,0.7,0); g.add(fil);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function mkSwitch(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.12,0.5),stdMat(0x8a5a2b,0.7)));
+  base.position.y=0.06; g.add(base);
+  [-0.28,0.28].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.14,10),stdMat(0xb08d2f,0.35));
+    post.position.set(dx,0.19,0); g.add(post);
+  });
+  const lever=new THREE.Mesh(new THREE.BoxGeometry(0.62,0.05,0.16),stdMat(0xb08d2f,0.35));
+  lever.geometry.translate(0.31,0,0);
+  lever.position.set(-0.28,0.27,0); lever.rotation.z=0.5; g.add(lever);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function mkBuzzer(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.4,0.14,18),stdMat(0x44586e,0.5)));
+  base.position.y=0.07; g.add(base);
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(0.32,16,10,0,Math.PI*2,0,Math.PI/2),stdMat(0x22384f,0.35));
+  dome.position.y=0.14; g.add(dome);
+  [-0.12,0,0.12].forEach(dx=>{
+    const hole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.03,8),new THREE.MeshBasicMaterial({color:0xf2c230}));
+    hole.position.set(dx,0.42,0.12); g.add(hole);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function mkElectrons(px,pz){
+  const g=new THREE.Group();
+  [-0.42,0.42].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.34,8),stdMat(0x44586e,0.6));
+    post.position.set(dx,0.17,0); g.add(post);
+  });
+  const wire=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.05,10),stdMat(0xb87333,0.35));
+  wire.rotation.z=Math.PI/2; wire.position.y=0.36; g.add(wire);
+  [-0.36,-0.12,0.12,0.36].forEach((dx,ix)=>{
+    const e=new THREE.Mesh(new THREE.SphereGeometry(0.095,10,8),new THREE.MeshBasicMaterial({color:ix%2? 0x2e6fd8:0x5dade2}));
+    e.position.set(dx,0.36,0.1); g.add(e);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  const loopWire=new THREE.Mesh(new THREE.TorusGeometry(2.55,0.035,8,64),stdMat(0xb87333,0.4));
+  loopWire.rotation.x=Math.PI/2; loopWire.position.set(-1.7,0.06,1.75); loopWire.scale.set(1.25,0.42,1); scene3.add(loopWire);
+  reg('dialA',mkDial(-4.8,-1.9,0.85,0x0b76d1,false));
+  reg('dialB',mkDial(-3.35,-1.9,0.1,0x0d9d58,false));
+  reg('dialC',mkDial(-1.9,-1.9,-0.28,0xe07b24,false));
+  reg('ammeter',mkDial(-0.35,-1.9,0.35,0xd23c2a,true));
+  reg('buzzer',mkBuzzer(1.15,-1.9));
+  reg('switchLever',mkSwitch(2.75,-1.9));
+  reg('cell',mkCell(4.45,-1.9));
+  reg('lamp1',mkLamp(-4.5,1.75));
+  reg('lamp2',mkLamp(-2.9,1.75));
+  reg('ammeterX',mkDial(-1.15,1.75,0.3,0x7a4fd0,true));
+  reg('ammeterY',mkDial(0.45,1.75,0.3,0x7a4fd0,true));
+  reg('ammeterZ',mkDial(2.05,1.75,0.3,0x7a4fd0,true));
+  reg('electrons',mkElectrons(3.9,1.75));
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('dialA',p,G.dialA); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('dialB',p,G.dialB); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('dialC',p,G.dialC); }
+  { const p=sphProxy(0.6); p.position.set(0,0.65,0); addProxy('ammeter',p,G.ammeter); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('buzzer',p,G.buzzer); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('switchLever',p,G.switchLever); }
+  { const p=sphProxy(0.58); p.position.set(0,0.4,0); addProxy('cell',p,G.cell); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('lamp1',p,G.lamp1); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('lamp2',p,G.lamp2); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('ammeterX',p,G.ammeterX); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('ammeterY',p,G.ammeterY); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('ammeterZ',p,G.ammeterZ); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('electrons',p,G.electrons); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['electrons','ammeter'],
+  ['ammeter'],
+  ['dialA','dialB','dialC'],
+  ['ammeter'],
+  ['lamp1','lamp2','switchLever'],
+  ['ammeterX','ammeterY','ammeterZ']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='electrons'||id==='ammeter'){
+      T.s1.add(id);
+      if(T.s1.size>=2) FOUND.flow=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1&&id==='ammeter'){
+    T.s2pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='dialA'||id==='dialB'||id==='dialC'){
+      T.s3.add(id);
+      if(T.s3.size>=3) FOUND.scales=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===3&&id==='ammeter'){
+    T.s4pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='lamp1'||id==='lamp2'||id==='switchLever'){
+      T.s5.add(id);
+      markSeriesFound();
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===5){
+    if(id==='ammeterX'||id==='ammeterY'||id==='ammeterZ'){
+      T.s6.add(id);
+      if(T.s6.size>=3) FOUND.rule=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.flow=false; }
+  if(step===1){ FOUND.unit=false; }
+  if(step===2){ FOUND.scales=false; }
+  if(step===3){ FOUND.connect=false; }
+  if(step===4){ FOUND.series=false; }
+  if(step===5){ FOUND.rule=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['electrons','ammeter'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ t.s2pos=true; t.s2ans=true; }
+  else if(i===2){ ['dialA','dialB','dialC'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ t.s4pos=true; t.s4ans=true; }
+  else if(i===4){ ['lamp1','lamp2','switchLever'].forEach(id=>t.s5.add(id)); t.s5pred=0; }
+  else if(i===5){ ['ammeterX','ammeterY','ammeterZ'].forEach(id=>t.s6.add(id)); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-9-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

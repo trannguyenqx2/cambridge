@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>9.1 Flow of electricity — Dòng điện · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+.binbtn.useful{background:#0d9d58}
+.binbtn.wasted{background:#b03a3a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="9.1 Flow of electricity" data-vi="9.1 Dòng điện (Flow of electricity)">9.1 Flow of electricity</span>
+    <span class="eqchip i18n" data-en="Unit 9 · Electricity" data-vi="Bài 9 · Điện (Electricity)">Unit 9 · Electricity</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/7 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does electricity flow around a circuit?" data-vi="Điện chảy quanh một mạch điện (circuit) như thế nào?">How does electricity flow around a circuit?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Complete circuit" data-vi="Mạch điện kín (complete circuit)">Complete circuit</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Electrons flow" data-vi="Các electron (electrons) chảy">Electrons flow</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Towards the positive terminal" data-vi="Về phía cực dương (positive terminal)">Towards the positive terminal</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="All lamps at the same time!" data-vi="Mọi bóng đèn cùng một lúc!">All lamps at the same time!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 9 Electricity · Section 9.1. The circuit bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 9 · Điện (Electricity) · Mục 9.1. Bàn mạch điện trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 9 Electricity · Section 9.1. The circuit bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 9 Electricity, section 9.1, pages 288–292; Workbook 7 (ISBN 9781108742818), pages 166–167. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 9 · Điện (Electricity), mục 9.1, trang 288–292; Sách bài tập 7 (ISBN 9781108742818), trang 166–167. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 9 Electricity, section 9.1, pages 288–292; Workbook 7 (ISBN 9781108742818), pages 166–167. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives: understand how electricity flows around a circuit; learn about the electrons that flow to make electric current. Key words: attract, battery, cell, components, current, electrons, free to move, negative charge, repel, terminals. The section opens with the Getting started questions about what a complete circuit needs and what flows around it." data-vi="Mục tiêu: hiểu điện chảy quanh một mạch điện (circuit) như thế nào; tìm hiểu về các electron (electrons) chảy để tạo thành dòng điện (current). Từ khóa: attract (hút), battery (bộ pin), cell (pin đơn), components (linh kiện), current (dòng điện), electrons (electron), free to move (tự do di chuyển), negative charge (điện tích âm), repel (đẩy), terminals (cực). Mục học mở đầu bằng các câu hỏi Khởi động (Getting started) về một mạch điện kín cần những gì và cái gì chảy quanh nó.">Objectives: understand how electricity flows around a circuit; learn about the electrons that flow to make electric current. Key words: attract, battery, cell, components, current, electrons, free to move, negative charge, repel, terminals.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D circuit bench — building a complete circuit from a cell, wires and a lamp; meeting cells, batteries and their + and − terminals; seeing that some electrons in a metal are free to move (randomly out of a circuit, all in the same direction inside one); working out that negatively charged electrons leave the negative terminal and move towards the positive one; modelling electron flow with the book's string-loop activity (Activity 9.1.1: the cell person pulls, the coloured marks are the electrons, and the whole loop moves together at the same speed); and a final check that includes the book's lamp prediction — four lamps metres apart in one series circuit all light at the same time, because the electrons everywhere start moving at once. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn mạch điện 3D — lắp một mạch điện kín (complete circuit) từ một pin đơn (cell), các dây dẫn và một bóng đèn; làm quen với pin đơn, bộ pin (battery) và các cực (terminals) + và − của chúng; thấy rằng một số electron (electrons) trong kim loại tự do di chuyển (free to move) (ngẫu nhiên khi ngoài mạch, tất cả cùng một hướng khi ở trong mạch); suy ra rằng các electron mang điện tích âm (negative charge) rời cực âm (negative terminal) và di chuyển về phía cực dương (positive terminal); mô phỏng dòng electron bằng hoạt động vòng dây của sách (Hoạt động 9.1.1: người đóng vai pin đơn kéo dây, các dấu màu là các electron, và cả vòng dây chuyển động cùng nhau với cùng một tốc độ); và phần kiểm tra cuối gồm dự đoán về bóng đèn của sách — bốn bóng đèn cách nhau vài mét trong một mạch nối tiếp đều sáng cùng một lúc, vì các electron ở khắp nơi bắt đầu chuyển động cùng lúc. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D circuit bench or with choice buttons. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-9-1 "Flow of electricity"
+   (Science 7, Unit 9 · Electricity)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+/* ================= bench things ================= */
+const THINGS={
+  cell:{kind:'cell', emoji:'🔋', name:{en:'Cell — with + and − terminals',vi:'Pin đơn (cell) — với các cực + và −'}, short:{en:'Cell',vi:'Pin đơn'}, labelY:1.5, fx:-4.7, fz:-1.8, fr:5.2},
+  battery:{kind:'battery', emoji:'🪫', name:{en:'Battery — many cells joined together',vi:'Bộ pin (battery) — nhiều pin đơn nối với nhau'}, short:{en:'Battery',vi:'Bộ pin'}, labelY:1.6, fx:-3.3, fz:-1.8, fr:5.2},
+  lamp:{kind:'lamp', emoji:'💡', name:{en:'Lamp',vi:'Bóng đèn (lamp)'}, short:{en:'Lamp',vi:'Bóng đèn'}, labelY:1.5, fx:-1.9, fz:-1.8, fr:5.2},
+  switchObj:{kind:'switch', emoji:'🎚️', name:{en:'Switch — open or closed',vi:'Công tắc (switch) — mở hoặc đóng'}, short:{en:'Switch',vi:'Công tắc'}, labelY:1.4, fx:-0.3, fz:-1.8, fr:5.2},
+  wire:{kind:'wire', emoji:'🧵', name:{en:'Wires — joining the circuit',vi:'Dây dẫn (wires) — nối mạch điện'}, short:{en:'Wires',vi:'Dây dẫn'}, labelY:1.4, fx:1.3, fz:-1.8, fr:5.2},
+  metalBar:{kind:'metal', emoji:'🔩', name:{en:'Metal bar — full of electrons',vi:'Thanh kim loại (metal) — chứa đầy electron'}, short:{en:'Metal bar',vi:'Thanh kim loại'}, labelY:1.4, fx:2.9, fz:-1.8, fr:5.2},
+  electron:{kind:'electron', emoji:'🔵', name:{en:'Electron — negative charge',vi:'Electron — điện tích âm (negative charge)'}, short:{en:'Electron',vi:'Electron'}, labelY:1.5, fx:4.6, fz:-1.8, fr:5.4},
+  stringLoop:{kind:'loop', emoji:'⭕', name:{en:'Loop of string — the model circuit',vi:'Vòng dây (loop of string) — mạch điện mô hình'}, short:{en:'String loop',vi:'Vòng dây'}, labelY:1.4, fx:-3.6, fz:1.8, fr:5.2},
+  tapeMark:{kind:'tape', emoji:'🏷️', name:{en:'Coloured tape marks on the string',vi:'Các dấu băng màu (coloured tape) trên vòng dây'}, short:{en:'Tape marks',vi:'Dấu băng màu'}, labelY:1.5, fx:-0.9, fz:1.8, fr:5.2},
+  personCell:{kind:'person', emoji:'🧑', name:{en:'The cell person — pulls the string',vi:'Người đóng vai pin đơn (cell) — kéo vòng dây'}, short:{en:'Cell person',vi:'Người-pin đơn'}, labelY:1.7, fx:1.6, fz:1.8, fr:5.2}
+};
+const FOCUSORDER=['cell','battery','lamp','switchObj','wire','metalBar','electron','stringLoop','tapeMark','personCell'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to build or test a circuit, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn lắp hay kiểm tra một mạch điện, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My electricity record',vi:'Bản ghi điện học của con'},
+  u2Brief:{en:'What you have found out about circuits, cells and electrons.',vi:'Những điều con đã tìm hiểu về mạch điện (circuits), pin đơn (cells) và electron (electrons).'},
+  rowCircuit:{en:'Complete-circuit parts tapped',vi:'Bộ phận của mạch kín đã chạm'},
+  rowIdeas:{en:'Electricity ideas answered',vi:'Ý điện học đã trả lời'},
+  rowModel:{en:'String-model parts tapped',vi:'Bộ phận của mô hình vòng dây đã chạm'},
+  rowGame:{en:'Final check questions right',vi:'Câu kiểm tra cuối đã đúng'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundWhich:{en:'I built a complete circuit',vi:'Con đã lắp một mạch điện kín (complete circuit)'},
+  foundLitmus:{en:'I know what a battery is made of',vi:'Con biết một bộ pin (battery) được làm từ gì'},
+  foundMade:{en:'I know how free electrons move in a metal',vi:'Con biết các electron tự do (free to move) chuyển động trong kim loại như thế nào'},
+  foundUniversal:{en:'I know which terminal attracts electrons',vi:'Con biết cực (terminal) nào hút (attract) các electron'},
+  foundTest:{en:'I modelled electron flow with a string loop',vi:'Con đã mô phỏng dòng electron bằng một vòng dây'},
+  foundGame:{en:'I answered the electricity check',vi:'Con đã trả lời phần kiểm tra về điện'},
+  tapBattery:{en:'👆 Tap the battery pack on the bench first!',vi:'👆 Trước tiên hãy chạm vào bộ pin (battery) trên bàn!'},
+  qBattery:{en:'A battery is made from…',vi:'Một bộ pin (battery) được làm từ…'},
+  chOneCell:{en:'One cell only',vi:'Chỉ một pin đơn (cell)'},
+  chTwoCells:{en:'Two or more cells joined together',vi:'Hai pin đơn trở lên nối với nhau'},
+  chTwoLamps:{en:'Two lamps joined together',vi:'Hai bóng đèn nối với nhau'},
+  tapMetal:{en:'👆 Tap the metal bar on the bench first!',vi:'👆 Trước tiên hãy chạm vào thanh kim loại (metal bar) trên bàn!'},
+  qMetal:{en:'The metal bar is now part of a complete circuit. How do its free electrons move?',vi:'Thanh kim loại giờ là một phần của mạch điện kín. Các electron tự do (free electrons) của nó chuyển động như thế nào?'},
+  chRandom:{en:'Randomly, in all directions',vi:'Ngẫu nhiên, theo mọi hướng (randomly)'},
+  chSameDir:{en:'All in the same direction',vi:'Tất cả cùng một hướng'},
+  chStopped:{en:'They stop moving',vi:'Chúng ngừng chuyển động'},
+  tapElectron:{en:'👆 Tap the electron model on the bench first!',vi:'👆 Trước tiên hãy chạm vào mô hình electron trên bàn!'},
+  qElectron:{en:'An electron has a negative charge. Which terminal attracts it?',vi:'Một electron mang điện tích âm (negative charge). Cực (terminal) nào hút (attract) nó?'},
+  chNegTerm:{en:'The negative terminal',vi:'Cực âm (negative terminal)'},
+  chPosTerm:{en:'The positive terminal',vi:'Cực dương (positive terminal)'},
+  chNoTerm:{en:'Neither terminal',vi:'Không cực nào cả'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 9.1',vi:'📝 Bài tập — Sách bài tập (Workbook) 9.1'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — The movement of electrons (Workbook 9.1)',vi:'Bài tập 1 · Focus — Sự chuyển động của electron (Workbook 9.1)'},
+  ex1Inst:{en:'What happens to the electrons when current flows? Choose the correct ending for each sentence.',vi:'Điều gì xảy ra với các electron khi có dòng điện (current) chảy? Hãy chọn phần kết đúng cho mỗi câu.'},
+  ex2T:{en:'Exercise 2 · Practice — Terminals and electron flow (Workbook 9.1)',vi:'Bài tập 2 · Practice — Các cực và dòng electron (Workbook 9.1)'},
+  ex2Inst:{en:'Complete each sentence with the correct word. The words come from the Workbook list: neutral, positive, negative.',vi:'Hoàn thành mỗi câu bằng từ đúng. Các từ lấy từ danh sách của sách bài tập: neutral (trung hòa), positive (dương), negative (âm).'},
+  ex3T:{en:'Exercise 3 · Challenge — Electron-flow arrows and predictions (Workbook 9.1)',vi:'Bài tập 3 · Challenge — Mũi tên dòng electron và dự đoán (Workbook 9.1)'},
+  ex3Inst:{en:'Use the direction of the electron-flow arrows to place the + and − terminals, then think about breaks and predictions.',vi:'Hãy dùng hướng của các mũi tên dòng electron để đặt các cực + và −, rồi nghĩ về chỗ đứt mạch và dự đoán.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'attract',vi:'hút (attract)'},
+  {en:'battery',vi:'bộ pin (battery)'},
+  {en:'cell',vi:'pin đơn (cell)'},
+  {en:'components',vi:'linh kiện / bộ phận (components)'},
+  {en:'current',vi:'dòng điện (current)'},
+  {en:'electrons',vi:'electron (electrons)'},
+  {en:'free to move',vi:'tự do di chuyển (free to move)'},
+  {en:'negative charge',vi:'điện tích âm (negative charge)'},
+  {en:'repel',vi:'đẩy (repel)'},
+  {en:'terminals',vi:'các cực (terminals)'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Complete the circuit',vi:'Lắp mạch điện kín'}, word:{en:'current',vi:'dòng điện (current)'},
+  q:{en:'Getting started: which things must a complete circuit have — and what flows around it?',vi:'Khởi động (Getting started): một mạch điện kín (complete circuit) cần có những gì — và cái gì chảy quanh nó?'},
+  act:{en:'Tap the three things this circuit cannot work without: the cell, the wires and the lamp on the bench.',vi:'Hãy chạm vào ba thứ mà mạch điện này không thể thiếu: pin đơn (cell), các dây dẫn (wires) và bóng đèn trên bàn.'},
+  see:{en:'With a cell, wires and a lamp joined in one unbroken loop, the lamp can light. Leave a gap, and nothing flows.',vi:'Khi một pin đơn, các dây dẫn và một bóng đèn được nối thành một vòng khép kín không đứt đoạn, bóng đèn có thể sáng. Chỉ cần hở một chỗ là không có gì chảy được.'},
+  concl:[
+    {en:'A complete circuit is one unbroken loop. It needs a power source such as a cell, wires to join everything, and a component such as a lamp.',vi:'Một mạch điện kín (complete circuit) là một vòng khép kín không đứt đoạn. Nó cần một nguồn điện như pin đơn (cell), các dây dẫn (wires) để nối mọi thứ, và một linh kiện (component) như bóng đèn.'},
+    {en:'A switch can be part of a circuit too: closed, it completes the loop; open, it breaks the loop and the flow stops.',vi:'Một công tắc (switch) cũng có thể là một phần của mạch: khi đóng, nó khép kín vòng mạch; khi mở, nó làm đứt vòng mạch và dòng chảy dừng lại.'},
+    {en:'What flows around a complete circuit is current — not heat, and not the wires themselves.',vi:'Thứ chảy quanh một mạch điện kín là dòng điện (current) — không phải nhiệt, và cũng không phải chính các dây dẫn.'}]},
+ {tag:{en:'Cells and batteries',vi:'Pin đơn và bộ pin'}, word:{en:'battery',vi:'bộ pin (battery)'},
+  q:{en:'What is the difference between a cell and a battery — and where do you connect them into a circuit?',vi:'Pin đơn (cell) và bộ pin (battery) khác nhau ở đâu — và người ta nối chúng vào mạch điện ở chỗ nào?'},
+  act:{en:'Tap the battery pack on the bench — the kind made of many cells, like the pack in an electric car. Then answer the question about what a battery is made from.',vi:'Hãy chạm vào bộ pin (battery) trên bàn — loại làm từ nhiều pin đơn, giống bộ pin trong ô tô điện. Sau đó trả lời câu hỏi về bộ pin được làm từ gì.'},
+  see:{en:'Every cell, battery and power supply has two connections, called terminals. They are marked + for positive and − for negative.',vi:'Mọi pin đơn, bộ pin và nguồn điện đều có hai đầu nối, gọi là các cực (terminals). Chúng được đánh dấu + cho cực dương (positive) và − cho cực âm (negative).'},
+  concl:[
+    {en:'A cell stores chemical energy, which the circuit can change into electrical energy.',vi:'Một pin đơn (cell) dự trữ năng lượng hóa học, và mạch điện có thể biến năng lượng đó thành năng lượng điện.'},
+    {en:'A battery is not one cell: it is two or more cells joined together. An electric-car battery pack is made of hundreds of separate cells.',vi:'Một bộ pin (battery) không phải là một pin đơn: nó là hai pin đơn trở lên nối với nhau. Bộ pin của ô tô điện làm từ hàng trăm pin đơn riêng biệt.'},
+    {en:'Cells, batteries, power supplies and many other components all have two terminals, labelled + (positive) and − (negative).',vi:'Pin đơn, bộ pin, nguồn điện và nhiều linh kiện (components) khác đều có hai cực (terminals), ghi + (dương, positive) và − (âm, negative).'}]},
+ {tag:{en:'Electrons in a metal',vi:'Electron trong kim loại'}, word:{en:'free to move',vi:'tự do di chuyển (free to move)'},
+  q:{en:'Wires are made of metal. What are the electrons inside a metal doing?',vi:'Dây dẫn làm bằng kim loại. Các electron (electrons) bên trong một kim loại đang làm gì?'},
+  act:{en:'Tap the metal bar on the bench. Then answer: when the metal is part of a complete circuit, how do its free electrons move?',vi:'Hãy chạm vào thanh kim loại trên bàn. Sau đó trả lời: khi kim loại là một phần của mạch điện kín, các electron tự do (free electrons) của nó chuyển động như thế nào?'},
+  see:{en:'All materials are made of atoms, and atoms contain smaller particles. One of these particles is the electron. In a metal, some electrons are free to move through the metal.',vi:'Mọi vật liệu đều làm từ các nguyên tử (atoms), và nguyên tử chứa các hạt nhỏ hơn. Một trong các hạt đó là electron. Trong kim loại, một số electron tự do di chuyển (free to move) qua kim loại.'},
+  concl:[
+    {en:'Some of the electrons in a metal are free to move — they can travel through the metal. (The book diagram is not to scale: real electrons are very small.)',vi:'Một số electron trong kim loại tự do di chuyển (free to move) — chúng có thể đi qua kim loại. (Sơ đồ trong sách không theo tỉ lệ: electron thật rất nhỏ.)'},
+    {en:'When the metal is not in a circuit, its free electrons wander randomly in all directions.',vi:'Khi kim loại không nằm trong mạch điện, các electron tự do của nó chuyển động ngẫu nhiên (randomly) theo mọi hướng.'},
+    {en:'When the metal is placed in a circuit, the electrons all move in the same direction — that movement is the current.',vi:'Khi kim loại được đặt vào một mạch điện, các electron đều chuyển động cùng một hướng — sự chuyển động đó chính là dòng điện (current).'}]},
+ {tag:{en:'Which way do electrons flow?',vi:'Electron chảy theo hướng nào?'}, word:{en:'negative charge',vi:'điện tích âm (negative charge)'},
+  q:{en:'Electrons carry a charge. Does that tell us which way they will flow around a circuit?',vi:'Electron mang một điện tích (charge). Điều đó có cho ta biết chúng sẽ chảy theo hướng nào quanh mạch điện không?'},
+  act:{en:'Tap the electron model on the bench. Then answer: which terminal attracts an electron?',vi:'Hãy chạm vào mô hình electron trên bàn. Sau đó trả lời: cực (terminal) nào hút (attract) một electron?'},
+  see:{en:'Opposite charges attract — they pull together. Like charges repel — they push apart. So positive and negative attract, while positive–positive and negative–negative repel.',vi:'Các điện tích trái dấu hút nhau (attract) — chúng kéo lại gần nhau. Các điện tích cùng dấu đẩy nhau (repel) — chúng đẩy nhau ra xa. Nên dương và âm hút nhau, còn dương–dương và âm–âm đẩy nhau.'},
+  concl:[
+    {en:'Electrons have a negative charge.',vi:'Electron mang điện tích âm (negative charge).'},
+    {en:'In a circuit, the negative terminal pushes the electrons away (it repels them), and they are attracted towards the positive terminal.',vi:'Trong một mạch điện, cực âm (negative terminal) đẩy các electron ra xa (nó đẩy, repel, chúng), và chúng bị hút (attract) về phía cực dương (positive terminal).'},
+    {en:'So current is the flow of electrons around the circuit: away from the negative terminal and towards the positive terminal.',vi:'Vậy dòng điện (current) là dòng electron chảy quanh mạch điện: rời khỏi cực âm và hướng về phía cực dương.'},
+    {en:'If there is a break in the circuit, all the electrons stop. Electrons can only flow in a complete circuit.',vi:'Nếu mạch điện bị đứt ở một chỗ, mọi electron đều dừng lại. Electron chỉ có thể chảy trong một mạch điện kín (complete circuit).'}]},
+ {tag:{en:'Model: a string loop',vi:'Mô hình: vòng dây'}, word:{en:'components',vi:'linh kiện (components)'},
+  q:{en:'Activity 9.1.1: can a loop of string, held by a group of people, model how current flows?',vi:'Hoạt động 9.1.1: một vòng dây do một nhóm người cầm có thể mô phỏng dòng điện (current) chảy như thế nào không?'},
+  act:{en:'Tap the loop of string, the coloured tape marks spaced along it, and the cell person — the person whose pulling makes the whole loop move.',vi:'Hãy chạm vào vòng dây, các dấu băng màu (coloured tape) cách đều nhau dọc vòng dây, và người đóng vai pin đơn (cell person) — người kéo làm cả vòng dây chuyển động.'},
+  see:{en:'The people holding the loop are the components of the circuit. When the cell person pulls, the whole loop moves together, and the coloured marks travel all the way around at the same speed.',vi:'Những người cầm vòng dây là các linh kiện (components) của mạch điện. Khi người-pin đơn kéo, cả vòng dây chuyển động cùng nhau, và các dấu màu đi hết vòng với cùng một tốc độ.'},
+  concl:[
+    {en:'In the model, the cell person makes the string move — just as the cell makes the electrons move in a real circuit.',vi:'Trong mô hình, người-pin đơn làm vòng dây chuyển động — giống như pin đơn (cell) làm các electron chuyển động trong mạch điện thật.'},
+    {en:'The coloured marks stand for the electrons. The marks move at the same speed all the way around — the string cannot be moving in one part of the circuit and still in another.',vi:'Các dấu màu tượng trưng cho các electron. Các dấu chuyển động với cùng một tốc độ trên khắp vòng — vòng dây không thể đang chuyển động ở một phần của mạch mà lại đứng yên ở phần khác.'},
+    {en:'The model is not perfect: you can see string and marks, but electrons are far too small to see, and in a real circuit the cell pushes the electrons rather than pulling a loop.',vi:'Mô hình này không hoàn hảo: ta nhìn thấy được dây và các dấu, nhưng electron nhỏ tới mức không thể nhìn thấy, và trong mạch thật pin đơn đẩy (push) các electron chứ không kéo một vòng dây.'}]},
+ {tag:{en:'Electricity check',vi:'Kiểm tra về điện'}, word:{en:'current',vi:'dòng điện (current)'},
+  q:{en:'Can you use the key words of this lesson correctly — including the book prediction about four far-apart lamps?',vi:'Con dùng đúng các từ khóa của bài này chưa — gồm cả dự đoán trong sách về bốn bóng đèn ở xa nhau?'},
+  act:{en:'Answer the three check questions about electron flow, breaks in circuits and the lamp prediction.',vi:'Trả lời ba câu hỏi kiểm tra về dòng electron, chỗ đứt trong mạch và dự đoán về bóng đèn.'},
+  see:{en:'Right answers move the check on. Three right answers finish it!',vi:'Đáp án đúng đưa phần kiểm tra đi tiếp. Ba đáp án đúng là hoàn thành!'},
+  concl:[
+    {en:'I can describe how electrons move in circuits.',vi:'Con có thể mô tả các electron (electrons) chuyển động trong mạch điện như thế nào.'},
+    {en:'I can work out the direction that electrons move — away from the negative terminal, towards the positive terminal.',vi:'Con có thể suy ra hướng các electron chuyển động — rời cực âm (negative terminal), hướng về cực dương (positive terminal).'},
+    {en:'A testable prediction is called a hypothesis — and the four-lamps prediction can be tested by switching the circuit on and watching.',vi:'Một dự đoán có thể kiểm chứng được gọi là giả thuyết (hypothesis) — và dự đoán về bốn bóng đèn có thể kiểm chứng bằng cách bật mạch điện và quan sát.'}]}
+];
+const GAME=[
+ {q:{en:'A series circuit has four identical lamps, spaced metres apart along very long wires. The power supply is switched on. What happens?',vi:'Một mạch nối tiếp có bốn bóng đèn giống hệt nhau, đặt cách nhau vài mét dọc các dây dẫn rất dài. Người ta bật nguồn điện. Điều gì xảy ra?'},
+  opts:[{en:'The lamp nearest the negative terminal lights first',vi:'Bóng đèn gần cực âm (negative terminal) nhất sáng trước'},{en:'The lamp nearest the positive terminal lights first',vi:'Bóng đèn gần cực dương (positive terminal) nhất sáng trước'},{en:'All four lamps light at the same time',vi:'Cả bốn bóng đèn sáng cùng một lúc'}],a:2},
+ {q:{en:'There is a break in a circuit. What happens to the electrons?',vi:'Một mạch điện bị đứt ở một chỗ. Các electron sẽ thế nào?'},
+  opts:[{en:'They keep flowing past the break',vi:'Chúng vẫn chảy qua chỗ đứt'},{en:'They all stop flowing',vi:'Tất cả chúng ngừng chảy'},{en:'They flow faster',vi:'Chúng chảy nhanh hơn'}],a:1},
+ {q:{en:'Electric current in a circuit is…',vi:'Dòng điện (current) trong một mạch điện là…'},
+  opts:[{en:'the movement of electrons around the circuit',vi:'sự chuyển động của các electron (electrons) quanh mạch điện'},{en:'the movement of atoms around the circuit',vi:'sự chuyển động của các nguyên tử (atoms) quanh mạch điện'},{en:'heat moving along the wires',vi:'nhiệt di chuyển dọc các dây dẫn'}],a:0}
+];
+const QUIZ=[
+ {q:{en:'What is electric current in a circuit?',vi:'Dòng điện (current) trong một mạch điện là gì?'},
+  o:[{en:'Atoms moving around the circuit',vi:'Các nguyên tử (atoms) chuyển động quanh mạch điện'},{en:'Electrons flowing around the circuit',vi:'Các electron (electrons) chảy quanh mạch điện'},{en:'Heat flowing along the wires',vi:'Nhiệt chảy dọc các dây dẫn'}],a:1,
+  e:{en:'Current is the movement of electrons around a complete circuit. The electrons are already in the wires — the cell makes them flow.',vi:'Dòng điện là sự chuyển động của các electron quanh một mạch điện kín (complete circuit). Các electron đã có sẵn trong dây dẫn — pin đơn (cell) làm chúng chảy.'}},
+ {q:{en:'What charge do electrons have?',vi:'Electron mang điện tích (charge) gì?'},
+  o:[{en:'Positive',vi:'Dương (positive)'},{en:'No charge',vi:'Không mang điện tích'},{en:'Negative',vi:'Âm (negative)'}],a:2,
+  e:{en:'Electrons have a negative charge. That is why the negative terminal repels them and the positive terminal attracts them.',vi:'Electron mang điện tích âm (negative charge). Đó là lý do cực âm đẩy (repel) chúng và cực dương hút (attract) chúng.'}},
+ {q:{en:'What is a battery?',vi:'Bộ pin (battery) là gì?'},
+  o:[{en:'Two or more cells joined together',vi:'Hai pin đơn (cells) trở lên nối với nhau'},{en:'One lamp and a switch',vi:'Một bóng đèn và một công tắc'},{en:'A single wire',vi:'Một dây dẫn duy nhất'}],a:0,
+  e:{en:'A battery contains two or more cells joined together. One cell on its own is not a battery.',vi:'Một bộ pin (battery) chứa hai pin đơn (cells) trở lên nối với nhau. Một pin đơn riêng lẻ không phải là bộ pin.'}},
+ {q:{en:'Four lamps are spaced metres apart in one series circuit. When it is switched on, the lamps light…',vi:'Bốn bóng đèn đặt cách nhau vài mét trong một mạch nối tiếp. Khi bật mạch, các bóng đèn sáng…'},
+  o:[{en:'one by one, nearest first',vi:'lần lượt, bóng gần nhất trước'},{en:'all at the same time',vi:'tất cả cùng một lúc'},{en:'one by one, farthest first',vi:'lần lượt, bóng xa nhất trước'}],a:1,
+  e:{en:'All the lamps light at the same time. The electrons are already everywhere in the circuit, and they all start moving at once when the circuit is completed.',vi:'Tất cả các bóng đèn sáng cùng một lúc. Các electron đã ở khắp nơi trong mạch, và tất cả chúng bắt đầu chuyển động cùng lúc khi mạch được khép kín.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'When current flows in a circuit, the electrons',vi:'Khi có dòng điện (current) chảy trong mạch, các electron'},correct:0,
+  opts:[{en:'flow around the circuit',vi:'chảy quanh mạch điện'},{en:'do not move at all',vi:'không hề chuyển động'}],
+  e:{en:'Current IS the flow of electrons. When current flows, the electrons travel around the whole circuit.',vi:'Dòng điện (current) CHÍNH LÀ dòng electron chảy. Khi có dòng điện, các electron đi quanh toàn bộ mạch điện.'}},
+ {pre:{en:'Electrons in the wires of a circuit are',vi:'Các electron trong dây dẫn của một mạch điện thì'},correct:1,
+  opts:[{en:'fixed in one place',vi:'cố định tại một chỗ'},{en:'free to move',vi:'tự do di chuyển (free to move)'}],
+  e:{en:'True: some electrons in a metal wire are free to move — that is what lets current flow through the wire.',vi:'Đúng: một số electron trong dây kim loại tự do di chuyển (free to move) — đó là điều cho phép dòng điện chảy qua dây.'}},
+ {pre:{en:'Electrons have a',vi:'Electron mang điện tích'},correct:0,
+  opts:[{en:'negative charge',vi:'âm (negative charge)'},{en:'positive charge',vi:'dương (positive charge)'}],
+  e:{en:'False to say positive: electrons have a NEGATIVE charge. Opposite charges attract, so electrons are attracted to the positive terminal.',vi:'Nói dương là sai: electron mang điện tích ÂM (negative charge). Các điện tích trái dấu hút nhau (attract), nên electron bị hút về phía cực dương.'}},
+ {pre:{en:'When a metal is not part of a circuit, its free electrons move',vi:'Khi một kim loại không nằm trong mạch điện, các electron tự do của nó chuyển động'},correct:1,
+  opts:[{en:'all in the same direction',vi:'tất cả cùng một hướng'},{en:'randomly',vi:'ngẫu nhiên (randomly)'}],
+  e:{en:'Out of a circuit, free electrons wander randomly. They only move together in one direction when the metal is part of a complete circuit.',vi:'Ngoài mạch điện, các electron tự do chuyển động ngẫu nhiên. Chúng chỉ chuyển động cùng nhau theo một hướng khi kim loại là một phần của mạch điện kín.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'A cell has a positive terminal and a',vi:'Một pin đơn (cell) có một cực dương và một cực'},correct:0,
+  opts:[{en:'negative',vi:'âm (negative)'},{en:'neutral',vi:'trung hòa (neutral)'}],
+  e:{en:'The two terminals of a cell are positive (+) and negative (−). Neutral is not a terminal.',vi:'Hai cực (terminals) của một pin đơn là dương (+) và âm (−). Trung hòa (neutral) không phải là một cực.'}},
+ {pre:{en:'In a circuit, electrons flow away from the',vi:'Trong một mạch điện, các electron chảy ra xa khỏi cực'},correct:1,
+  opts:[{en:'positive',vi:'dương (positive)'},{en:'negative',vi:'âm (negative)'}],
+  e:{en:'Electrons leave the NEGATIVE terminal: it has the same charge as the electrons, so it repels them around the circuit.',vi:'Electron rời khỏi cực ÂM (negative terminal): cực này cùng dấu điện tích với electron, nên nó đẩy (repel) chúng đi quanh mạch.'}},
+ {pre:{en:'…and the electrons flow towards the',vi:'…và các electron chảy về phía cực'},correct:1,
+  opts:[{en:'negative',vi:'âm (negative)'},{en:'positive',vi:'dương (positive)'}],
+  e:{en:'Electrons flow TOWARDS the positive terminal, because opposite charges attract.',vi:'Electron chảy VỀ PHÍA cực dương (positive terminal), vì các điện tích trái dấu hút nhau (attract).'}},
+ {pre:{en:'A battery contains two or more',vi:'Một bộ pin (battery) chứa hai hoặc nhiều'},correct:0,
+  opts:[{en:'cells joined together',vi:'pin đơn (cells) nối với nhau'},{en:'switches joined together',vi:'công tắc (switches) nối với nhau'}],
+  e:{en:'A battery is made by joining two or more CELLS together — like the hundreds of cells in an electric-car battery pack.',vi:'Một bộ pin (battery) được làm bằng cách nối hai PIN ĐƠN (cells) trở lên với nhau — như hàng trăm pin đơn trong bộ pin của ô tô điện.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'Arrows show electrons leaving one end of a cell. That end is the',vi:'Các mũi tên cho thấy electron rời một đầu của pin đơn. Đầu đó là cực'},correct:1,
+  opts:[{en:'positive terminal (+)',vi:'dương (+) (positive terminal)'},{en:'negative terminal (−)',vi:'âm (−) (negative terminal)'}],
+  e:{en:'Electrons always leave a cell at its NEGATIVE terminal — so the − sign goes at the end the arrows start from.',vi:'Electron luôn rời pin đơn ở cực ÂM (negative terminal) — nên dấu − đặt ở đầu mà các mũi tên bắt đầu.'}},
+ {pre:{en:'The electrons travel around the circuit and arrive back at the',vi:'Các electron đi quanh mạch điện và quay trở lại ở cực'},correct:0,
+  opts:[{en:'positive terminal (+)',vi:'dương (+) (positive terminal)'},{en:'negative terminal (−)',vi:'âm (−) (negative terminal)'}],
+  e:{en:'Electrons are attracted to the POSITIVE terminal, so they arrive back at the + end of the cell. The + sign goes there.',vi:'Electron bị hút về phía cực DƯƠNG (positive terminal), nên chúng quay lại ở đầu + của pin đơn. Dấu + đặt ở đó.'}},
+ {pre:{en:'If there is a break in the circuit, all the electrons',vi:'Nếu mạch điện bị đứt ở một chỗ, mọi electron đều'},correct:1,
+  opts:[{en:'keep flowing',vi:'vẫn tiếp tục chảy'},{en:'stop flowing',vi:'ngừng chảy'}],
+  e:{en:'A break stops everything: electrons can only flow in a complete circuit, so one gap stops the flow everywhere at once.',vi:'Một chỗ đứt làm mọi thứ dừng lại: electron chỉ có thể chảy trong mạch điện kín (complete circuit), nên một chỗ hở làm dòng chảy dừng ở khắp nơi cùng lúc.'}},
+ {pre:{en:'A testable prediction, such as ‘all four lamps will light at the same time’, is called a',vi:'Một dự đoán có thể kiểm chứng, như ‘cả bốn bóng đèn sẽ sáng cùng một lúc’, được gọi là một'},correct:0,
+  opts:[{en:'hypothesis',vi:'giả thuyết (hypothesis)'},{en:'component',vi:'linh kiện (component)'}],
+  e:{en:'A prediction you can test is a hypothesis. You test this one by switching the circuit on and watching all four lamps.',vi:'Một dự đoán mà con có thể kiểm chứng là một giả thuyết (hypothesis). Con kiểm chứng dự đoán này bằng cách bật mạch điện và quan sát cả bốn bóng đèn.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 4 + 4 = 12 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-9-1';
+const SUMKEY='camb:sum:sci7-9-1';
+const BOT_CODE='sci7-9.1';
+let FOUND={which:false,litmus:false,made:false,universal:false,tested:false,game:false};
+function newTrack(){return {
+  s1:new Set(),
+  s2pos:false, s2ans:false, s2wrong:false,
+  s3pos:false, s3ans:false, s3wrong:false,
+  s4pos:false, s4ans:false, s4wrong:false,
+  s5:new Set(),
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=3;
+  if(i===1) return T.s2pos&&T.s2ans;
+  if(i===2) return T.s3pos&&T.s3ans;
+  if(i===3) return T.s4pos&&T.s4ans;
+  if(i===4) return T.s5.size>=3;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Complete-circuit parts tapped: '+T.s1.size+' of 3 (cell · wires · lamp).',
+             'Bộ phận của mạch kín đã chạm: '+T.s1.size+' / 3 (pin đơn (cell) · dây dẫn (wires) · bóng đèn (lamp)).');
+  }
+  if(i===1){
+    if(!T.s2pos) return B('Tap the battery pack on the bench.','Hãy chạm vào bộ pin (battery) trên bàn.');
+    if(T.s2wrong&&!T.s2ans) return B('Think again! One cell on its own is just a cell — a battery joins several of them together.','Nghĩ lại nào! Một pin đơn riêng lẻ chỉ là pin đơn — một bộ pin (battery) nối nhiều pin đơn với nhau.');
+    if(!T.s2ans) return B('You tapped the battery pack. Now answer: what is a battery made from?','Con đã chạm vào bộ pin. Giờ trả lời: bộ pin được làm từ gì?');
+    return B('A battery is two or more cells joined together, and every cell has + and − terminals.','Một bộ pin (battery) là hai pin đơn (cells) trở lên nối với nhau, và mỗi pin đơn có các cực + và −.');
+  }
+  if(i===2){
+    if(!T.s3pos) return B('Tap the metal bar on the bench.','Hãy chạm vào thanh kim loại trên bàn.');
+    if(T.s3wrong&&!T.s3ans) return B('Think again! Random movement is what happens OUT of a circuit. In a complete circuit the electrons are pushed the same way.','Nghĩ lại nào! Chuyển động ngẫu nhiên là điều xảy ra NGOÀI mạch điện. Trong mạch điện kín, các electron bị đẩy cùng một hướng.');
+    if(!T.s3ans) return B('You tapped the metal bar. Now answer: how do its free electrons move in a complete circuit?','Con đã chạm vào thanh kim loại. Giờ trả lời: các electron tự do của nó chuyển động như thế nào trong mạch điện kín?');
+    return B('In a complete circuit, the free electrons in a metal all move in the same direction.','Trong một mạch điện kín, các electron tự do (free electrons) trong kim loại đều chuyển động cùng một hướng.');
+  }
+  if(i===3){
+    if(!T.s4pos) return B('Tap the electron model on the bench.','Hãy chạm vào mô hình electron trên bàn.');
+    if(T.s4wrong&&!T.s4ans) return B('Think again! Like charges repel, so the negative terminal pushes electrons away. Opposite charges attract…','Nghĩ lại nào! Các điện tích cùng dấu đẩy nhau (repel), nên cực âm đẩy electron ra xa. Các điện tích trái dấu hút nhau (attract)…');
+    if(!T.s4ans) return B('You tapped the electron. Now answer: which terminal attracts it?','Con đã chạm vào electron. Giờ trả lời: cực nào hút (attract) nó?');
+    return B('Electrons are negatively charged, so the positive terminal attracts them and the negative terminal repels them.','Electron mang điện tích âm, nên cực dương (positive terminal) hút (attract) chúng và cực âm (negative terminal) đẩy (repel) chúng.');
+  }
+  if(i===4){
+    return B('String-model parts tapped: '+T.s5.size+' of 3 (string loop · coloured tape marks · cell person).',
+             'Bộ phận của mô hình vòng dây đã chạm: '+T.s5.size+' / 3 (vòng dây (string loop) · dấu băng màu (tape marks) · người-pin đơn (cell person)).');
+  }
+  if(i===5){
+    if(T.s6idx>=GAME.length) return B('Check finished! You answered all 3 questions right.','Đã xong phần kiểm tra! Con đã trả lời đúng cả 3 câu.');
+    return B('Check question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — follow the electrons around the circuit!' : ''),
+             'Câu hỏi kiểm tra '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — hãy theo các electron đi quanh mạch điện!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔋',label:{en:'Cell — the power source',vi:'Pin đơn (cell) — nguồn điện'},got:T.s1.has('cell')},
+      {emoji:'🧵',label:{en:'Wires — join everything',vi:'Dây dẫn (wires) — nối mọi thứ'},got:T.s1.has('wire')},
+      {emoji:'💡',label:{en:'Lamp — the component',vi:'Bóng đèn (lamp) — linh kiện'},got:T.s1.has('lamp')}
+    ]);
+  }else if(curStep===1){
+    if(!T.s2pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapBattery)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s2ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qBattery);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chOneCell,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chTwoCells,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2ans=true; FOUND.litmus=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chTwoLamps,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===2){
+    if(!T.s3pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapMetal)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s3ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qMetal);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chRandom,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chSameDir,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3ans=true; FOUND.made=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chStopped,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===3){
+    if(!T.s4pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapElectron)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s4ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qElectron);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chNegTerm,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chPosTerm,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4ans=true; FOUND.universal=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chNoTerm,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'⭕',label:{en:'Loop of string — the circuit',vi:'Vòng dây — mạch điện'},got:T.s5.has('stringLoop')},
+      {emoji:'🏷️',label:{en:'Coloured marks — the electrons',vi:'Dấu màu — các electron'},got:T.s5.has('tapeMark')},
+      {emoji:'🧑',label:{en:'Cell person — makes it move',vi:'Người-pin đơn — làm nó chuyển động'},got:T.s5.has('personCell')}
+    ]);
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.game=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('cell'); bounceThing('cell'); setTimeout(()=>{ focusVisual('lamp'); bounceThing('lamp'); },900); }
+  else if(i===1){ focusThing('battery'); bounceThing('battery'); }
+  else if(i===2){ focusThing('metalBar'); bounceThing('metalBar'); }
+  else if(i===3){ focusThing('electron'); bounceThing('electron'); }
+  else if(i===4){ focusVisual('stringLoop'); bounceThing('stringLoop'); setTimeout(()=>{ focusVisual('personCell'); bounceThing('personCell'); },900); }
+  else if(i===5){ focusThing('lamp'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  const ideas=[1,2,3].reduce((n,i)=>n+(doneSteps.has(i)?1:0),0);
+  $('grpRows').innerHTML=
+    row(STR.rowCircuit,(doneSteps.has(0)?3:T.s1.size),3)+
+    row(STR.rowIdeas,ideas,3)+
+    row(STR.rowModel,(doneSteps.has(4)?3:T.s5.size),3)+
+    row(STR.rowGame,(doneSteps.has(5)?3:T.s6correct),3);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.which||doneSteps.has(0),label:STR.foundWhich},
+    {got:FOUND.litmus||doneSteps.has(1),label:STR.foundLitmus},
+    {got:FOUND.made||doneSteps.has(2),label:STR.foundMade},
+    {got:FOUND.universal||doneSteps.has(3),label:STR.foundUniversal},
+    {got:FOUND.tested||doneSteps.has(4),label:STR.foundTest},
+    {got:FOUND.game||doneSteps.has(5),label:STR.foundGame}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildCell(px,pz){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,0.62,16),stdMat(0xf2a03d,0.45)));
+  body.position.y=0.33; g.add(body);
+  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.265,0.265,0.16,16),stdMat(0x2b2b2b,0.5));
+  band.position.y=0.52; g.add(band);
+  const knob=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.1,10),stdMat(0xc0c6cc,0.35));
+  knob.position.y=0.69; g.add(knob);
+  const plusV=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.2,0.02),new THREE.MeshBasicMaterial({color:0xffffff}));
+  plusV.position.set(-0.27,0.36,0); plusV.rotation.y=0; g.add(plusV);
+  const minus=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.045,0.02),new THREE.MeshBasicMaterial({color:0xffffff}));
+  minus.position.set(0.27,0.36,0); g.add(minus);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBattery(px,pz){
+  const g=new THREE.Group();
+  const box=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.05,0.42,0.6),stdMat(0x22384f,0.5)));
+  box.position.y=0.21; g.add(box);
+  [-0.36,-0.12,0.12,0.36].forEach(dx=>{
+    const c=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.3,10),stdMat(0xf2a03d,0.45));
+    c.position.set(dx,0.55,0); g.add(c);
+    const k=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.06,8),stdMat(0xc0c6cc,0.35));
+    k.position.set(dx,0.73,0); g.add(k);
+  });
+  const post=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.18,0.14),stdMat(0xd23c2a,0.4));
+  post.position.set(-0.42,0.5,0.22); g.add(post);
+  const post2=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.18,0.14),stdMat(0x2e6fd8,0.4));
+  post2.position.set(0.42,0.5,0.22); g.add(post2);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildLamp(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.12,14),stdMat(0x44586e,0.5)));
+  base.position.y=0.06; g.add(base);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.3,8),stdMat(0x707c89,0.4));
+  stem.position.y=0.27; g.add(stem);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.27,14,12),new THREE.MeshBasicMaterial({color:0xffe27a}));
+  bulb.position.y=0.62; g.add(bulb);
+  const core=new THREE.Mesh(new THREE.SphereGeometry(0.11,8,8),new THREE.MeshBasicMaterial({color:0xfff6c9}));
+  core.position.y=0.62; g.add(core);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSwitch(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.1,0.5),stdMat(0x8a5a2b,0.8)));
+  base.position.y=0.05; g.add(base);
+  [-0.32,0.32].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.2,8),stdMat(0xc0c6cc,0.35));
+    post.position.set(dx,0.2,0); g.add(post);
+  });
+  const lever=new THREE.Mesh(new THREE.BoxGeometry(0.78,0.06,0.14),stdMat(0xd9930d,0.4));
+  lever.position.set(0.05,0.36,0); lever.rotation.z=0.42; g.add(lever);
+  const knob=new THREE.Mesh(new THREE.SphereGeometry(0.09,8,8),stdMat(0xd23c2a,0.45));
+  knob.position.set(0.4,0.52,0); g.add(knob);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildWire(px,pz){
+  const g=new THREE.Group();
+  const coil=new THREE.Mesh(new THREE.TorusGeometry(0.36,0.07,10,28),stdMat(0xb87333,0.35));
+  coil.rotation.x=Math.PI/2; coil.position.y=0.12; g.add(shadowed(coil));
+  const coil2=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.06,10,24),stdMat(0xd98e4a,0.35));
+  coil2.rotation.x=Math.PI/2; coil2.position.y=0.24; g.add(coil2);
+  const tail=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.6,8),stdMat(0xb87333,0.35));
+  tail.rotation.z=Math.PI/2; tail.position.set(0.55,0.1,0.2); g.add(tail);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildMetalBar(px,pz){
+  const g=new THREE.Group();
+  const bar=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.25,0.22,0.42),stdMat(0xb9c4cf,0.3)));
+  bar.position.y=0.16; g.add(bar);
+  [-0.45,-0.15,0.15,0.45].forEach((dx,ix)=>{
+    const e=new THREE.Mesh(new THREE.SphereGeometry(0.085,8,8),new THREE.MeshBasicMaterial({color:0x2e6fd8}));
+    e.position.set(dx,0.36,(ix%2?0.1:-0.1)); g.add(e);
+    const m=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.025,0.02),new THREE.MeshBasicMaterial({color:0xffffff}));
+    m.position.set(dx,0.36,(ix%2?0.19:-0.01)); g.add(m);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildElectron(px,pz){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,16,14),new THREE.MeshBasicMaterial({color:0x2e6fd8})));
+  ball.position.y=0.46; g.add(ball);
+  const minus=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.07,0.03),new THREE.MeshBasicMaterial({color:0xffffff}));
+  minus.position.set(0,0.46,0.33); g.add(minus);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.52,0.025,8,32),stdMat(0x44586e,0.5));
+  ring.rotation.x=Math.PI/2.4; ring.position.y=0.46; g.add(ring);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.08,12),stdMat(0x44586e,0.6));
+  base.position.y=0.04; g.add(base);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildStringLoop(px,pz){
+  const g=new THREE.Group();
+  const loop=new THREE.Mesh(new THREE.TorusGeometry(0.52,0.055,10,36),stdMat(0xd23c2a,0.7));
+  loop.rotation.x=Math.PI/2; loop.position.y=0.14; g.add(shadowed(loop));
+  [[0.52,0.14,0],[-0.52,0.14,0],[0,0.14,0.52],[0,0.14,-0.52],[0.37,0.14,0.37],[-0.37,0.14,-0.37]].forEach(p=>{
+    const mark=new THREE.Mesh(new THREE.BoxGeometry(0.13,0.09,0.13),new THREE.MeshBasicMaterial({color:0xf2c230}));
+    mark.position.set(p[0],p[1],p[2]); g.add(mark);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildTapeMark(px,pz){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.08,0.42),stdMat(0x8a5a2b,0.8)));
+  stand.position.y=0.04; g.add(stand);
+  [0xd23c2a,0xf2c230,0x2ecc71].forEach((c,ix)=>{
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.52,8),stdMat(0x707c89,0.5));
+    pole.position.set(-0.32+ix*0.32,0.32,0); g.add(pole);
+    const flag=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.16,0.03),new THREE.MeshBasicMaterial({color:c}));
+    flag.position.set(-0.2+ix*0.32,0.52,0); g.add(flag);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildPerson(px,pz){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.26,0.62,12),stdMat(0x0d9d58,0.6)));
+  body.position.y=0.36; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.19,12,10),stdMat(0xf2c79b,0.6));
+  head.position.y=0.86; g.add(head);
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(0.62,0.09,0.09),stdMat(0x0d9d58,0.6));
+  arm.position.set(-0.3,0.58,0.14); arm.rotation.z=0.25; g.add(arm);
+  const sign=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.05,10),stdMat(0xf2a03d,0.45));
+  sign.position.set(0,0.4,0.24); sign.rotation.x=Math.PI/2; g.add(sign);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  reg('cell',buildCell(-4.7,-1.8));
+  reg('battery',buildBattery(-3.3,-1.8));
+  reg('lamp',buildLamp(-1.9,-1.8));
+  reg('switchObj',buildSwitch(-0.3,-1.8));
+  reg('wire',buildWire(1.3,-1.8));
+  reg('metalBar',buildMetalBar(2.9,-1.8));
+  reg('electron',buildElectron(4.6,-1.8));
+  reg('stringLoop',buildStringLoop(-3.6,1.8));
+  reg('tapeMark',buildTapeMark(-0.9,1.8));
+  reg('personCell',buildPerson(1.6,1.8));
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('cell',p,G.cell); }
+  { const p=sphProxy(0.6); p.position.set(0,0.4,0); addProxy('battery',p,G.battery); }
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('lamp',p,G.lamp); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('switchObj',p,G.switchObj); }
+  { const p=sphProxy(0.52); p.position.set(0,0.2,0); addProxy('wire',p,G.wire); }
+  { const p=sphProxy(0.62); p.position.set(0,0.25,0); addProxy('metalBar',p,G.metalBar); }
+  { const p=sphProxy(0.55); p.position.set(0,0.45,0); addProxy('electron',p,G.electron); }
+  { const p=sphProxy(0.62); p.position.set(0,0.15,0); addProxy('stringLoop',p,G.stringLoop); }
+  { const p=sphProxy(0.55); p.position.set(0,0.35,0); addProxy('tapeMark',p,G.tapeMark); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('personCell',p,G.personCell); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['cell','wire','lamp'],
+  ['battery'],
+  ['metalBar'],
+  ['electron'],
+  ['stringLoop','tapeMark','personCell'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='cell'||id==='wire'||id==='lamp'){
+      T.s1.add(id);
+      if(T.s1.size>=3) FOUND.which=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1&&id==='battery'){
+    T.s2pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===2&&id==='metalBar'){
+    T.s3pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===3&&id==='electron'){
+    T.s4pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='stringLoop'||id==='tapeMark'||id==='personCell'){
+      T.s5.add(id);
+      if(T.s5.size>=3) FOUND.tested=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.which=false; }
+  if(step===1){ FOUND.litmus=false; }
+  if(step===2){ FOUND.made=false; }
+  if(step===3){ FOUND.universal=false; }
+  if(step===4){ FOUND.tested=false; }
+  if(step===5){ FOUND.game=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['cell','wire','lamp'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ t.s2pos=true; t.s2ans=true; }
+  else if(i===2){ t.s3pos=true; t.s3ans=true; }
+  else if(i===3){ t.s4pos=true; t.s4ans=true; }
+  else if(i===4){ ['stringLoop','tapeMark','personCell'].forEach(id=>t.s5.add(id)); }
+  else if(i===5){ t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-9-1',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

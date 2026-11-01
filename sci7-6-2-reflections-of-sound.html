@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.2 Reflections of sound — Sự phản xạ âm thanh · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+.binbtn.useful{background:#0d9d58}
+.binbtn.wasted{background:#b03a3a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="6.2 Reflections of sound" data-vi="6.2 Sự phản xạ âm thanh (Reflections of sound)">6.2 Reflections of sound</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Earth physics" data-vi="Bài 6 · Vật lí Trái Đất (Earth physics)">Unit 6 · Earth physics</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/7 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why do you sometimes hear a sound twice?" data-vi="Vì sao đôi khi ta nghe một âm thanh hai lần?">Why do you sometimes hear a sound twice?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Sound hits a surface" data-vi="Âm thanh chạm vào một bề mặt (surface)">Sound hits a surface</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="It reflects back — an echo!" data-vi="Nó phản xạ trở lại — một tiếng vọng (echo)!">It reflects back — an echo!</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Echoes can help" data-vi="Tiếng vọng có thể giúp ích (echoes)">Echoes can help</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Or be unwanted" data-vi="Hoặc gây phiền (unwanted)">Or be unwanted</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 6 Earth physics · Section 6.2. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 6 · Vật lí Trái Đất (Earth physics) · Mục 6.2. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 6 Earth physics · Section 6.2. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 6 Earth physics, section 6.2, pages 196–204; Workbook 7 (ISBN 9781108742818), pages 114–119. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 6 · Vật lí Trái Đất (Earth physics), mục 6.2, trang 196–204; Sách bài tập 7 (ISBN 9781108742818), trang 114–119. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 6 Earth physics, section 6.2, pages 196–204; Workbook 7 (ISBN 9781108742818), pages 114–119. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives: learn that sound waves can be reflected; discover what can happen when sound is reflected. Key words: echo, effect on the sound, property, reflected, unwanted. The section opens with a group discussion (Getting started) about how the particles in a sound wave move — a good talking point before starting the steps." data-vi="Mục tiêu: biết rằng sóng âm (sound waves) có thể bị phản xạ (reflected); khám phá điều gì có thể xảy ra khi âm thanh bị phản xạ. Từ khóa: echo (tiếng vọng), effect on the sound (tác động lên âm thanh), property (tính chất), reflected (bị phản xạ), unwanted (không mong muốn). Mục học mở đầu bằng một thảo luận nhóm (Getting started) về cách các hạt trong sóng âm chuyển động — một điểm gợi mở tốt trước khi bắt đầu các bước.">Objectives: learn that sound waves can be reflected; discover what can happen when sound is reflected. Key words: echo, effect on the sound, property, reflected, unwanted.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — making a sound at the drum and reflecting it off the flat wall (a reflected sound wave is an echo), picking out the large, smooth, flat surfaces that reflect sound best (glass, flat metal, smooth concrete), following useful echoes (a bat finding an insect; a boat sounding the depth to a fish — the sound travels there and back, so its journey is double the distance), stopping unwanted echoes with soft curtains and shaped wall panels, and modelling the book's tube investigation (phone, cardboard tubes and the hard metal reflecting surface). The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D — tạo âm thanh ở cái trống và cho nó phản xạ khỏi bức tường phẳng (một sóng âm bị phản xạ là một tiếng vọng (echo)), chọn ra các bề mặt lớn, nhẵn, phẳng phản xạ âm thanh tốt nhất (kính, kim loại phẳng, bê tông nhẵn), theo dõi các tiếng vọng hữu ích (một con dơi tìm côn trùng; một con thuyền đo độ sâu tới một con cá — âm thanh đi tới và quay lại, nên hành trình của nó gấp đôi khoảng cách), chặn các tiếng vọng không mong muốn (unwanted) bằng rèm mềm và các tấm tường có hình dạng đặc biệt, và mô phỏng thí nghiệm ống giấy của sách (điện thoại, ống bìa cứng và bề mặt phản xạ kim loại cứng). Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D bench or with choice buttons. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-6-2 "Reflections of sound"
+   (Science 7, Unit 6 · Earth physics)
+   Loaded between camb-engine.js and camb-bridge.js.
+   Book section 6.2 covers sound reflecting from surfaces, echoes,
+   the surfaces that reflect best, useful echoes (bats, boats,
+   ultrasound), unwanted echoes in studios and theatres, the
+   mirror-modelling activity and the tube investigation.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  drum:{kind:'drum', emoji:'🥁', name:{en:'Drum — make a sound',vi:'Trống — tạo một âm thanh'}, short:{en:'Drum',vi:'Trống'}, labelY:1.5, fx:-5.0, fz:-1.8, fr:5.2},
+  wall:{kind:'wall', emoji:'🧱', name:{en:'Smooth concrete wall',vi:'Tường bê tông nhẵn (smooth concrete wall)'}, short:{en:'Concrete wall',vi:'Tường bê tông'}, labelY:2.0, fx:-3.6, fz:-1.8, fr:5.2},
+  glass:{kind:'glass', emoji:'🪟', name:{en:'Glass window',vi:'Cửa sổ kính (glass window)'}, short:{en:'Glass window',vi:'Cửa sổ kính'}, labelY:1.7, fx:-2.2, fz:-1.8, fr:5.2},
+  metal:{kind:'metal', emoji:'🪞', name:{en:'Flat metal sheet',vi:'Tấm kim loại phẳng (flat metal sheet)'}, short:{en:'Metal sheet',vi:'Tấm kim loại'}, labelY:1.7, fx:-0.8, fz:-1.8, fr:5.2},
+  curtain:{kind:'curtain', emoji:'🟣', name:{en:'Soft thick curtains',vi:'Rèm dày mềm (soft thick curtains)'}, short:{en:'Curtains',vi:'Rèm'}, labelY:1.8, fx:0.8, fz:-1.8, fr:5.2},
+  panel:{kind:'panel', emoji:'🧩', name:{en:'Shaped wall panels',vi:'Tấm tường có hình dạng (shaped wall panels)'}, short:{en:'Wall panels',vi:'Tấm tường'}, labelY:1.7, fx:2.2, fz:-1.8, fr:5.2},
+  bat:{kind:'bat', emoji:'🦇', name:{en:'Bat',vi:'Con dơi (bat)'}, short:{en:'Bat',vi:'Con dơi'}, labelY:1.5, fx:3.5, fz:-1.8, fr:5.2},
+  insect:{kind:'insect', emoji:'🦟', name:{en:'Insect',vi:'Côn trùng (insect)'}, short:{en:'Insect',vi:'Côn trùng'}, labelY:1.3, fx:4.8, fz:-1.8, fr:5.2},
+  boat:{kind:'boat', emoji:'⛵', name:{en:'Boat',vi:'Con thuyền (boat)'}, short:{en:'Boat',vi:'Con thuyền'}, labelY:1.7, fx:-3.9, fz:1.8, fr:5.2},
+  fish:{kind:'fish', emoji:'🐟', name:{en:'Fish under the water',vi:'Con cá dưới nước (fish)'}, short:{en:'Fish',vi:'Con cá'}, labelY:1.3, fx:-1.6, fz:1.8, fr:5.2},
+  phone:{kind:'phone', emoji:'📱', name:{en:'Mobile phone — quiet sound',vi:'Điện thoại di động — âm thanh nhỏ (mobile phone)'}, short:{en:'Phone',vi:'Điện thoại'}, labelY:1.4, fx:0.9, fz:1.8, fr:5.2},
+  tubes:{kind:'tubes', emoji:'📏', name:{en:'Two cardboard tubes',vi:'Hai ống bìa cứng (cardboard tubes)'}, short:{en:'Tubes',vi:'Ống bìa'}, labelY:1.5, fx:3.2, fz:1.8, fr:5.2}
+};
+const FOCUSORDER=['drum','wall','glass','metal','curtain','panel','bat','insect','boat','fish','phone','tubes'];
+const S3USE=[
+  {id:'bat', emoji:'🦇', en:'Bat — sends out a sound', vi:'Con dơi — phát ra một âm thanh'},
+  {id:'insect', emoji:'🦟', en:'Insect — the sound reflects off it', vi:'Côn trùng — âm thanh phản xạ khỏi nó'},
+  {id:'boat', emoji:'⛵', en:'Boat — sends a sound down', vi:'Con thuyền — gửi một âm thanh xuống dưới'},
+  {id:'fish', emoji:'🐟', en:'Fish — the echo comes back from it', vi:'Con cá — tiếng vọng quay lại từ nó'}
+];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to use a thing, tap it on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn dùng một vật, hãy chạm vào chính nó trên bàn!'},
+  u2T:{en:'My echo record',vi:'Bản ghi tiếng vọng của con'},
+  u2Brief:{en:'What you have found out about reflected sound.',vi:'Những điều con đã tìm hiểu về âm thanh bị phản xạ (reflected sound).'},
+  rowEcho:{en:'Echo actions done',vi:'Thao tác tạo tiếng vọng đã làm'},
+  rowSurf:{en:'Best reflectors found',vi:'Bề mặt phản xạ tốt nhất đã tìm'},
+  rowUseful:{en:'Useful-echo things tapped',vi:'Vật trong phần tiếng vọng hữu ích đã chạm'},
+  rowInvest:{en:'Investigation things used',vi:'Dụng cụ thí nghiệm đã dùng'},
+  rowGame:{en:'Final check questions right',vi:'Câu kiểm tra cuối đã đúng'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundEcho:{en:'I made an echo by reflecting a sound',vi:'Con đã tạo một tiếng vọng (echo) bằng cách phản xạ một âm thanh'},
+  foundSurf:{en:'I found the surfaces that reflect sound best',vi:'Con đã tìm ra các bề mặt phản xạ âm thanh tốt nhất'},
+  foundUseful:{en:'I followed useful echoes — bat and boat',vi:'Con đã theo dõi tiếng vọng hữu ích — con dơi và con thuyền'},
+  foundStop:{en:'I stopped unwanted echoes',vi:'Con đã chặn các tiếng vọng không mong muốn (unwanted)'},
+  foundInvest:{en:'I investigated how sound is reflected',vi:'Con đã thí nghiệm cách âm thanh bị phản xạ (reflected)'},
+  foundGame:{en:'I answered the sound-reflection check',vi:'Con đã trả lời phần kiểm tra về sự phản xạ âm thanh'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.2'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Reflections of sound (Workbook 6.2)',vi:'Bài tập 1 · Focus — Sự phản xạ âm thanh (Workbook 6.2)'},
+  ex1Inst:{en:'Choose the correct word to complete each sentence about reflected sound.',vi:'Chọn từ đúng để hoàn thành mỗi câu về âm thanh bị phản xạ (reflected sound).'},
+  ex2T:{en:'Exercise 2 · Practice — Echoes in tunnels and Sofia’s surfaces (Workbook 6.2)',vi:'Bài tập 2 · Practice — Tiếng vọng trong đường hầm và các bề mặt của Sofia (Workbook 6.2)'},
+  ex2Inst:{en:'Think about Arun’s guitar in a tunnel and a field, and about Sofia’s echo measurements: A 52 dB, B 65 dB, C 38 dB, D 44 dB (bigger dB = louder echo).',vi:'Hãy nghĩ về cây đàn của Arun trong đường hầm và ngoài cánh đồng, và về các số đo tiếng vọng của Sofia: A 52 dB, B 65 dB, C 38 dB, D 44 dB (dB càng lớn = tiếng vọng càng to).'},
+  ex3T:{en:'Exercise 3 · Challenge — Echo timing and submarines (Workbook 6.2)',vi:'Bài tập 3 · Challenge — Thời gian của tiếng vọng và tàu ngầm (Workbook 6.2)'},
+  ex3Inst:{en:'Sofia stands 85 m from a tall cliff; the speed of sound in air is 340 metres per second. Then: how does a submarine “see” with sound?',vi:'Sofia đứng cách một vách đá cao 85 m; tốc độ âm thanh trong không khí là 340 mét mỗi giây. Sau đó: tàu ngầm “nhìn” bằng âm thanh như thế nào?'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'echo',vi:'tiếng vọng / âm phản xạ'},
+  {en:'reflected',vi:'bị phản xạ'},
+  {en:'property',vi:'tính chất'},
+  {en:'effect on the sound',vi:'tác động lên âm thanh'},
+  {en:'unwanted',vi:'không mong muốn'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Make an echo',vi:'Tạo một tiếng vọng'}, word:{en:'echo',vi:'tiếng vọng (echo)'},
+  q:{en:'Stand in an empty room and clap once. Why does the sound seem to last longer, then fade away?',vi:'Đứng trong một căn phòng trống và vỗ tay một lần. Vì sao âm thanh dường như kéo dài hơn, rồi mờ dần đi?'},
+  act:{en:'Tap the drum to make a sound. Then tap the flat wall — watch the sound wave travel out, hit the wall and come back.',vi:'Chạm vào cái trống để tạo một âm thanh. Sau đó chạm vào bức tường phẳng — quan sát sóng âm đi ra, chạm vào tường và quay trở lại.'},
+  see:{en:'The returning sound wave reaches your ears a moment after the first sound. That reflected sound is an echo.',vi:'Sóng âm quay trở lại đến tai con một lúc sau âm thanh đầu tiên. Âm thanh bị phản xạ đó là một tiếng vọng (echo).'},
+  concl:[
+    {en:'One property of all waves is that they can be reflected from surfaces — and sound waves are no different.',vi:'Một tính chất (property) của mọi sóng là chúng có thể bị phản xạ (reflected) khỏi các bề mặt — và sóng âm cũng vậy.'},
+    {en:'Reflection works like a ball bouncing off a wall: the wave hits the surface and comes back. The only difference is that a wave is not pulled by gravity.',vi:'Sự phản xạ giống như một quả bóng nảy khỏi tường: sóng chạm vào bề mặt và quay trở lại. Điểm khác duy nhất là sóng không bị lực hấp dẫn (gravity) kéo xuống.'},
+    {en:'A reflected sound wave is called an echo. Between two flat walls, one clap can bounce back and forth — that is the strange effect on the sound you hear.',vi:'Một sóng âm bị phản xạ được gọi là tiếng vọng (echo). Giữa hai bức tường phẳng, một tiếng vỗ tay có thể nảy qua lại — đó là tác động lạ (effect on the sound) mà con nghe thấy.'}]},
+ {tag:{en:'Best surfaces for reflecting',vi:'Bề mặt phản xạ tốt nhất'}, word:{en:'reflected',vi:'bị phản xạ (reflected)'},
+  q:{en:'Some surfaces bounce sound back strongly and others swallow it. Which surfaces reflect sound best?',vi:'Một số bề mặt dội âm thanh trở lại mạnh mẽ, số khác lại nuốt mất nó. Những bề mặt nào phản xạ âm thanh tốt nhất?'},
+  act:{en:'Tap the three surfaces that reflect sound BEST: the glass window, the flat metal sheet and the smooth concrete wall. Careful — the soft curtains and the shaped panels are traps!',vi:'Chạm vào ba bề mặt phản xạ âm thanh TỐT NHẤT: cửa sổ kính, tấm kim loại phẳng và tường bê tông nhẵn. Cẩn thận — rèm mềm và tấm tường có hình dạng là bẫy đấy!'},
+  see:{en:'The glass, the flat metal and the smooth concrete send a strong echo back. The soft curtains give almost no echo at all.',vi:'Kính, kim loại phẳng và bê tông nhẵn gửi một tiếng vọng mạnh trở lại. Rèm mềm hầu như không tạo tiếng vọng nào.'},
+  concl:[
+    {en:'Sound waves reflect best from large, smooth, flat surfaces.',vi:'Sóng âm phản xạ tốt nhất khỏi các bề mặt lớn, nhẵn và phẳng.'},
+    {en:'Glass, tiles, flat metal and smooth concrete all give good reflections of sound — an empty room with walls like these echoes a lot.',vi:'Kính, gạch men (tiles), kim loại phẳng và bê tông nhẵn đều cho phản xạ âm thanh tốt — một căn phòng trống với những bức tường như vậy vang rất nhiều.'},
+    {en:'Soft, thick materials do the opposite: they take the sound in instead of reflecting it.',vi:'Các vật liệu mềm, dày làm điều ngược lại: chúng hút âm thanh vào thay vì phản xạ nó.'}]},
+ {tag:{en:'Useful echoes',vi:'Tiếng vọng hữu ích'}, word:{en:'echo',vi:'tiếng vọng (echo)'},
+  q:{en:'Echoes are not just a strange effect — some animals and boats use them to find things they cannot see. How?',vi:'Tiếng vọng không chỉ là một hiệu ứng lạ — một số con vật và con thuyền dùng chúng để tìm những thứ chúng không nhìn thấy. Bằng cách nào?'},
+  act:{en:'Tap the bat (it sends out a sound), then the insect (the sound reflects off it). Then tap the boat (it sends a sound down), then the fish (the echo comes back from it).',vi:'Chạm vào con dơi (nó phát ra một âm thanh), rồi con côn trùng (âm thanh phản xạ khỏi nó). Sau đó chạm vào con thuyền (nó gửi một âm thanh xuống dưới), rồi con cá (tiếng vọng quay lại từ nó).'},
+  see:{en:'Each echo comes back after a short time. The time the echo takes — and the direction it comes from — tells the bat and the boat where the reflecting thing is.',vi:'Mỗi tiếng vọng quay lại sau một thời gian ngắn. Thời gian tiếng vọng cần — và hướng nó đến từ — cho con dơi và con thuyền biết vật phản xạ đang ở đâu.'},
+  concl:[
+    {en:'A bat makes a sound; the wave reflects off an insect and the echo tells the bat where its food is — from the time taken and the direction of the echo.',vi:'Một con dơi tạo ra âm thanh; sóng phản xạ khỏi một con côn trùng và tiếng vọng (echo) cho con dơi biết thức ăn của nó ở đâu — từ thời gian cần và hướng của tiếng vọng.'},
+    {en:'A boat sends a sound down through the water. It reflects off the solid ground (or a fish) and the echo time is used to work out the depth.',vi:'Một con thuyền gửi một âm thanh xuống qua nước. Nó phản xạ khỏi mặt đất rắn (hoặc một con cá) và thời gian của tiếng vọng được dùng để tính ra độ sâu.'},
+    {en:'Remember: the sound travels from the source to the surface AND back again — so the distance the sound travels is double the distance to the reflecting surface. Echoes of sound sent into the body can even build a picture of an unborn baby.',vi:'Hãy nhớ: âm thanh đi từ nguồn tới bề mặt VÀ quay trở lại — nên quãng đường âm thanh đi gấp đôi khoảng cách tới bề mặt phản xạ. Tiếng vọng của âm thanh gửi vào cơ thể thậm chí có thể dựng nên hình ảnh của một em bé chưa chào đời.'}]},
+ {tag:{en:'Unwanted echoes',vi:'Tiếng vọng không mong muốn'}, word:{en:'unwanted',vi:'không mong muốn (unwanted)'},
+  q:{en:'In a recording studio or a theatre, echoes spoil everything. How do designers stop them?',vi:'Trong một phòng thu âm hay một nhà hát, tiếng vọng làm hỏng mọi thứ. Các nhà thiết kế chặn chúng bằng cách nào?'},
+  act:{en:'Tap the soft thick curtains (hang them up) and then the shaped wall panels (fix them to the wall) to change this room so it stops echoing.',vi:'Chạm vào rèm dày mềm (treo chúng lên) và sau đó các tấm tường có hình dạng (gắn chúng lên tường) để thay đổi căn phòng này sao cho nó ngừng vang.'},
+  see:{en:'With soft curtains hanging and shaped panels on the walls, there are no large flat surfaces left — a clap now sounds short and clear.',vi:'Với rèm mềm treo lên và các tấm có hình dạng trên tường, không còn bề mặt lớn phẳng nào nữa — một tiếng vỗ tay giờ nghe ngắn và rõ ràng.'},
+  concl:[
+    {en:'Sometimes echoes are unwanted: in a recording, a note played once would repeat with an echo and the recording would be spoiled.',vi:'Đôi khi tiếng vọng là không mong muốn (unwanted): trong một bản ghi âm, một nốt nhạc chơi một lần sẽ lặp lại kèm tiếng vọng và bản ghi sẽ bị hỏng.'},
+    {en:'In a theatre, echoes would make the actors’ voices unclear, so theatres are designed with no large flat surfaces that could cause echoes.',vi:'Trong một nhà hát, tiếng vọng sẽ làm giọng của diễn viên không rõ, nên nhà hát được thiết kế không có bề mặt lớn phẳng nào có thể gây ra tiếng vọng.'},
+    {en:'Soft materials and shaped wall surfaces take in the sound or scatter it, so the echo is stopped.',vi:'Các vật liệu mềm và bề mặt tường có hình dạng hút âm thanh vào hoặc làm nó tản ra, nên tiếng vọng bị chặn lại.'}]},
+ {tag:{en:'Investigating reflections',vi:'Thí nghiệm về phản xạ'}, word:{en:'property',vi:'tính chất (property)'},
+  q:{en:'How is sound reflected? Set up the book’s tube investigation and find the pattern for yourself.',vi:'Âm thanh bị phản xạ như thế nào? Hãy lắp thí nghiệm ống giấy của sách và tự tìm ra quy luật.'},
+  act:{en:'Tap the mobile phone (it makes a quiet sound inside the first tube), then the two cardboard tubes (one sends the sound, one carries it to your ear), then the flat metal sheet (the reflecting surface). Turn the listening tube until the sound is loudest, and mark both tubes on the paper.',vi:'Chạm vào điện thoại di động (nó tạo một âm thanh nhỏ bên trong ống đầu tiên), rồi hai ống bìa cứng (một ống gửi âm thanh đi, một ống đưa nó tới tai con), rồi tấm kim loại phẳng (bề mặt phản xạ). Xoay ống nghe cho tới khi âm thanh to nhất, và đánh dấu cả hai ống trên tờ giấy.'},
+  see:{en:'The sound is loudest when the listening tube sits in one special position — as if the sound bounces off the surface like a ball, at the same angle on the other side.',vi:'Âm thanh to nhất khi ống nghe nằm ở một vị trí đặc biệt — như thể âm thanh nảy khỏi bề mặt như một quả bóng, với cùng một góc ở phía bên kia.'},
+  concl:[
+    {en:'The pattern: the two tubes sit at matching angles to the reflecting surface — the sound goes in at an angle and reflects out at the same angle on the other side.',vi:'Quy luật: hai ống nằm ở các góc khớp nhau so với bề mặt phản xạ — âm thanh đi vào theo một góc và phản xạ ra với cùng góc đó ở phía bên kia.'},
+    {en:'Changing the reflecting surface changes the echo: a hard, flat surface (tile, metal, hard plastic) reflects sound well, while a soft surface such as foam reflects it badly.',vi:'Thay đổi bề mặt phản xạ làm thay đổi tiếng vọng: một bề mặt cứng, phẳng (gạch men, kim loại, nhựa cứng) phản xạ âm thanh tốt, trong khi một bề mặt mềm như xốp (foam) phản xạ nó kém.'},
+    {en:'This investigation is tricky: quiet sounds, exact tube positions and careful marking all matter — small improvements in the set-up give better results.',vi:'Thí nghiệm này khó: âm thanh nhỏ, vị trí ống chính xác và việc đánh dấu cẩn thận đều quan trọng — những cải tiến nhỏ trong cách lắp đặt cho kết quả tốt hơn.'}]},
+ {tag:{en:'Echo check',vi:'Kiểm tra tiếng vọng'}, word:{en:'echo',vi:'tiếng vọng (echo)'},
+  q:{en:'Can you use the key words of this lesson correctly?',vi:'Con dùng đúng các từ khóa của bài này chưa?'},
+  act:{en:'Answer the three check questions about reflections of sound.',vi:'Trả lời ba câu hỏi kiểm tra về sự phản xạ âm thanh (reflections of sound).'},
+  see:{en:'Right answers move the check on. Three right answers finish it!',vi:'Đáp án đúng đưa phần kiểm tra đi tiếp. Ba đáp án đúng là hoàn thành!'},
+  concl:[
+    {en:'I can understand that sound can be reflected.',vi:'Con có thể hiểu rằng âm thanh có thể bị phản xạ (reflected).'},
+    {en:'I can recall what happens when sound is reflected.',vi:'Con có thể nhớ lại điều gì xảy ra khi âm thanh bị phản xạ.'},
+    {en:'I can explain how echoes can be useful — and how they can be stopped when they are unwanted.',vi:'Con có thể giải thích tiếng vọng (echoes) hữu ích như thế nào — và làm sao chặn chúng khi chúng không mong muốn (unwanted).'}]}
+];
+const GAME=[
+ {q:{en:'You clap in a tunnel and hear the same sound again a moment later. What have you heard?',vi:'Con vỗ tay trong một đường hầm và nghe lại chính âm thanh đó một lúc sau. Con đã nghe thấy gì?'},
+  opts:[{en:'A louder sound',vi:'Một âm thanh to hơn'},{en:'An echo — the sound wave reflected off the walls',vi:'Một tiếng vọng (echo) — sóng âm phản xạ khỏi các bức tường'},{en:'A sound with a higher pitch',vi:'Một âm thanh có cao độ (pitch) cao hơn'}],a:1},
+ {q:{en:'A boat sends out a sound and the echo takes a long time to come back. What does that tell the crew?',vi:'Một con thuyền phát ra một âm thanh và tiếng vọng cần một thời gian dài để quay lại. Điều đó cho thủy thủ đoàn biết gì?'},
+  opts:[{en:'The reflecting surface is far away — the water is deep',vi:'Bề mặt phản xạ ở xa — nước sâu'},{en:'The water is very shallow',vi:'Nước rất nông'},{en:'The sound never reflected',vi:'Âm thanh không bao giờ bị phản xạ'}],a:0},
+ {q:{en:'Which change would stop echoes in a recording studio?',vi:'Thay đổi nào sẽ chặn tiếng vọng trong một phòng thu âm?'},
+  opts:[{en:'Adding large flat mirrors to the walls',vi:'Thêm các tấm gương lớn phẳng lên tường'},{en:'Hanging soft thick curtains and fixing shaped panels',vi:'Treo rèm dày mềm và gắn các tấm có hình dạng'},{en:'Emptying the room completely',vi:'Dọn trống hoàn toàn căn phòng'}],a:1}
+];
+const QUIZ=[
+ {q:{en:'Which statement describes what happens to a sound to make an echo?',vi:'Câu nào mô tả điều xảy ra với một âm thanh để tạo thành tiếng vọng (echo)?'},
+  o:[{en:'The pitch of the sound increases',vi:'Cao độ (pitch) của âm thanh tăng lên'},{en:'The pitch of the sound decreases',vi:'Cao độ của âm thanh giảm xuống'},{en:'The sound gets reflected',vi:'Âm thanh bị phản xạ (reflected)'},{en:'The sound gets louder',vi:'Âm thanh trở nên to hơn'}],a:2,
+  e:{en:'An echo is a reflected sound wave: the wave hits a surface and comes back. Its pitch does not change.',vi:'Một tiếng vọng (echo) là một sóng âm bị phản xạ: sóng chạm vào một bề mặt và quay trở lại. Cao độ của nó không thay đổi.'}},
+ {q:{en:'Which one of these will give the best echo in a room? (All have the same area.)',vi:'Vật nào sau đây sẽ cho tiếng vọng tốt nhất trong một căn phòng? (Tất cả có cùng diện tích.)'},
+  o:[{en:'Soft curtains',vi:'Rèm mềm (soft curtains)'},{en:'A glass window',vi:'Một cửa sổ kính (glass window)'},{en:'A thick carpet',vi:'Một tấm thảm dày (thick carpet)'},{en:'A wool blanket',vi:'Một tấm chăn len (wool blanket)'}],a:1,
+  e:{en:'Sound reflects best from large, smooth, flat surfaces — glass is hard, smooth and flat. Curtains, carpet and wool are soft, so they take the sound in.',vi:'Âm thanh phản xạ tốt nhất khỏi các bề mặt lớn, nhẵn, phẳng — kính cứng, nhẵn và phẳng. Rèm, thảm và len đều mềm, nên chúng hút âm thanh vào.'}},
+ {q:{en:'Zara practises her drums in an empty room. Which material on the walls would stop the echoes?',vi:'Zara tập trống trong một căn phòng trống. Vật liệu nào trên tường sẽ chặn được tiếng vọng?'},
+  o:[{en:'Flat wood sheets',vi:'Tấm gỗ phẳng (flat wood sheets)'},{en:'Shiny metal sheets',vi:'Tấm kim loại bóng (shiny metal sheets)'},{en:'Soft thick curtains',vi:'Rèm dày mềm (soft thick curtains)'},{en:'Large flat mirrors',vi:'Gương lớn phẳng (large flat mirrors)'}],a:2,
+  e:{en:'Soft, thick curtains take the sound in instead of reflecting it. Flat wood, shiny metal and mirrors are hard, flat surfaces — they would reflect the sound and make MORE echoes.',vi:'Rèm dày mềm hút âm thanh vào thay vì phản xạ nó. Gỗ phẳng, kim loại bóng và gương là các bề mặt cứng, phẳng — chúng sẽ phản xạ âm thanh và tạo NHIỀU tiếng vọng hơn.'}},
+ {q:{en:'A bat is 3 metres from an insect. Its sound goes to the insect and back as an echo. How far does the sound travel altogether?',vi:'Một con dơi cách một con côn trùng 3 mét. Âm thanh của nó đi tới con côn trùng và quay lại thành tiếng vọng. Tổng cộng âm thanh đi bao xa?'},
+  o:[{en:'6 metres — the distance there and back',vi:'6 mét — quãng đường đi và về'},{en:'3 metres — just the distance to the insect',vi:'3 mét — chỉ khoảng cách tới con côn trùng'},{en:'1.5 metres — half the distance',vi:'1,5 mét — một nửa khoảng cách'}],a:0,
+  e:{en:'The sound must travel from the bat to the insect (3 m) and then back again (3 m) — double the distance, 6 m in total.',vi:'Âm thanh phải đi từ con dơi tới con côn trùng (3 m) rồi quay trở lại (3 m) — gấp đôi khoảng cách, tổng cộng 6 m.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'A reflected sound wave is called an',vi:'Một sóng âm bị phản xạ được gọi là một'},correct:0,
+  opts:[{en:'echo',vi:'tiếng vọng (echo)'},{en:'vibration',vi:'dao động (vibration)'}],
+  e:{en:'When a sound wave hits a surface and comes back, the sound you hear again is an echo.',vi:'Khi một sóng âm chạm vào một bề mặt và quay trở lại, âm thanh con nghe lại là một tiếng vọng (echo).'}},
+ {pre:{en:'Of these, the surface best at reflecting sound is',vi:'Trong các bề mặt này, bề mặt phản xạ âm thanh tốt nhất là'},correct:0,
+  opts:[{en:'a flat wall',vi:'một bức tường phẳng (flat wall)'},{en:'tall grass',vi:'cỏ cao (tall grass)'}],
+  e:{en:'In the Workbook list — a large tree, tall grass, a flat wall, a sandy beach — the flat wall wins: sound reflects best from large, smooth, flat surfaces.',vi:'Trong danh sách của sách bài tập — một cây lớn, cỏ cao, một bức tường phẳng, một bãi biển cát — bức tường phẳng thắng: âm thanh phản xạ tốt nhất khỏi các bề mặt lớn, nhẵn, phẳng.'}},
+ {pre:{en:'When a wave is reflected, it behaves like a ball bouncing off a wall — the only difference is that a wave is not affected by',vi:'Khi một sóng bị phản xạ, nó giống như một quả bóng nảy khỏi tường — điểm khác duy nhất là sóng không bị tác động bởi'},correct:1,
+  opts:[{en:'the surface',vi:'bề mặt (surface)'},{en:'gravity',vi:'lực hấp dẫn (gravity)'}],
+  e:{en:'A ball is pulled down by gravity as it bounces. A sound wave is not — it simply comes back off the surface.',vi:'Một quả bóng bị lực hấp dẫn (gravity) kéo xuống khi nó nảy. Một sóng âm thì không — nó chỉ đơn giản quay lại khỏi bề mặt.'}},
+ {pre:{en:'Arun hears his footstep again in the tunnel because the sound reflected off the tunnel',vi:'Arun nghe lại tiếng bước chân của mình trong đường hầm vì âm thanh đã phản xạ khỏi'},correct:0,
+  opts:[{en:'walls',vi:'các bức tường của đường hầm (walls)'},{en:'floor lights',vi:'đèn trên sàn (floor lights)'}],
+  e:{en:'The hard walls of the tunnel reflect the sound of his footstep back to his ears, a very short time later.',vi:'Các bức tường cứng của đường hầm phản xạ âm thanh bước chân của cậu ấy trở lại tai, một thời gian rất ngắn sau đó.'}},
+ {pre:{en:'A reflected sound changes the sound you hear — scientists call this an',vi:'Một âm thanh bị phản xạ làm thay đổi âm thanh con nghe — các nhà khoa học gọi đây là một'},correct:1,
+  opts:[{en:'unwanted surface',vi:'bề mặt không mong muốn (unwanted surface)'},{en:'effect on the sound',vi:'tác động lên âm thanh (effect on the sound)'}],
+  e:{en:'“Effect on the sound” is one of this section’s key phrases: it means the sound is changed — for example, a clap that seems to last longer, then fade away.',vi:'“Tác động lên âm thanh (effect on the sound)” là một cụm từ khóa của mục này: nó nghĩa là âm thanh bị thay đổi — ví dụ, một tiếng vỗ tay dường như kéo dài hơn, rồi mờ dần.'}}
+];
+let EX1_ORD=EX1.map(s=>fyIdx(s.opts.length));
+const EX2=[
+ {pre:{en:'Arun plays his guitar in two places. He will hear more echoes in the',vi:'Arun chơi đàn guitar ở hai nơi. Cậu ấy sẽ nghe nhiều tiếng vọng hơn ở'},correct:0,
+  opts:[{en:'tunnel',vi:'đường hầm (tunnel)'},{en:'field',vi:'cánh đồng (field)'}],
+  e:{en:'In the tunnel, hard walls are close all around him and reflect the sound back. In the open field there are no surfaces nearby to reflect it.',vi:'Trong đường hầm, các bức tường cứng ở gần xung quanh cậu ấy và phản xạ âm thanh trở lại. Ngoài cánh đồng trống không có bề mặt nào gần để phản xạ nó.'}},
+ {pre:{en:'The tunnel gives more echoes because its walls are hard and flat, so they ___ the sound',vi:'Đường hầm cho nhiều tiếng vọng hơn vì các bức tường của nó cứng và phẳng, nên chúng ___ âm thanh'},correct:0,
+  opts:[{en:'reflect',vi:'phản xạ (reflect)'},{en:'swallow',vi:'nuốt mất (swallow)'}],
+  e:{en:'Hard, flat surfaces reflect sound strongly. Soft surfaces are the ones that take sound in and quiet it down.',vi:'Các bề mặt cứng, phẳng phản xạ âm thanh mạnh. Các bề mặt mềm mới là những bề mặt hút âm thanh vào và làm nó nhỏ đi.'}},
+ {pre:{en:'In Sofia’s table, the loudest echo (65 dB) came from surface',vi:'Trong bảng của Sofia, tiếng vọng to nhất (65 dB) đến từ bề mặt'},correct:1,
+  opts:[{en:'C',vi:'C'},{en:'B',vi:'B'}],
+  e:{en:'Sofia’s results: A 52 dB, B 65 dB, C 38 dB, D 44 dB. The greater the dB value, the louder the sound — so B, at 65 dB, is the loudest echo, and it would be the tallest bar on her bar chart.',vi:'Kết quả của Sofia: A 52 dB, B 65 dB, C 38 dB, D 44 dB. Giá trị dB càng lớn, âm thanh càng to — nên B, ở 65 dB, là tiếng vọng to nhất, và nó sẽ là cột cao nhất trên biểu đồ cột của bạn ấy.'}},
+ {pre:{en:'The surface that would be best in a room for recording music is surface',vi:'Bề mặt tốt nhất trong một căn phòng để ghi âm nhạc là bề mặt'},correct:0,
+  opts:[{en:'C',vi:'C'},{en:'B',vi:'B'}],
+  e:{en:'Surface C gave the quietest echo of all — only 38 dB. A recording room needs as little echo as possible, so the surface that reflects least is best.',vi:'Bề mặt C cho tiếng vọng nhỏ nhất — chỉ 38 dB. Một phòng ghi âm cần càng ít tiếng vọng càng tốt, nên bề mặt phản xạ ít nhất là tốt nhất.'}},
+ {pre:{en:'Surface C gave the quietest echo, so C is most likely a ___ surface',vi:'Bề mặt C cho tiếng vọng nhỏ nhất, nên C rất có thể là một bề mặt ___'},correct:1,
+  opts:[{en:'hard, flat',vi:'cứng, phẳng (hard, flat)'},{en:'soft',vi:'mềm (soft)'}],
+  e:{en:'A hard, flat surface would bounce a loud echo back — like surface B. A soft surface takes the sound in, so its echo is quiet.',vi:'Một bề mặt cứng, phẳng sẽ dội một tiếng vọng to trở lại — như bề mặt B. Một bề mặt mềm hút âm thanh vào, nên tiếng vọng của nó nhỏ.'}}
+];
+let EX2_ORD=EX2.map(s=>fyIdx(s.opts.length));
+const EX3=[
+ {pre:{en:'The sound of Sofia’s drum must travel from her to the cliff and back again, so the total distance it travels is 85 × 2 =',vi:'Âm thanh từ trống của Sofia phải đi từ bạn ấy tới vách đá và quay lại, nên tổng quãng đường nó đi là 85 × 2 ='},correct:0,
+  opts:[{en:'170 metres',vi:'170 mét (metres)'},{en:'85 metres',vi:'85 mét (metres)'}],
+  e:{en:'An echo always makes a return trip: to the reflecting surface and back. 85 m out plus 85 m back is 170 m altogether.',vi:'Một tiếng vọng luôn thực hiện một chuyến đi khứ hồi: tới bề mặt phản xạ và quay lại. 85 m đi cộng 85 m về là tổng cộng 170 m.'}},
+ {pre:{en:'Time = distance ÷ speed, so Sofia hears the echo after 170 ÷ 340 =',vi:'Thời gian = quãng đường ÷ tốc độ, nên Sofia nghe tiếng vọng sau 170 ÷ 340 ='},correct:0,
+  opts:[{en:'0.5 seconds',vi:'0,5 giây (seconds)'},{en:'2 seconds',vi:'2 giây (seconds)'}],
+  e:{en:'170 ÷ 340 = 0.5, so the echo of the drum comes back after half a second — that is the time Sofia measures.',vi:'170 ÷ 340 = 0,5, nên tiếng vọng của trống quay lại sau nửa giây — đó là thời gian Sofia đo được.'}},
+ {pre:{en:'To detect objects in dark water, a submarine sends out a',vi:'Để phát hiện các vật trong nước tối, một tàu ngầm phát ra một'},correct:1,
+  opts:[{en:'beam of light',vi:'chùm sáng (beam of light)'},{en:'sound wave',vi:'sóng âm (sound wave)'}],
+  e:{en:'At night or in deep water the crew cannot see ahead. Like a bat, the submarine uses sound: it sends out a sound wave into the water.',vi:'Vào ban đêm hoặc trong nước sâu, thủy thủ đoàn không thể nhìn phía trước. Giống như một con dơi, tàu ngầm dùng âm thanh: nó phát ra một sóng âm vào trong nước.'}},
+ {pre:{en:'The sound reflects off a large rock and returns to the submarine as an',vi:'Âm thanh phản xạ khỏi một tảng đá lớn và quay lại tàu ngầm dưới dạng một'},correct:0,
+  opts:[{en:'echo',vi:'tiếng vọng (echo)'},{en:'shadow',vi:'cái bóng (shadow)'}],
+  e:{en:'The returning echo tells the crew that something solid is ahead — and the time it took tells them how far away the rock is.',vi:'Tiếng vọng quay lại cho thủy thủ đoàn biết có một vật rắn ở phía trước — và thời gian nó cần cho họ biết tảng đá ở cách bao xa.'}},
+ {pre:{en:'The longer the echo takes to return to the submarine, the ___ the object is',vi:'Tiếng vọng càng mất nhiều thời gian để quay lại tàu ngầm, vật thể càng ___'},correct:1,
+  opts:[{en:'nearer',vi:'gần hơn (nearer)'},{en:'further away',vi:'ở xa hơn (further away)'}],
+  e:{en:'Sound travels at a steady speed, so a longer return time means a longer journey — the reflecting object is further away.',vi:'Âm thanh di chuyển với tốc độ ổn định, nên thời gian quay lại lâu hơn nghĩa là hành trình dài hơn — vật phản xạ ở xa hơn.'}}
+];
+let EX3_ORD=EX3.map(s=>fyIdx(s.opts.length));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 5 + 5 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-6-2';
+const SUMKEY='camb:sum:sci7-6-2';
+const BOT_CODE='sci7-6.2';
+let FOUND={echo:false,surf:false,useful:false,stop:false,invest:false,game:false};
+function newTrack(){return {
+  s1:new Set(),
+  s2:new Set(),
+  s3:new Set(),
+  s4:new Set(),
+  s5:new Set(),
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=2;
+  if(i===1) return T.s2.size>=3;
+  if(i===2) return T.s3.size>=4;
+  if(i===3) return T.s4.size>=2;
+  if(i===4) return T.s5.size>=3;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Echo actions done: '+T.s1.size+' of 2 (drum makes the sound · the wall reflects it back).',
+             'Thao tác tạo tiếng vọng đã làm: '+T.s1.size+' / 2 (trống tạo âm thanh · tường phản xạ nó trở lại).');
+  }
+  if(i===1){
+    return B('Best reflectors found: '+T.s2.size+' of 3 (glass window · flat metal sheet · smooth concrete wall).',
+             'Bề mặt phản xạ tốt nhất đã tìm: '+T.s2.size+' / 3 (cửa sổ kính · tấm kim loại phẳng · tường bê tông nhẵn).');
+  }
+  if(i===2){
+    return B('Useful-echo things tapped: '+T.s3.size+' of 4 (bat · insect · boat · fish).',
+             'Vật trong phần tiếng vọng hữu ích đã chạm: '+T.s3.size+' / 4 (con dơi · côn trùng · con thuyền · con cá).');
+  }
+  if(i===3){
+    return B('Echo-stopping changes made: '+T.s4.size+' of 2 (soft thick curtains · shaped wall panels).',
+             'Thay đổi chặn tiếng vọng đã làm: '+T.s4.size+' / 2 (rèm dày mềm · tấm tường có hình dạng).');
+  }
+  if(i===4){
+    return B('Investigation things used: '+T.s5.size+' of 3 (mobile phone · cardboard tubes · metal reflecting surface).',
+             'Dụng cụ thí nghiệm đã dùng: '+T.s5.size+' / 3 (điện thoại di động · ống bìa cứng · bề mặt phản xạ kim loại).');
+  }
+  if(i===5){
+    if(T.s6idx>=GAME.length) return B('Check finished! You answered all 3 questions right.','Đã xong phần kiểm tra! Con đã trả lời đúng cả 3 câu.');
+    return B('Check question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — check what an echo is and which surfaces reflect sound!' : ''),
+             'Câu hỏi kiểm tra '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — hãy kiểm tra tiếng vọng là gì và bề mặt nào phản xạ âm thanh!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🥁',label:{en:'Tap the drum — make a sound',vi:'Chạm vào trống — tạo âm thanh'},got:T.s1.has('drum')},
+      {emoji:'🧱',label:{en:'Tap the wall — the sound reflects back',vi:'Chạm vào tường — âm thanh phản xạ lại'},got:T.s1.has('wall')}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🪟',label:{en:'Glass window',vi:'Cửa sổ kính'},got:T.s2.has('glass')},
+      {emoji:'🪞',label:{en:'Flat metal sheet',vi:'Tấm kim loại phẳng'},got:T.s2.has('metal')},
+      {emoji:'🧱',label:{en:'Smooth concrete wall',vi:'Tường bê tông nhẵn'},got:T.s2.has('wall')}
+    ]);
+  }else if(curStep===2){
+    statPills(box,S3USE.map(u=>({
+      emoji:u.emoji,label:{en:u.en,vi:u.vi},got:T.s3.has(u.id)
+    })));
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🟣',label:{en:'Hang the soft thick curtains',vi:'Treo rèm dày mềm lên'},got:T.s4.has('curtain')},
+      {emoji:'🧩',label:{en:'Fix the shaped wall panels',vi:'Gắn các tấm tường có hình dạng'},got:T.s4.has('panel')}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'📱',label:{en:'Phone — quiet sound in tube 1',vi:'Điện thoại — âm thanh nhỏ trong ống 1'},got:T.s5.has('phone')},
+      {emoji:'📏',label:{en:'Tubes — send and listen',vi:'Ống bìa — gửi và nghe'},got:T.s5.has('tubes')},
+      {emoji:'🪞',label:{en:'Metal sheet — reflecting surface',vi:'Tấm kim loại — bề mặt phản xạ'},got:T.s5.has('metal')}
+    ]);
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.game=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('drum'); bounceThing('drum'); setTimeout(()=>{ focusVisual('wall'); bounceThing('wall'); },900); }
+  else if(i===1){ focusVisual('glass'); bounceThing('glass'); setTimeout(()=>{ focusVisual('metal'); bounceThing('metal'); },900); }
+  else if(i===2){ focusVisual('bat'); bounceThing('bat'); setTimeout(()=>{ focusVisual('boat'); bounceThing('boat'); },900); }
+  else if(i===3){ focusVisual('curtain'); bounceThing('curtain'); setTimeout(()=>{ focusVisual('panel'); bounceThing('panel'); },900); }
+  else if(i===4){ focusVisual('phone'); bounceThing('phone'); setTimeout(()=>{ focusVisual('tubes'); bounceThing('tubes'); },900); }
+  else if(i===5){ focusThing('wall'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowEcho,(doneSteps.has(0)?2:T.s1.size),2)+
+    row(STR.rowSurf,(doneSteps.has(1)?3:T.s2.size),3)+
+    row(STR.rowUseful,(doneSteps.has(2)?4:T.s3.size),4)+
+    row(STR.rowInvest,(doneSteps.has(4)?3:T.s5.size),3)+
+    row(STR.rowGame,(doneSteps.has(5)?3:T.s6correct),3);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.echo||doneSteps.has(0),label:STR.foundEcho},
+    {got:FOUND.surf||doneSteps.has(1),label:STR.foundSurf},
+    {got:FOUND.useful||doneSteps.has(2),label:STR.foundUseful},
+    {got:FOUND.stop||doneSteps.has(3),label:STR.foundStop},
+    {got:FOUND.invest||doneSteps.has(4),label:STR.foundInvest},
+    {got:FOUND.game||doneSteps.has(5),label:STR.foundGame}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildDrum(px,pz){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.36,0.42,16),stdMat(0xd23c2a,0.5)));
+  body.position.y=0.32; g.add(body);
+  const skin=new THREE.Mesh(new THREE.CylinderGeometry(0.37,0.37,0.05,16),stdMat(0xfdf3d8,0.6));
+  skin.position.y=0.55; g.add(skin);
+  [-1,1].forEach(s=>{
+    const stick=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.55,8),stdMat(0x8a5a2b,0.6));
+    stick.position.set(0.22*s,0.78,0.1); stick.rotation.z=0.7*s; g.add(stick);
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(0.055,8,8),stdMat(0xf2c230,0.5));
+    tip.position.set(0.4*s,0.92,0.1); g.add(tip);
+  });
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.12,12),stdMat(0x44586e,0.6)));
+  base.position.y=0.06; g.add(base);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildWall(px,pz){
+  const g=new THREE.Group();
+  const slab=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,1.6,0.18),stdMat(0xb9c4cd,0.55)));
+  slab.position.y=0.8; g.add(slab);
+  const top=new THREE.Mesh(new THREE.BoxGeometry(1.25,0.1,0.28),stdMat(0x8fa0ae,0.6));
+  top.position.y=1.64; g.add(top);
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.25,0.14,0.4),stdMat(0x8fa0ae,0.7)));
+  base.position.y=0.07; g.add(base);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildGlass(px,pz){
+  const g=new THREE.Group();
+  const frame=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.0,1.3,0.09),stdMat(0x8a5a2b,0.7)));
+  frame.position.y=0.85; g.add(frame);
+  const pane=new THREE.Mesh(new THREE.BoxGeometry(0.86,1.16,0.04),new THREE.MeshStandardMaterial({color:0x9fd4f2,roughness:0.1,transparent:true,opacity:0.65}));
+  pane.position.set(0,0.85,0.04); g.add(pane);
+  const barV=new THREE.Mesh(new THREE.BoxGeometry(0.06,1.16,0.05),stdMat(0x8a5a2b,0.7));
+  barV.position.set(0,0.85,0.05); g.add(barV);
+  const barH=new THREE.Mesh(new THREE.BoxGeometry(0.86,0.06,0.05),stdMat(0x8a5a2b,0.7));
+  barH.position.set(0,0.85,0.05); g.add(barH);
+  [-0.42,0.42].forEach(dx=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.24,0.09),stdMat(0x44586e,0.6));
+    leg.position.set(dx,0.12,0); g.add(leg);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildMetal(px,pz){
+  const g=new THREE.Group();
+  const sheet=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.0,1.25,0.05),new THREE.MeshStandardMaterial({color:0xd7dee5,roughness:0.18,metalness:0.75})));
+  sheet.position.y=0.85; g.add(sheet);
+  [-0.4,0.4].forEach(dx=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.26,8),stdMat(0x44586e,0.6));
+    leg.position.set(dx,0.13,0); g.add(leg);
+  });
+  const shine=new THREE.Mesh(new THREE.BoxGeometry(0.16,1.1,0.02),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.5}));
+  shine.position.set(-0.25,0.85,0.04); g.add(shine);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildCurtain(px,pz){
+  const g=new THREE.Group();
+  const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,1.25,8),stdMat(0xb7791f,0.4));
+  rod.rotation.z=Math.PI/2; rod.position.y=1.5; g.add(rod);
+  [-0.5,-0.25,0,0.25,0.5].forEach((dx,ix)=>{
+    const fold=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.22,1.35,0.1),stdMat(ix%2? 0x7d3c98:0x8e44ad,0.85)));
+    fold.position.set(dx,0.8,0); g.add(fold);
+  });
+  [-0.6,0.6].forEach(dx=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.18,8),stdMat(0x44586e,0.6));
+    leg.position.set(dx,0.09,0); g.add(leg);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildPanel(px,pz){
+  const g=new THREE.Group();
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.1,1.3,0.08),stdMat(0x5b7186,0.7)));
+  board.position.y=0.85; g.add(board);
+  [[-0.3,1.15],[0.05,1.2],[0.35,1.1],[-0.32,0.8],[0.1,0.78],[0.36,0.82],[-0.28,0.45],[0.08,0.42],[0.34,0.48]].forEach(p=>{
+    const wedge=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.22,4),stdMat(0xf2c230,0.7));
+    wedge.rotation.x=Math.PI/2; wedge.position.set(p[0],p[1],0.12); g.add(wedge);
+  });
+  [-0.45,0.45].forEach(dx=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.22,0.09),stdMat(0x44586e,0.6));
+    leg.position.set(dx,0.11,0); g.add(leg);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBat(px,pz){
+  const g=new THREE.Group();
+  const bodyM=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.26,12,10),stdMat(0x3d3d55,0.8)));
+  bodyM.position.y=0.62; g.add(bodyM);
+  [-1,1].forEach(s=>{
+    const ear=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.18,6),stdMat(0x3d3d55,0.8));
+    ear.position.set(0.12*s,0.86,0); g.add(ear);
+    const wing=new THREE.Mesh(new THREE.BoxGeometry(0.52,0.05,0.3),stdMat(0x55556e,0.8));
+    wing.position.set(0.48*s,0.68,0); wing.rotation.z=0.25*s; g.add(wing);
+  });
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.4,8),stdMat(0x44586e,0.6));
+  post.position.y=0.2; g.add(post);
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,0.06,10),stdMat(0x44586e,0.6)));
+  base.position.y=0.03; g.add(base);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildInsect(px,pz){
+  const g=new THREE.Group();
+  const bodyM=new THREE.Mesh(new THREE.SphereGeometry(0.14,10,8),stdMat(0x229954,0.6));
+  bodyM.scale.set(1.4,0.8,0.8); bodyM.position.y=0.55; g.add(bodyM);
+  [-1,1].forEach(s=>{
+    const wing=new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.6}));
+    wing.scale.set(1,0.25,0.6); wing.position.set(-0.02,0.68,0.14*s); g.add(wing);
+  });
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.48,8),stdMat(0x44586e,0.6));
+  post.position.y=0.24; g.add(post);
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.2,0.06,10),stdMat(0x44586e,0.6)));
+  base.position.y=0.03; g.add(base);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBoat(px,pz){
+  const g=new THREE.Group();
+  const hull=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.25,0.34,0.5),stdMat(0xb03a3a,0.6)));
+  hull.position.y=0.32; g.add(hull);
+  const bow=new THREE.Mesh(new THREE.ConeGeometry(0.25,0.4,4),stdMat(0xb03a3a,0.6));
+  bow.rotation.z=-Math.PI/2; bow.rotation.y=Math.PI/4; bow.position.set(0.8,0.32,0); g.add(bow);
+  const cabin=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.3,0.36),stdMat(0xffffff,0.5));
+  cabin.position.set(-0.25,0.62,0); g.add(cabin);
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.85,8),stdMat(0x8a5a2b,0.7));
+  mast.position.set(0.3,0.85,0); g.add(mast);
+  const sail=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.6,0.42),stdMat(0xfdf3d8,0.6));
+  sail.position.set(0.3,0.85,0); sail.rotation.y=0.5; g.add(sail);
+  const water=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.06,0.85),new THREE.MeshBasicMaterial({color:0x2e86d8,transparent:true,opacity:0.55}));
+  water.position.y=0.14; g.add(water);
+  const legs=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.14,0.4),stdMat(0x44586e,0.7));
+  legs.position.y=0.07; g.add(legs);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildFish(px,pz){
+  const g=new THREE.Group();
+  const tank=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.8,0.6),new THREE.MeshStandardMaterial({color:0x9fd4f2,roughness:0.15,transparent:true,opacity:0.35})));
+  tank.position.y=0.5; g.add(tank);
+  const bodyM=new THREE.Mesh(new THREE.SphereGeometry(0.2,12,10),stdMat(0xf2762e,0.55));
+  bodyM.scale.set(1.5,0.8,0.7); bodyM.position.set(-0.08,0.5,0); g.add(bodyM);
+  const tail=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.26,8),stdMat(0xf2762e,0.55));
+  tail.rotation.z=Math.PI/2; tail.position.set(0.3,0.5,0); g.add(tail);
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(0.035,8,8),new THREE.MeshBasicMaterial({color:0x16283f}));
+  eye.position.set(-0.3,0.56,0.1); g.add(eye);
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.25,0.1,0.7),stdMat(0x44586e,0.7)));
+  base.position.y=0.05; g.add(base);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildPhone(px,pz){
+  const g=new THREE.Group();
+  const bodyM=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.62,0.07),stdMat(0x22384f,0.4)));
+  bodyM.position.y=0.42; bodyM.rotation.x=-0.25; g.add(bodyM);
+  const screen=new THREE.Mesh(new THREE.BoxGeometry(0.28,0.52,0.02),new THREE.MeshBasicMaterial({color:0x7fd4ff}));
+  screen.position.set(0,0.43,0.045); screen.rotation.x=-0.25; g.add(screen);
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.08,0.3),stdMat(0x44586e,0.7)));
+  stand.position.y=0.04; g.add(stand);
+  [[0.3,0.62,0.12],[0.42,0.74,0.05],[0.3,0.5,-0.14]].forEach(p=>{
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(0.07,0.015,6,14),new THREE.MeshBasicMaterial({color:0x2e86d8}));
+    ring.position.set(p[0],p[1],p[2]); g.add(ring);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildTubes(px,pz){
+  const g=new THREE.Group();
+  const paper=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.5,0.04,0.9),stdMat(0xffffff,0.8)));
+  paper.position.y=0.05; g.add(paper);
+  [-1,1].forEach(s=>{
+    const tubeM=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,1.05,12,1,true),new THREE.MeshStandardMaterial({color:0xd9b380,roughness:0.8,side:THREE.DoubleSide}));
+    tubeM.position.set(0.3*s,0.3,0.1); tubeM.rotation.z=Math.PI/2.6*s; tubeM.rotation.y=0.35*s; g.add(tubeM);
+  });
+  const barrier=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.55,0.7),stdMat(0x8a5a2b,0.8));
+  barrier.position.set(0,0.32,0.1); g.add(barrier);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  reg('drum',buildDrum(-5.0,-1.8));
+  reg('wall',buildWall(-3.6,-1.8));
+  reg('glass',buildGlass(-2.2,-1.8));
+  reg('metal',buildMetal(-0.8,-1.8));
+  reg('curtain',buildCurtain(0.8,-1.8));
+  reg('panel',buildPanel(2.2,-1.8));
+  reg('bat',buildBat(3.5,-1.8));
+  reg('insect',buildInsect(4.8,-1.8));
+  reg('boat',buildBoat(-3.9,1.8));
+  reg('fish',buildFish(-1.6,1.8));
+  reg('phone',buildPhone(0.9,1.8));
+  reg('tubes',buildTubes(3.2,1.8));
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('drum',p,G.drum); }
+  { const p=sphProxy(0.72); p.position.set(0,0.85,0); addProxy('wall',p,G.wall); }
+  { const p=sphProxy(0.6); p.position.set(0,0.85,0); addProxy('glass',p,G.glass); }
+  { const p=sphProxy(0.6); p.position.set(0,0.85,0); addProxy('metal',p,G.metal); }
+  { const p=sphProxy(0.62); p.position.set(0,0.8,0); addProxy('curtain',p,G.curtain); }
+  { const p=sphProxy(0.62); p.position.set(0,0.85,0); addProxy('panel',p,G.panel); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('bat',p,G.bat); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('insect',p,G.insect); }
+  { const p=sphProxy(0.65); p.position.set(0,0.4,0); addProxy('boat',p,G.boat); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('fish',p,G.fish); }
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('phone',p,G.phone); }
+  { const p=sphProxy(0.68); p.position.set(0,0.3,0); addProxy('tubes',p,G.tubes); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['drum','wall'],
+  ['glass','metal','wall'],
+  ['bat','insect','boat','fish'],
+  ['curtain','panel'],
+  ['phone','tubes','metal'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='drum'||id==='wall'){
+      T.s1.add(id);
+      if(T.s1.size>=2) FOUND.echo=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1){
+    if(id==='glass'||id==='metal'||id==='wall'){
+      T.s2.add(id);
+      if(T.s2.size>=3) FOUND.surf=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===2){
+    if(id==='bat'||id==='insect'||id==='boat'||id==='fish'){
+      T.s3.add(id);
+      if(T.s3.size>=4) FOUND.useful=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===3){
+    if(id==='curtain'||id==='panel'){
+      T.s4.add(id);
+      if(T.s4.size>=2) FOUND.stop=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===4){
+    if(id==='phone'||id==='tubes'||id==='metal'){
+      T.s5.add(id);
+      if(T.s5.size>=3) FOUND.invest=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(s=>fyIdx(s.opts.length));
+  EX2_ORD=EX2.map(s=>fyIdx(s.opts.length));
+  EX3_ORD=EX3.map(s=>fyIdx(s.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.echo=false; }
+  if(step===1){ FOUND.surf=false; }
+  if(step===2){ FOUND.useful=false; }
+  if(step===3){ FOUND.stop=false; }
+  if(step===4){ FOUND.invest=false; }
+  if(step===5){ FOUND.game=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['drum','wall'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ ['glass','metal','wall'].forEach(id=>t.s2.add(id)); }
+  else if(i===2){ ['bat','insect','boat','fish'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ ['curtain','panel'].forEach(id=>t.s4.add(id)); }
+  else if(i===4){ ['phone','tubes','metal'].forEach(id=>t.s5.add(id)); }
+  else if(i===5){ t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-6-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

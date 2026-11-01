@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>1.5 Blood — Máu · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.virus{background:#7a4fd0}
+.binbtn.notvirus{background:#64748b}
+.binbtn.food{background:#e07b24}
+.binbtn.water{background:#0b76d1}
+.binbtn.block{background:#7a4fd0}
+.binbtn.kill{background:#d23c2a}
+.plotbtn.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.wordopt.sel{border-color:var(--acc);background:#eef6ff}
+.binbtn.never{background:#44586e}
+.binbtn.rbc{background:#d23c2a}
+.binbtn.wbc{background:#7a4fd0}
+.binbtn.phago{background:#0d9d58}
+.binbtn.anti{background:#e07b24}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="1.5 Blood" data-vi="1.5 Máu (Blood)">1.5 Blood</span>
+    <span class="eqchip i18n" data-en="Unit 1 · Respiration" data-vi="Bài 1 · Hô hấp (Respiration)">Unit 1 · Respiration</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does blood carry what our cells need — and defend us?" data-vi="Máu chở những thứ tế bào cần — và bảo vệ ta — như thế nào?">How does blood carry what our cells need — and defend us?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="What blood is made of" data-vi="Máu gồm những gì">What blood is made of</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Oxygen delivery" data-vi="Vận chuyển oxy (oxygen)">Oxygen delivery</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Defence against pathogens" data-vi="Phòng vệ chống mầm bệnh (pathogens)">Defence against pathogens</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="I can explain blood!" data-vi="Em giải thích được về máu!">I can explain blood!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things in the scene!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trong khung cảnh!">🖱 Drag to look around · Scroll to zoom · Tap things in the scene!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 1 Respiration · Section 1.5. The scene in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 8 · Bài 1 Hô hấp (Respiration) · Mục 1.5. Khung cảnh trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 8 · Unit 1 Respiration · Section 1.5. The scene in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, 2021; ISBN 9781108742825), Unit 1 Respiration, section 1.5 Blood, pages 25–33; Workbook 8 (ISBN 9781108742856), section 1.5, pages 16–20. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, 2021; ISBN 9781108742825), Bài 1 Respiration (Hô hấp), mục 1.5 Blood (Máu), trang 25–33; Sách bài tập 8 (Workbook, ISBN 9781108742856), mục 1.5, trang 16–20. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, 2021; ISBN 9781108742825), Unit 1 Respiration, section 1.5 Blood, pages 25–33; Workbook 8 (ISBN 9781108742856), section 1.5, pages 16–20. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn about the structure of blood; find out about the functions of red blood cells, white blood cells and blood plasma. Key words: antibodies, blood plasma, oxyhaemoglobin, pathogens, red blood cells, white blood cells." data-vi="Mục tiêu: tìm hiểu cấu tạo của máu; tìm hiểu chức năng của hồng cầu (red blood cells), bạch cầu (white blood cells) và huyết tương (blood plasma). Từ khóa: antibodies (kháng thể), blood plasma (huyết tương), oxyhaemoglobin, pathogens (mầm bệnh), red blood cells (hồng cầu), white blood cells (bạch cầu).">Objectives: learn about the structure of blood; find out about the functions of red blood cells, white blood cells and blood plasma. Key words: antibodies, blood plasma, oxyhaemoglobin, pathogens, red blood cells, white blood cells.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the blood components, the oxygen journey and the defence cells in the 3D scene, sorting feature cards, or reading the Workbook rat-at-altitude results table (sea level about 6.5–7.0 throughout; high altitude rising from 6.5 on day 1 to 11.5 on day 20). The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các thành phần máu, hành trình oxy và các tế bào phòng vệ trong khung cảnh 3D, xếp thẻ đặc điểm, hoặc đọc bảng kết quả chuột ở độ cao trong sách bài tập (mực nước biển khoảng 6,5–7,0 suốt thí nghiệm; độ cao tăng từ 6,5 ngày 1 lên 11,5 ngày 20). Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action in the 3D scene, with sorting cards or the altitude results table. The lesson checks the action itself, and the answer stays locked until the action is done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-1-5 "Blood" (Science 8, Unit 1 Respiration)
+   Shared-engine shell + inline content script (see BUILDER-BRIEF / API.md).
+   Source: Cambridge Lower Secondary Science 8, 2nd ed. — LB 1.5 (pp.25–33),
+   WB 1.5 (pp.16–20). All wording paraphrased; altitude table values are the
+   Workbook's own results, reproduced exactly.
+   ===================================================================== */
+
+/* ================= scene objects ================= */
+const DOBJS={
+  plasma:   {kind:'component', emoji:'🟡', name:{en:'Blood plasma — the liquid part',vi:'Huyết tương (blood plasma) — phần lỏng'}, short:{en:'Blood plasma',vi:'Huyết tương'}, ring:0.9, labelY:1.5, fx:-3.7, fz:-1.9, fr:5.2},
+  rbc:      {kind:'component', emoji:'🔴', name:{en:'Red blood cell',vi:'Hồng cầu (red blood cell)'}, short:{en:'Red blood cell',vi:'Hồng cầu'}, ring:0.85, labelY:1.3, fx:-1.85, fz:-1.9, fr:5.0},
+  wbc:      {kind:'component', emoji:'⚪', name:{en:'White blood cell',vi:'Bạch cầu (white blood cell)'}, short:{en:'White blood cell',vi:'Bạch cầu'}, ring:0.9, labelY:1.45, fx:0, fz:-1.9, fr:5.0},
+  bacterium:{kind:'pathogen', emoji:'🦠', name:{en:'Bacterium — a pathogen',vi:'Vi khuẩn (bacterium) — một mầm bệnh (pathogen)'}, short:{en:'Bacterium',vi:'Vi khuẩn'}, ring:0.85, labelY:1.35, fx:1.85, fz:-1.9, fr:5.0},
+  antibody: {kind:'defence', emoji:'🔱', name:{en:'Antibody — a Y-shaped chemical',vi:'Kháng thể (antibody) — chất hình chữ Y'}, short:{en:'Antibody',vi:'Kháng thể'}, ring:0.8, labelY:1.5, fx:3.7, fz:-1.9, fr:5.0},
+  alveolus: {kind:'lungs', emoji:'🫧', name:{en:'Alveolus — air sac in the lungs',vi:'Phế nang (alveolus) — túi khí trong phổi'}, short:{en:'Alveolus',vi:'Phế nang'}, ring:0.9, labelY:1.5, fx:-3.2, fz:2.2, fr:5.2},
+  oxygen:   {kind:'gas', emoji:'🔵', name:{en:'Oxygen molecule',vi:'Phân tử oxy (oxygen)'}, short:{en:'Oxygen',vi:'Oxy'}, ring:0.7, labelY:1.25, fx:-1.3, fz:2.2, fr:5.0},
+  bodycell: {kind:'cell', emoji:'🟠', name:{en:'Body cell — respiring',vi:'Tế bào cơ thể (body cell) — đang hô hấp'}, short:{en:'Body cell',vi:'Tế bào cơ thể'}, ring:0.85, labelY:1.4, fx:0.6, fz:2.2, fr:5.0},
+  glucose:  {kind:'dissolved', emoji:'🟨', name:{en:'Glucose — dissolved in plasma',vi:'Glucose — hòa tan trong huyết tương (plasma)'}, short:{en:'Glucose',vi:'Glucose'}, ring:0.65, labelY:1.15, fx:2.4, fz:2.2, fr:5.0},
+  co2:      {kind:'gas', emoji:'⚫', name:{en:'Carbon dioxide molecule',vi:'Phân tử carbon dioxide'}, short:{en:'Carbon dioxide',vi:'Carbon dioxide'}, ring:0.75, labelY:1.2, fx:3.9, fz:2.2, fr:5.0}
+};
+const FOCUSORDER=['plasma','rbc','wbc','bacterium','antibody','alveolus','oxygen','bodycell','glucose','co2'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the scene',vi:'Trong khung cảnh'},
+  u1Brief:{en:'Tap a name to LOOK at it. Looking is not doing — to count, tap the thing itself in the scene!',vi:'Chạm vào một tên để NGẮM. Ngắm chưa phải là làm — muốn được tính, hãy chạm vào chính vật đó trong khung cảnh!'},
+  u2T:{en:'My groups',vi:'Nhóm của con'},
+  u2Brief:{en:'How many cards are in each group?',vi:'Mỗi nhóm có bao nhiêu thẻ?'},
+  grpRbc:{en:'🔴 Red blood cell cards',vi:'🔴 Thẻ hồng cầu (red blood cell)'},
+  grpWbc:{en:'⚪ White blood cell cards',vi:'⚪ Thẻ bạch cầu (white blood cell)'},
+  grpPhago:{en:'🖐️ Phagocytosis cards',vi:'🖐️ Thẻ thực bào (phagocytosis)'},
+  grpAnti:{en:'🔱 Antibodies cards',vi:'🔱 Thẻ kháng thể (antibodies)'},
+  u3T:{en:'Things I found',vi:'Những thứ con đã tìm thấy'},
+  u3Brief:{en:'Your blood-investigation checklist.',vi:'Danh sách khám phá về máu của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundPlasma:{en:'Blood plasma',vi:'Huyết tương (blood plasma)'},
+  foundRbc:{en:'A red blood cell',vi:'Một hồng cầu (red blood cell)'},
+  foundWbc:{en:'A white blood cell',vi:'Một bạch cầu (white blood cell)'},
+  foundJourney:{en:'The oxygen journey',vi:'Hành trình của oxy (oxygen)'},
+  foundDefence:{en:'Defence against a pathogen',vi:'Phòng vệ chống mầm bệnh (pathogen)'},
+  binRbc:{en:'RED BLOOD CELLS 🔴',vi:'HỒNG CẦU 🔴'},
+  binWbc:{en:'WHITE BLOOD CELLS ⚪',vi:'BẠCH CẦU ⚪'},
+  binPhago:{en:'PHAGOCYTOSIS 🖐️',vi:'THỰC BÀO 🖐️'},
+  binAnti:{en:'ANTIBODIES 🔱',vi:'KHÁNG THỂ 🔱'},
+  altQ1:{en:'Which group of rats changed the most?',vi:'Nhóm chuột nào thay đổi nhiều nhất?'},
+  altQ2:{en:'What was the increase in red blood cell count for the high-altitude rats, from day 1 to day 20?',vi:'Số lượng hồng cầu của chuột ở độ cao tăng bao nhiêu, từ ngày 1 đến ngày 20?'},
+  lookWbc:{en:'Look at the white blood cell ⚪',vi:'Ngắm bạch cầu (white blood cell) ⚪'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 1.5',vi:'📝 Bài tập — Sách bài tập (Workbook) 1.5'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các bài tập kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1.5A · Focus — The components of blood',vi:'Bài tập 1.5A · Focus — Các thành phần của máu'},
+  ex1Inst:{en:'Answer each question about the three components of blood: plasma, red blood cells and white blood cells.',vi:'Trả lời từng câu hỏi về ba thành phần của máu: huyết tương (plasma), hồng cầu (red blood cells) và bạch cầu (white blood cells).'},
+  ex2T:{en:'Exercise 1.5B · Practice — Functions of blood components',vi:'Bài tập 1.5B · Practice — Chức năng của các thành phần máu'},
+  ex2Inst:{en:'Choose the best word to complete each sentence about blood.',vi:'Chọn từ đúng nhất để hoàn thành mỗi câu về máu.'},
+  ex3T:{en:'Exercise 1.5C · Challenge — Rats at altitude',vi:'Bài tập 1.5C · Challenge — Chuột ở độ cao'},
+  ex3Inst:{en:'Scientists kept one group of rats at sea level and took another group to high altitude, where the air has less oxygen. They measured the mean red blood cell count on days 1, 3, 7, 15 and 20. Sea level stayed at about 6.5–7.0, while the high-altitude count rose from 6.5 to 11.5. Answer the questions about this experiment.',vi:'Các nhà khoa học giữ một nhóm chuột ở mực nước biển và đưa nhóm khác lên độ cao, nơi không khí có ít oxy (oxygen) hơn. Họ đo số lượng hồng cầu trung bình vào các ngày 1, 3, 7, 15 và 20. Nhóm mực nước biển giữ ở khoảng 6,5–7,0, còn nhóm độ cao tăng từ 6,5 lên 11,5. Hãy trả lời các câu hỏi về thí nghiệm này.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'antibodies',vi:'kháng thể'},
+  {en:'blood plasma',vi:'huyết tương'},
+  {en:'oxyhaemoglobin',vi:'oxyhaemoglobin — haemoglobin đã kết hợp với oxy'},
+  {en:'pathogens',vi:'mầm bệnh'},
+  {en:'red blood cells',vi:'hồng cầu'},
+  {en:'white blood cells',vi:'bạch cầu'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'What is blood made of?',vi:'Máu gồm những gì?'}, word:{en:'blood plasma',vi:'huyết tương'},
+  q:{en:'Blood looks red — but what is really inside it?',vi:'Máu trông có màu đỏ — nhưng bên trong máu thực sự có gì?'},
+  act:{en:'Think of the microscope photograph in the book. In the scene, tap the three components of blood: the blood plasma, a red blood cell and a white blood cell.',vi:'Hãy nhớ bức ảnh chụp qua kính hiển vi trong sách. Trong khung cảnh, hãy chạm vào ba thành phần của máu: huyết tương (blood plasma), một hồng cầu (red blood cell) và một bạch cầu (white blood cell).'},
+  see:{en:'Each component you tap bounces, gets a ring and shows its name.',vi:'Mỗi thành phần con chạm sẽ nảy lên, có vòng tròn và hiện tên của nó.'},
+  concl:[
+    {en:'Blood is made of a pale yellow liquid, blood plasma, with red blood cells and white blood cells floating in it.',vi:'Máu gồm một chất lỏng màu vàng rất nhạt là huyết tương (blood plasma), với hồng cầu và bạch cầu trôi trong đó.'},
+    {en:'Most blood cells are red blood cells — about five million in every 1 cm³ of blood. White blood cells are far fewer, and some are bigger.',vi:'Hầu hết tế bào máu là hồng cầu (red blood cells) — khoảng năm triệu trong mỗi 1 cm³ máu. Bạch cầu (white blood cells) ít hơn nhiều, và một số to hơn.'}]},
+ {tag:{en:'Red or white?',vi:'Hồng cầu hay bạch cầu?'}, word:{en:'red blood cells',vi:'hồng cầu'},
+  q:{en:'Can you tell a red blood cell from a white blood cell?',vi:'Con có phân biệt được hồng cầu với bạch cầu không?'},
+  act:{en:'Tap a feature card, then tap RED BLOOD CELLS or WHITE BLOOD CELLS. Sort at least 5 cards correctly.',vi:'Chạm vào một thẻ đặc điểm, rồi chạm HỒNG CẦU (RED BLOOD CELLS) hoặc BẠCH CẦU (WHITE BLOOD CELLS). Xếp đúng ít nhất 5 thẻ.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Red blood cells have no nucleus and no mitochondria, and they are full of haemoglobin. White blood cells always have a nucleus.',vi:'Hồng cầu (red blood cells) không có nhân (nucleus) và không có ti thể (mitochondria), và chứa đầy haemoglobin. Bạch cầu (white blood cells) luôn có nhân.'},
+    {en:'Not having a nucleus leaves more room for haemoglobin, and not having mitochondria stops the cell using up the oxygen it is carrying.',vi:'Không có nhân giúp chừa thêm chỗ cho haemoglobin, và không có ti thể giúp tế bào không dùng hết oxy (oxygen) mà nó đang chở.'}]},
+ {tag:{en:'The oxygen journey',vi:'Hành trình của oxy'}, word:{en:'oxyhaemoglobin',vi:'oxyhaemoglobin'},
+  q:{en:'How does oxygen travel from the lungs to every respiring cell?',vi:'Oxy (oxygen) đi từ phổi tới mọi tế bào đang hô hấp bằng cách nào?'},
+  act:{en:'Follow the journey in the scene: tap an alveolus in the lungs, then tap a red blood cell, then tap a body cell.',vi:'Đi theo hành trình trong khung cảnh: chạm vào một phế nang (alveolus) trong phổi, rồi chạm vào một hồng cầu (red blood cell), rồi chạm vào một tế bào cơ thể (body cell).'},
+  see:{en:'Each stop on the journey bounces and shows its name.',vi:'Mỗi điểm dừng trên hành trình sẽ nảy lên và hiện tên của nó.'},
+  concl:[
+    {en:'In the capillaries next to the alveoli, oxygen diffuses into red blood cells and joins haemoglobin, making bright red oxyhaemoglobin.',vi:'Trong các mao mạch cạnh phế nang (alveoli), oxy khuếch tán vào hồng cầu và kết hợp với haemoglobin, tạo thành oxyhaemoglobin (oxyhaemoglobin) màu đỏ tươi.'},
+    {en:'At respiring body cells, the oxyhaemoglobin gives up its oxygen to the cells. Red blood cells are small, so they can pass through tiny capillaries and get close to the alveoli and the cells.',vi:'Tại các tế bào cơ thể đang hô hấp, oxyhaemoglobin nhả oxy cho tế bào. Hồng cầu nhỏ nên đi qua được các mao mạch rất nhỏ và đến gần phế nang và tế bào.'}]},
+ {tag:{en:'Defending the body',vi:'Bảo vệ cơ thể'}, word:{en:'pathogens',vi:'mầm bệnh'},
+  q:{en:'A pathogen has got into the blood. What happens next?',vi:'Một mầm bệnh (pathogen) đã xâm nhập vào máu. Điều gì xảy ra tiếp theo?'},
+  act:{en:'In the scene, tap the bacterium (a pathogen), then tap a white blood cell, then tap an antibody.',vi:'Trong khung cảnh, hãy chạm vào vi khuẩn (bacterium) — một mầm bệnh, rồi chạm vào một bạch cầu (white blood cell), rồi chạm vào một kháng thể (antibody).'},
+  see:{en:'The pathogen, the white blood cell and the antibody each bounce and show their names.',vi:'Mầm bệnh, bạch cầu và kháng thể đều nảy lên và hiện tên của chúng.'},
+  concl:[
+    {en:'Bacteria and viruses that can make us ill are called pathogens. White blood cells defend us against them.',vi:'Vi khuẩn (bacteria) và vi rút (viruses) có thể làm ta ốm được gọi là mầm bệnh (pathogens). Bạch cầu (white blood cells) bảo vệ ta chống lại chúng.'},
+    {en:'Plasma does the carrying work too: it transports the blood cells, dissolved glucose from the digestive system, and carbon dioxide away from respiring cells to the lungs.',vi:'Huyết tương (plasma) cũng làm nhiệm vụ vận chuyển: nó chở các tế bào máu, glucose hòa tan từ hệ tiêu hóa, và carbon dioxide từ các tế bào đang hô hấp tới phổi.'}]},
+ {tag:{en:'Two ways to kill pathogens',vi:'Hai cách diệt mầm bệnh'}, word:{en:'antibodies',vi:'kháng thể'},
+  q:{en:'White blood cells kill pathogens in two different ways. Can you sort them?',vi:'Bạch cầu diệt mầm bệnh (pathogens) bằng hai cách khác nhau. Con có xếp được không?'},
+  act:{en:'Tap a card, then tap PHAGOCYTOSIS or ANTIBODIES. Sort at least 5 cards correctly.',vi:'Chạm vào một thẻ, rồi chạm THỰC BÀO (PHAGOCYTOSIS) hoặc KHÁNG THỂ (ANTIBODIES). Xếp đúng ít nhất 5 thẻ.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'In phagocytosis, a white blood cell changes shape, pushes out “fingers” of cytoplasm to capture a bacterium, then kills and digests it.',vi:'Trong thực bào (phagocytosis), một bạch cầu thay đổi hình dạng, đẩy tế bào chất (cytoplasm) ra thành các “ngón tay” để bắt vi khuẩn, rồi giết và tiêu hóa nó.'},
+    {en:'Other white blood cells make antibodies — Y-shaped chemicals that stick to a pathogen. They may kill it directly, or glue many pathogens together so other white cells can capture them.',vi:'Các bạch cầu khác tạo kháng thể (antibodies) — các chất hình chữ Y bám vào mầm bệnh. Chúng có thể giết mầm bệnh trực tiếp, hoặc dính nhiều mầm bệnh lại với nhau để các bạch cầu khác bắt chúng.'}]},
+ {tag:{en:'Rats at altitude',vi:'Chuột ở độ cao'}, word:{en:'red blood cell count',vi:'số lượng hồng cầu'},
+  q:{en:'What happens to red blood cell numbers when there is less oxygen in the air?',vi:'Điều gì xảy ra với số lượng hồng cầu khi không khí có ít oxy (oxygen) hơn?'},
+  act:{en:'Read the Workbook results table in the step card — mean red blood cell count for rats at sea level and at high altitude on days 1, 3, 7, 15 and 20 — then answer the two big questions.',vi:'Đọc bảng kết quả trong sách bài tập ở thẻ bước — số lượng hồng cầu trung bình của chuột ở mực nước biển và ở độ cao vào các ngày 1, 3, 7, 15 và 20 — rồi trả lời hai câu hỏi lớn.'},
+  see:{en:'The sea-level counts stay at about 6.5–7.0. Watch what the high-altitude counts do.',vi:'Số lượng ở mực nước biển giữ ở khoảng 6,5–7,0. Hãy xem số lượng ở độ cao thay đổi thế nào.'},
+  concl:[
+    {en:'At high altitude the mean red blood cell count rose from 6.5 on day 1 to 11.5 on day 20 — an increase of 5.0. More red blood cells can carry more oxygen, which helps when the air contains less oxygen.',vi:'Ở độ cao, số lượng hồng cầu trung bình tăng từ 6,5 vào ngày 1 lên 11,5 vào ngày 20 — tăng 5,0. Nhiều hồng cầu hơn chở được nhiều oxy (oxygen) hơn, điều này có ích khi không khí chứa ít oxy hơn.'},
+    {en:'I can describe what blood plasma is, and its function.',vi:'Con mô tả được huyết tương (blood plasma) là gì và chức năng của nó.'},
+    {en:'I can explain how red blood cells, containing haemoglobin, transport oxygen.',vi:'Con giải thích được hồng cầu chứa haemoglobin vận chuyển oxy (oxygen) như thế nào.'},
+    {en:'I can explain how white blood cells help to protect us against pathogens.',vi:'Con giải thích được bạch cầu giúp bảo vệ ta chống mầm bệnh (pathogens) như thế nào.'}]}
+];
+const CARDS2=[
+ {id:'f_nonucleus',emoji:'🚫',en:'Has no nucleus',vi:'Không có nhân',ans:'rbc'},
+ {id:'f_nucleus',emoji:'🟣',en:'Has a nucleus',vi:'Có nhân',ans:'wbc'},
+ {id:'f_haemo',emoji:'🔴',en:'Full of haemoglobin',vi:'Chứa đầy haemoglobin',ans:'rbc'},
+ {id:'f_mkantibodies',emoji:'🔱',en:'Makes antibodies',vi:'Tạo kháng thể',ans:'wbc'},
+ {id:'f_carryoxygen',emoji:'🫧',en:'Carries oxygen to cells',vi:'Chở oxy tới tế bào',ans:'rbc'},
+ {id:'f_digestbacteria',emoji:'🖐️',en:'Can capture and digest bacteria',vi:'Bắt và tiêu hóa được vi khuẩn',ans:'wbc'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const CARDS4=[
+ {id:'w_wrap',emoji:'🖐️',en:'Changes shape and wraps around a bacterium',vi:'Thay đổi hình dạng và bao quanh một vi khuẩn',ans:'phago'},
+ {id:'w_yshape',emoji:'🔱',en:'Makes Y-shaped chemicals',vi:'Tạo các chất hình chữ Y',ans:'anti'},
+ {id:'w_digest',emoji:'🧫',en:'Digests the captured bacterium in its cytoplasm',vi:'Tiêu hóa vi khuẩn đã bắt trong tế bào chất',ans:'phago'},
+ {id:'w_stick',emoji:'🧲',en:'Chemicals stick onto the pathogen',vi:'Các chất bám vào mầm bệnh',ans:'anti'},
+ {id:'w_killinside',emoji:'⚗️',en:'Chemicals inside the cell kill the captured bacterium',vi:'Các chất bên trong tế bào giết vi khuẩn đã bắt',ans:'phago'},
+ {id:'w_glue',emoji:'🕸️',en:'Glues many pathogens together so they cannot move',vi:'Dính nhiều mầm bệnh lại với nhau để chúng không di chuyển được',ans:'anti'}
+];
+const CARDS4_ORDER=mixOrder(CARDS4,c=>c.ans,2);
+const ALTDATA=[
+ {d:1,sea:'6.5',high:'6.5'},
+ {d:3,sea:'7.0',high:'8.5'},
+ {d:7,sea:'6.5',high:'10.0'},
+ {d:15,sea:'6.5',high:'10.5'},
+ {d:20,sea:'7.0',high:'11.5'}
+];
+const QUIZ=[
+ {q:{en:'Which component of blood is a liquid?',vi:'Thành phần nào của máu là chất lỏng?'},
+  o:[{en:'Red blood cells',vi:'Hồng cầu (red blood cells)'},{en:'Blood plasma',vi:'Huyết tương (blood plasma)'},{en:'White blood cells',vi:'Bạch cầu (white blood cells)'}],a:1,
+  e:{en:'Blood plasma is the pale yellow liquid part of blood. The red and white blood cells float in it.',vi:'Huyết tương (blood plasma) là phần lỏng màu vàng nhạt của máu. Hồng cầu và bạch cầu trôi trong đó.'}},
+ {q:{en:'Why do red blood cells have no nucleus?',vi:'Vì sao hồng cầu (red blood cells) không có nhân (nucleus)?'},
+  o:[{en:'So they can change shape and capture bacteria',vi:'Để chúng thay đổi hình dạng và bắt vi khuẩn'},{en:'So they can make antibodies',vi:'Để chúng tạo kháng thể (antibodies)'},{en:'It leaves more room for haemoglobin',vi:'Nó chừa thêm chỗ cho haemoglobin'}],a:2,
+  e:{en:'With no nucleus, a red blood cell has more room for the haemoglobin that carries oxygen.',vi:'Không có nhân, hồng cầu có thêm chỗ cho haemoglobin chở oxy (oxygen).'}},
+ {q:{en:'How does a white blood cell kill a pathogen by phagocytosis?',vi:'Bạch cầu (white blood cell) diệt mầm bệnh (pathogen) bằng thực bào (phagocytosis) như thế nào?'},
+  o:[{en:'It changes shape, captures the bacterium, then kills and digests it',vi:'Nó thay đổi hình dạng, bắt vi khuẩn, rồi giết và tiêu hóa nó'},{en:'It joins haemoglobin to make oxyhaemoglobin',vi:'Nó kết hợp với haemoglobin tạo oxyhaemoglobin'},{en:'It carries the bacterium to the lungs',vi:'Nó chở vi khuẩn tới phổi'}],a:0,
+  e:{en:'The cell pushes out fingers of cytoplasm to capture the bacterium, then produces chemicals that kill and digest it.',vi:'Tế bào đẩy tế bào chất (cytoplasm) ra thành các ngón tay để bắt vi khuẩn, rồi tạo các chất giết và tiêu hóa nó.'}},
+ {q:{en:'What is oxyhaemoglobin?',vi:'Oxyhaemoglobin là gì?'},
+  o:[{en:'A chemical in plasma that kills pathogens',vi:'Một chất trong huyết tương (plasma) giết mầm bệnh'},{en:'An antibody made by white blood cells',vi:'Một kháng thể (antibody) do bạch cầu tạo ra'},{en:'The bright red compound formed when haemoglobin combines with oxygen',vi:'Hợp chất màu đỏ tươi tạo thành khi haemoglobin kết hợp với oxy (oxygen)'}],a:2,
+  e:{en:'In the lungs, oxygen diffuses into red blood cells and combines with haemoglobin to form oxyhaemoglobin. At body cells, it lets the oxygen go.',vi:'Ở phổi, oxy khuếch tán vào hồng cầu và kết hợp với haemoglobin tạo oxyhaemoglobin. Tại tế bào cơ thể, nó nhả oxy ra.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {q:{en:'Which of the three components of blood is a liquid?',vi:'Thành phần nào trong ba thành phần của máu là chất lỏng?'},
+  o:[{en:'Red blood cells',vi:'Hồng cầu'},{en:'Blood plasma',vi:'Huyết tương (blood plasma)'},{en:'White blood cells',vi:'Bạch cầu'}],a:1,
+  e:{en:'Plasma is the liquid part of blood — it is mostly water.',vi:'Huyết tương (plasma) là phần lỏng của máu — nó chủ yếu là nước.'}},
+ {q:{en:'Which component has a nucleus?',vi:'Thành phần nào có nhân (nucleus)?'},
+  o:[{en:'White blood cells',vi:'Bạch cầu (white blood cells)'},{en:'Red blood cells',vi:'Hồng cầu'},{en:'Blood plasma',vi:'Huyết tương'}],a:0,
+  e:{en:'White blood cells always have nuclei. Red blood cells have no nuclei, and plasma is a liquid, not a cell.',vi:'Bạch cầu luôn có nhân. Hồng cầu không có nhân, và huyết tương là chất lỏng, không phải tế bào.'}},
+ {q:{en:'Which component transports oxygen from the lungs to all the respiring cells in the body?',vi:'Thành phần nào vận chuyển oxy (oxygen) từ phổi tới mọi tế bào đang hô hấp trong cơ thể?'},
+  o:[{en:'Blood plasma',vi:'Huyết tương'},{en:'White blood cells',vi:'Bạch cầu'},{en:'Red blood cells',vi:'Hồng cầu (red blood cells)'}],a:2,
+  e:{en:'Red blood cells carry oxygen, joined to their haemoglobin.',vi:'Hồng cầu chở oxy, kết hợp với haemoglobin của chúng.'}},
+ {q:{en:'Which component protects us against pathogens that have got into the body?',vi:'Thành phần nào bảo vệ ta chống mầm bệnh (pathogens) đã xâm nhập cơ thể?'},
+  o:[{en:'Red blood cells',vi:'Hồng cầu'},{en:'White blood cells',vi:'Bạch cầu (white blood cells)'},{en:'Blood plasma',vi:'Huyết tương'}],a:1,
+  e:{en:'White blood cells defend us — by phagocytosis and by making antibodies.',vi:'Bạch cầu bảo vệ ta — bằng thực bào (phagocytosis) và bằng cách tạo kháng thể (antibodies).'}},
+ {q:{en:'Which component transports blood cells, nutrients and carbon dioxide?',vi:'Thành phần nào vận chuyển tế bào máu, chất dinh dưỡng và carbon dioxide?'},
+  o:[{en:'Blood plasma',vi:'Huyết tương (blood plasma)'},{en:'Red blood cells',vi:'Hồng cầu'},{en:'White blood cells',vi:'Bạch cầu'}],a:0,
+  e:{en:'The cells travel in the plasma, and substances such as glucose and carbon dioxide are carried dissolved in it.',vi:'Các tế bào di chuyển trong huyết tương, và các chất như glucose và carbon dioxide được chở hòa tan trong đó.'}}
+];
+let EX1_ORD=EX1.map((q)=>fyIdx(q.o.length));
+const EX2=[
+ {s:{en:'Blood contains a pale yellow liquid, called _____.',vi:'Máu chứa một chất lỏng màu vàng nhạt, gọi là _____.'},
+  o:[{en:'plasma',vi:'huyết tương (plasma)'},{en:'haemoglobin',vi:'haemoglobin'},{en:'cytoplasm',vi:'tế bào chất (cytoplasm)'}],a:0,
+  e:{en:'The pale yellow liquid part of blood is plasma.',vi:'Phần lỏng màu vàng nhạt của máu là huyết tương (plasma).'}},
+ {s:{en:'Plasma also transports substances in solution, including glucose and _____.',vi:'Huyết tương cũng vận chuyển các chất hòa tan, gồm glucose và _____.'},
+  o:[{en:'antibodies',vi:'kháng thể (antibodies)'},{en:'carbon dioxide',vi:'carbon dioxide'},{en:'a nucleus',vi:'một nhân (nucleus)'}],a:1,
+  e:{en:'Carbon dioxide made by respiring cells dissolves in plasma and is carried to the lungs.',vi:'Carbon dioxide do tế bào hô hấp tạo ra hòa tan trong huyết tương (plasma) và được chở tới phổi.'}},
+ {s:{en:'Red blood cells are the _____ abundant cells in the blood.',vi:'Hồng cầu là loại tế bào _____ nhất trong máu.'},
+  o:[{en:'least',vi:'ít (least)'},{en:'most',vi:'nhiều (most)'}],a:1,
+  e:{en:'Red blood cells are the most abundant — about five million in every 1 cm³ of blood.',vi:'Hồng cầu là nhiều nhất — khoảng năm triệu trong mỗi 1 cm³ máu.'}},
+ {s:{en:'Their function is to transport _____ from the lungs to all the respiring cells.',vi:'Chức năng của chúng là vận chuyển _____ từ phổi tới mọi tế bào đang hô hấp.'},
+  o:[{en:'oxygen',vi:'oxy (oxygen)'},{en:'bacteria',vi:'vi khuẩn (bacteria)'},{en:'plasma',vi:'huyết tương (plasma)'}],a:0,
+  e:{en:'Red blood cells transport oxygen from the lungs to respiring cells.',vi:'Hồng cầu vận chuyển oxy (oxygen) từ phổi tới các tế bào đang hô hấp.'}},
+ {s:{en:'To help them do this, they contain a red pigment called _____.',vi:'Để làm được việc này, chúng chứa một sắc tố đỏ gọi là _____.'},
+  o:[{en:'glucose',vi:'glucose'},{en:'plasma',vi:'huyết tương'},{en:'haemoglobin',vi:'haemoglobin'}],a:2,
+  e:{en:'Haemoglobin is the red pigment that combines with oxygen.',vi:'Haemoglobin là sắc tố đỏ kết hợp với oxy (oxygen).'}},
+ {s:{en:'White blood cells, _____ red blood cells, contain a nucleus.',vi:'Bạch cầu, _____ hồng cầu, có chứa nhân.'},
+  o:[{en:'like',vi:'giống như (like)'},{en:'unlike',vi:'khác với (unlike)'}],a:1,
+  e:{en:'Unlike red blood cells, white blood cells contain a nucleus.',vi:'Khác với (unlike) hồng cầu, bạch cầu có chứa nhân (nucleus).'}},
+ {s:{en:'Some white blood cells produce chemicals called _____, which attach to pathogens and kill them.',vi:'Một số bạch cầu tạo các chất gọi là _____, chúng bám vào mầm bệnh và giết chúng.'},
+  o:[{en:'antibodies',vi:'kháng thể (antibodies)'},{en:'glucose',vi:'glucose'},{en:'oxyhaemoglobin',vi:'oxyhaemoglobin'}],a:0,
+  e:{en:'Antibodies are Y-shaped chemicals that stick onto pathogens.',vi:'Kháng thể (antibodies) là các chất hình chữ Y bám vào mầm bệnh (pathogens).'}},
+ {s:{en:'Other white blood cells kill pathogens by taking them into their _____ and digesting them.',vi:'Các bạch cầu khác giết mầm bệnh bằng cách đưa chúng vào _____ của chúng và tiêu hóa chúng.'},
+  o:[{en:'nucleus',vi:'nhân (nucleus)'},{en:'cytoplasm',vi:'tế bào chất (cytoplasm)'}],a:1,
+  e:{en:'In phagocytosis the pathogen is taken into the cytoplasm and digested there.',vi:'Trong thực bào (phagocytosis), mầm bệnh được đưa vào tế bào chất (cytoplasm) và tiêu hóa ở đó.'}}
+];
+let EX2_ORD=EX2.map((q)=>fyIdx(q.o.length));
+const EX3=[
+ {q:{en:'Which is the best prediction for the rats taken to high altitude?',vi:'Dự đoán nào là tốt nhất cho nhóm chuột được đưa lên độ cao?'},
+  o:[{en:'Their red blood cell count will fall, because cold air damages cells',vi:'Số lượng hồng cầu sẽ giảm, vì không khí lạnh làm hại tế bào'},{en:'Their red blood cell count will stay exactly the same',vi:'Số lượng hồng cầu sẽ giữ nguyên hoàn toàn'},{en:'Their red blood cell count will rise, so their blood can carry more of the scarce oxygen',vi:'Số lượng hồng cầu sẽ tăng, để máu chở được nhiều hơn lượng oxy ít ỏi'}],a:2,
+  e:{en:'At high altitude the air has less oxygen, so making more red blood cells helps the blood carry enough oxygen.',vi:'Ở độ cao, không khí có ít oxy (oxygen) hơn, nên tạo thêm hồng cầu giúp máu chở đủ oxy.'}},
+ {q:{en:'What was the independent variable in the experiment?',vi:'Biến độc lập (independent variable) trong thí nghiệm là gì?'},
+  o:[{en:'The altitude the rats were kept at',vi:'Độ cao nơi chuột được giữ'},{en:'The mean red blood cell count',vi:'Số lượng hồng cầu trung bình'},{en:'The number of days',vi:'Số ngày'}],a:0,
+  e:{en:'The scientists changed the altitude — sea level or high altitude. The days were the same sampling times for both groups.',vi:'Các nhà khoa học thay đổi độ cao — mực nước biển hoặc độ cao. Các ngày là thời điểm lấy mẫu giống nhau cho cả hai nhóm.'}},
+ {q:{en:'What was the dependent variable in the experiment?',vi:'Biến phụ thuộc (dependent variable) trong thí nghiệm là gì?'},
+  o:[{en:'The altitude the rats were kept at',vi:'Độ cao nơi chuột được giữ'},{en:'The mean red blood cell count',vi:'Số lượng hồng cầu trung bình (red blood cell count)'},{en:'The food the rats were given',vi:'Thức ăn cho chuột'}],a:1,
+  e:{en:'The dependent variable is what was measured: the mean red blood cell count in a certain volume of blood.',vi:'Biến phụ thuộc là thứ được đo: số lượng hồng cầu trung bình trong một thể tích máu nhất định.'}},
+ {q:{en:'Calculate the increase in red blood cell count for the high-altitude rats from day 1 to day 20: 11.5 − 6.5 = ?',vi:'Tính mức tăng số lượng hồng cầu của chuột ở độ cao từ ngày 1 đến ngày 20: 11,5 − 6,5 = ?'},
+  o:[{en:'3.5',vi:'3,5'},{en:'5.0',vi:'5,0'},{en:'11.5',vi:'11,5'}],a:1,
+  e:{en:'11.5 − 6.5 = 5.0. That is a mean rate of about 5.0 ÷ 19 ≈ 0.26 per day.',vi:'11,5 − 6,5 = 5,0. Tức là tốc độ trung bình khoảng 5,0 ÷ 19 ≈ 0,26 mỗi ngày.'}},
+ {q:{en:'After 20 days the high-altitude rats were taken back down to sea level. What would happen to their red blood cell count over the next few weeks?',vi:'Sau 20 ngày, chuột ở độ cao được đưa trở xuống mực nước biển. Số lượng hồng cầu của chúng sẽ thế nào trong vài tuần tiếp theo?'},
+  o:[{en:'It would fall back towards about 6.5–7.0, because more oxygen is available so fewer red blood cells are needed',vi:'Nó sẽ giảm trở về khoảng 6,5–7,0, vì có nhiều oxy hơn nên cần ít hồng cầu hơn'},{en:'It would keep rising to 20',vi:'Nó sẽ tiếp tục tăng lên 20'},{en:'It would drop to zero',vi:'Nó sẽ giảm xuống 0'}],a:0,
+  e:{en:'Back at sea level the air has more oxygen again, so the extra red blood cells are no longer needed and the count returns to normal.',vi:'Trở lại mực nước biển, không khí lại có nhiều oxy (oxygen) hơn, nên số hồng cầu thừa không còn cần nữa và số lượng trở về bình thường.'}}
+];
+let EX3_ORD=EX3.map((q)=>fyIdx(q.o.length));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 5 + 8 + 5 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-1-5';
+const SUMKEY='camb:sum:sci8-1-5';
+const BOT_CODE='sci8-1.5';
+let FOUND={plasma:false,rbc:false,wbc:false,journey:false,defence:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fPlasma:false, fRbc:false, fWbc:false, hint1:null,
+  s2correct:new Set(), s2sel:null,
+  jAlv:false, jRbc:false, jCell:false,
+  dPath:false, dWbc:false, dAb:false,
+  s4correct:new Set(), s4sel:null,
+  altRise:false, altInc:false, altWrong:''
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.fPlasma&&T.fRbc&&T.fWbc;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.jAlv&&T.jRbc&&T.jCell;
+  if(i===3) return T.dPath&&T.dWbc&&T.dAb;
+  if(i===4) return T.s4correct.size>=5;
+  if(i===5) return T.altRise&&T.altInc;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.hint1){
+      const t=DOBJS[T.hint1];
+      return B('That is '+t.name.en+'. It is not one of the three components. Look for plasma, a red blood cell and a white blood cell!',
+               'Đó là '+t.name.vi+'. Nó không phải một trong ba thành phần. Hãy tìm huyết tương (plasma), một hồng cầu và một bạch cầu!');
+    }
+    return B('You found: plasma '+(T.fPlasma?'✓':'…')+' · red blood cell '+(T.fRbc?'✓':'…')+' · white blood cell '+(T.fWbc?'✓':'…')+'. Tap things in the scene!',
+             'Con đã tìm: huyết tương (plasma) '+(T.fPlasma?'✓':'…')+' · hồng cầu (red blood cell) '+(T.fRbc?'✓':'…')+' · bạch cầu (white blood cell) '+(T.fWbc?'✓':'…')+'. Hãy chạm vào các vật trong khung cảnh!');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap RED BLOOD CELLS or WHITE BLOOD CELLS.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm HỒNG CẦU (RED BLOOD CELLS) hoặc BẠCH CẦU (WHITE BLOOD CELLS).');
+    return B('Cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2){
+    return B('Oxygen journey: alveolus '+(T.jAlv?'✓':'…')+' · red blood cell picks up oxygen '+(T.jRbc?'✓':'…')+' · body cell receives oxygen '+(T.jCell?'✓':'…')+'.',
+             'Hành trình oxy: phế nang (alveolus) '+(T.jAlv?'✓':'…')+' · hồng cầu nhận oxy (oxygen) '+(T.jRbc?'✓':'…')+' · tế bào cơ thể nhận oxy '+(T.jCell?'✓':'…')+'.');
+  }
+  if(i===3){
+    return B('Defence found: pathogen '+(T.dPath?'✓':'…')+' · white blood cell '+(T.dWbc?'✓':'…')+' · antibody '+(T.dAb?'✓':'…')+'.',
+             'Phòng vệ đã tìm: mầm bệnh (pathogen) '+(T.dPath?'✓':'…')+' · bạch cầu (white blood cell) '+(T.dWbc?'✓':'…')+' · kháng thể (antibody) '+(T.dAb?'✓':'…')+'.');
+  }
+  if(i===4){
+    const c=T.s4sel? CARDS4.find(x=>x.id===T.s4sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap PHAGOCYTOSIS or ANTIBODIES.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm THỰC BÀO (PHAGOCYTOSIS) hoặc KHÁNG THỂ (ANTIBODIES).');
+    return B('Cards right: '+T.s4correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s4correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5){
+    if(T.altWrong==='rise'&&!T.altRise) return B('Not that group. Compare the two columns — the sea-level counts hardly change.','Không phải nhóm đó. Hãy so hai cột — số lượng ở mực nước biển hầu như không đổi.');
+    if(T.altWrong==='inc'&&!T.altInc) return B('Not that number. Subtract: high-altitude day 20 (11.5) minus day 1 (6.5).','Không phải số đó. Hãy trừ: ngày 20 ở độ cao (11,5) trừ ngày 1 (6,5).');
+    return B('Group that changed most '+(T.altRise?'✓':'…')+' · Increase 6.5 → 11.5 worked out '+(T.altInc?'✓':'…')+'. Read the table and answer both questions.',
+             'Nhóm thay đổi nhiều nhất '+(T.altRise?'✓':'…')+' · Đã tính mức tăng 6,5 → 11,5 '+(T.altInc?'✓':'…')+'. Hãy đọc bảng và trả lời cả hai câu hỏi.');
+  }
+  return B('','');
+}
+function altAnswer(which,isOk){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(isOk){
+    if(which==='rise') T.altRise=true; else T.altInc=true;
+    T.altWrong='';
+  }else{
+    T.altWrong=which; addMistake();
+  }
+  saveProg(); renderStepExtra(); refreshEvidence();
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🟡',label:{en:'Blood plasma',vi:'Huyết tương'},got:T.fPlasma},
+      {emoji:'🔴',label:{en:'Red blood cell',vi:'Hồng cầu'},got:T.fRbc},
+      {emoji:'⚪',label:{en:'White blood cell',vi:'Bạch cầu'},got:T.fWbc}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'rbc',label:STR.binRbc,cls:'rbc'},{key:'wbc',label:STR.binWbc,cls:'wbc'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🫧',label:{en:'Alveolus (lungs)',vi:'Phế nang (phổi)'},got:T.jAlv},
+      {emoji:'🔴',label:{en:'Red blood cell',vi:'Hồng cầu'},got:T.jRbc},
+      {emoji:'🟠',label:{en:'Body cell',vi:'Tế bào cơ thể'},got:T.jCell}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🦠',label:{en:'Pathogen',vi:'Mầm bệnh'},got:T.dPath},
+      {emoji:'⚪',label:{en:'White blood cell',vi:'Bạch cầu'},got:T.dWbc},
+      {emoji:'🔱',label:{en:'Antibody',vi:'Kháng thể'},got:T.dAb}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookWbc);
+    b.onclick=()=>focusThing('wbc');
+    box.appendChild(b);
+  }else if(curStep===4){
+    buildSort(box,CARDS4_ORDER,
+      [{key:'phago',label:STR.binPhago,cls:'phago'},{key:'anti',label:STR.binAnti,cls:'anti'}],
+      T.s4correct,()=>T.s4sel,v=>{T.s4sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    const tbl=document.createElement('div'); tbl.style.margin='6px 0';
+    let th='<div style="font-size:14.5px;line-height:1.55"><b>'+(lang==='vi'?'Ngày · Mực nước biển · Độ cao':'Day · Sea level · High altitude')+'</b></div>';
+    tbl.innerHTML=th+ALTDATA.map(r=>'<div style="font-size:14.5px;line-height:1.5">Day '+r.d+' · '+r.sea+' · <b>'+r.high+'</b></div>').join('');
+    box.appendChild(tbl);
+    const q1=document.createElement('div'); q1.className='qbig'; q1.innerHTML=bi(STR.altQ1); box.appendChild(q1);
+    const row1=document.createElement('div'); row1.className='ynrow'; row1.style.flexWrap='wrap';
+    [{id:'sea',label:{en:'Sea level rats',vi:'Chuột ở mực nước biển'},ok:false},
+     {id:'high',label:{en:'High altitude rats',vi:'Chuột ở độ cao'},ok:true},
+     {id:'both',label:{en:'Both the same',vi:'Cả hai như nhau'},ok:false}].forEach(o=>{
+      const b=document.createElement('button');
+      b.id='alt_rise_'+o.id;
+      b.className='plotbtn'+((T.altRise&&o.id==='high')?' got':'');
+      b.style.cssText='flex:1 1 30%;font-size:14.5px;font-weight:700;padding:9px 6px;border-radius:12px;line-height:1.3';
+      b.innerHTML=biInl(o.label);
+      b.onclick=()=>altAnswer('rise',o.ok);
+      row1.appendChild(b);
+    });
+    box.appendChild(row1);
+    const q2=document.createElement('div'); q2.className='qbig'; q2.innerHTML=bi(STR.altQ2); box.appendChild(q2);
+    const row2=document.createElement('div'); row2.className='ynrow'; row2.style.flexWrap='wrap';
+    [{id:'v35',label:{en:'3.5',vi:'3,5'},ok:false},
+     {id:'v50',label:{en:'5.0',vi:'5,0'},ok:true},
+     {id:'v115',label:{en:'11.5',vi:'11,5'},ok:false}].forEach(o=>{
+      const b=document.createElement('button');
+      b.id='alt_inc_'+o.id;
+      b.className='plotbtn'+((T.altInc&&o.id==='v50')?' got':'');
+      b.style.cssText='flex:1 1 30%;font-size:14.5px;font-weight:700;padding:9px 6px;border-radius:12px;line-height:1.3';
+      b.innerHTML=biInl(o.label);
+      b.onclick=()=>altAnswer('inc',o.ok);
+      row2.appendChild(b);
+    });
+    box.appendChild(row2);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('plasma'); bounceThing('plasma'); setTimeout(()=>{ focusVisual('rbc'); bounceThing('rbc'); },900); }
+  else if(i===1){ demoSort(CARDS2,T.s2correct); }
+  else if(i===2){ focusVisual('alveolus'); bounceThing('alveolus'); setTimeout(()=>{ focusVisual('bodycell'); bounceThing('bodycell'); },900); }
+  else if(i===3){ focusVisual('bacterium'); bounceThing('bacterium'); setTimeout(()=>{ focusVisual('antibody'); bounceThing('antibody'); },900); }
+  else if(i===4){ demoSort(CARDS4,T.s4correct); }
+  else if(i===5){ const b=$('stepExtra'); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=DOBJS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function grpCount(ids){ return ids.filter(id=>SORTED.has(id)).length; }
+function renderGroups(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.grpRbc)+'</span><b>'+grpCount(['f_nonucleus','f_haemo','f_carryoxygen'])+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpWbc)+'</span><b>'+grpCount(['f_nucleus','f_mkantibodies','f_digestbacteria'])+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpPhago)+'</span><b>'+grpCount(['w_wrap','w_digest','w_killinside'])+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpAnti)+'</span><b>'+grpCount(['w_yshape','w_stick','w_glue'])+' / 3</b></div>';
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.plasma||doneSteps.has(0),label:STR.foundPlasma},
+    {got:FOUND.rbc||doneSteps.has(0),label:STR.foundRbc},
+    {got:FOUND.wbc||doneSteps.has(0),label:STR.foundWbc},
+    {got:FOUND.journey||doneSteps.has(2),label:STR.foundJourney},
+    {got:FOUND.defence||doneSteps.has(3),label:STR.foundDefence}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ================= exercises panel module (engine v2 registration) ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderMcqList(listEl,EX,ORD,ANS,DONE,prefix){
+  listEl.innerHTML='';
+  EX.forEach((q,qi)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    const head=document.createElement('div');
+    head.innerHTML='<b>'+(qi+1)+'.</b> '+biInl(q.q||q.s);
+    row.appendChild(head);
+    (ORD[qi]||q.o.map((_,i)=>i)).forEach(oi=>{
+      const b=document.createElement('button');
+      b.className='qopt'+(ANS[qi]===oi?' sel':'')+(exRevealed&&oi===q.a?' right':'');
+      b.id=prefix+'_'+qi+'_'+oi; b.dataset.q=qi; b.dataset.o=oi;
+      b.innerHTML=biInl(q.o[oi]);
+      b.onclick=()=>{
+        if(exRevealed) return;
+        ANS[qi]=oi; saveProg(); renderExercises();
+      };
+      row.appendChild(b);
+    });
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(DONE.has(qi)? '✓ ' : '')+bi(q.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  renderMcqList($('ex1List'),EX1,EX1_ORD,EX1ANS,EX1DONE,'ex1opt');
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderMcqList($('ex2List'),EX2,EX2_ORD,EX2ANS,EX2DONE,'ex2opt');
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  renderMcqList($('ex3List'),EX3,EX3_ORD,EX3ANS,EX3DONE,'ex3opt');
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((q,qi)=>qi).filter(qi=>EX1ANS[qi]===EX1[qi].a));
+  EX2DONE=new Set(EX2.map((q,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.map((q,qi)=>qi).filter(qi=>EX3ANS[qi]===EX3[qi].a));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map((q)=>fyIdx(q.o.length));
+  EX2_ORD=EX2.map((q)=>fyIdx(q.o.length));
+  EX3_ORD=EX3.map((q)=>fyIdx(q.o.length));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.plasma=false; FOUND.rbc=false; FOUND.wbc=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.journey=false; }
+  if(step===3){ FOUND.defence=false; }
+  if(step===4){ CARDS4.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    const load=(src,EX,ANS)=>{ if(src&&typeof src==='object') Object.keys(src).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX.length&&Number.isInteger(src[k])&&src[k]>=0&&src[k]<EX[qi].o.length) ANS[qi]=src[k]; }); };
+    load(s.exAns.a1,EX1,EX1ANS); load(s.exAns.a2,EX2,EX2ANS); load(s.exAns.a3,EX3,EX3ANS);
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1DONE.forEach(qi=>{ EX1ANS[qi]=EX1[qi].a; });
+    EX2DONE.forEach(qi=>{ EX2ANS[qi]=EX2[qi].a; });
+    EX3DONE.forEach(qi=>{ EX3ANS[qi]=EX3[qi].a; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fPlasma=!!FOUND.plasma; t.fRbc=!!FOUND.rbc; t.fWbc=!!FOUND.wbc; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); }
+  else if(i===2){ t.jAlv=true; t.jRbc=true; t.jCell=true; }
+  else if(i===3){ t.dPath=true; t.dWbc=true; t.dAb=true; }
+  else if(i===4){ CARDS4.forEach(c=>{ if(SORTED.has(c.id)) t.s4correct.add(c.id); }); }
+  else if(i===5){ t.altRise=true; t.altInc=true; }
+  return t;
+}
+
+/* ================= 3D scene ================= */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:9.6, th:0.1, ph:1.08, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function dSph(r,color,rough){ return shadowed(new THREE.Mesh(new THREE.SphereGeometry(r,14,10),stdMat(color,rough===undefined?0.85:rough))); }
+function dBox(w,h,d,color){ return shadowed(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),stdMat(color,0.9))); }
+function dCyl(rt,rb,h,color){ return shadowed(new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,12),stdMat(color,0.85))); }
+function buildPlasma(){
+  const g=new THREE.Group();
+  const flask=dCyl(0.3,0.42,0.85,0xf7e08a); flask.position.y=0.45; g.add(flask);
+  const neck=dCyl(0.13,0.13,0.35,0xf7e08a); neck.position.y=1.0; g.add(neck);
+  const disc=new THREE.Mesh(new THREE.CircleGeometry(0.62,28),stdMat(0xf3df7e,0.5));
+  disc.rotation.x=-Math.PI/2; disc.position.y=0.03; disc.receiveShadow=true; g.add(disc);
+  g.position.set(-3.7,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function buildRbc(){
+  const g=new THREE.Group();
+  const cell=dSph(0.42,0xd23c2a,0.55); cell.scale.set(1,0.38,1); cell.position.y=0.42; g.add(cell);
+  const dent=dSph(0.2,0xb02a1e,0.55); dent.scale.set(1,0.3,1); dent.position.y=0.56; g.add(dent);
+  const post=dCyl(0.05,0.05,0.28,0x8a5a2b); post.position.y=0.12; g.add(post);
+  g.position.set(-1.85,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function buildWbc(){
+  const g=new THREE.Group();
+  const cell=dSph(0.5,0xf4f1e8,0.6); cell.position.y=0.55; g.add(cell);
+  const nuc=dSph(0.27,0x7a4fd0,0.6); nuc.scale.set(1.15,0.85,0.6); nuc.position.set(0.05,0.58,0.3); g.add(nuc);
+  const post=dCyl(0.05,0.05,0.2,0x8a5a2b); post.position.y=0.08; g.add(post);
+  g.position.set(0,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function buildBacterium(){
+  const g=new THREE.Group();
+  const body=dCyl(0.2,0.2,0.8,0x57b84c); body.rotation.z=Math.PI/2; body.position.y=0.55; g.add(body);
+  [-0.4,0.4].forEach(x=>{ const cap=dSph(0.2,0x57b84c); cap.position.set(x,0.55,0); g.add(cap); });
+  for(let k=0;k<6;k++){
+    const a=k/6*Math.PI*2;
+    const h=new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,0.17,6),stdMat(0x2e8b3a,0.9));
+    h.position.set(Math.cos(a*2)*0.28,0.55+Math.sin(a)*0.24,Math.cos(a)*0.24);
+    h.rotation.z=a; g.add(h);
+  }
+  g.position.set(1.85,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function buildAntibody(){
+  const g=new THREE.Group();
+  const stem=dCyl(0.045,0.045,0.5,0x7a4fd0); stem.position.y=0.3; g.add(stem);
+  [-1,1].forEach(s=>{
+    const arm=dCyl(0.04,0.04,0.42,0x9a6fe0);
+    arm.position.set(s*0.13,0.68,0); arm.rotation.z=s*0.7; g.add(arm);
+    const tip=dSph(0.07,0xff8c42,0.6); tip.position.set(s*0.27,0.86,0); g.add(tip);
+  });
+  const base=dCyl(0.16,0.18,0.1,0x64748b); base.position.y=0.05; g.add(base);
+  g.position.set(3.7,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function buildAlveolus(){
+  const g=new THREE.Group();
+  [[0,0.55,0,0.34],[0.32,0.4,0.1,0.24],[-0.3,0.42,-0.08,0.26],[0.08,0.78,-0.12,0.22],[-0.14,0.3,0.2,0.2]].forEach(p=>{
+    const s=dSph(p[3],0xffa8c0,0.5); s.position.set(p[0],p[1],p[2]); g.add(s);
+  });
+  const tube=dCyl(0.07,0.07,0.5,0xe88aa5); tube.position.set(0.42,0.75,0); tube.rotation.z=0.7; g.add(tube);
+  g.position.set(-3.2,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildOxygen(){
+  const g=new THREE.Group();
+  [-0.16,0.16].forEach(x=>{ const s=dSph(0.19,0x3d8bfd,0.45); s.position.set(x,0.55,0); g.add(s); });
+  const bond=dCyl(0.04,0.04,0.2,0x2a6fb5); bond.rotation.z=Math.PI/2; bond.position.y=0.55; g.add(bond);
+  const post=dCyl(0.04,0.04,0.4,0x8a5a2b); post.position.y=0.2; g.add(post);
+  g.position.set(-1.3,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildBodycell(){
+  const g=new THREE.Group();
+  const cell=dSph(0.46,0xffb066,0.6); cell.position.y=0.52; g.add(cell);
+  const nuc=dSph(0.18,0xe07b24,0.6); nuc.position.set(0,0.55,0.32); g.add(nuc);
+  const mito=dSph(0.11,0xd23c2a,0.6); mito.scale.set(1.6,0.7,0.7); mito.position.set(-0.22,0.38,0.3); g.add(mito);
+  g.position.set(0.6,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildGlucose(){
+  const g=new THREE.Group();
+  const hex=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.16,6),stdMat(0xffd94d,0.55));
+  hex.rotation.x=Math.PI/2.4; hex.position.y=0.5; hex.castShadow=true; g.add(hex);
+  const post=dCyl(0.04,0.04,0.38,0x8a5a2b); post.position.y=0.18; g.add(post);
+  g.position.set(2.4,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildCo2(){
+  const g=new THREE.Group();
+  const c=dSph(0.17,0x333333,0.5); c.position.set(0,0.55,0); g.add(c);
+  [-0.3,0.3].forEach(x=>{ const s=dSph(0.14,0x8d99a6,0.5); s.position.set(x,0.55,0); g.add(s); });
+  const post=dCyl(0.04,0.04,0.4,0x8a5a2b); post.position.y=0.2; g.add(post);
+  g.position.set(3.9,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xfdf0ee);
+  scene3.fog=new THREE.Fog(0xfdf0ee,16,30);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0xd8a7a0,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xfbe3dd,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const vessel=new THREE.Mesh(new THREE.BoxGeometry(11,0.03,3.4),stdMat(0xfbd9d2,1));
+  vessel.position.set(0,0.005,-1.9); vessel.receiveShadow=true; scene3.add(vessel);
+  const mat2=new THREE.Mesh(new THREE.BoxGeometry(11,0.03,3.2),stdMat(0xe6f4ff,1));
+  mat2.position.set(0.3,0.005,2.2); mat2.receiveShadow=true; scene3.add(mat2);
+  reg('plasma',buildPlasma());
+  reg('rbc',buildRbc());
+  reg('wbc',buildWbc());
+  reg('bacterium',buildBacterium());
+  reg('antibody',buildAntibody());
+  reg('alveolus',buildAlveolus());
+  reg('oxygen',buildOxygen());
+  reg('bodycell',buildBodycell());
+  reg('glucose',buildGlucose());
+  reg('co2',buildCo2());
+  { const p=sphProxy(0.7); p.position.set(0,0.6,0); addProxy('plasma',p,G.plasma); }
+  { const p=sphProxy(0.62); p.position.set(0,0.42,0); addProxy('rbc',p,G.rbc); }
+  { const p=sphProxy(0.68); p.position.set(0,0.55,0); addProxy('wbc',p,G.wbc); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('bacterium',p,G.bacterium); }
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('antibody',p,G.antibody); }
+  { const p=sphProxy(0.68); p.position.set(0,0.55,0); addProxy('alveolus',p,G.alveolus); }
+  { const p=sphProxy(0.52); p.position.set(0,0.55,0); addProxy('oxygen',p,G.oxygen); }
+  { const p=sphProxy(0.64); p.position.set(0,0.52,0); addProxy('bodycell',p,G.bodycell); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('glucose',p,G.glucose); }
+  { const p=sphProxy(0.56); p.position.set(0,0.55,0); addProxy('co2',p,G.co2); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=DOBJS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=DOBJS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=DOBJS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['plasma','rbc','wbc'],
+  [],
+  ['alveolus','rbc','bodycell'],
+  ['bacterium','wbc','antibody'],
+  [],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!DOBJS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='plasma'){ T.fPlasma=true; FOUND.plasma=true; T.hint1=null; }
+    else if(id==='rbc'){ T.fRbc=true; FOUND.rbc=true; T.hint1=null; }
+    else if(id==='wbc'){ T.fWbc=true; FOUND.wbc=true; T.hint1=null; }
+    else T.hint1=id;
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='alveolus') T.jAlv=true;
+    else if(id==='rbc') T.jRbc=true;
+    else if(id==='bodycell') T.jCell=true;
+    if(T.jAlv&&T.jRbc&&T.jCell) FOUND.journey=true;
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='bacterium') T.dPath=true;
+    else if(id==='wbc') T.dWbc=true;
+    else if(id==='antibody') T.dAb=true;
+    if(T.dPath&&T.dWbc&&T.dAb) FOUND.defence=true;
+    saveProg(); renderFound(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start: all scene objects stay in their labelled places */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.bacterium) G.bacterium.rotation.y=Math.sin(t*0.8)*0.2;
+  if(G.oxygen) G.oxygen.rotation.y=t*0.6;
+  if(G.antibody) G.antibody.rotation.y=Math.sin(t*0.7)*0.15;
+  if(lastFocus&&DOBJS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+DOBJS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+window.CAMB_LESSON={
+  id:'sci8-1-5',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

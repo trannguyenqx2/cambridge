@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>8.4 Detecting chemical reactions — Nhận biết phản ứng hóa học · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+.binbtn.useful{background:#0d9d58}
+.binbtn.wasted{background:#b03a3a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="8.4 Detecting chemical reactions" data-vi="8.4 Nhận biết phản ứng hóa học (Detecting chemical reactions)">8.4 Detecting chemical reactions</span>
+    <span class="eqchip i18n" data-en="Unit 8 · Changes to materials" data-vi="Bài 8 · Sự biến đổi của vật liệu (Changes to materials)">Unit 8 · Changes to materials</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/7 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How can you tell a chemical reaction has happened?" data-vi="Làm sao biết một phản ứng hóa học đã xảy ra?">How can you tell a chemical reaction has happened?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="A gas is given off" data-vi="Có khí thoát ra (gas is given off)">A gas is given off</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Test the gas" data-vi="Thử khí (test the gas)">Test the gas</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Spot the other clues" data-vi="Tìm các dấu hiệu khác (clues)">Spot the other clues</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Reaction — or not?" data-vi="Phản ứng — hay không?">Reaction — or not?</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 8 Changes to materials · Section 8.4. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 8 · Sự biến đổi của vật liệu (Changes to materials) · Mục 8.4. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 8 Changes to materials · Section 8.4. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 8 Changes to materials, section 8.4, pages 275–287; Workbook 7 (ISBN 9781108742818), pages 163–165. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 8 · Sự biến đổi của vật liệu (Changes to materials), mục 8.4, trang 275–287; Sách bài tập 7 (ISBN 9781108742818), trang 163–165. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 8 Changes to materials, section 8.4, pages 275–287; Workbook 7 (ISBN 9781108742818), pages 163–165. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives: learn about different ways of telling if a chemical reaction has happened; test gases given off in reactions so that you can identify them; carry out practical tasks safely. Key words: cloudy, glowing, precipitate. The section opens (Getting started) by recalling the differences between reactants and products, chemical and physical changes, and acids and alkalis." data-vi="Mục tiêu: học các cách khác nhau để nhận biết một phản ứng hóa học (chemical reaction) đã xảy ra; thử các khí thoát ra trong phản ứng để xác định chúng; thực hiện các việc thực hành một cách an toàn. Từ khóa: cloudy (đục), glowing (cháy âm ỉ), precipitate (kết tủa). Mục học mở đầu (Getting started) bằng việc nhớ lại sự khác nhau giữa chất phản ứng (reactants) và sản phẩm (products), biến đổi hóa học và biến đổi vật lý, axit và kiềm.">Objectives: learn about different ways of telling if a chemical reaction has happened; test gases given off in reactions so that you can identify them; carry out practical tasks safely. Key words: cloudy, glowing, precipitate.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — spotting gas being given off in three reactions (magnesium with hydrochloric acid gives hydrogen, baking powder with vinegar gives carbon dioxide, hydrogen peroxide with apple gives oxygen), testing carbon dioxide with limewater (it turns cloudy as a precipitate of calcium carbonate forms), spotting the other clues (colour change from black copper oxide to a blue solution, heat given out and a reactant being used up with zinc and acid, and a white precipitate when silver nitrate meets calcium chloride), testing oxygen with a glowing splint (it relights — and recalling that hydrogen gives a squeaky pop with a lit splint), and judging investigations in the style of the book's experiments (melting chocolate and evaporating copper sulfate solution are physical changes, not reactions). Gas tests for hydrogen from section 8.1 are recalled, not re-taught. Safety glasses are worn throughout, as in the book. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D — nhận ra khí thoát ra trong ba phản ứng (magnesium với axit hydrochloric cho khí hydrogen, bột nở (baking powder) với giấm cho khí carbon dioxide, hydrogen peroxide với táo cho khí oxygen), thử carbon dioxide bằng nước vôi trong (limewater) (nó trở nên đục (cloudy) khi kết tủa (precipitate) calcium carbonate hình thành), nhận ra các dấu hiệu khác (đổi màu từ copper oxide đen thành dung dịch xanh dương, nhiệt tỏa ra và một chất phản ứng bị dùng hết với kẽm và axit, và kết tủa trắng khi silver nitrate gặp calcium chloride), thử oxygen bằng que đóm cháy âm ỉ (glowing splint) (nó bùng cháy lại — và nhớ lại rằng hydrogen tạo tiếng nổ nhỏ (squeaky pop) với que đóm đang cháy), và phán đoán các khảo sát theo kiểu các thí nghiệm trong sách (chocolate tan chảy và dung dịch copper sulfate bay hơi là biến đổi vật lý, không phải phản ứng). Cách thử hydrogen của mục 8.1 được nhắc lại, không dạy lại. Kính bảo hộ được đeo suốt, như trong sách. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D bench. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-8-4 "Detecting chemical reactions"
+   (Science 7, Unit 8 · Changes to materials)
+   Loaded between camb-engine.js and camb-bridge.js.
+   Book section 8.4 covers the clues that a chemical reaction has
+   happened (gas given off, reactant disappears, colour change, heat
+   produced, pH change, precipitate formed), the gas tests (limewater
+   turns cloudy for carbon dioxide, a glowing splint relights in
+   oxygen, a squeaky pop for hydrogen — recalled from 8.1) and judging
+   the book's experiments A–H (reaction or physical change).
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  mgTube:{kind:'tube', emoji:'🫧', name:{en:'Magnesium in hydrochloric acid',vi:'Magnesium trong axit hydrochloric'}, short:{en:'Mg + acid tube',vi:'Ống Mg + axit'}, labelY:1.5, fx:-4.7, fz:-1.8, fr:5.2},
+  fizzTube:{kind:'tube', emoji:'🥤', name:{en:'Baking powder and vinegar',vi:'Bột nở và giấm (baking powder and vinegar)'}, short:{en:'Fizz tube',vi:'Ống sủi bọt'}, labelY:1.5, fx:-3.3, fz:-1.8, fr:5.2},
+  peroxideTube:{kind:'tube', emoji:'🍎', name:{en:'Hydrogen peroxide and apple',vi:'Hydrogen peroxide và táo'}, short:{en:'Peroxide tube',vi:'Ống peroxide'}, labelY:1.5, fx:-1.9, fz:-1.8, fr:5.2},
+  limewater:{kind:'tube', emoji:'🥛', name:{en:'Limewater test tube',vi:'Ống nghiệm nước vôi trong (limewater)'}, short:{en:'Limewater',vi:'Nước vôi trong'}, labelY:1.5, fx:-0.3, fz:-1.8, fr:5.2},
+  splint:{kind:'splint', emoji:'🔥', name:{en:'Glowing splint',vi:'Que đóm cháy âm ỉ (glowing splint)'}, short:{en:'Glowing splint',vi:'Que đóm âm ỉ'}, labelY:1.5, fx:1.3, fz:-1.8, fr:5.2},
+  copperBeaker:{kind:'beaker', emoji:'🔵', name:{en:'Copper oxide and sulfuric acid beaker',vi:'Cốc copper oxide và axit sulfuric'}, short:{en:'Copper beaker',vi:'Cốc đồng'}, labelY:1.5, fx:2.9, fz:-1.8, fr:5.2},
+  zincTube:{kind:'tube', emoji:'🌡️', name:{en:'Zinc in hydrochloric acid',vi:'Kẽm trong axit hydrochloric (zinc in acid)'}, short:{en:'Zinc tube',vi:'Ống kẽm'}, labelY:1.5, fx:4.6, fz:-1.8, fr:5.2},
+  silverTube:{kind:'tube', emoji:'⚪', name:{en:'Silver nitrate and calcium chloride',vi:'Silver nitrate và calcium chloride'}, short:{en:'Silver tube',vi:'Ống bạc'}, labelY:1.5, fx:-3.6, fz:1.8, fr:5.2},
+  chocolate:{kind:'choc', emoji:'🍫', name:{en:'Chocolate in a warm-water beaker',vi:'Chocolate trong cốc nước ấm'}, short:{en:'Chocolate',vi:'Chocolate'}, labelY:1.5, fx:-0.9, fz:1.8, fr:5.2},
+  dish:{kind:'dish', emoji:'💠', name:{en:'Evaporating dish of copper sulfate solution',vi:'Đĩa bay hơi chứa dung dịch copper sulfate'}, short:{en:'Evaporating dish',vi:'Đĩa bay hơi'}, labelY:1.5, fx:1.6, fz:1.8, fr:5.2}
+};
+const FOCUSORDER=['mgTube','fizzTube','peroxideTube','limewater','splint','copperBeaker','zincTube','silverTube','chocolate','dish'];
+const S5OBS=[
+  {id:'chocolate', emoji:'🍫', en:'Chocolate melts — physical change, NO reaction', vi:'Chocolate tan chảy — biến đổi vật lý, KHÔNG phải phản ứng'},
+  {id:'dish', emoji:'💠', en:'Copper sulfate solution evaporates — physical change, NO reaction', vi:'Dung dịch copper sulfate bay hơi — biến đổi vật lý, KHÔNG phải phản ứng'},
+  {id:'copperBeaker', emoji:'🔵', en:'Copper oxide mixture turns blue — reaction!', vi:'Hỗn hợp copper oxide chuyển xanh dương — phản ứng!'},
+  {id:'silverTube', emoji:'⚪', en:'White precipitate forms — reaction!', vi:'Kết tủa trắng hình thành — phản ứng!'}
+];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to test or observe a reaction, tap it on the bench! Wear safety glasses for every practical step.',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn thử hay quan sát một phản ứng, hãy chạm vào chính nó trên bàn! Hãy đeo kính bảo hộ trong mọi bước thực hành.'},
+  u2T:{en:'My reaction record',vi:'Bản ghi phản ứng của con'},
+  u2Brief:{en:'What you have spotted and tested so far.',vi:'Những điều con đã nhận ra và kiểm tra được tới giờ.'},
+  rowGas:{en:'Gas reactions observed',vi:'Phản ứng sinh khí đã quan sát'},
+  rowClues:{en:'Other clues spotted',vi:'Dấu hiệu khác đã nhận ra'},
+  rowJudge:{en:'Investigations observed',vi:'Khảo sát đã quan sát'},
+  rowGame:{en:'Final check questions right',vi:'Câu kiểm tra cuối đã đúng'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundGas:{en:'I spotted gas being given off in three reactions',vi:'Con đã nhận ra khí thoát ra trong ba phản ứng'},
+  foundCO2:{en:'I tested carbon dioxide with limewater',vi:'Con đã thử carbon dioxide bằng nước vôi trong (limewater)'},
+  foundClues:{en:'I spotted colour change, heat and a precipitate',vi:'Con đã nhận ra đổi màu, nhiệt tỏa ra và kết tủa (precipitate)'},
+  foundO2:{en:'I tested oxygen with a glowing splint',vi:'Con đã thử oxygen bằng que đóm cháy âm ỉ (glowing splint)'},
+  foundJudge:{en:'I judged investigations: reaction or not?',vi:'Con đã phán đoán các khảo sát: phản ứng hay không?'},
+  foundGame:{en:'I answered the reaction check',vi:'Con đã trả lời phần kiểm tra về phản ứng'},
+  tapLime:{en:'👆 Tap the limewater tube on the bench first!',vi:'👆 Trước tiên hãy chạm vào ống nước vôi trong (limewater) trên bàn!'},
+  qCO2:{en:'Carbon dioxide is bubbled through the limewater. What happens to the limewater?',vi:'Người ta sục khí carbon dioxide qua nước vôi trong. Nước vôi trong trở nên thế nào?'},
+  chCloudy:{en:'Turns cloudy',vi:'Trở nên đục (cloudy)'},
+  chClear:{en:'Stays clear',vi:'Vẫn trong suốt (stays clear)'},
+  chBlue:{en:'Turns blue',vi:'Chuyển màu xanh dương (turns blue)'},
+  tapSplint:{en:'👆 Tap the glowing splint on the bench first!',vi:'👆 Trước tiên hãy chạm vào que đóm cháy âm ỉ (glowing splint) trên bàn!'},
+  qOxygen:{en:'The glowing splint is put into a tube of oxygen. What happens?',vi:'Người ta đưa que đóm cháy âm ỉ vào một ống chứa oxygen. Điều gì xảy ra?'},
+  chRelight:{en:'It relights',vi:'Nó bùng cháy lại (relights)'},
+  chPop:{en:'It gives a squeaky pop',vi:'Nó tạo tiếng nổ nhỏ (squeaky pop)'},
+  chOut:{en:'It just goes out',vi:'Nó cứ thế tắt đi (goes out)'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 8.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 8.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Key words for material changes (Workbook 8.4A)',vi:'Bài tập 1 · Focus — Từ khóa về biến đổi vật liệu (Workbook 8.4A)'},
+  ex1Inst:{en:'Match each idea to its key word, as in the Workbook matching task. Tap the CORRECT word for each line.',vi:'Hãy nối mỗi ý với từ khóa của nó, như bài nối từ trong sách bài tập. Chạm vào từ ĐÚNG cho mỗi dòng.'},
+  ex2T:{en:'Exercise 2 · Practice — Has a reaction taken place? (Workbook 8.4B)',vi:'Bài tập 2 · Practice — Phản ứng đã xảy ra chưa? (Workbook 8.4B)'},
+  ex2Inst:{en:'One clue is a gas being given off — you see bubbles or fizzing. Complete each line with the other clues and their examples from the book.',vi:'Một dấu hiệu là có khí thoát ra — con thấy bọt khí hay sủi bọt. Hãy hoàn thành mỗi dòng bằng các dấu hiệu khác và ví dụ của chúng trong sách.'},
+  ex3T:{en:'Exercise 3 · Challenge — Testing for gases (Workbook 8.4C)',vi:'Bài tập 3 · Challenge — Thử các khí (Workbook 8.4C)'},
+  ex3Inst:{en:'Four tubes hold air, oxygen, hydrogen and carbon dioxide. Use the gas tests to say which is which.',vi:'Bốn ống chứa không khí, oxygen, hydrogen và carbon dioxide. Hãy dùng các cách thử khí để nói ống nào là khí nào.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'cloudy',vi:'đục / vẩn đục'},
+  {en:'glowing',vi:'cháy âm ỉ / hồng rực'},
+  {en:'precipitate',vi:'kết tủa'},
+  {en:'reactants',vi:'chất phản ứng'},
+  {en:'products',vi:'sản phẩm'},
+  {en:'neutralisation',vi:'phản ứng trung hòa'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'A gas is given off',vi:'Có khí thoát ra'}, word:{en:'gas given off',vi:'khí thoát ra (gas given off)'},
+  q:{en:'In a chemical reaction, new products form from the reactants. What is one of the most useful clues that this has happened?',vi:'Trong một phản ứng hóa học (chemical reaction), các sản phẩm (products) mới hình thành từ các chất phản ứng (reactants). Một trong những dấu hiệu hữu ích nhất cho thấy điều này đã xảy ra là gì?'},
+  act:{en:'Put your safety glasses on (in your mind). Tap all three reacting tubes on the bench: magnesium with hydrochloric acid, baking powder with vinegar, and hydrogen peroxide with a piece of apple. Watch each one bubble.',vi:'Hãy đeo kính bảo hộ (trong tưởng tượng). Chạm vào cả ba ống đang phản ứng trên bàn: magnesium với axit hydrochloric, bột nở (baking powder) với giấm, và hydrogen peroxide với một mẩu táo. Quan sát từng ống sủi bọt.'},
+  see:{en:'All three tubes bubble and fizz — a gas is being given off in each reaction.',vi:'Cả ba ống đều sủi bọt — một khí đang thoát ra trong mỗi phản ứng.'},
+  concl:[
+    {en:'Bubbles or fizzing are a key clue: a gas is given off, so a chemical reaction has taken place.',vi:'Bọt khí hay sủi bọt là một dấu hiệu quan trọng: một khí thoát ra, nên một phản ứng hóa học đã xảy ra.'},
+    {en:'Magnesium + hydrochloric acid gives off hydrogen. Baking powder + vinegar gives off carbon dioxide. Hydrogen peroxide + apple gives off oxygen.',vi:'Magnesium + axit hydrochloric cho khí hydrogen. Bột nở + giấm cho khí carbon dioxide. Hydrogen peroxide + táo cho khí oxygen.'},
+    {en:'A gas on its own does not name itself — each gas needs its own test, as the next steps show.',vi:'Một khí tự nó không tự nói tên — mỗi khí cần cách thử riêng, như các bước tiếp theo cho thấy.'}]},
+ {tag:{en:'Test for carbon dioxide',vi:'Thử carbon dioxide'}, word:{en:'cloudy',vi:'đục (cloudy)'},
+  q:{en:'Calcium carbonate reacts with hydrochloric acid in one tube, and the gas travels down a delivery tube into limewater. How does the limewater expose the gas?',vi:'Calcium carbonate phản ứng với axit hydrochloric trong một ống, và khí đi qua ống dẫn vào nước vôi trong (limewater). Nước vôi trong làm lộ khí đó như thế nào?'},
+  act:{en:'Tap the limewater tube on the bench — the carbon dioxide from the calcium carbonate and acid is bubbling through it. Then answer: what happens to the limewater?',vi:'Chạm vào ống nước vôi trong trên bàn — khí carbon dioxide từ calcium carbonate và axit đang sục qua nó. Sau đó trả lời: nước vôi trong trở nên thế nào?'},
+  see:{en:'Clear limewater slowly turns milky and cloudy when carbon dioxide is bubbled through it.',vi:'Nước vôi trong suốt từ từ trở nên trắng đục (cloudy) khi carbon dioxide được sục qua nó.'},
+  concl:[
+    {en:'The test for carbon dioxide: bubble the gas through limewater — if the limewater turns cloudy, the gas is carbon dioxide.',vi:'Cách thử carbon dioxide: sục khí qua nước vôi trong (limewater) — nếu nước vôi trong trở nên đục (cloudy), khí đó là carbon dioxide.'},
+    {en:'Limewater is a solution of calcium hydroxide. The cloudiness is a precipitate of calcium carbonate forming: a gas added to a liquid has made a solid.',vi:'Nước vôi trong là dung dịch calcium hydroxide. Sự vẩn đục là kết tủa (precipitate) calcium carbonate đang hình thành: một khí cho vào một chất lỏng đã tạo ra một chất rắn.'},
+    {en:'The same test catches the carbon dioxide from baking powder and vinegar — and even from your own breath blown through a straw.',vi:'Cách thử này cũng bắt được carbon dioxide từ bột nở và giấm — và cả từ hơi thở của chính con thổi qua ống hút.'}]},
+ {tag:{en:'Other reaction clues',vi:'Các dấu hiệu phản ứng khác'}, word:{en:'precipitate',vi:'kết tủa (precipitate)'},
+  q:{en:'Gas is only one clue. What else can tell you a reaction has happened?',vi:'Khí chỉ là một dấu hiệu. Điều gì khác có thể cho con biết một phản ứng đã xảy ra?'},
+  act:{en:'Tap the three clue stations on the bench: the copper oxide beaker (colour), the zinc tube (warm it in your hands — and remember the magnesium ribbon being used up in acid), and the silver tube (mixing the two solutions).',vi:'Chạm vào ba trạm dấu hiệu trên bàn: cốc copper oxide (màu sắc), ống kẽm (cầm ấm trong tay — và nhớ lại dải magnesium bị dùng hết trong axit), và ống bạc (trộn hai dung dịch).'},
+  see:{en:'The black mixture turns into a blue solution, the zinc tube feels hot, and a white solid suddenly appears in the silver tube.',vi:'Hỗn hợp đen biến thành một dung dịch xanh dương, ống kẽm cảm thấy nóng, và một chất rắn trắng bất ngờ xuất hiện trong ống bạc.'},
+  concl:[
+    {en:'Colour change: gently heating black copper oxide with sulfuric acid makes a blue solution of copper sulfate.',vi:'Đổi màu (colour change): đun nhẹ copper oxide đen với axit sulfuric tạo ra dung dịch copper sulfate màu xanh dương.'},
+    {en:'Heat given out, and a reactant used up: zinc with hydrochloric acid makes the tube feel hot, and magnesium ribbon in acid gradually disappears as it becomes magnesium chloride.',vi:'Nhiệt tỏa ra, và một chất phản ứng bị dùng hết: kẽm với axit hydrochloric làm ống nghiệm nóng lên, và dải magnesium trong axit dần biến mất khi nó trở thành magnesium chloride.'},
+    {en:'A precipitate forms: mixing silver nitrate and calcium chloride solutions makes a solid — silver chloride — appear where there were only liquids. Neutralising an alkali also changes its pH, another clue.',vi:'Một kết tủa (precipitate) hình thành: trộn dung dịch silver nitrate và calcium chloride làm một chất rắn — silver chloride — xuất hiện ở nơi trước đó chỉ có chất lỏng. Trung hòa (neutralising) một kiềm cũng làm pH của nó thay đổi, một dấu hiệu nữa.'}]},
+ {tag:{en:'Test for oxygen',vi:'Thử oxygen'}, word:{en:'glowing',vi:'cháy âm ỉ (glowing)'},
+  q:{en:'Hydrogen peroxide with manganese dioxide (or apple) gives off a gas. Which gas is it — and how do you prove it?',vi:'Hydrogen peroxide với manganese dioxide (hay táo) cho ra một khí. Đó là khí nào — và con chứng minh bằng cách nào?'},
+  act:{en:'Tap the glowing splint on the bench — it is being held in the neck of the peroxide tube. Then answer: what happens to the glowing splint in oxygen?',vi:'Chạm vào que đóm cháy âm ỉ (glowing splint) trên bàn — nó đang được giữ ở cổ ống peroxide. Sau đó trả lời: điều gì xảy ra với que đóm cháy âm ỉ trong oxygen?'},
+  see:{en:'A splint that is only glowing — no flame — bursts back into flame in the gas from the peroxide tube.',vi:'Một que đóm chỉ cháy âm ỉ — không có ngọn lửa — bùng cháy lại thành ngọn lửa trong khí từ ống peroxide.'},
+  concl:[
+    {en:'The test for oxygen: a glowing splint relights when it is placed in oxygen.',vi:'Cách thử oxygen: một que đóm cháy âm ỉ (glowing splint) bùng cháy lại (relights) khi được đưa vào oxygen.'},
+    {en:'Do not mix the tests up: hydrogen is tested with a LIT splint and gives a squeaky pop (from section 8.1); carbon dioxide turns limewater cloudy; oxygen relights a GLOWING splint.',vi:'Đừng lẫn lộn các cách thử: hydrogen được thử bằng que đóm ĐANG CHÁY và tạo tiếng nổ nhỏ (squeaky pop) (từ mục 8.1); carbon dioxide làm nước vôi trong đục; oxygen làm que đóm CHÁY ÂM Ỉ bùng cháy lại.'},
+    {en:'Three gases, three different tests — that is how you identify a gas you cannot see.',vi:'Ba khí, ba cách thử khác nhau — đó là cách con xác định một khí mà con không nhìn thấy được.'}]},
+ {tag:{en:'Reaction — or not?',vi:'Phản ứng — hay không?'}, word:{en:'chemical change',vi:'biến đổi hóa học (chemical change)'},
+  q:{en:'Like the book’s laboratory experiments: which of these changes are chemical reactions, and which are only physical changes?',vi:'Giống các thí nghiệm trong phòng lab của sách: những biến đổi nào trong số này là phản ứng hóa học, và những biến đổi nào chỉ là biến đổi vật lý?'},
+  act:{en:'Observe all four investigations on the bench: tap the chocolate in warm water, the evaporating dish of copper sulfate solution, the copper oxide beaker again, and the silver tube again. Judge each one as you go.',vi:'Quan sát cả bốn khảo sát trên bàn: chạm vào chocolate trong nước ấm, đĩa bay hơi chứa dung dịch copper sulfate, cốc copper oxide một lần nữa, và ống bạc một lần nữa. Hãy phán đoán từng cái khi quan sát.'},
+  see:{en:'The chocolate only melts and the solution only loses water — but the copper mixture turns blue and a white precipitate forms in the silver tube.',vi:'Chocolate chỉ tan chảy và dung dịch chỉ mất nước — nhưng hỗn hợp đồng chuyển xanh dương và một kết tủa trắng hình thành trong ống bạc.'},
+  concl:[
+    {en:'Melting chocolate is a physical change: no new substance forms, and the chocolate can solidify again. Evaporating copper sulfate solution is also physical — the water leaves and the same blue solid remains.',vi:'Chocolate tan chảy là biến đổi vật lý (physical change): không có chất mới nào hình thành, và chocolate có thể đông lại. Dung dịch copper sulfate bay hơi cũng là biến đổi vật lý — nước rời đi và cùng một chất rắn xanh dương còn lại.'},
+    {en:'The copper oxide change and the silver nitrate change ARE reactions: new substances form (blue copper sulfate solution; solid silver chloride).',vi:'Biến đổi copper oxide và biến đổi silver nitrate LÀ phản ứng: các chất mới hình thành (dung dịch copper sulfate xanh dương; chất rắn silver chloride).'},
+    {en:'Always ask: is a NEW substance formed? The clues — gas, colour change, heat, a precipitate, a pH change — are the evidence.',vi:'Luôn tự hỏi: có một chất MỚI hình thành không? Các dấu hiệu — khí, đổi màu, nhiệt, kết tủa (precipitate), thay đổi pH — là bằng chứng.'}]},
+ {tag:{en:'Reaction check',vi:'Kiểm tra phản ứng'}, word:{en:'precipitate',vi:'kết tủa (precipitate)'},
+  q:{en:'Can you use the clues and the gas tests correctly?',vi:'Con dùng đúng các dấu hiệu và các cách thử khí chưa?'},
+  act:{en:'Answer the three check questions about detecting chemical reactions.',vi:'Trả lời ba câu hỏi kiểm tra về nhận biết phản ứng hóa học (detecting chemical reactions).'},
+  see:{en:'Right answers move the check on. Three right answers finish it!',vi:'Đáp án đúng đưa phần kiểm tra đi tiếp. Ba đáp án đúng là hoàn thành!'},
+  concl:[
+    {en:'I can list different ways of identifying that a chemical reaction has taken place.',vi:'Con có thể liệt kê các cách khác nhau để nhận biết một phản ứng hóa học đã xảy ra.'},
+    {en:'I can test gases for hydrogen, oxygen and carbon dioxide.',vi:'Con có thể thử các khí hydrogen, oxygen và carbon dioxide.'},
+    {en:'I can carry out practical work safely.',vi:'Con có thể thực hiện công việc thực hành một cách an toàn.'}]}
+];
+const GAME=[
+ {q:{en:'A magnesium ribbon in acid gets smaller and smaller until it is gone. Why?',vi:'Một dải magnesium trong axit ngày càng nhỏ đi cho đến khi biến mất. Vì sao?'},
+  opts:[{en:'It melted into the acid',vi:'Nó tan chảy vào axit'},{en:'It was used up, combining with the chlorine to form magnesium chloride',vi:'Nó bị dùng hết, kết hợp với chlorine tạo thành magnesium chloride'},{en:'It evaporated as a gas',vi:'Nó bay hơi thành khí'}],a:1},
+ {q:{en:'Which of these is NOT a chemical reaction?',vi:'Việc nào sau đây KHÔNG phải là một phản ứng hóa học?'},
+  opts:[{en:'Burning a piece of wood',vi:'Đốt một mẩu gỗ'},{en:'Melting chocolate',vi:'Làm tan chảy chocolate'},{en:'Baking a cake',vi:'Nướng một chiếc bánh'}],a:1},
+ {q:{en:'You blow gently through a straw into limewater and it turns cloudy. Your breath gave the limewater…',vi:'Con thổi nhẹ qua ống hút vào nước vôi trong và nó trở nên đục. Hơi thở của con đã đưa vào nước vôi trong…'},
+  opts:[{en:'oxygen',vi:'oxygen'},{en:'hydrogen',vi:'hydrogen'},{en:'carbon dioxide',vi:'carbon dioxide'}],a:2}
+];
+const QUIZ=[
+ {q:{en:'How do you test for carbon dioxide, and what do you see?',vi:'Con thử carbon dioxide bằng cách nào, và con thấy gì?'},
+  o:[{en:'A glowing splint relights',vi:'Que đóm cháy âm ỉ bùng cháy lại'},{en:'Limewater turns cloudy',vi:'Nước vôi trong (limewater) trở nên đục (cloudy)'},{en:'A lit splint gives a squeaky pop',vi:'Que đóm đang cháy tạo tiếng nổ nhỏ (squeaky pop)'}],a:1,
+  e:{en:'Bubble the gas through limewater: carbon dioxide turns the limewater cloudy because a precipitate of calcium carbonate forms.',vi:'Sục khí qua nước vôi trong (limewater): carbon dioxide làm nước vôi trong trở nên đục (cloudy) vì kết tủa (precipitate) calcium carbonate hình thành.'}},
+ {q:{en:'A glowing splint bursts back into flame inside a test tube of gas. Which gas is in the tube?',vi:'Một que đóm cháy âm ỉ (glowing splint) bùng cháy lại thành ngọn lửa bên trong một ống nghiệm chứa khí. Khí trong ống là khí nào?'},
+  o:[{en:'Oxygen',vi:'Oxygen'},{en:'Carbon dioxide',vi:'Carbon dioxide'},{en:'Hydrogen',vi:'Hydrogen'}],a:0,
+  e:{en:'Oxygen relights a glowing splint. Hydrogen gives a squeaky pop with a lit splint, and carbon dioxide turns limewater cloudy.',vi:'Oxygen làm que đóm cháy âm ỉ bùng cháy lại. Hydrogen tạo tiếng nổ nhỏ (squeaky pop) với que đóm đang cháy, và carbon dioxide làm nước vôi trong đục.'}},
+ {q:{en:'Which observation is a clue that a chemical reaction — not just a physical change — has taken place?',vi:'Quan sát nào là dấu hiệu cho thấy một phản ứng hóa học — không chỉ là biến đổi vật lý — đã xảy ra?'},
+  o:[{en:'Chocolate melts in hot water',vi:'Chocolate tan chảy trong nước nóng'},{en:'Water evaporates from a blue solution',vi:'Nước bay hơi khỏi một dung dịch xanh dương'},{en:'A white precipitate forms when two solutions are mixed',vi:'Một kết tủa (precipitate) trắng hình thành khi trộn hai dung dịch'}],a:2,
+  e:{en:'A precipitate is a new solid substance formed by a reaction. Melting and evaporating make no new substance — they are physical changes.',vi:'Kết tủa (precipitate) là một chất rắn mới được hình thành bởi một phản ứng. Tan chảy và bay hơi không tạo chất mới — chúng là biến đổi vật lý.'}},
+ {q:{en:'Magnesium reacts with hydrochloric acid and bubbles of gas stream off. How do you test that this gas is hydrogen?',vi:'Magnesium phản ứng với axit hydrochloric và các bọt khí thoát ra. Con thử để biết khí này là hydrogen bằng cách nào?'},
+  o:[{en:'Put a lit splint to the gas — it gives a squeaky pop',vi:'Đưa que đóm đang cháy tới khí — nó tạo tiếng nổ nhỏ (squeaky pop)'},{en:'Bubble it through limewater — it turns cloudy',vi:'Sục nó qua nước vôi trong — nó trở nên đục'},{en:'Put a glowing splint in — it relights',vi:'Đưa que đóm cháy âm ỉ vào — nó bùng cháy lại'}],a:0,
+  e:{en:'Hydrogen burns with a squeaky pop when a lit splint is put to it. The cloudy limewater test is for carbon dioxide, and relighting a glowing splint is the test for oxygen.',vi:'Hydrogen cháy với tiếng nổ nhỏ (squeaky pop) khi đưa que đóm đang cháy tới nó. Cách thử nước vôi trong đục là dành cho carbon dioxide, và làm que đóm cháy âm ỉ bùng cháy lại là cách thử oxygen.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'The substances you start with in a chemical reaction are called the',vi:'Các chất con bắt đầu trong một phản ứng hóa học được gọi là'},correct:0,
+  opts:[{en:'reactants',vi:'chất phản ứng (reactants)'},{en:'products',vi:'sản phẩm (products)'}],
+  e:{en:'Reactants are what you start with. In magnesium + hydrochloric acid, magnesium and the acid are the reactants.',vi:'Chất phản ứng (reactants) là những gì con bắt đầu. Trong magnesium + axit hydrochloric, magnesium và axit là các chất phản ứng.'}},
+ {pre:{en:'The new substances made in a chemical reaction are called the',vi:'Các chất mới được tạo ra trong một phản ứng hóa học được gọi là'},correct:1,
+  opts:[{en:'reactants',vi:'chất phản ứng (reactants)'},{en:'products',vi:'sản phẩm (products)'}],
+  e:{en:'Products are what is formed. Magnesium chloride and hydrogen are the products when magnesium reacts with hydrochloric acid.',vi:'Sản phẩm (products) là những gì được hình thành. Magnesium chloride và hydrogen là các sản phẩm khi magnesium phản ứng với axit hydrochloric.'}},
+ {pre:{en:'The reaction where an acid is cancelled out by an alkali, giving a neutral solution of pH 7, is called',vi:'Phản ứng trong đó một axit bị một kiềm trung hòa, cho dung dịch trung tính có pH 7, được gọi là'},correct:0,
+  opts:[{en:'neutralisation',vi:'trung hòa (neutralisation)'},{en:'precipitate',vi:'kết tủa (precipitate)'}],
+  e:{en:'Neutralisation: sodium hydroxide + hydrochloric acid → sodium chloride + water, and the pH moves to 7.',vi:'Trung hòa (neutralisation): sodium hydroxide + axit hydrochloric → sodium chloride + nước, và pH chuyển về 7.'}},
+ {pre:{en:'A solid formed when two liquids react together is called a',vi:'Một chất rắn hình thành khi hai chất lỏng phản ứng với nhau được gọi là'},correct:1,
+  opts:[{en:'corrosive liquid',vi:'chất lỏng ăn mòn (corrosive)'},{en:'precipitate',vi:'kết tủa (precipitate)'}],
+  e:{en:'Silver chloride is a precipitate when silver nitrate and calcium chloride solutions are mixed. Calcium carbonate is the precipitate that makes limewater cloudy.',vi:'Silver chloride là một kết tủa (precipitate) khi trộn dung dịch silver nitrate và calcium chloride. Calcium carbonate là kết tủa làm nước vôi trong trở nên đục.'}},
+ {pre:{en:'A substance with a pH of less than 7 is an',vi:'Một chất có pH nhỏ hơn 7 là một'},correct:0,
+  opts:[{en:'acid',vi:'axit (acid)'},{en:'alkali',vi:'kiềm (alkali)'}],
+  e:{en:'Acids have pH less than 7. Alkalis have pH more than 7, and the pH scale shows how strong an acid or alkali is.',vi:'Axit có pH nhỏ hơn 7. Kiềm có pH lớn hơn 7, và thang pH (pH scale) cho thấy một axit hay kiềm mạnh đến mức nào.'}},
+ {pre:{en:'A substance that can dissolve or eat away other materials is described as',vi:'Một chất có thể hòa tan hay ăn mòn các vật liệu khác được mô tả là'},correct:1,
+  opts:[{en:'neutral',vi:'trung tính (neutral)'},{en:'corrosive',vi:'ăn mòn (corrosive)'}],
+  e:{en:'Concentrated acids are corrosive — that is why spills are dangerous and safety glasses and care are needed.',vi:'Các axit đậm đặc có tính ăn mòn (corrosive) — đó là lý do tràn axit rất nguy hiểm và cần kính bảo hộ cùng sự cẩn thận.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'Bubbles or fizzing, like vinegar on baking powder, show that a',vi:'Bọt khí hay sủi bọt, như giấm trên bột nở, cho thấy rằng một'},correct:0,
+  opts:[{en:'gas is given off',vi:'khí thoát ra (gas is given off)'},{en:'solid has melted',vi:'chất rắn đã tan chảy'}],
+  e:{en:'A gas given off is the first clue in the Workbook exercise — the bubbles in vinegar and baking powder are carbon dioxide forming.',vi:'Khí thoát ra là dấu hiệu đầu tiên trong bài tập sách bài tập — các bọt khí trong giấm và bột nở là carbon dioxide đang hình thành.'}},
+ {pre:{en:'In acid, a magnesium ribbon gradually disappears because the reactant is',vi:'Trong axit, một dải magnesium dần biến mất vì chất phản ứng đang'},correct:1,
+  opts:[{en:'changing colour',vi:'đổi màu'},{en:'being used up',vi:'bị dùng hết (being used up)'}],
+  e:{en:'The magnesium is used up: it combines with the chlorine from the acid to form magnesium chloride, while hydrogen is given off.',vi:'Magnesium bị dùng hết: nó kết hợp với chlorine từ axit tạo thành magnesium chloride, trong khi hydrogen thoát ra.'}},
+ {pre:{en:'Black copper oxide warmed with sulfuric acid gives a blue solution — the clue here is a',vi:'Copper oxide đen được đun ấm với axit sulfuric cho một dung dịch xanh dương — dấu hiệu ở đây là'},correct:0,
+  opts:[{en:'colour change',vi:'đổi màu (colour change)'},{en:'precipitate',vi:'kết tủa (precipitate)'}],
+  e:{en:'Black → blue is a colour change: the new substance is copper sulfate dissolved in water.',vi:'Đen → xanh dương là đổi màu (colour change): chất mới là copper sulfate hòa tan trong nước.'}},
+ {pre:{en:'When zinc is added to hydrochloric acid, the test tube feels hot — the clue here is that',vi:'Khi cho kẽm vào axit hydrochloric, ống nghiệm cảm thấy nóng — dấu hiệu ở đây là'},correct:1,
+  opts:[{en:'the pH falls to zero',vi:'pH giảm xuống không'},{en:'heat is produced',vi:'nhiệt được tạo ra (heat is produced)'}],
+  e:{en:'Heat produced is a clue a reaction has happened. Potassium in water produces so much heat the hydrogen burns — a teacher-only demonstration.',vi:'Nhiệt được tạo ra (heat is produced) là dấu hiệu một phản ứng đã xảy ra. Potassium trong nước tạo ra nhiều nhiệt đến mức hydrogen bốc cháy — phần trình diễn chỉ dành cho giáo viên.'}},
+ {pre:{en:'When an alkali is neutralised by an acid, the clue you can measure is a change in',vi:'Khi một kiềm bị một axit trung hòa, dấu hiệu con có thể đo là sự thay đổi của'},correct:0,
+  opts:[{en:'pH',vi:'pH'},{en:'mass of the flask',vi:'khối lượng của bình'}],
+  e:{en:'Neutralisation changes the pH towards 7 — universal indicator in the flask turns green when the alkali is exactly neutralised.',vi:'Trung hòa làm pH thay đổi về phía 7 — chất chỉ thị vạn năng trong bình chuyển xanh lá khi kiềm vừa được trung hòa đúng mức.'}},
+ {pre:{en:'Mixing silver nitrate and calcium chloride solutions forms a white solid — the clue here is a',vi:'Trộn dung dịch silver nitrate và calcium chloride tạo ra một chất rắn trắng — dấu hiệu ở đây là'},correct:1,
+  opts:[{en:'gas given off',vi:'khí thoát ra'},{en:'precipitate formed',vi:'kết tủa hình thành (precipitate formed)'}],
+  e:{en:'The white solid is silver chloride, a precipitate: two liquids reacted and a new solid appeared.',vi:'Chất rắn trắng là silver chloride, một kết tủa (precipitate): hai chất lỏng đã phản ứng và một chất rắn mới xuất hiện.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'A glowing splint relights in the tube of',vi:'Một que đóm cháy âm ỉ (glowing splint) bùng cháy lại trong ống chứa'},correct:0,
+  opts:[{en:'oxygen',vi:'oxygen'},{en:'carbon dioxide',vi:'carbon dioxide'}],
+  e:{en:'Oxygen relights a glowing splint — the test used for the gas from hydrogen peroxide and manganese dioxide.',vi:'Oxygen làm que đóm cháy âm ỉ bùng cháy lại — cách thử dùng cho khí từ hydrogen peroxide và manganese dioxide.'}},
+ {pre:{en:'Limewater turns cloudy in the tube of',vi:'Nước vôi trong (limewater) trở nên đục trong ống chứa'},correct:1,
+  opts:[{en:'hydrogen',vi:'hydrogen'},{en:'carbon dioxide',vi:'carbon dioxide'}],
+  e:{en:'Carbon dioxide turns limewater cloudy as a precipitate of calcium carbonate forms.',vi:'Carbon dioxide làm nước vôi trong trở nên đục (cloudy) khi kết tủa (precipitate) calcium carbonate hình thành.'}},
+ {pre:{en:'A lit splint gives a squeaky pop in the tube of',vi:'Một que đóm đang cháy tạo tiếng nổ nhỏ (squeaky pop) trong ống chứa'},correct:0,
+  opts:[{en:'hydrogen',vi:'hydrogen'},{en:'oxygen',vi:'oxygen'}],
+  e:{en:'Hydrogen burns with a squeaky pop — the test from section 8.1 for the gas from magnesium and acid.',vi:'Hydrogen cháy với tiếng nổ nhỏ (squeaky pop) — cách thử từ mục 8.1 cho khí từ magnesium và axit.'}},
+ {pre:{en:'In the tube of air, the glowing splint does not relight, the limewater stays clear and there is no pop, because air is mostly',vi:'Trong ống không khí, que đóm cháy âm ỉ không bùng cháy lại, nước vôi trong vẫn trong và không có tiếng nổ, vì không khí chủ yếu là'},correct:1,
+  opts:[{en:'pure oxygen',vi:'oxygen nguyên chất'},{en:'nitrogen, with only some oxygen',vi:'nitrogen, chỉ với một ít oxygen'}],
+  e:{en:'Air is a mixture — mostly nitrogen with about a fifth oxygen — so none of the three gas tests gives a strong positive result for air.',vi:'Không khí là một hỗn hợp — chủ yếu là nitrogen với khoảng một phần năm oxygen — nên cả ba cách thử khí đều không cho kết quả dương tính rõ rệt với không khí.'}},
+ {pre:{en:'The liquid used to test for carbon dioxide is',vi:'Chất lỏng dùng để thử carbon dioxide là'},correct:0,
+  opts:[{en:'limewater',vi:'nước vôi trong (limewater)'},{en:'universal indicator',vi:'chất chỉ thị vạn năng (universal indicator)'}],
+  e:{en:'Limewater — calcium hydroxide solution — is the carbon dioxide test liquid. Universal indicator tests pH, not this gas.',vi:'Nước vôi trong (limewater) — dung dịch calcium hydroxide — là chất lỏng thử carbon dioxide. Chất chỉ thị vạn năng thử pH, không thử khí này.'}},
+ {pre:{en:'In the book test, the oxygen comes from hydrogen peroxide with a spatula of',vi:'Trong cách thử của sách, oxygen đến từ hydrogen peroxide với một thìa đầy'},correct:1,
+  opts:[{en:'limewater',vi:'nước vôi trong (limewater)'},{en:'manganese dioxide',vi:'manganese dioxide'}],
+  e:{en:'Hydrogen peroxide + manganese dioxide gives off oxygen briskly, ready for the glowing splint test. Apple pieces do the same job more gently.',vi:'Hydrogen peroxide + manganese dioxide cho khí oxygen thoát ra nhanh, sẵn sàng cho cách thử que đóm cháy âm ỉ. Các mẩu táo cũng làm việc tương tự nhưng nhẹ nhàng hơn.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 6 + 6 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-8-4';
+const SUMKEY='camb:sum:sci7-8-4';
+const BOT_CODE='sci7-8.4';
+let FOUND={gas:false,co2:false,clues:false,o2:false,judge:false,game:false};
+function newTrack(){return {
+  s1:new Set(),
+  s2pos:false, s2ans:false, s2wrong:false,
+  s3:new Set(),
+  s4pos:false, s4ans:false, s4wrong:false,
+  s5:new Set(),
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=3;
+  if(i===1) return T.s2pos&&T.s2ans;
+  if(i===2) return T.s3.size>=3;
+  if(i===3) return T.s4pos&&T.s4ans;
+  if(i===4) return T.s5.size>=4;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Gas reactions observed: '+T.s1.size+' of 3 (magnesium + acid → hydrogen · baking powder + vinegar → carbon dioxide · peroxide + apple → oxygen).',
+             'Phản ứng sinh khí đã quan sát: '+T.s1.size+' / 3 (magnesium + axit → hydrogen · bột nở + giấm → carbon dioxide · peroxide + táo → oxygen).');
+  }
+  if(i===1){
+    if(!T.s2pos) return B('Tap the limewater tube on the bench.','Hãy chạm vào ống nước vôi trong trên bàn.');
+    if(T.s2wrong&&!T.s2ans) return B('Think again! The limewater does not change colour — it goes milky. The word for that is CLOUDY.','Nghĩ lại nào! Nước vôi trong không đổi màu — nó trở nên trắng đục. Từ gọi điều đó là ĐỤC (cloudy).');
+    if(!T.s2ans) return B('You tapped the limewater. Now answer: what happens to it when carbon dioxide bubbles through?','Con đã chạm vào nước vôi trong. Giờ trả lời: nó trở nên thế nào khi carbon dioxide sục qua?');
+    return B('Limewater turns cloudy with carbon dioxide — a precipitate of calcium carbonate forms.','Nước vôi trong trở nên đục (cloudy) với carbon dioxide — kết tủa (precipitate) calcium carbonate hình thành.');
+  }
+  if(i===2){
+    return B('Other clues spotted: '+T.s3.size+' of 3 (colour change · heat produced and a reactant used up · precipitate formed).',
+             'Dấu hiệu khác đã nhận ra: '+T.s3.size+' / 3 (đổi màu · nhiệt tạo ra và một chất phản ứng bị dùng hết · kết tủa hình thành).');
+  }
+  if(i===3){
+    if(!T.s4pos) return B('Tap the glowing splint on the bench.','Hãy chạm vào que đóm cháy âm ỉ trên bàn.');
+    if(T.s4wrong&&!T.s4ans) return B('Think again! A squeaky pop is the test for HYDROGEN with a lit splint. A GLOWING splint in oxygen bursts back into flame.','Nghĩ lại nào! Tiếng nổ nhỏ (squeaky pop) là cách thử HYDROGEN bằng que đóm đang cháy. Que đóm CHÁY ÂM Ỉ trong oxygen bùng cháy lại thành ngọn lửa.');
+    if(!T.s4ans) return B('You tapped the glowing splint. Now answer: what happens to it in oxygen?','Con đã chạm vào que đóm cháy âm ỉ. Giờ trả lời: điều gì xảy ra với nó trong oxygen?');
+    return B('A glowing splint relights in oxygen.','Một que đóm cháy âm ỉ (glowing splint) bùng cháy lại trong oxygen.');
+  }
+  if(i===4){
+    return B('Investigations observed: '+T.s5.size+' of 4 (chocolate melts — no reaction · solution evaporates — no reaction · copper mixture turns blue — reaction · white precipitate — reaction).',
+             'Khảo sát đã quan sát: '+T.s5.size+' / 4 (chocolate tan chảy — không phản ứng · dung dịch bay hơi — không phản ứng · hỗn hợp đồng chuyển xanh dương — phản ứng · kết tủa trắng — phản ứng).');
+  }
+  if(i===5){
+    if(T.s6idx>=GAME.length) return B('Check finished! You answered all 3 questions right.','Đã xong phần kiểm tra! Con đã trả lời đúng cả 3 câu.');
+    return B('Check question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — check the clues and the gas tests carefully!' : ''),
+             'Câu hỏi kiểm tra '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — hãy kiểm tra các dấu hiệu và cách thử khí cẩn thận!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🫧',label:{en:'Mg + acid → hydrogen',vi:'Mg + axit → hydrogen'},got:T.s1.has('mgTube')},
+      {emoji:'🥤',label:{en:'Baking powder + vinegar → CO₂',vi:'Bột nở + giấm → CO₂'},got:T.s1.has('fizzTube')},
+      {emoji:'🍎',label:{en:'Peroxide + apple → oxygen',vi:'Peroxide + táo → oxygen'},got:T.s1.has('peroxideTube')}
+    ]);
+  }else if(curStep===1){
+    if(!T.s2pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapLime)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s2ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qCO2);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chClear,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chCloudy,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2ans=true; FOUND.co2=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chBlue,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🔵',label:{en:'Colour change: black → blue',vi:'Đổi màu: đen → xanh dương'},got:T.s3.has('copperBeaker')},
+      {emoji:'🌡️',label:{en:'Heat produced · reactant used up',vi:'Nhiệt tạo ra · chất phản ứng bị dùng hết'},got:T.s3.has('zincTube')},
+      {emoji:'⚪',label:{en:'Precipitate forms',vi:'Kết tủa (precipitate) hình thành'},got:T.s3.has('silverTube')}
+    ]);
+  }else if(curStep===3){
+    if(!T.s4pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapSplint)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s4ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qOxygen);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chOut,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chRelight,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4ans=true; FOUND.o2=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chPop,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===4){
+    statPills(box,S5OBS.map(o5=>({
+      emoji:o5.emoji,label:{en:o5.en,vi:o5.vi},got:T.s5.has(o5.id)
+    })));
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.game=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('mgTube'); bounceThing('mgTube'); setTimeout(()=>{ focusVisual('fizzTube'); bounceThing('fizzTube'); },900); }
+  else if(i===1){ focusThing('limewater'); bounceThing('limewater'); }
+  else if(i===2){ focusVisual('copperBeaker'); bounceThing('copperBeaker'); setTimeout(()=>{ focusVisual('silverTube'); bounceThing('silverTube'); },900); }
+  else if(i===3){ focusThing('splint'); bounceThing('splint'); }
+  else if(i===4){ focusVisual('chocolate'); bounceThing('chocolate'); setTimeout(()=>{ focusVisual('dish'); bounceThing('dish'); },900); }
+  else if(i===5){ focusThing('limewater'); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowGas,(doneSteps.has(0)?3:T.s1.size),3)+
+    row(STR.rowClues,(doneSteps.has(2)?3:T.s3.size),3)+
+    row(STR.rowJudge,(doneSteps.has(4)?4:T.s5.size),4)+
+    row(STR.rowGame,(doneSteps.has(5)?3:T.s6correct),3);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.gas||doneSteps.has(0),label:STR.foundGas},
+    {got:FOUND.co2||doneSteps.has(1),label:STR.foundCO2},
+    {got:FOUND.clues||doneSteps.has(2),label:STR.foundClues},
+    {got:FOUND.o2||doneSteps.has(3),label:STR.foundO2},
+    {got:FOUND.judge||doneSteps.has(4),label:STR.foundJudge},
+    {got:FOUND.game||doneSteps.has(5),label:STR.foundGame}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildReactTube(px,pz,liqColor,chunkColor){
+  const g=new THREE.Group();
+  const rack=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.1,0.4),stdMat(0x8a5a2b,0.8)));
+  rack.position.y=0.05; g.add(rack);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.15,0.85,14,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.5,side:THREE.DoubleSide}));
+  glass.position.y=0.52; g.add(glass);
+  const bottom=new THREE.Mesh(new THREE.SphereGeometry(0.15,12,8),stdMat(0xd7e6f2,0.3));
+  bottom.position.y=0.12; bottom.scale.y=0.5; g.add(bottom);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.13,0.42,12),new THREE.MeshStandardMaterial({color:liqColor,roughness:0.25,transparent:true,opacity:0.85}));
+  liquid.position.y=0.34; g.add(liquid);
+  const chunk=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.07,0.1),stdMat(chunkColor,0.5));
+  chunk.position.set(0,0.16,0); chunk.rotation.y=0.5; g.add(chunk);
+  [[-0.06,0.55,0.04],[0.05,0.68,-0.03],[0.0,0.8,0.05],[-0.04,0.92,-0.02]].forEach(p=>{
+    const bub=new THREE.Mesh(new THREE.SphereGeometry(0.035,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.8}));
+    bub.position.set(p[0],p[1],p[2]); g.add(bub);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildLimewater(px,pz){
+  const g=new THREE.Group();
+  const rack=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.1,0.4),stdMat(0x8a5a2b,0.8)));
+  rack.position.y=0.05; g.add(rack);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.15,0.85,14,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.5,side:THREE.DoubleSide}));
+  glass.position.y=0.52; g.add(glass);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.13,0.45,12),new THREE.MeshStandardMaterial({color:0xf4f8f4,roughness:0.3,transparent:true,opacity:0.75}));
+  liquid.position.y=0.35; g.add(liquid);
+  const tubeIn=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.6,8),stdMat(0xbcd9ea,0.3));
+  tubeIn.position.set(0.08,0.75,0); tubeIn.rotation.z=0.25; g.add(tubeIn);
+  [[-0.05,0.3,0.03],[0.04,0.42,-0.02]].forEach(p=>{
+    const bub=new THREE.Mesh(new THREE.SphereGeometry(0.03,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.85}));
+    bub.position.set(p[0],p[1],p[2]); g.add(bub);
+  });
+  const cloud=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.55}));
+  cloud.position.set(0,0.22,0); cloud.scale.y=0.7; g.add(cloud);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSplint(px,pz){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.08,0.45),stdMat(0x8a5a2b,0.8)));
+  stand.position.y=0.04; g.add(stand);
+  const stick=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.85,0.07),stdMat(0xd9a05a,0.8));
+  stick.position.set(0,0.5,0); stick.rotation.z=0.35; g.add(stick);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),new THREE.MeshBasicMaterial({color:0xff7b1c}));
+  glow.position.set(0.14,0.9,0); g.add(glow);
+  const glow2=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),new THREE.MeshBasicMaterial({color:0xffd23c}));
+  glow2.position.set(0.14,0.9,0); g.add(glow2);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildCopperBeaker(px,pz){
+  const g=new THREE.Group();
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.32,0.74,18,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.5,side:THREE.DoubleSide})));
+  glass.position.y=0.39; g.add(glass);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.32,0.04,18),stdMat(0xd7e6f2,0.3));
+  bottom.position.y=0.03; g.add(bottom);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.27,0.42,16),new THREE.MeshStandardMaterial({color:0x2e6fd8,roughness:0.25,transparent:true,opacity:0.8}));
+  liquid.position.y=0.26; g.add(liquid);
+  const powder=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,0.07,12),stdMat(0x1c1c22,0.9));
+  powder.position.y=0.09; g.add(powder);
+  const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.8,8),stdMat(0xbcd9ea,0.3));
+  rod.position.set(0.18,0.55,0); rod.rotation.z=-0.3; g.add(rod);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSilverTube(px,pz){
+  const g=new THREE.Group();
+  const rack=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.1,0.4),stdMat(0x8a5a2b,0.8)));
+  rack.position.y=0.05; g.add(rack);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.15,0.85,14,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.5,side:THREE.DoubleSide}));
+  glass.position.y=0.52; g.add(glass);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.13,0.45,12),new THREE.MeshStandardMaterial({color:0xf2f2ee,roughness:0.4,transparent:true,opacity:0.9}));
+  liquid.position.y=0.35; g.add(liquid);
+  const precip=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.1,0.12,12),stdMat(0xffffff,0.95));
+  precip.position.y=0.16; g.add(precip);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildChocolate(px,pz){
+  const g=new THREE.Group();
+  const beaker=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.36,0.6,18,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.45,side:THREE.DoubleSide})));
+  beaker.position.y=0.32; g.add(beaker);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.32,0.4,16),new THREE.MeshStandardMaterial({color:0xaed6f1,roughness:0.25,transparent:true,opacity:0.6}));
+  water.position.y=0.24; g.add(water);
+  const tubeM=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.12,0.6,12,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.55,side:THREE.DoubleSide}));
+  tubeM.position.set(0,0.5,0); g.add(tubeM);
+  const choc=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.1,0.11),stdMat(0x6b3a1e,0.6));
+  choc.position.set(0,0.28,0); choc.rotation.y=0.4; g.add(choc);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildDish(px,pz){
+  const g=new THREE.Group();
+  [-0.35,0.35].forEach(dx=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.34,8),stdMat(0x44586e,0.6));
+    leg.position.set(dx,0.17,0.15); g.add(leg);
+    const leg2=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.34,8),stdMat(0x44586e,0.6));
+    leg2.position.set(dx,0.17,-0.15); g.add(leg2);
+  });
+  const dishM=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.3,0.18,18),stdMat(0xf4f6f8,0.5)));
+  dishM.position.y=0.42; g.add(dishM);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.4,0.05,16),new THREE.MeshBasicMaterial({color:0x2e6fd8}));
+  liquid.position.y=0.5; g.add(liquid);
+  [[-0.2,0.62,0.1],[0.15,0.7,-0.05]].forEach(p=>{
+    const steam=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.5}));
+    steam.position.set(p[0],p[1],p[2]); g.add(steam);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  reg('mgTube',buildReactTube(-4.7,-1.8,0xbcd9ea,0xb8bcc4));
+  reg('fizzTube',buildReactTube(-3.3,-1.8,0xf7e8b0,0xffffff));
+  reg('peroxideTube',buildReactTube(-1.9,-1.8,0xf5d7d0,0xd94f3c));
+  reg('limewater',buildLimewater(-0.3,-1.8));
+  reg('splint',buildSplint(1.3,-1.8));
+  reg('copperBeaker',buildCopperBeaker(2.9,-1.8));
+  reg('zincTube',buildReactTube(4.6,-1.8,0xbcd9ea,0x8a93a0));
+  reg('silverTube',buildSilverTube(-3.6,1.8));
+  reg('chocolate',buildChocolate(-0.9,1.8));
+  reg('dish',buildDish(1.6,1.8));
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('mgTube',p,G.mgTube); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('fizzTube',p,G.fizzTube); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('peroxideTube',p,G.peroxideTube); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('limewater',p,G.limewater); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('splint',p,G.splint); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('copperBeaker',p,G.copperBeaker); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('zincTube',p,G.zincTube); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('silverTube',p,G.silverTube); }
+  { const p=sphProxy(0.58); p.position.set(0,0.4,0); addProxy('chocolate',p,G.chocolate); }
+  { const p=sphProxy(0.6); p.position.set(0,0.4,0); addProxy('dish',p,G.dish); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['mgTube','fizzTube','peroxideTube'],
+  ['limewater'],
+  ['copperBeaker','zincTube','silverTube'],
+  ['splint'],
+  ['chocolate','dish','copperBeaker','silverTube'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='mgTube'||id==='fizzTube'||id==='peroxideTube'){
+      T.s1.add(id);
+      if(T.s1.size>=3) FOUND.gas=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1&&id==='limewater'){
+    T.s2pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='copperBeaker'||id==='zincTube'||id==='silverTube'){
+      T.s3.add(id);
+      if(T.s3.size>=3) FOUND.clues=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===3&&id==='splint'){
+    T.s4pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='chocolate'||id==='dish'||id==='copperBeaker'||id==='silverTube'){
+      T.s5.add(id);
+      if(T.s5.size>=4) FOUND.judge=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.gas=false; }
+  if(step===1){ FOUND.co2=false; }
+  if(step===2){ FOUND.clues=false; }
+  if(step===3){ FOUND.o2=false; }
+  if(step===4){ FOUND.judge=false; }
+  if(step===5){ FOUND.game=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['mgTube','fizzTube','peroxideTube'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ t.s2pos=true; t.s2ans=true; }
+  else if(i===2){ ['copperBeaker','zincTube','silverTube'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ t.s4pos=true; t.s4ans=true; }
+  else if(i===4){ ['chocolate','dish','copperBeaker','silverTube'].forEach(id=>t.s5.add(id)); }
+  else if(i===5){ t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-8-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>1.3 Breathing — Sự thở · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.in{background:#0d9d58}
+.binbtn.out{background:#0b76d1}
+.binbtn.yes{background:#0d9d58}
+.binbtn.no{background:#64748b}
+.binbtn.path{background:#7a4fd0}
+.binbtn.notpath{background:#44586e}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.inc{background:#0d9d58}
+.binbtn.dec{background:#b7791f}
+.binbtn.imp{background:#7a4fd0}
+.binbtn.notimp{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="1.3 Breathing" data-vi="1.3 Sự thở (Breathing)">1.3 Breathing</span>
+    <span class="eqchip i18n" data-en="Unit 1 · Respiration" data-vi="Bài 1 · Hô hấp (Respiration)">Unit 1 · Respiration</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do your muscles move air in and out of your lungs?" data-vi="Các cơ của con đưa không khí vào và ra khỏi phổi như thế nào?">How do your muscles move air in and out of your lungs?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Measure a breath" data-vi="Đo một hơi thở (measure)">Measure a breath</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Muscles contract or relax" data-vi="Cơ co lại (contract) hoặc giãn ra (relax)">Muscles contract or relax</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Chest volume changes" data-vi="Thể tích ngực thay đổi (volume)">Chest volume changes</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Air moves!" data-vi="Không khí chuyển động!">Air moves!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the cylinder, bottle, tubing and the syringe model!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào ống đong (measuring cylinder), chai, ống cong và mô hình ống tiêm!">🖱 Drag to look around · Scroll to zoom · Tap the cylinder, bottle, tubing and the syringe model!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 1 Respiration · Section 1.3. The chest, bottle and syringe models in this lesson are simulations." data-vi="Khoa học Cambridge Trung học cơ sở 8 · Bài 1 Hô hấp (Respiration) · Mục 1.3. Các mô hình ngực, chai và ống tiêm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 8 · Unit 1 Respiration · Section 1.3. The chest, bottle and syringe models in this lesson are simulations.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition), ISBN 9781108742825, Unit 1 Respiration, section 1.3 Breathing, pages 13–18; Workbook 8 (2nd edition), ISBN 9781108742856, pages 6–12. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2), ISBN 9781108742825, Bài 1 Hô hấp (Respiration), mục 1.3 Sự thở (Breathing), trang 13–18; Sách bài tập 8 (Workbook) (bản 2), ISBN 9781108742856, trang 6–12. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition), ISBN 9781108742825, Unit 1 Respiration, section 1.3 Breathing, pages 13–18; Workbook 8 (2nd edition), ISBN 9781108742856, pages 6–12. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: measure how much air you can push out of your lungs in one breath; learn how the muscles between the ribs and the diaphragm move air into and out of the lungs. Key words: breathing, contract, relax — plus diaphragm, intercostal muscles, volume, pressure, measuring cylinder and mean." data-vi="Mục tiêu: đo lượng không khí có thể đẩy ra khỏi phổi trong một hơi thở; tìm hiểu cách các cơ giữa các xương sườn và cơ hoành (diaphragm) đưa không khí vào và ra khỏi phổi. Từ khóa: breathing (sự thở), contract (co lại), relax (giãn ra) — cùng diaphragm (cơ hoành), intercostal muscles (cơ liên sườn), volume (thể tích), pressure (áp suất), measuring cylinder (ống đong) và mean (giá trị trung bình).">Objectives: measure how much air you can push out of your lungs in one breath; learn how the muscles between the ribs and the diaphragm move air into and out of the lungs. Key words: breathing, contract, relax — plus diaphragm, intercostal muscles, volume, pressure, measuring cylinder and mean.</p>
+    <p class="i18n" data-en="How it works: the steps follow the book's order — marking a scale on a bottle with a measuring cylinder, measuring one breath out (the simulation's first try reads 1 650 cm³, and its three recorded tries are 1 650, 1 950 and 1 800 cm³, mean 1 800 cm³), sorting what the intercostal and diaphragm muscles do when breathing in and out, working the syringe-and-balloon model, and finishing with how chest volume and pressure make air move. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The syringe model is deliberately imperfect, as in the book: one balloon for two lungs, and walls that cannot move like ribs. The Workbook exercises practise the book's own tasks: completing the measuring method, judging what would improve Sofia and Zara's orchestra experiment, and reading the graph of lung volume at different ages." data-vi="Cách hoạt động: các bước đi theo đúng thứ tự trong sách — vạch thang đo lên chai bằng ống đong (measuring cylinder), đo một hơi thở ra (lần thử đầu tiên của mô phỏng chỉ 1 650 cm³, và ba lần thử đã ghi là 1 650, 1 950 và 1 800 cm³, trung bình (mean) 1 800 cm³), sắp xếp việc cơ liên sườn và cơ hoành làm khi hít vào và thở ra, vận hành mô hình ống tiêm và quả bóng, và kết thúc bằng cách thể tích ngực và áp suất làm không khí chuyển động. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Mô hình ống tiêm cố ý chưa hoàn hảo, như trong sách: một quả bóng cho hai lá phổi, và thành không chuyển động được như xương sườn. Các bài tập Workbook luyện đúng dạng bài của sách: hoàn thành phương pháp đo, xét điều gì cải thiện thí nghiệm dàn nhạc của Sofia và Zara, và đọc đồ thị thể tích phổi ở các độ tuổi khác nhau.">How it works: each step asks for one real action, in the book's order. The lesson checks the action itself, and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn imp" id="ex2BinImp"></button>
+        <button class="binbtn notimp" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-1-3 "Breathing"
+   (Science 8, Unit 1 · Respiration)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= scene things ================= */
+const THINGS={
+  cylinder: {kind:'kit', emoji:'🧪', name:{en:'The measuring cylinder',vi:'Ống đong (measuring cylinder)'}, short:{en:'Measuring cylinder',vi:'Ống đong'}, labelY:0.75, fx:2.45, fz:1.05, fr:4.6},
+  bottle:   {kind:'kit', emoji:'🫙', name:{en:'The big bottle (with the scale)',vi:'Chai lớn (có thang đo — scale)'}, short:{en:'Bottle',vi:'Chai lớn'}, labelY:1.15, fx:3.4, fz:0, fr:5.2},
+  tube:     {kind:'kit', emoji:'🥤', name:{en:'The bendy tubing',vi:'Ống cong (bendy tubing)'}, short:{en:'Tubing',vi:'Ống cong'}, labelY:0.7, fx:3.0, fz:0.35, fr:4.6},
+  bowl:     {kind:'kit', emoji:'🥣', name:{en:'The big bowl of water',vi:'Thau nước lớn (bowl)'}, short:{en:'Bowl',vi:'Thau nước'}, labelY:0.55, fx:3.4, fz:0, fr:5.2},
+  windpipe: {kind:'part', emoji:'🌬️', name:{en:'The trachea (windpipe)',vi:'Khí quản (trachea)'}, short:{en:'Trachea',vi:'Khí quản'}, labelY:0.75, fx:0, fz:0.2, fr:5.0},
+  lungL:    {kind:'lung', emoji:'🫁', name:{en:'Left lung',vi:'Phổi trái (lung)'}, short:{en:'Left lung',vi:'Phổi trái'}, labelY:0.85, fx:-0.6, fz:0.3, fr:5.0},
+  lungR:    {kind:'lung', emoji:'🫁', name:{en:'Right lung',vi:'Phổi phải (lung)'}, short:{en:'Right lung',vi:'Phổi phải'}, labelY:0.85, fx:0.6, fz:0.3, fr:5.0},
+  diaphragm:{kind:'part', emoji:'〰️', name:{en:'The diaphragm',vi:'Cơ hoành (diaphragm)'}, short:{en:'Diaphragm',vi:'Cơ hoành'}, labelY:0.6, fx:0, fz:0.2, fr:5.5},
+  syringe:  {kind:'model',emoji:'💉', name:{en:'The syringe (chest / rib cage)',vi:'Ống tiêm (lồng ngực / khung sườn — rib cage)'}, short:{en:'Syringe',vi:'Ống tiêm'}, labelY:1.2, fx:-3.4, fz:0, fr:5.5},
+  balloon:  {kind:'model',emoji:'🎈', name:{en:'The balloon inside (a lung)',vi:'Quả bóng bên trong (một lá phổi — lung)'}, short:{en:'Balloon (lung)',vi:'Bóng (phổi)'}, labelY:0.8, fx:-3.4, fz:0.3, fr:5.0},
+  plunger:  {kind:'model',emoji:'⬇️', name:{en:'The plunger (the diaphragm)',vi:'Pít-tông (plunger) (cơ hoành — diaphragm)'}, short:{en:'Plunger',vi:'Pít-tông'}, labelY:0.55, fx:-3.4, fz:0, fr:5.0}
+};
+const FOCUSORDER=['cylinder','bottle','tube','bowl','windpipe','lungL','lungR','diaphragm','syringe','balloon','plunger'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the stage',vi:'Trên sân khấu'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Breathing & results tracker',vi:'Bảng theo dõi sự thở & kết quả'},
+  u2Brief:{en:'What the muscles do when we breathe, and the three tries from the lung-volume experiment (in cm³).',vi:'Các cơ làm gì khi ta thở, và ba lần thử của thí nghiệm thể tích phổi (theo cm³).'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your breathing-experiment checklist.',vi:'Danh sách kiểm tra thí nghiệm về sự thở của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundScale:{en:'I marked a scale on the bottle',vi:'Con đã vạch thang đo lên chai'},
+  foundBlow:{en:'I measured one breath out',vi:'Con đã đo một hơi thở ra'},
+  foundMean:{en:'I calculated the mean of three tries',vi:'Con đã tính giá trị trung bình (mean) của ba lần thử'},
+  foundModel:{en:'I worked the syringe model of breathing',vi:'Con đã vận hành mô hình ống tiêm về sự thở'},
+  trkIn:{en:'Breathing in',vi:'Hít vào (breathing in)'},
+  trkInV:{en:'Muscles contract · ribs up and out',vi:'Cơ co (contract) · sườn lên và ra ngoài'},
+  trkOut:{en:'Breathing out',vi:'Thở ra (breathing out)'},
+  trkOutV:{en:'Muscles relax · ribs drop down',vi:'Cơ giãn (relax) · sườn hạ xuống'},
+  trkModel:{en:'Syringe model',vi:'Mô hình ống tiêm'},
+  trkModelV:{en:'Plunger out = breathe in',vi:'Kéo pít-tông ra = hít vào'},
+  trkMean:{en:'Mean volume',vi:'Thể tích trung bình (mean)'},
+  trkMeanV:{en:'1 800 cm³',vi:'1 800 cm³'},
+  trkWait:{en:'Not done yet',vi:'Chưa làm'},
+  trialTableT:{en:'One learner, three tries — cm³ of air pushed out:',vi:'Một bạn học, ba lần thử — cm³ không khí đẩy ra:'},
+  trial1:{en:'Try 1',vi:'Lần thử 1'},
+  trial2:{en:'Try 2',vi:'Lần thử 2'},
+  trial3:{en:'Try 3',vi:'Lần thử 3'},
+  trialMean:{en:'Mean',vi:'Trung bình (mean)'},
+  binIn:{en:'BREATHE IN 🌬️',vi:'HÍT VÀO (BREATHE IN) 🌬️'},
+  binOut:{en:'BREATHE OUT 💨',vi:'THỞ RA (BREATHE OUT) 💨'},
+  binInc:{en:'INCREASE ⬆️',vi:'TĂNG (INCREASE) ⬆️'},
+  binDec:{en:'DECREASE ⬇️',vi:'GIẢM (DECREASE) ⬇️'},
+  binImp:{en:'IMPROVES THE EXPERIMENT ✓',vi:'LÀM THÍ NGHIỆM TỐT HƠN ✓'},
+  binNot:{en:'DOES NOT IMPROVE IT',vi:'KHÔNG LÀM TỐT HƠN'},
+  tapTube:{en:'👆 First tap the bendy tubing on the stage, then tap the bottle to breathe out!',vi:'👆 Trước hết chạm vào ống cong (bendy tubing) trên sân khấu, rồi chạm vào chai để thở ra!'},
+  qMean:{en:'The three tries are 1 650, 1 950 and 1 800 cm³. What is the mean volume?',vi:'Ba lần thử là 1 650, 1 950 và 1 800 cm³. Thể tích trung bình (mean) là bao nhiêu?'},
+  chMeanA:{en:'1 750 cm³',vi:'1 750 cm³'},
+  chMeanB:{en:'1 800 cm³',vi:'1 800 cm³'},
+  chMeanC:{en:'1 850 cm³',vi:'1 850 cm³'},
+  tapModel:{en:'👆 On the syringe model, tap the balloon inside, then tap the plunger to pull it out!',vi:'👆 Trên mô hình ống tiêm, chạm vào quả bóng bên trong, rồi chạm vào pít-tông (plunger) để kéo nó ra!'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 1.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 1.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Measuring lung volumes',vi:'Bài tập 1 · Focus — Đo thể tích phổi'},
+  ex1Inst:{en:'Sofia and Zara measure how much air musicians can push out of their lungs, using a marked bottle. In each sentence, tap the word that belongs in the gap.',vi:'Sofia và Zara đo lượng không khí các nhạc công có thể đẩy ra khỏi phổi (lungs), bằng một chai có vạch đo. Trong mỗi câu, chạm vào từ thuộc về chỗ trống.'},
+  ex2T:{en:'Exercise 2 · Practice — Improving the experiment',vi:'Bài tập 2 · Practice — Cải thiện thí nghiệm'},
+  ex2Inst:{en:'Their teacher says the girls cannot draw definite conclusions yet, and asks them to improve the experiment. Tap a card, then tap IMPROVES THE EXPERIMENT or DOES NOT IMPROVE IT.',vi:'Cô giáo nói hai bạn chưa thể rút ra kết luận chắc chắn, và yêu cầu cải thiện thí nghiệm. Chạm vào một thẻ, rồi chạm LÀM THÍ NGHIỆM TỐT HƠN hoặc KHÔNG LÀM TỐT HƠN.'},
+  ex3T:{en:'Exercise 3 · Challenge — Lung volume at different ages',vi:'Bài tập 3 · Challenge — Thể tích phổi ở các độ tuổi khác nhau'},
+  ex3Inst:{en:'Scientists measured several hundred men and women of different ages, and drew a graph of the mean volume of air pushed out in one breath. In each sentence, tap the WRONG ending to cross it out.',vi:'Các nhà khoa học đo vài trăm người nam và nữ ở các độ tuổi khác nhau, và vẽ đồ thị thể tích trung bình của không khí đẩy ra trong một hơi thở. Trong mỗi câu, chạm vào phần kết SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'breathing',vi:'sự thở'},
+  {en:'contract',vi:'co lại'},
+  {en:'relax',vi:'giãn ra'},
+  {en:'diaphragm',vi:'cơ hoành'},
+  {en:'intercostal muscles',vi:'cơ liên sườn'},
+  {en:'volume',vi:'thể tích'},
+  {en:'pressure',vi:'áp suất'},
+  {en:'measuring cylinder',vi:'ống đong'},
+  {en:'mean',vi:'giá trị trung bình'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Make a scale on a bottle',vi:'Vạch thang đo lên chai'}, word:{en:'measuring cylinder',vi:'ống đong'},
+  q:{en:'How much air can you push out of your lungs in one breath?',vi:'Con có thể đẩy bao nhiêu không khí ra khỏi phổi (lungs) trong một hơi thở?'},
+  act:{en:'Tap the measuring cylinder — in the real experiment you use it to measure known volumes of water, one at a time, and mark a scale on the big bottle. Then tap the big bottle that carries the scale.',vi:'Chạm vào ống đong (measuring cylinder) — trong thí nghiệm thật, con dùng nó để đong từng thể tích nước đã biết và vạch thang đo (scale) lên chai lớn. Sau đó chạm vào chai lớn mang thang đo đó.'},
+  see:{en:'The cylinder is the measuring tool; the bottle becomes a measuring container with a scale from bottom to top.',vi:'Ống đong là dụng cụ đo; chai trở thành một bình đo có thang đo từ đáy tới miệng.'},
+  concl:[
+    {en:'A scale is made on the bottle by measuring known volumes of water with a measuring cylinder and marking each level on the bottle.',vi:'Thang đo được vạch lên chai bằng cách đong các thể tích nước đã biết bằng ống đong (measuring cylinder) và đánh dấu từng mức lên chai.'},
+    {en:'After that, the bottle is filled right to the top with water, closed with its lid, and turned upside down in a big bowl of water — the water stays inside it.',vi:'Sau đó, chai được đổ đầy nước tới miệng, đậy nắp, và úp ngược xuống một thau nước lớn — nước vẫn ở yên bên trong chai.'}]},
+ {tag:{en:'Measure one breath out',vi:'Đo một hơi thở ra'}, word:{en:'breathing',vi:'sự thở'},
+  q:{en:'Can the air from one breath push water out of the bottle?',vi:'Không khí từ một hơi thở có đẩy nước ra khỏi chai được không?'},
+  act:{en:'Tap the bendy tubing to slide it up into the upside-down bottle, under the water. Then tap the bottle: the learner takes a deep breath in and breathes out through the tube as much as they can, in one breath.',vi:'Chạm vào ống cong (bendy tubing) để luồn nó lên vào trong chai úp ngược, dưới mặt nước. Sau đó chạm vào chai: bạn học hít một hơi sâu vào rồi thở ra qua ống hết mức có thể, trong một hơi thở.'},
+  see:{en:'The breathed-out air collects at the top of the bottle and pushes water out of it. The scale reads 1 650 cm³ for this first try.',vi:'Không khí thở ra tụ lại ở phần trên của chai và đẩy nước ra khỏi chai. Thang đo chỉ 1 650 cm³ cho lần thử đầu tiên này.'},
+  concl:[
+    {en:'The volume of water pushed out of the bottle is equal to the volume of air breathed out of the lungs in that one breath.',vi:'Thể tích (volume) nước bị đẩy ra khỏi chai bằng thể tích không khí thở ra khỏi phổi (lungs) trong hơi thở đó.'},
+    {en:'Safety: the bottle and tubing must be clean, the water must be safe to drink, and each person uses their own clean piece of tubing.',vi:'An toàn: chai và ống phải sạch, nước phải là nước uống an toàn, và mỗi người dùng một đoạn ống sạch riêng.'}]},
+ {tag:{en:'Repeat and find the mean',vi:'Lặp lại và tính trung bình'}, word:{en:'mean',vi:'giá trị trung bình'},
+  q:{en:'The same learner tries two more times. What is the mean (mean) volume?',vi:'Cùng bạn học đó thử thêm hai lần nữa. Thể tích trung bình (mean) là bao nhiêu?'},
+  act:{en:'The three tries are 1 650, 1 950 and 1 800 cm³. Add them together and divide by 3 — then tap the mean below.',vi:'Ba lần thử là 1 650, 1 950 và 1 800 cm³. Cộng chúng lại và chia cho 3 — rồi chạm vào giá trị trung bình (mean) ở dưới.'},
+  see:{en:'1 650 + 1 950 + 1 800 = 5 400, and 5 400 ÷ 3 = 1 800. Only one of the three buttons shows the mean.',vi:'1 650 + 1 950 + 1 800 = 5 400, và 5 400 ÷ 3 = 1 800. Chỉ một trong ba nút cho giá trị trung bình đúng.'},
+  concl:[
+    {en:'The mean of the three tries is 1 800 cm³: add the three volumes together and divide by 3.',vi:'Giá trị trung bình (mean) của ba lần thử là 1 800 cm³: cộng ba thể tích lại và chia cho 3.'},
+    {en:'Repeating a measurement and using the mean gives a better value than trusting a single try, because one try can be unusually big or small.',vi:'Lặp lại phép đo và dùng giá trị trung bình cho kết quả tốt hơn là tin vào một lần thử duy nhất, vì một lần thử có thể lớn hoặc nhỏ bất thường.'}]},
+ {tag:{en:'Breathing in, breathing out',vi:'Hít vào, thở ra'}, word:{en:'contract',vi:'co lại'},
+  q:{en:'What do the rib and diaphragm muscles do in each stage of breathing (breathing)?',vi:'Các cơ sườn và cơ hoành (diaphragm) làm gì trong mỗi giai đoạn của sự thở (breathing)?'},
+  act:{en:'Tap a card, then tap BREATHE IN or BREATHE OUT.',vi:'Chạm vào một thẻ, rồi chạm HÍT VÀO (BREATHE IN) hoặc THỞ RA (BREATHE OUT).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Breathing in: the intercostal muscles between the ribs contract and pull the ribs up and out, and the diaphragm muscles contract and pull the diaphragm down flat.',vi:'Hít vào (breathing in): các cơ liên sườn (intercostal muscles) giữa các xương sườn co lại (contract) và kéo sườn lên và ra ngoài, và các cơ của cơ hoành (diaphragm) co lại, kéo cơ hoành xuống thành phẳng.'},
+    {en:'Breathing out: the intercostal muscles relax and let the ribs drop down, and the diaphragm muscles relax so the diaphragm returns to its domed shape.',vi:'Thở ra (breathing out): các cơ liên sườn giãn ra (relax) và để sườn hạ xuống, và các cơ của cơ hoành giãn ra nên cơ hoành trở lại hình vòm của nó.'}]},
+ {tag:{en:'A syringe model of breathing',vi:'Mô hình ống tiêm về sự thở'}, word:{en:'pressure',vi:'áp suất'},
+  q:{en:'How can a syringe and a balloon model what happens when you breathe in?',vi:'Một ống tiêm và một quả bóng có thể mô hình hóa điều xảy ra khi con hít vào như thế nào?'},
+  act:{en:'On the syringe model, tap the balloon inside the syringe. Then tap the plunger — tapping it pulls it steadily out.',vi:'Trên mô hình ống tiêm, chạm vào quả bóng bên trong ống tiêm. Sau đó chạm vào pít-tông (plunger) — chạm vào nó tức là kéo nó ra một cách từ từ.'},
+  see:{en:'As the plunger is pulled out, the balloon inside inflates — air has moved into it through the small hole at the top.',vi:'Khi pít-tông được kéo ra, quả bóng bên trong phồng lên — không khí đã đi vào nó qua lỗ nhỏ ở phía trên.'},
+  concl:[
+    {en:'In the model, the balloon stands for a lung, the plunger stands for the diaphragm, the syringe body stands for the chest and rib cage, and air enters through the small hole, like air entering down the trachea.',vi:'Trong mô hình, quả bóng tượng trưng cho một lá phổi (lung), pít-tông (plunger) tượng trưng cho cơ hoành (diaphragm), thân ống tiêm tượng trưng cho lồng ngực và khung sườn (rib cage), và không khí đi vào qua lỗ nhỏ, giống như không khí đi xuống khí quản (trachea).'},
+    {en:'Pulling the plunger out makes more space inside, so the pressure inside falls and air moves in, inflating the balloon — just as a bigger chest volume makes air move into the lungs.',vi:'Kéo pít-tông ra tạo thêm khoảng trống bên trong, nên áp suất (pressure) bên trong giảm và không khí đi vào, làm quả bóng phồng lên — giống như thể tích ngực lớn hơn làm không khí đi vào phổi.'},
+    {en:'The model is not perfect: it has only one balloon for two lungs, and its walls cannot move outwards like the ribs do.',vi:'Mô hình chưa hoàn hảo: nó chỉ có một quả bóng cho hai lá phổi, và thành của nó không chuyển động ra ngoài được như xương sườn (ribs).'}]},
+ {tag:{en:'Volume and pressure',vi:'Thể tích và áp suất'}, word:{en:'volume',vi:'thể tích'},
+  q:{en:'When you breathe in and out, what happens to the volume (volume) and pressure (pressure) inside your chest?',vi:'Khi con hít vào và thở ra, thể tích (volume) và áp suất (pressure) bên trong lồng ngực thay đổi thế nào?'},
+  act:{en:'Tap a card, then tap INCREASE or DECREASE.',vi:'Chạm vào một thẻ, rồi chạm TĂNG (INCREASE) hoặc GIẢM (DECREASE).'},
+  see:{en:'Right cards turn green. You need 3 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 3 thẻ trở lên.'},
+  concl:[
+    {en:'I can use a measuring cylinder to make a volume scale on a bottle.',vi:'Con dùng được ống đong (measuring cylinder) để vạch thang đo thể tích lên một chai.'},
+    {en:'I can measure the volume of air I can breathe out in one breath.',vi:'Con đo được thể tích (volume) không khí con có thể thở ra trong một hơi thở.'},
+    {en:'I can describe how the diaphragm and intercostal muscles cause breathing movements.',vi:'Con mô tả được cách cơ hoành (diaphragm) và cơ liên sườn (intercostal muscles) gây ra các chuyển động thở.'},
+    {en:'I can explain how these movements make air move into and out of the lungs.',vi:'Con giải thích được cách các chuyển động này làm không khí đi vào và ra khỏi phổi (lungs).'}]}
+];
+const CARDS3=[
+ {id:'c_intin',emoji:'💪',en:'The intercostal muscles between the ribs contract',vi:'Cơ liên sườn (intercostal muscles) giữa các xương sườn co lại (contract)',ans:'in'},
+ {id:'c_ribsup',emoji:'⬆️',en:'The ribs move upwards and outwards',vi:'Xương sườn (ribs) di chuyển lên và ra ngoài',ans:'in'},
+ {id:'c_diaflat',emoji:'⬇️',en:'The diaphragm muscles contract and the diaphragm flattens downwards',vi:'Cơ hoành (diaphragm) co lại và hạ xuống thành phẳng',ans:'in'},
+ {id:'c_intout',emoji:'😌',en:'The intercostal muscles between the ribs relax',vi:'Cơ liên sườn (intercostal muscles) giữa các xương sườn giãn ra (relax)',ans:'out'},
+ {id:'c_ribsdn',emoji:'⬇️',en:'The ribs drop down into their natural position',vi:'Xương sườn (ribs) hạ xuống vị trí tự nhiên của chúng',ans:'out'},
+ {id:'c_diadome',emoji:'⬆️',en:'The diaphragm muscles relax and the diaphragm domes upwards',vi:'Cơ hoành (diaphragm) giãn ra và trở lại hình vòm lên trên',ans:'out'}
+];
+const CARDS3_ORDER=mixOrder(CARDS3,c=>c.ans,2);
+const CARDS6=[
+ {id:'k_chestin',emoji:'🫁',en:'The volume of the chest — when breathing in',vi:'Thể tích (volume) của lồng ngực — khi hít vào',ans:'inc'},
+ {id:'k_pressin',emoji:'🎈',en:'The pressure inside the chest and lungs — when breathing in',vi:'Áp suất (pressure) bên trong ngực và phổi (lungs) — khi hít vào',ans:'dec'},
+ {id:'k_chestout',emoji:'💨',en:'The volume of the chest — when breathing out',vi:'Thể tích (volume) của lồng ngực — khi thở ra',ans:'dec'},
+ {id:'k_pressout',emoji:'🗜️',en:'The pressure inside the chest and lungs — when breathing out',vi:'Áp suất (pressure) bên trong ngực và phổi (lungs) — khi thở ra',ans:'inc'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'How is the scale made on the bottle in the lung-volume experiment?',vi:'Thang đo trên chai trong thí nghiệm thể tích phổi được vạch như thế nào?'},
+  o:[{en:'By guessing where each level goes',vi:'Bằng cách đoán vị trí từng mức'},{en:'With a ruler only',vi:'Chỉ bằng thước kẻ'},{en:'By marking levels for known volumes measured with a measuring cylinder',vi:'Bằng cách đánh dấu các mức cho các thể tích đã biết, đong bằng ống đong (measuring cylinder)'}],a:2,
+  e:{en:'Known volumes of water are measured with a measuring cylinder, and each level is marked on the bottle to build the scale.',vi:'Các thể tích nước đã biết được đong bằng ống đong (measuring cylinder), và từng mức được đánh dấu lên chai để tạo thang đo.'}},
+ {q:{en:'When you breathe in, what do the intercostal muscles and the diaphragm muscles do?',vi:'Khi con hít vào (breathe in), cơ liên sườn (intercostal muscles) và các cơ của cơ hoành làm gì?'},
+  o:[{en:'They relax',vi:'Chúng giãn ra (relax)'},{en:'They contract',vi:'Chúng co lại (contract)'},{en:'They stop working',vi:'Chúng ngừng hoạt động'}],a:1,
+  e:{en:'Both sets of muscles contract when you breathe in: the ribs are pulled up and out, and the diaphragm is pulled down flat.',vi:'Cả hai nhóm cơ đều co lại (contract) khi hít vào: xương sườn được kéo lên và ra ngoài, và cơ hoành (diaphragm) được kéo xuống thành phẳng.'}},
+ {q:{en:'In the syringe model, why does the balloon inflate when the plunger is pulled out?',vi:'Trong mô hình ống tiêm, vì sao quả bóng phồng lên khi pít-tông (plunger) được kéo ra?'},
+  o:[{en:'The volume inside increases, the pressure falls, and air moves into the balloon',vi:'Thể tích (volume) bên trong tăng, áp suất (pressure) giảm, và không khí đi vào quả bóng'},{en:'The plunger pushes air into the balloon',vi:'Pít-tông đẩy không khí vào quả bóng'},{en:'The balloon makes its own air',vi:'Quả bóng tự tạo ra không khí'}],a:0,
+  e:{en:'Pulling the plunger out increases the volume inside the syringe, so the pressure falls and air moves in through the hole, inflating the balloon.',vi:'Kéo pít-tông ra làm tăng thể tích bên trong ống tiêm, nên áp suất giảm và không khí đi vào qua lỗ, làm quả bóng phồng lên.'}},
+ {q:{en:'When you breathe out, what happens inside the chest?',vi:'Khi con thở ra (breathe out), điều gì xảy ra bên trong lồng ngực?'},
+  o:[{en:'The volume increases and the pressure falls',vi:'Thể tích (volume) tăng và áp suất (pressure) giảm'},{en:'The volume decreases and the pressure rises, squeezing air out',vi:'Thể tích giảm và áp suất tăng, ép không khí ra ngoài'},{en:'Nothing changes',vi:'Không có gì thay đổi'}],a:1,
+  e:{en:'When the muscles relax, the chest volume decreases. The pressure rises, so air is squeezed out of the lungs.',vi:'Khi các cơ giãn ra (relax), thể tích lồng ngực giảm. Áp suất tăng, nên không khí bị ép ra khỏi phổi (lungs).'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'To mark a scale on the bottle, you measure known volumes of water with a',vi:'Để vạch thang đo lên chai, bạn đong các thể tích nước đã biết bằng một'},post:null,correct:0,
+  opts:[{en:'measuring cylinder',vi:'ống đong (measuring cylinder)'},{en:'kitchen spoon',vi:'thìa nhà bếp'}],
+  e:{en:'A measuring cylinder measures volumes of water accurately enough to mark each level of the scale.',vi:'Ống đong (measuring cylinder) đong thể tích nước đủ chính xác để đánh dấu từng mức của thang đo.'}},
+ {pre:{en:'The bottle and the bendy tubing must be',vi:'Chai và ống cong phải'},post:null,correct:1,
+  opts:[{en:'old and dirty',vi:'cũ và bẩn'},{en:'clean, and the water must be safe to drink',vi:'sạch, và nước phải là nước uống an toàn'}],
+  e:{en:'The apparatus goes near the mouth, so it must be clean and the water must be safe to drink.',vi:'Dụng cụ ở gần miệng, nên nó phải sạch và nước phải là nước uống an toàn.'}},
+ {pre:{en:'Before it is turned upside down, the bottle is filled with water',vi:'Trước khi úp ngược xuống, chai được đổ đầy nước'},post:null,correct:1,
+  opts:[{en:'half way up',vi:'tới nửa chai'},{en:'right to the top',vi:'tới tận miệng chai'}],
+  e:{en:'The bottle is filled right to the top, so the air breathed in is what pushes water out past the scale marks.',vi:'Chai được đổ đầy tới miệng, để không khí thở vào là thứ đẩy nước ra qua các vạch đo.'}},
+ {pre:{en:'The full bottle is turned',vi:'Chai đầy nước được'},post:{en:'in a big bowl of water',vi:'trong một thau nước lớn'},correct:0,
+  opts:[{en:'upside down',vi:'úp ngược xuống'},{en:'onto its side',vi:'lật nằm ngang'}],
+  e:{en:'Turned upside down with its top under the water in the bowl, the water stays inside the bottle until air is blown in.',vi:'Úp ngược với miệng chai ngập trong nước của thau, nước ở yên trong chai cho tới khi không khí được thổi vào.'}},
+ {pre:{en:'The volume of air breathed out is read from',vi:'Thể tích không khí thở ra được đọc từ'},post:null,correct:1,
+  opts:[{en:'the lid of the bottle',vi:'nắp chai'},{en:'the scale marked on the bottle',vi:'thang đo đã vạch trên chai'}],
+  e:{en:'The breathed-out air pushes water down past the scale, and the level gives the volume.',vi:'Không khí thở ra đẩy nước xuống qua thang đo, và mức nước cho thể tích.'}},
+ {pre:{en:'To get a better value for one person, you repeat the measurement and calculate the',vi:'Để có giá trị tốt hơn cho một người, bạn lặp lại phép đo và tính'},post:null,correct:0,
+  opts:[{en:'mean of the results',vi:'giá trị trung bình (mean) của các kết quả'},{en:'colour of the results',vi:'màu của các kết quả'}],
+  e:{en:'Repeating the measurement two more times and calculating the mean gives a better value than a single try.',vi:'Lặp lại phép đo thêm hai lần và tính giá trị trung bình (mean) cho kết quả tốt hơn một lần thử duy nhất.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {id:'x_more',emoji:'👥',en:'Collect results from many more people in the orchestra',vi:'Thu thập kết quả từ nhiều người hơn nữa trong dàn nhạc',ans:'imp'},
+ {id:'x_three',emoji:'🔁',en:'Make three measurements for each person',vi:'Đo ba lần cho mỗi người',ans:'imp'},
+ {id:'x_same',emoji:'🫙',en:'Use the same marked bottle and scale for everyone',vi:'Dùng cùng một chai có vạch đo và thang đo cho mọi người',ans:'imp'},
+ {id:'x_perc',emoji:'🥁',en:'Find out whether playing a percussion instrument affects lung volume',vi:'Tìm hiểu việc chơi nhạc cụ gõ có ảnh hưởng tới thể tích phổi không',ans:'not'},
+ {id:'x_run',emoji:'🏃',en:'Measure how fast each person can run',vi:'Đo tốc độ chạy của mỗi người',ans:'not'},
+ {id:'x_diff',emoji:'🔀',en:'Use a different-sized bottle for each person',vi:'Dùng một chai kích thước khác nhau cho mỗi người',ans:'not'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'In every age group on the graph, the mean volume pushed out by men is',vi:'Trong mọi nhóm tuổi trên đồ thị, thể tích trung bình nam giới đẩy ra là'},wrong:0,
+  opts:[{en:'lower than the mean for women',vi:'thấp hơn giá trị trung bình của nữ giới'},{en:'higher than the mean for women',vi:'cao hơn giá trị trung bình của nữ giới'}],
+  e:{en:'The line for men stays above the line for women in every age group, so the wrong ending is “lower than the mean for women”.',vi:'Đường của nam giới luôn ở trên đường của nữ giới trong mọi nhóm tuổi, nên phần kết sai là “thấp hơn giá trị trung bình của nữ giới”.'}},
+ {pre:{en:'As people get older, the mean volume they can push out in one breath generally',vi:'Khi người ta nhiều tuổi hơn, thể tích trung bình họ có thể đẩy ra trong một hơi thở nói chung'},wrong:1,
+  opts:[{en:'decreases',vi:'giảm xuống'},{en:'increases',vi:'tăng lên'}],
+  e:{en:'The graph falls for the older age groups, so the wrong ending is “increases”.',vi:'Đồ thị đi xuống ở các nhóm tuổi lớn hơn, nên phần kết sai là “tăng lên”.'}},
+ {pre:{en:'The researchers measured several hundred people so that their mean values would be',vi:'Các nhà nghiên cứu đo vài trăm người để các giá trị trung bình của họ'},wrong:0,
+  opts:[{en:'less reliable',vi:'kém tin cậy hơn'},{en:'more reliable',vi:'tin cậy hơn'}],
+  e:{en:'Results from several hundred people are more reliable than results from just a few, so the wrong ending is “less reliable”.',vi:'Kết quả từ vài trăm người tin cậy hơn kết quả chỉ từ vài người, nên phần kết sai là “kém tin cậy hơn”.'}},
+ {pre:{en:'For women in the 20–29 age group, the graph shows a mean volume of',vi:'Với nữ giới ở nhóm tuổi 20–29, đồ thị cho thể tích trung bình là'},wrong:1,
+  opts:[{en:'more than 3 dm³',vi:'hơn 3 dm³'},{en:'less than 1 dm³',vi:'ít hơn 1 dm³'}],
+  e:{en:'The women’s line reaches above 3 dm³ for the 20–29 group, so the wrong ending is “less than 1 dm³”. Remember to give the unit, dm³, with a volume.',vi:'Đường của nữ giới vượt 3 dm³ ở nhóm 20–29, nên phần kết sai là “ít hơn 1 dm³”. Nhớ ghi đơn vị dm³ kèm với thể tích.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 6 + 4 = 16 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci8-1-3';
+const SUMKEY='camb:sum:sci8-1-3';
+const BOT_CODE='sci8-1.3';
+let FOUND={cyl:false, bottle:false, blow:false, mean:false, model:false};
+let SORTED=new Set();
+function newTrack(){return {
+  mCyl:false, mBottle:false,
+  tTube:false, tBlow:false,
+  meanAns:false, meanWrong:false,
+  srtCorrect:new Set(), srtSel:null,
+  mBal:false, mPlu:false,
+  finCorrect:new Set(), finSel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.mCyl&&T.mBottle;
+  if(i===1) return T.tTube&&T.tBlow;
+  if(i===2) return T.meanAns;
+  if(i===3) return T.srtCorrect.size>=5;
+  if(i===4) return T.mBal&&T.mPlu;
+  if(i===5) return T.finCorrect.size>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('You used: the measuring cylinder '+(T.mCyl?'✓':'…')+' · the scaled bottle '+(T.mBottle?'✓':'…')+'. Tap them on the stage!',
+      'Con đã dùng: ống đong (measuring cylinder) '+(T.mCyl?'✓':'…')+' · chai có thang đo '+(T.mBottle?'✓':'…')+'. Hãy chạm vào chúng trên sân khấu!');
+  }
+  if(i===1){
+    if(!T.tTube) return B('The tubing is beside the bottle. Tap it to slide it into the bottle, under the water.','Ống cong ở cạnh chai. Hãy chạm vào nó để luồn nó vào chai, dưới mặt nước.');
+    if(!T.tBlow) return B('The tubing is in place. Now tap the bottle to breathe out through it, as much as you can in one breath.','Ống đã vào vị trí. Giờ hãy chạm vào chai để thở ra qua ống, hết mức có thể trong một hơi thở.');
+    return B('You breathed out through the tubing: the scale read 1 650 cm³ of air — try 1 is recorded.','Con đã thở ra qua ống: thang đo chỉ 1 650 cm³ không khí — lần thử 1 đã được ghi.');
+  }
+  if(i===2){
+    if(T.meanWrong&&!T.meanAns) return B('Think again! Add all three tries first: 1 650 + 1 950 + 1 800 = 5 400, then divide by 3.','Nghĩ lại nào! Trước hết cộng cả ba lần thử: 1 650 + 1 950 + 1 800 = 5 400, rồi chia cho 3.');
+    if(!T.meanAns) return B('Three tries recorded: 1 650, 1 950 and 1 800 cm³. Tap the mean of the three values.','Ba lần thử đã ghi: 1 650, 1 950 và 1 800 cm³. Hãy chạm vào giá trị trung bình (mean) của ba giá trị.');
+    return B('Mean found: (1 650 + 1 950 + 1 800) ÷ 3 = 1 800 cm³.','Đã tìm được trung bình: (1 650 + 1 950 + 1 800) ÷ 3 = 1 800 cm³.');
+  }
+  if(i===3){
+    const c=T.srtSel? CARDS3.find(x=>x.id===T.srtSel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap BREATHE IN or BREATHE OUT.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm HÍT VÀO (BREATHE IN) hoặc THỞ RA (BREATHE OUT).');
+    return B('Cards right: '+T.srtCorrect.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.srtCorrect.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===4){
+    return B('Model parts used: the balloon (a lung) '+(T.mBal?'✓':'…')+' · the plunger pulled out (the diaphragm) '+(T.mPlu?'✓':'…')+'.',
+      'Các bộ phận mô hình đã dùng: quả bóng (một lá phổi — lung) '+(T.mBal?'✓':'…')+' · pít-tông đã kéo ra (cơ hoành — diaphragm) '+(T.mPlu?'✓':'…')+'.');
+  }
+  if(i===5){
+    const c=T.finSel? CARDS6.find(x=>x.id===T.finSel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Does it increase or decrease?','Con đã chọn thẻ “'+c.vi+'”. Nó tăng hay giảm?');
+    return B('Cards right: '+T.finCorrect.size+' of 4. You need 3 or more.','Số thẻ đúng: '+T.finCorrect.size+' / 4. Con cần đúng từ 3 thẻ trở lên.');
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function wrongPick(flag){
+  T[flag]=true; addMistake(); refreshEvidence(); renderStepExtra();
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🧪',label:{en:'Measuring cylinder used',vi:'Đã dùng ống đong (measuring cylinder)'},got:T.mCyl},
+      {emoji:'🫙',label:{en:'Scale marked on the bottle',vi:'Đã vạch thang đo lên chai'},got:T.mBottle}
+    ]);
+  }else if(curStep===1){
+    const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapTube)+'</b>'; box.appendChild(p);
+    statPills(box,[
+      {emoji:'🥤',label:{en:'Tubing in the bottle',vi:'Ống cong đã vào chai'},got:T.tTube},
+      {emoji:'💨',label:{en:'One breath out — 1 650 cm³',vi:'Một hơi thở ra — 1 650 cm³'},got:T.tBlow}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'1️⃣',label:{en:'Try 1 — 1 650 cm³',vi:'Lần thử 1 — 1 650 cm³'},got:true},
+      {emoji:'2️⃣',label:{en:'Try 2 — 1 950 cm³',vi:'Lần thử 2 — 1 950 cm³'},got:true},
+      {emoji:'3️⃣',label:{en:'Try 3 — 1 800 cm³',vi:'Lần thử 3 — 1 800 cm³'},got:true}
+    ]);
+    if(!T.meanAns){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qMean); box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chMeanA,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } wrongPick('meanWrong'); }));
+      row.appendChild(choiceBtn(STR.chMeanB,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.meanAns=true; FOUND.mean=true; saveProg(); renderFound(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chMeanC,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } wrongPick('meanWrong'); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===3){
+    buildSort(box,CARDS3_ORDER,
+      [{key:'in',label:STR.binIn,cls:'in'},{key:'out',label:STR.binOut,cls:'out'}],
+      T.srtCorrect,()=>T.srtSel,v=>{T.srtSel=v;},null,onSortPlaced);
+  }else if(curStep===4){
+    const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapModel)+'</b>'; box.appendChild(p);
+    statPills(box,[
+      {emoji:'🎈',label:{en:'Balloon (a lung)',vi:'Quả bóng (một lá phổi — lung)'},got:T.mBal},
+      {emoji:'⬇️',label:{en:'Plunger pulled out',vi:'Pít-tông đã kéo ra'},got:T.mPlu}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'inc',label:STR.binInc,cls:'inc'},{key:'dec',label:STR.binDec,cls:'dec'}],
+      T.finCorrect,()=>T.finSel,v=>{T.finSel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('cylinder'); bounceThing('cylinder'); setTimeout(()=>{ focusVisual('bottle'); bounceThing('bottle'); },900); }
+  else if(i===1){ focusThing('tube'); bounceThing('tube'); setTimeout(()=>{ focusVisual('bottle'); bounceThing('bottle'); },900); }
+  else if(i===2){ focusThing('bottle'); bounceThing('bottle'); }
+  else if(i===3){ demoSort(CARDS3,T.srtCorrect); }
+  else if(i===4){ focusThing('balloon'); bounceThing('balloon'); setTimeout(()=>{ focusThing('plunger'); },900); }
+  else if(i===5){ demoSort(CARDS6,T.finCorrect); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,got,val)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b style="font-size:15px">'+(got? biInl(val) : biInl(STR.trkWait))+'</b></div>';
+  const srow=(lbl,val)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b style="font-size:15px">'+val+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.trkIn,doneSteps.has(3),STR.trkInV)+
+    row(STR.trkOut,doneSteps.has(3),STR.trkOutV)+
+    row(STR.trkModel,doneSteps.has(4),STR.trkModelV)+
+    row(STR.trkMean,doneSteps.has(2),STR.trkMeanV)+
+    '<div class="small" style="margin-top:7px;font-weight:700">'+biInl(STR.trialTableT)+'</div>'+
+    srow(STR.trial1,'1 650')+
+    srow(STR.trial2,'1 950')+
+    srow(STR.trial3,'1 800')+
+    srow(STR.trialMean,'1 800');
+}
+function renderFound(){
+  const items=[
+    {got:(FOUND.cyl&&FOUND.bottle)||doneSteps.has(0),label:STR.foundScale},
+    {got:FOUND.blow||doneSteps.has(1),label:STR.foundBlow},
+    {got:FOUND.mean||doneSteps.has(2),label:STR.foundMean},
+    {got:FOUND.model||doneSteps.has(4),label:STR.foundModel}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+let airMesh=null, pulledT=0;
+const ORB={r:10.5, th:0.55, ph:1.05, tx:0, ty:1.0, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function grp(x,y,z){ const g=new THREE.Group(); g.position.set(x||0,y||0,z||0); g.userData.baseY=y||0; return g; }
+function ball(r,color,x,y,z,sx,sy,sz){
+  const m=shadowed(new THREE.Mesh(new THREE.SphereGeometry(r,20,16),stdMat(color,0.6)));
+  m.position.set(x,y,z); m.scale.set(sx||1,sy||1,sz||1); return m;
+}
+function cylBetween(color,x,y,z,r,h){
+  const m=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,14),stdMat(color,0.6)));
+  m.position.set(x,y,z); return m;
+}
+function buildBody(){
+  const shell=new THREE.Group();
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(0.82,0.95,2.1,20),
+    new THREE.MeshBasicMaterial({color:0x9fc6e8,transparent:true,opacity:0.16,depthWrite:false}));
+  torso.position.set(0,1.05,-0.12); shell.add(torso);
+  [0.72,1.05,1.38].forEach(y=>{
+    const rib=new THREE.Mesh(new THREE.TorusGeometry(0.88,0.035,8,28),stdMat(0xf4f8fb,0.4));
+    rib.rotation.x=Math.PI/2; rib.position.set(0,y,-0.05); shell.add(rib);
+  });
+  const neck=cylBetween(0xf2c79b,0,2.28,-0.05,0.16,0.4); shell.add(neck);
+  const head=ball(0.42,0xf2c79b,0,2.72,-0.05); shell.add(head);
+  scene3.add(shell);
+  const pipe=grp(0,0,0);
+  pipe.add(cylBetween(0x9fc6e8,0,1.85,0,0.09,0.8));
+  [1.62,1.85,2.08].forEach(y=>{ const ring=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.02,6,14),stdMat(0x6fa8d8,0.5)); ring.rotation.x=Math.PI/2; ring.position.set(0,y,0); pipe.add(ring); });
+  reg('windpipe',pipe);
+  const ll=grp(0,0,0); ll.add(ball(0.5,0xe86a7a,-0.52,1.05,0.05,0.85,1.1,0.6)); reg('lungL',ll);
+  const lr=grp(0,0,0); lr.add(ball(0.5,0xe86a7a,0.52,1.05,0.05,0.85,1.1,0.6)); reg('lungR',lr);
+  const dia=grp(0,0,0); dia.add(ball(0.5,0xc94f6d,0,0.4,0.02,1.7,0.42,0.8)); reg('diaphragm',dia);
+}
+function buildVolumeRig(){
+  const bx=3.4;
+  /* bowl of water */
+  const bowlG=grp(0,0,0);
+  const bowlM=new THREE.Mesh(new THREE.CylinderGeometry(1.05,0.8,0.36,24),stdMat(0x7a9fc0,0.7));
+  bowlM.position.set(bx,-0.18,0); bowlG.add(bowlM);
+  const bWater=new THREE.Mesh(new THREE.CylinderGeometry(0.98,0.98,0.06,24),
+    new THREE.MeshBasicMaterial({color:0x3fa7d6,transparent:true,opacity:0.75}));
+  bWater.position.set(bx,-0.03,0); bowlG.add(bWater);
+  reg('bowl',bowlG);
+  /* inverted bottle with scale marks + water + air pocket */
+  const botG=grp(0,0,0);
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,1.7,20),
+    new THREE.MeshBasicMaterial({color:0xbfe0f2,transparent:true,opacity:0.3,depthWrite:false}));
+  body.position.set(bx,1.25,0); botG.add(body);
+  const neckM=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.3,0.4,14),
+    new THREE.MeshBasicMaterial({color:0xbfe0f2,transparent:true,opacity:0.3,depthWrite:false}));
+  neckM.position.set(bx,0.25,0); botG.add(neckM);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.48,1.55,16),
+    new THREE.MeshBasicMaterial({color:0x3fa7d6,transparent:true,opacity:0.45,depthWrite:false}));
+  water.position.set(bx,1.18,0); botG.add(water);
+  airMesh=new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.48,1,16),
+    new THREE.MeshBasicMaterial({color:0xfff3c4,transparent:true,opacity:0.85,depthWrite:false}));
+  airMesh.position.set(bx,2.02,0); airMesh.scale.set(1,0.12,1); botG.add(airMesh);
+  [0.6,0.95,1.3,1.65,2.0].forEach(y=>{
+    const mark=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.035,0.02),stdMat(0x22384f,0.4));
+    mark.position.set(bx+0.56,y,0.18); botG.add(mark);
+  });
+  reg('bottle',botG);
+  /* bendy tubing: one leg in the bowl water / bottle mouth, one rising out */
+  const tubeG=grp(0,0,0);
+  const leg1=cylBetween(0xf2762e,3.02,0.42,0.35,0.055,0.85); leg1.rotation.z=0.5; tubeG.add(leg1);
+  const leg2=cylBetween(0xf2762e,2.62,0.95,0.35,0.055,0.8); leg2.rotation.z=-0.25; tubeG.add(leg2);
+  reg('tube',tubeG);
+  /* measuring cylinder standing in front */
+  const cylG=grp(0,0,0);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.75,14),
+    new THREE.MeshBasicMaterial({color:0xbfe0f2,transparent:true,opacity:0.35,depthWrite:false}));
+  glass.position.set(2.45,0.05,1.05); cylG.add(glass);
+  const cWater=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.4,12),
+    new THREE.MeshBasicMaterial({color:0x3fa7d6,transparent:true,opacity:0.7}));
+  cWater.position.set(2.45,-0.1,1.05); cylG.add(cWater);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.28,0.07,14),stdMat(0x44586e,0.6));
+  base.position.set(2.45,-0.33,1.05); cylG.add(base);
+  reg('cylinder',cylG);
+}
+function buildSyringe(){
+  const sx=-3.4;
+  const vis=new THREE.Group();
+  const tubeBody=new THREE.Mesh(new THREE.CylinderGeometry(0.58,0.58,1.9,20),
+    new THREE.MeshBasicMaterial({color:0xbfe0f2,transparent:true,opacity:0.28,depthWrite:false}));
+  tubeBody.position.set(sx,1.05,0); vis.add(tubeBody);
+  const bung=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.22,14),stdMat(0x8a5a2b,0.8));
+  bung.position.set(sx,2.1,0); vis.add(bung);
+  scene3.add(vis);
+  const sg=grp(0,0,0); reg('syringe',sg);
+  const bal=grp(0,0,0); bal.add(ball(0.3,0xf28ba8,sx,1.35,0,1,1.25,1)); reg('balloon',bal);
+  const plu=grp(0,0,0);
+  const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.13,18),stdMat(0x44586e,0.6));
+  disc.position.set(sx,0.16,0); plu.add(disc);
+  plu.add(cylBetween(0xd9dee3,sx,-0.14,0,0.09,0.5));
+  const knob=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,0.09,14),stdMat(0x44586e,0.6));
+  knob.position.set(sx,-0.42,0); plu.add(knob);
+  reg('plunger',plu);
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xeaf7ff);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,80);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8aa5bd,0.95));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.8);
+  sunL.position.set(4,7,5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-8; sunL.shadow.camera.right=8; sunL.shadow.camera.top=8; sunL.shadow.camera.bottom=-8;
+  sunL.shadow.camera.far=25; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(9,36),stdMat(0xcfe8d4,0.95));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.36; ground.receiveShadow=true;
+  scene3.add(ground);
+  buildBody(); buildVolumeRig(); buildSyringe();
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.55); p.position.set(2.45,0.05,1.05); addProxy('cylinder',p,G.cylinder); }
+  { const p=sphProxy(0.8); p.position.set(3.4,1.2,0); addProxy('bottle',p,G.bottle); }
+  { const p=sphProxy(0.48); p.position.set(2.5,0.8,0.55); addProxy('tube',p,G.tube); }
+  { const p=sphProxy(0.48); p.position.set(0,1.88,0); addProxy('windpipe',p,G.windpipe); }
+  { const p=sphProxy(0.8); p.position.set(-0.52,1.05,0.05); addProxy('lungL',p,G.lungL); }
+  { const p=sphProxy(0.8); p.position.set(0.52,1.05,0.05); addProxy('lungR',p,G.lungR); }
+  { const p=sphProxy(0.62); p.position.set(-3.4,1.35,0); addProxy('balloon',p,G.balloon); }
+  { const p=sphProxy(0.72); p.position.set(-3.4,0.05,0); addProxy('plunger',p,G.plunger); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a thing */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(16,Math.max(5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  if(id==='cylinder') return {x:2.45,y:0.05,z:1.05};
+  if(id==='bottle') return {x:3.4,y:1.25,z:0};
+  if(id==='tube') return {x:2.5,y:0.8,z:0.55};
+  if(id==='bowl') return {x:3.4,y:-0.1,z:0};
+  if(id==='windpipe') return {x:0,y:1.85,z:0};
+  if(id==='lungL') return {x:-0.52,y:1.05,z:0.05};
+  if(id==='lungR') return {x:0.52,y:1.05,z:0.05};
+  if(id==='diaphragm') return {x:0,y:0.4,z:0.02};
+  if(id==='syringe') return {x:-3.4,y:1.05,z:0};
+  if(id==='balloon') return {x:-3.4,y:1.35,z:0};
+  if(id==='plunger') return {x:-3.4,y:0.05,z:0};
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['cylinder','bottle'],
+  ['tube','bottle'],
+  [],
+  [],
+  ['balloon','plunger'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  if(id!=='plunger') bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='cylinder'){ T.mCyl=true; FOUND.cyl=true; }
+    else if(id==='bottle'){ T.mBottle=true; FOUND.bottle=true; }
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='tube'){ T.tTube=true; }
+    else if(id==='bottle'){ T.tBlow=true; FOUND.blow=true; }
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===4&&id==='balloon'){
+    T.mBal=true; FOUND.model=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===4&&id==='plunger'){
+    T.mPlu=true; FOUND.model=true;
+    if(G.plunger) addAnim(0.9,f=>{ G.plunger.position.y=-0.34*easeOut(f); });
+    saveProg(); renderMirrors(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  pulledT=0;
+  if(G.plunger&&i!==4) G.plunger.position.y=0;
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  const br=1+Math.sin(t*1.7)*0.06;
+  if(G.lungL) G.lungL.scale.set(br,br,br);
+  if(G.lungR) G.lungR.scale.set(br,br,br);
+  /* air pocket grows in the inverted bottle once the learner has breathed out (step 2) */
+  if(airMesh){
+    const target=(curStep===1&&T.tBlow)? 0.62 : 0.12;
+    const cur=airMesh.scale.y+(target-airMesh.scale.y)*0.06;
+    airMesh.scale.set(1,cur,1);
+    airMesh.position.y=2.1-cur/2;
+  }
+  /* balloon inflates as the plunger is pulled out (step 5) */
+  const pTarget=(curStep===4&&T.mPlu)? 1 : 0;
+  pulledT+=(pTarget-pulledT)*0.06;
+  if(G.balloon){ const s=1+pulledT*0.38; G.balloon.scale.set(s,s,s); }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function wordBtn(si,oi,o,mode){
+  let cls='wordopt';
+  if(mode==='choose'){
+    if(EX1ANS[si]===oi) cls+=' crossed';
+    if(exRevealed&&oi===EX1[si].correct) cls+=' rightmark';
+  }else{
+    if(EX3ANS[si]===oi) cls+=' crossed';
+    if(exRevealed&&oi===EX3[si].wrong) cls+=' rightmark';
+  }
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — complete the sentences */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  const l1=$('ex1List'); l1.innerHTML='';
+  EX1.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    (EX1_ORD[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=wordBtn(si,oi,s1.opts[oi],'choose')+(pos===0?' / ':'');
+    });
+    if(s1.post) html+=' '+biInl(s1.post);
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX1DONE.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    l1.appendChild(row);
+  });
+  l1.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      EX1ANS[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+  /* Ex 2 · Practice — improves the experiment, or not */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinImp').innerHTML=bi(STR.binImp);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='imp'?'✓':'✗')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong ending */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=wordBtn(si,oi,s3.opts[oi],'cross')+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      EX3ANS[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinImp').onclick=()=>ex2Place('imp');
+$('ex2BinNot').onclick=()=>ex2Place('not');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.cyl=false; FOUND.bottle=false; }
+  if(step===1){ FOUND.blow=false; }
+  if(step===3){ CARDS3.forEach(c=>SORTED.delete(c.id)); }
+  if(step===4){ FOUND.model=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='imp'||s.exAns.a2[id]==='not')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.mCyl=true; t.mBottle=true; }
+  else if(i===1){ t.tTube=true; t.tBlow=true; }
+  else if(i===2){ t.meanAns=true; }
+  else if(i===3){ CARDS3.forEach(c=>{ if(SORTED.has(c.id)) t.srtCorrect.add(c.id); }); }
+  else if(i===4){ t.mBal=true; t.mPlu=true; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.finCorrect.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-1-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

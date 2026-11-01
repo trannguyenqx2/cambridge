@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.2 Speed — Tốc độ · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="3.2 Speed" data-vi="3.2 Tốc độ (Speed)">3.2 Speed</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do we work out how fast something moves?" data-vi="Làm sao tính được một vật chuyển động nhanh thế nào?">How do we work out how fast something moves?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Speed = distance ÷ time" data-vi="Tốc độ (speed) = quãng đường ÷ thời gian">Speed = distance ÷ time</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Rearrange the triangle" data-vi="Đổi tam giác công thức">Rearrange the triangle</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Use m, s and m/s" data-vi="Dùng m, s và m/s">Use m, s and m/s</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Measure a rolling ball" data-vi="Đo một quả bóng lăn">Measure a rolling ball</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.2. The track in this lesson is a simulation — all speeds and times are the book values." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 3 Lực và năng lượng (Forces and energy) · Mục 3.2. Đường đua trong bài này là mô phỏng — mọi tốc độ và thời gian đều là số liệu trong sách.">Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.2. The track in this lesson is a simulation — all speeds and times are the book values.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.2, pages 71–77; Workbook 8 (ISBN 9781108742856), pages 42–46. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 3 Forces and energy (Lực và năng lượng), mục 3.2, trang 71–77; Sách bài tập 8 (ISBN 9781108742856), trang 42–46. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.2, pages 71–77; Workbook 8 (ISBN 9781108742856), pages 42–46. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: understand what is meant by speed; learn about the unit of speed; be able to calculate speed, distance and time. Key words: average speed, calculate, constant, m/s, metres, per, second, speed." data-vi="Mục tiêu: hiểu tốc độ (speed) nghĩa là gì; biết đơn vị của tốc độ; tính được tốc độ, quãng đường và thời gian. Từ khóa: average speed (tốc độ trung bình), calculate (tính toán), constant (không đổi), m/s, metres (mét), per (trong mỗi), second (giây), speed (tốc độ).">Objectives: understand what is meant by speed; learn about the unit of speed; be able to calculate speed, distance and time. Key words: average speed, calculate, constant, m/s, metres, per, second, speed.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D track — tapping the sign and the horse for the meaning of m/s, working out the bus speed (100 m in 20 s = 5 m/s), rearranging the formula triangle for Marcus (240 m) and Sofia (60 s), finding the aeroplane average speed (500 km/h), sorting the book table of typical speeds, and planning the ramp-and-ball investigation with repeats and an average time. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Watch out: always show working and give the unit, and use metres, seconds and m/s unless the question gives other units." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên đường đua 3D — chạm biển báo và con ngựa để hiểu nghĩa của m/s, tính tốc độ xe buýt (100 m trong 20 s = 5 m/s), đổi tam giác công thức cho Marcus (240 m) và Sofia (60 s), tìm tốc độ trung bình của máy bay (500 km/h), phân loại bảng tốc độ điển hình của sách, và lên kế hoạch khảo sát máng dốc và bóng với các lần lặp và thời gian trung bình. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Lưu ý: luôn trình bày cách làm và ghi đơn vị, và dùng mét, giây và m/s trừ khi đề bài cho đơn vị khác.">How it works: each step asks for one real action on the 3D track — the bus, triangle, aeroplane and investigation calculations all use the book values exactly. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-3-2 "Speed" (Science 8, Unit 3)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= scene things ================= */
+const THINGS={
+  sign:    {emoji:'🚦', name:{en:'Speed-limit sign',vi:'Biển giới hạn tốc độ (speed-limit sign)'}, short:{en:'Speed sign',vi:'Biển tốc độ'}, ring:0.5, labelY:1.6, fx:-4.6, fz:1.4, fr:5.2},
+  horse:   {emoji:'🐎', name:{en:'Horse — 15 m/s',vi:'Ngựa — 15 m/s (horse)'}, short:{en:'Horse',vi:'Ngựa'}, ring:0.62, labelY:1.35, fx:-3.0, fz:1.5, fr:5.2},
+  bus:     {emoji:'🚌', name:{en:'Bus — 100 m in 20 s',vi:'Xe buýt — 100 m trong 20 s (bus)'}, short:{en:'Bus',vi:'Xe buýt'}, ring:0.95, labelY:1.7, fx:0.2, fz:-2.0, fr:6.0},
+  finish:  {emoji:'🏁', name:{en:'100 m finish post',vi:'Cột đích 100 m (finish post)'}, short:{en:'100 m post',vi:'Cột 100 m'}, ring:0.5, labelY:1.9, fx:3.4, fz:-2.0, fr:5.4},
+  bike:    {emoji:'🚴', name:{en:'Marcus on his bicycle — 4 m/s',vi:'Marcus trên xe đạp — 4 m/s (bicycle)'}, short:{en:'Bicycle',vi:'Xe đạp'}, ring:0.6, labelY:1.3, fx:-4.3, fz:-2.0, fr:5.2},
+  car:     {emoji:'🚗', name:{en:'Sofia in a car — 35 m/s',vi:'Sofia trong ô tô — 35 m/s (car)'}, short:{en:'Car',vi:'Ô tô'}, ring:0.7, labelY:1.3, fx:1.6, fz:1.6, fr:5.4},
+  plane:   {emoji:'✈️', name:{en:'Aeroplane — 2500 km in 5 h',vi:'Máy bay — 2500 km trong 5 giờ (aeroplane)'}, short:{en:'Aeroplane',vi:'Máy bay'}, ring:0.75, labelY:1.5, fx:4.3, fz:0.9, fr:5.6},
+  city:    {emoji:'🚩', name:{en:'Destination flag — 2500 km away',vi:'Cờ đích — cách 2500 km (destination)'}, short:{en:'Destination',vi:'Đích đến'}, ring:0.45, labelY:1.5, fx:-1.2, fz:2.6, fr:5.2},
+  ramp:    {emoji:'📐', name:{en:'Ramp',vi:'Máng dốc (ramp)'}, short:{en:'Ramp',vi:'Máng dốc'}, ring:0.55, labelY:0.9, fx:-2.3, fz:-0.2, fr:5.2},
+  ball:    {emoji:'🎾', name:{en:'Tennis ball',vi:'Bóng tennis (tennis ball)'}, short:{en:'Tennis ball',vi:'Bóng tennis'}, ring:0.4, labelY:0.6, fx:-1.25, fz:-0.2, fr:4.8},
+  stopwatch:{emoji:'⏱️', name:{en:'Stopwatch',vi:'Đồng hồ bấm giờ (stopwatch)'}, short:{en:'Stopwatch',vi:'Đồng hồ bấm giờ'}, ring:0.45, labelY:1.0, fx:0.9, fz:-0.3, fr:4.8},
+  tree:    {emoji:'🌳', name:{en:'Tree',vi:'Cái cây (tree)'}, short:{en:'Tree',vi:'Cái cây'}, ring:0.6, labelY:1.9, fx:5.0, fz:2.4, fr:5.4}
+};
+const FOCUSORDER=['sign','horse','bus','bike','car','plane','ramp','ball'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the track',vi:'Trên đường đua'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the track!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên đường!'},
+  u2T:{en:'My calculation board',vi:'Bảng tính của con'},
+  u2Brief:{en:'The book calculations you have worked out.',vi:'Các phép tính trong sách mà con đã làm ra.'},
+  recBus:{en:'Bus speed: 100 ÷ 20 = 5 m/s',vi:'Tốc độ xe buýt: 100 ÷ 20 = 5 m/s'},
+  recBike:{en:'Marcus distance: 4 × 60 = 240 m',vi:'Quãng đường của Marcus: 4 × 60 = 240 m'},
+  recCar:{en:'Sofia time: 2100 ÷ 35 = 60 s',vi:'Thời gian của Sofia: 2100 ÷ 35 = 60 s'},
+  recPlane:{en:'Plane speed: 2500 ÷ 5 = 500 km/h',vi:'Tốc độ máy bay: 2500 ÷ 5 = 500 km/h'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your lesson checklist.',vi:'Danh sách kiểm tra của con.'},
+  didCalc:{en:'Calculated a speed from distance and time',vi:'Đã tính tốc độ (speed) từ quãng đường và thời gian'},
+  didRearr:{en:'Rearranged the triangle for distance and time',vi:'Đã đổi công thức tam giác để tìm quãng đường và thời gian'},
+  didSort:{en:'Sorted typical speeds from the book table',vi:'Đã phân loại các tốc độ điển hình từ bảng trong sách'},
+  didInvest:{en:'Planned the rolling-ball speed investigation',vi:'Đã lên kế hoạch khảo sát tốc độ bóng lăn'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binSlow:{en:'UP TO 12 m/s',vi:'TỐI ĐA 12 m/s (up to 12 m/s)'},
+  binFast:{en:'OVER 12 m/s',vi:'TRÊN 12 m/s (over 12 m/s)'},
+  lookBall:{en:'Look at the ball 🎾',vi:'Ngắm quả bóng 🎾'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.2'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Units of speed (3.2A)',vi:'Bài tập 1 · Focus — Đơn vị của tốc độ (speed) (3.2A)'},
+  ex1Inst:{en:'Circle (tap) the one correct answer in each question about standard units.',vi:'Khoanh tròn (chạm vào) một đáp án đúng trong mỗi câu hỏi về đơn vị chuẩn.'},
+  ex2T:{en:'Exercise 2 · Practice — Calculating speed (3.2B)',vi:'Bài tập 2 · Practice — Tính tốc độ (speed) (3.2B)'},
+  ex2Inst:{en:'Use speed = distance ÷ time. Tap the correct answer for each journey. Show the unit in your choice!',vi:'Dùng tốc độ (speed) = quãng đường ÷ thời gian. Chạm vào đáp án đúng cho mỗi hành trình. Hãy để ý đơn vị trong lựa chọn!'},
+  ex3T:{en:'Exercise 3 · Challenge — Calculating distance and time (3.2C)',vi:'Bài tập 3 · Challenge — Tính quãng đường và thời gian (3.2C)'},
+  ex3Inst:{en:'Use distance = speed × time and time = distance ÷ speed. Tap the correct answer for each question.',vi:'Dùng quãng đường = tốc độ (speed) × thời gian và thời gian = quãng đường ÷ tốc độ. Chạm vào đáp án đúng cho mỗi câu.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'average speed',vi:'tốc độ trung bình'},
+  {en:'calculate',vi:'tính toán'},
+  {en:'constant',vi:'không đổi'},
+  {en:'m/s',vi:'mét trên giây'},
+  {en:'metres',vi:'mét'},
+  {en:'per',vi:'trên mỗi / trong mỗi'},
+  {en:'second',vi:'giây'},
+  {en:'speed',vi:'tốc độ'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Units of speed',vi:'Đơn vị của tốc độ'}, word:{en:'m/s',vi:'mét trên giây (m/s)'},
+  q:{en:'Speed-limit signs show a number but no unit. What unit do scientists use — and what does it mean?',vi:'Biển giới hạn tốc độ chỉ ghi một con số, không ghi đơn vị. Các nhà khoa học dùng đơn vị nào — và nó nghĩa là gì?'},
+  act:{en:'Tap the speed-limit sign, then tap the horse. A horse running at 15 m/s travels 15 metres in each second.',vi:'Chạm vào biển giới hạn tốc độ (speed-limit sign), rồi chạm vào con ngựa. Một con ngựa chạy với tốc độ (speed) 15 m/s đi được 15 mét trong mỗi giây.'},
+  see:{en:'The sign and the horse bounce and show their names. Both found completes the step.',vi:'Biển báo và con ngựa nảy lên và hiện tên. Tìm đủ cả hai là hoàn thành bước.'},
+  concl:[
+    {en:'The standard scientific unit of speed is metres per second, written m/s.',vi:'Đơn vị khoa học chuẩn của tốc độ (speed) là mét trên giây, viết là m/s (metres per second).'},
+    {en:'“Per” means “in each”: 15 m/s means 15 metres travelled in each second.',vi:'“Per” nghĩa là “trong mỗi”: 15 m/s (metres per second) nghĩa là đi được 15 mét (metres) trong mỗi giây (second).'},
+    {en:'Cars may use km/h or miles per hour and ships use knots, so scientists use one standard unit to avoid confusion.',vi:'Ô tô có thể dùng km/h hay dặm trên giờ, tàu thủy dùng hải lý (knots), nên các nhà khoa học dùng một đơn vị chuẩn để tránh nhầm lẫn.'}]},
+ {tag:{en:'Calculate a speed',vi:'Tính một tốc độ'}, word:{en:'speed',vi:'tốc độ'},
+  q:{en:'A bus travels a distance of 100 m in a time of 20 s. What is its speed?',vi:'Một xe buýt đi quãng đường 100 m trong thời gian 20 s. Tốc độ của nó là bao nhiêu?'},
+  act:{en:'Tap the bus, then tap the 100 m finish post at the end of its run.',vi:'Chạm vào xe buýt (bus), rồi chạm vào cột đích 100 m ở cuối đường chạy của nó.'},
+  see:{en:'The bus and the finish post bounce. Together they give the distance and the time.',vi:'Xe buýt và cột đích nảy lên. Cùng nhau chúng cho quãng đường và thời gian.'},
+  concl:[
+    {en:'speed = distance ÷ time.',vi:'tốc độ (speed) = quãng đường (distance) ÷ thời gian (time).'},
+    {en:'For the bus: 100 m ÷ 20 s = 5 m/s — it travels 5 metres in each second.',vi:'Với xe buýt: 100 m ÷ 20 s = 5 m/s (metres per second) — nó đi 5 mét (metres) trong mỗi giây (second).'}]},
+ {tag:{en:'The formula triangle',vi:'Tam giác công thức'}, word:{en:'calculate',vi:'tính toán (calculate)'},
+  q:{en:'How can the same triangle give us a distance and a time?',vi:'Làm sao cùng một tam giác công thức cho ta cả quãng đường lẫn thời gian?'},
+  act:{en:'Tap Marcus on his bicycle — he rides at 4 m/s for 60 s. Then tap Sofia in her car — it travels at 35 m/s for a distance of 2100 m.',vi:'Chạm vào Marcus trên xe đạp (bicycle) — cậu ấy đạp với tốc độ 4 m/s trong 60 s. Rồi chạm vào Sofia trong ô tô (car) — nó chạy với tốc độ 35 m/s trên quãng đường 2100 m.'},
+  see:{en:'The bicycle and the car bounce and show their numbers.',vi:'Xe đạp và ô tô nảy lên và hiện các con số của chúng.'},
+  concl:[
+    {en:'distance = speed × time. Marcus: 4 × 60 = 240 m.',vi:'quãng đường (distance) = tốc độ (speed) × thời gian (time). Marcus: 4 × 60 = 240 m.'},
+    {en:'time = distance ÷ speed. Sofia: 2100 ÷ 35 = 60 s.',vi:'thời gian (time) = quãng đường (distance) ÷ tốc độ (speed). Sofia: 2100 ÷ 35 = 60 s.'},
+    {en:'Cover the quantity you want in the triangle and the triangle shows the calculation to use.',vi:'Che đại lượng con muốn tìm trong tam giác, tam giác sẽ chỉ phép tính cần dùng.'}]},
+ {tag:{en:'Speed in km/h',vi:'Tốc độ theo km/h'}, word:{en:'average speed',vi:'tốc độ trung bình'},
+  q:{en:'An aeroplane flies 2500 km in 5 hours. What is its speed?',vi:'Một máy bay bay 2500 km trong 5 giờ. Tốc độ của nó là bao nhiêu?'},
+  act:{en:'Tap the aeroplane, then tap the destination flag 2500 km away.',vi:'Chạm vào máy bay (aeroplane), rồi chạm vào cờ đích cách đó 2500 km.'},
+  see:{en:'The aeroplane and the flag bounce and show the journey numbers.',vi:'Máy bay và lá cờ nảy lên và hiện các con số của hành trình.'},
+  concl:[
+    {en:'2500 km ÷ 5 hours = 500 km/h. Dividing a distance in km by a time in hours gives a speed in km/h.',vi:'2500 km ÷ 5 giờ = 500 km/h. Chia quãng đường theo km cho thời gian theo giờ cho tốc độ (speed) theo km/h.'},
+    {en:'This is an average speed: the speed during a journey is not always constant. Constant means not changing.',vi:'Đây là tốc độ trung bình (average speed): tốc độ trong một hành trình không phải lúc nào cũng không đổi (constant). Không đổi (constant) nghĩa là không thay đổi.'},
+    {en:'Unless you are told otherwise, work in metres, seconds and m/s — and always show your working and give the unit.',vi:'Trừ khi được dặn khác, hãy làm việc với mét (metres), giây (seconds) và m/s — và luôn trình bày cách làm, ghi đơn vị cùng đáp án.'}]},
+ {tag:{en:'Typical speeds',vi:'Các tốc độ điển hình'}, word:{en:'constant',vi:'không đổi (constant)'},
+  q:{en:'How fast are everyday ways of travelling, in m/s?',vi:'Các cách di chuyển hằng ngày nhanh đến mức nào, tính theo m/s?'},
+  act:{en:'The cards use the typical speeds from the book table, in m/s. Tap a card, then tap UP TO 12 m/s or OVER 12 m/s.',vi:'Các thẻ dùng các tốc độ điển hình trong bảng của sách, tính theo m/s. Chạm vào một thẻ, rồi chạm TỐI ĐA 12 m/s hoặc TRÊN 12 m/s.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'From the book table: walking 2 m/s, cycling 7 m/s, bus 12 m/s, small motorcycle 20 m/s, car 30 m/s, train 35 m/s, aeroplane 200 m/s.',vi:'Từ bảng trong sách: đi bộ 2 m/s, đạp xe 7 m/s, xe buýt 12 m/s, xe máy nhỏ 20 m/s, ô tô 30 m/s, tàu hỏa 35 m/s, máy bay 200 m/s.'},
+    {en:'With a distance and a time for one of these, the same equation gives the time a journey will take or the speed it needs.',vi:'Với một quãng đường và một thời gian của một phương tiện, cùng phương trình đó cho thời gian hành trình hoặc tốc độ cần thiết.'}]},
+ {tag:{en:'Measure a rolling ball',vi:'Đo một quả bóng lăn'}, word:{en:'speed',vi:'tốc độ'},
+  q:{en:'How can we measure the speed of a ball rolling off a ramp?',vi:'Làm sao đo được tốc độ của một quả bóng lăn xuống máng dốc?'},
+  act:{en:'Tap the ramp, then tap the tennis ball at the top, then tap the stopwatch. In the book, you time the ball between two pieces of coloured tape on the floor.',vi:'Chạm vào máng dốc (ramp), rồi chạm vào bóng tennis ở trên đỉnh, rồi chạm vào đồng hồ bấm giờ (stopwatch). Trong sách, con bấm giờ cho bóng đi giữa hai miếng băng màu trên sàn.'},
+  see:{en:'The ramp, the ball and the stopwatch bounce — the investigation kit is ready.',vi:'Máng dốc, quả bóng và đồng hồ bấm giờ nảy lên — bộ dụng cụ khảo sát đã sẵn sàng.'},
+  concl:[
+    {en:'Measure the distance between the two tapes, time the ball across it three times, and use the average time: speed = distance ÷ average time.',vi:'Đo quãng đường giữa hai miếng băng, bấm giờ bóng đi qua ba lần, và dùng thời gian trung bình: tốc độ (speed) = quãng đường ÷ thời gian trung bình.'},
+    {en:'Repeating each timing makes the result more reliable — one timing could be a mistake, and the repeats let you spot it and average it out.',vi:'Lặp lại mỗi lần bấm giờ giúp kết quả tin cậy hơn — một lần bấm có thể sai, và các lần lặp giúp con phát hiện và làm đều nó ra.'},
+    {en:'The independent variable is the release height; the dependent variable is the speed. Keep the same ball and the same tape distance each time, and plot height (horizontal axis) against speed (vertical axis).',vi:'Biến độc lập (independent variable) là chiều cao thả bóng; biến phụ thuộc (dependent variable) là tốc độ (speed). Giữ nguyên quả bóng và quãng đường giữa hai băng mỗi lần, và vẽ đồ thị chiều cao (trục ngang) theo tốc độ (trục dọc).'},
+    {en:'I can use the equation that links speed, distance and time, and rearrange it to calculate any one of them.',vi:'Con dùng được phương trình liên hệ tốc độ (speed), quãng đường và thời gian, và đổi được nó để tính bất kỳ đại lượng nào.'},
+    {en:'I know the standard units are metres, seconds and metres per second, and I can calculate with other units too.',vi:'Con biết các đơn vị chuẩn là mét (metres), giây (seconds) và mét trên giây (metres per second), và con tính được với các đơn vị khác nữa.'}]}
+];
+const TRAVEL=[
+ {id:'t_walk',emoji:'🚶',en:'Walking — 2 m/s',vi:'Đi bộ — 2 m/s (walking)',ans:'slow'},
+ {id:'t_cycle',emoji:'🚴',en:'Cycling — 7 m/s',vi:'Đạp xe — 7 m/s (cycling)',ans:'slow'},
+ {id:'t_bus',emoji:'🚌',en:'Bus — 12 m/s',vi:'Xe buýt — 12 m/s (bus)',ans:'slow'},
+ {id:'t_moto',emoji:'🏍️',en:'Small motorcycle — 20 m/s',vi:'Xe máy nhỏ — 20 m/s (motorcycle)',ans:'fast'},
+ {id:'t_car',emoji:'🚗',en:'Car — 30 m/s',vi:'Ô tô — 30 m/s (car)',ans:'fast'},
+ {id:'t_train',emoji:'🚆',en:'Train — 35 m/s',vi:'Tàu hỏa — 35 m/s (train)',ans:'fast'}
+];
+const TRAVEL_ORDER=mixOrder(TRAVEL,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What is the standard scientific unit of speed?',vi:'Đơn vị khoa học chuẩn của tốc độ (speed) là gì?'},
+  o:[{en:'km/h',vi:'km/h'},{en:'m/s — metres per second',vi:'m/s — mét trên giây (metres per second)'},{en:'miles per hour',vi:'dặm trên giờ (miles per hour)'}],a:1,
+  e:{en:'Scientists in all countries use metres per second, m/s, so nobody is confused by local units.',vi:'Các nhà khoa học ở mọi nước dùng mét trên giây (metres per second), m/s, để không ai bị nhầm bởi đơn vị địa phương.'}},
+ {q:{en:'A bus travels 100 m in 20 s. What is its speed?',vi:'Một xe buýt đi 100 m trong 20 s. Tốc độ của nó là bao nhiêu?'},
+  o:[{en:'5 m/s',vi:'5 m/s'},{en:'2000 m/s',vi:'2000 m/s'},{en:'0.2 m/s',vi:'0.2 m/s'}],a:0,
+  e:{en:'speed = distance ÷ time = 100 ÷ 20 = 5 m/s.',vi:'tốc độ (speed) = quãng đường ÷ thời gian = 100 ÷ 20 = 5 m/s.'}},
+ {q:{en:'Marcus rides at 4 m/s for 60 s. How far does he go?',vi:'Marcus đạp xe với tốc độ 4 m/s trong 60 s. Cậu ấy đi được bao xa?'},
+  o:[{en:'15 m',vi:'15 m'},{en:'64 m',vi:'64 m'},{en:'240 m',vi:'240 m'}],a:2,
+  e:{en:'distance = speed × time = 4 × 60 = 240 m.',vi:'quãng đường (distance) = tốc độ (speed) × thời gian = 4 × 60 = 240 m.'}},
+ {q:{en:'A car travels at 35 m/s. How long does it take to travel 2100 m?',vi:'Một ô tô chạy với tốc độ 35 m/s. Nó mất bao lâu để đi 2100 m?'},
+  o:[{en:'6 s',vi:'6 s'},{en:'60 s',vi:'60 s'},{en:'2135 s',vi:'2135 s'}],a:1,
+  e:{en:'time = distance ÷ speed = 2100 ÷ 35 = 60 s.',vi:'thời gian (time) = quãng đường (distance) ÷ tốc độ (speed) = 2100 ÷ 35 = 60 s.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1Q=[
+ {pre:{en:'The standard unit of distance in science is the',vi:'Đơn vị chuẩn của quãng đường trong khoa học là'},
+  opts:[{en:'metre',vi:'mét (metre)'},{en:'foot',vi:'foot'},{en:'mile',vi:'dặm (mile)'},{en:'kilometre',vi:'ki-lô-mét (kilometre)'}],a:0,
+  e:{en:'The metre is the standard unit of distance (length).',vi:'Mét (metre) là đơn vị chuẩn của quãng đường (độ dài).'}},
+ {pre:{en:'The standard unit of time in science is the',vi:'Đơn vị chuẩn của thời gian trong khoa học là'},
+  opts:[{en:'day',vi:'ngày (day)'},{en:'hour',vi:'giờ (hour)'},{en:'minute',vi:'phút (minute)'},{en:'second',vi:'giây (second)'}],a:3,
+  e:{en:'The second is the standard unit of time.',vi:'Giây (second) là đơn vị chuẩn của thời gian.'}},
+ {pre:{en:'The standard unit of speed in science is',vi:'Đơn vị chuẩn của tốc độ (speed) trong khoa học là'},
+  opts:[{en:'m s',vi:'m s'},{en:'m/s',vi:'m/s'},{en:'m/s2',vi:'m/s2'},{en:'m2s',vi:'m2s'}],a:1,
+  e:{en:'Speed in metres per second is written m/s.',vi:'Tốc độ theo mét trên giây (metres per second) được viết là m/s.'}},
+ {pre:{en:'A motorcycle travels at 60 km/h. That means it travels',vi:'Một xe máy chạy với tốc độ 60 km/h. Điều đó nghĩa là nó đi được'},
+  opts:[{en:'60 m every second',vi:'60 m mỗi giây'},{en:'60 m every hour',vi:'60 m mỗi giờ'},{en:'60 km every second',vi:'60 km mỗi giây'},{en:'60 km every hour',vi:'60 km mỗi giờ'}],a:3,
+  e:{en:'km/h means kilometres travelled in each hour — 60 km in every hour.',vi:'km/h nghĩa là số ki-lô-mét đi được trong mỗi giờ — 60 km trong mỗi giờ.'}}
+];
+const EX2Q=[
+ {pre:{en:'A car travels 70 m in 2 s. Its average speed is',vi:'Một ô tô đi 70 m trong 2 s. Tốc độ trung bình của nó là'},
+  opts:[{en:'35 m/s',vi:'35 m/s'},{en:'140 m/s',vi:'140 m/s'},{en:'5 m/s',vi:'5 m/s'}],a:0,
+  e:{en:'70 ÷ 2 = 35 m/s.',vi:'70 ÷ 2 = 35 m/s.'}},
+ {pre:{en:'The same car then travels 30 m in 2 s. Its new speed is',vi:'Sau đó cùng ô tô đó đi 30 m trong 2 s. Tốc độ mới của nó là'},
+  opts:[{en:'60 m/s',vi:'60 m/s'},{en:'15 m/s',vi:'15 m/s'},{en:'32 m/s',vi:'32 m/s'}],a:1,
+  e:{en:'30 ÷ 2 = 15 m/s.',vi:'30 ÷ 2 = 15 m/s.'}},
+ {pre:{en:'Arun walks 450 m to school in 300 s. His average walking speed is',vi:'Arun đi bộ 450 m tới trường trong 300 s. Tốc độ đi bộ trung bình của cậu ấy là'},
+  opts:[{en:'150 m/s',vi:'150 m/s'},{en:'3 m/s',vi:'3 m/s'},{en:'1.5 m/s',vi:'1.5 m/s'}],a:2,
+  e:{en:'450 ÷ 300 = 1.5 m/s.',vi:'450 ÷ 300 = 1.5 m/s.'}},
+ {pre:{en:'An aeroplane travels 5400 km in 6 hours. Its average speed is',vi:'Một máy bay bay 5400 km trong 6 giờ. Tốc độ trung bình của nó là'},
+  opts:[{en:'900 km/h',vi:'900 km/h'},{en:'540 km/h',vi:'540 km/h'},{en:'32400 km/h',vi:'32400 km/h'}],a:0,
+  e:{en:'5400 ÷ 6 = 900 km/h.',vi:'5400 ÷ 6 = 900 km/h.'}},
+ {pre:{en:'Arun\u2019s answer is an average speed because',vi:'Đáp án của Arun là tốc độ trung bình (average speed) vì'},
+  opts:[{en:'he walked in metres',vi:'cậu ấy đi theo mét'},{en:'his speed kept changing during the walk',vi:'tốc độ của cậu ấy luôn thay đổi trong lúc đi'},{en:'school is a long way away',vi:'trường ở rất xa'}],a:1,
+  e:{en:'On a real walk the speed speeds up and slows down — the calculation gives the average over the whole journey.',vi:'Khi đi bộ thật, tốc độ lúc nhanh lúc chậm — phép tính cho tốc độ trung bình (average speed) của cả hành trình.'}}
+];
+const EX3Q=[
+ {pre:{en:'A train travels at a constant 45 m/s. The distance it travels in 30 s is',vi:'Một tàu hỏa chạy với tốc độ không đổi (constant) 45 m/s. Quãng đường nó đi trong 30 s là'},
+  opts:[{en:'75 m',vi:'75 m'},{en:'1350 m',vi:'1350 m'},{en:'1.5 m',vi:'1.5 m'}],a:1,
+  e:{en:'distance = 45 × 30 = 1350 m.',vi:'quãng đường (distance) = 45 × 30 = 1350 m.'}},
+ {pre:{en:'The distance the same train travels in 2 minutes is',vi:'Quãng đường cùng tàu hỏa đó đi trong 2 phút là'},
+  opts:[{en:'5400 m',vi:'5400 m'},{en:'90 m',vi:'90 m'},{en:'2700 m',vi:'2700 m'}],a:0,
+  e:{en:'2 minutes = 120 s, so distance = 45 × 120 = 5400 m.',vi:'2 phút = 120 s, nên quãng đường (distance) = 45 × 120 = 5400 m.'}},
+ {pre:{en:'Zara runs at a constant 4 m/s. The time she takes to run 120 m is',vi:'Zara chạy với tốc độ không đổi (constant) 4 m/s. Thời gian cô ấy chạy 120 m là'},
+  opts:[{en:'480 s',vi:'480 s'},{en:'124 s',vi:'124 s'},{en:'30 s',vi:'30 s'}],a:2,
+  e:{en:'time = 120 ÷ 4 = 30 s.',vi:'thời gian (time) = 120 ÷ 4 = 30 s.'}},
+ {pre:{en:'Sofia cycles at 6 m/s and Zara runs at 4 m/s. In one minute, Sofia travels further than Zara by',vi:'Sofia đạp xe với tốc độ 6 m/s và Zara chạy với tốc độ 4 m/s. Trong một phút, Sofia đi xa hơn Zara'},
+  opts:[{en:'120 m',vi:'120 m'},{en:'60 m',vi:'60 m'},{en:'10 m',vi:'10 m'}],a:0,
+  e:{en:'Sofia: 6 × 60 = 360 m. Zara: 4 × 60 = 240 m. Difference: 360 − 240 = 120 m.',vi:'Sofia: 6 × 60 = 360 m. Zara: 4 × 60 = 240 m. Hiệu: 360 − 240 = 120 m.'}},
+ {pre:{en:'A car must travel 50 km in 2 hours. The average speed it must travel at is',vi:'Một ô tô cần đi 50 km trong 2 giờ. Tốc độ trung bình nó cần chạy là'},
+  opts:[{en:'100 km/h',vi:'100 km/h'},{en:'25 km/h',vi:'25 km/h'},{en:'52 km/h',vi:'52 km/h'}],a:1,
+  e:{en:'50 ÷ 2 = 25 km/h.',vi:'50 ÷ 2 = 25 km/h.'}},
+ {pre:{en:'The car must go faster than 25 km/h for some parts of the journey because',vi:'Ô tô phải chạy nhanh hơn 25 km/h ở một số đoạn của hành trình vì'},
+  opts:[{en:'at other times it is slowed down or stopped, so it must catch up',vi:'ở những lúc khác nó bị chậm lại hoặc dừng, nên nó phải bắt kịp'},{en:'25 km/h is the speed limit everywhere',vi:'25 km/h là giới hạn tốc độ ở mọi nơi'},{en:'the driver likes going fast',vi:'tài xế thích đi nhanh'}],a:0,
+  e:{en:'25 km/h is only the average: slower parts must be balanced by faster parts to still average 25 km/h.',vi:'25 km/h chỉ là tốc độ trung bình (average speed): các đoạn chậm hơn phải được bù bằng các đoạn nhanh hơn để vẫn đạt trung bình 25 km/h.'}}
+];
+const EX_TOTAL=EX1Q.length+EX2Q.length+EX3Q.length; /* 4 + 5 + 6 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+let EX1_ORD=EX1Q.map(q=>fyIdx(q.opts.length));
+let EX2_ORD=EX2Q.map(q=>fyIdx(q.opts.length));
+let EX3_ORD=EX3Q.map(q=>fyIdx(q.opts.length));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-3-2';
+const SUMKEY='camb:sum:sci8-3-2';
+const BOT_CODE='sci8-3.2';
+let FOUND={bus:false,bike:false,car:false,plane:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1sign:false, s1horse:false,
+  s2bus:false, s2finish:false,
+  s3bike:false, s3car:false,
+  s4plane:false, s4city:false,
+  s5correct:new Set(), s5sel:null,
+  s6ramp:false, s6ball:false, s6watch:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.s1sign&&T.s1horse;
+  if(i===1) return T.s2bus&&T.s2finish;
+  if(i===2) return T.s3bike&&T.s3car;
+  if(i===3) return T.s4plane&&T.s4city;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6ramp&&T.s6ball&&T.s6watch;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Sign tapped '+(T.s1sign?'✓':'…')+' · horse tapped '+(T.s1horse?'✓':'…')+'.',
+                     'Đã chạm biển báo '+(T.s1sign?'✓':'…')+' · đã chạm ngựa '+(T.s1horse?'✓':'…')+'.');
+  if(i===1) return B('Bus (100 m) '+(T.s2bus?'✓':'…')+' · 100 m finish post (20 s) '+(T.s2finish?'✓':'…')+'. Speed = 100 ÷ 20.',
+                     'Xe buýt (100 m) '+(T.s2bus?'✓':'…')+' · cột đích 100 m (20 s) '+(T.s2finish?'✓':'…')+'. Tốc độ (speed) = 100 ÷ 20.');
+  if(i===2) return B('Bicycle: distance worked out '+(T.s3bike?'✓':'…')+' · car: time worked out '+(T.s3car?'✓':'…')+'.',
+                     'Xe đạp: đã tính quãng đường '+(T.s3bike?'✓':'…')+' · ô tô: đã tính thời gian '+(T.s3car?'✓':'…')+'.');
+  if(i===3) return B('Aeroplane (2500 km) '+(T.s4plane?'✓':'…')+' · destination flag (5 hours) '+(T.s4city?'✓':'…')+'.',
+                     'Máy bay (2500 km) '+(T.s4plane?'✓':'…')+' · cờ đích (5 giờ) '+(T.s4city?'✓':'…')+'.');
+  if(i===4){
+    const c=T.s5sel? TRAVEL.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked \u201C'+c.en+'\u201D. Now tap UP TO 12 m/s or OVER 12 m/s.','Con đã chọn \u201C'+c.vi+'\u201D. Giờ hãy chạm TỐI ĐA 12 m/s hoặc TRÊN 12 m/s.');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5) return B('Ramp set up '+(T.s6ramp?'✓':'…')+' · ball released '+(T.s6ball?'✓':'…')+' · stopwatch used '+(T.s6watch?'✓':'…')+'.',
+                     'Máng dốc đã dựng '+(T.s6ramp?'✓':'…')+' · bóng đã thả '+(T.s6ball?'✓':'…')+' · đồng hồ bấm giờ đã dùng '+(T.s6watch?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🚦',label:{en:'Speed-limit sign',vi:'Biển giới hạn tốc độ'},got:T.s1sign},
+      {emoji:'🐎',label:{en:'Horse — 15 m in each second',vi:'Ngựa — 15 m trong mỗi giây'},got:T.s1horse}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🚌',label:{en:'Bus — 100 m',vi:'Xe buýt — 100 m'},got:T.s2bus},
+      {emoji:'🏁',label:{en:'Finish post — after 20 s',vi:'Cột đích — sau 20 s'},got:T.s2finish}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🚴',label:{en:'Marcus: 4 m/s × 60 s',vi:'Marcus: 4 m/s × 60 s'},got:T.s3bike},
+      {emoji:'🚗',label:{en:'Sofia: 2100 m ÷ 35 m/s',vi:'Sofia: 2100 m ÷ 35 m/s'},got:T.s3car}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'✈️',label:{en:'Aeroplane — 2500 km',vi:'Máy bay — 2500 km'},got:T.s4plane},
+      {emoji:'🚩',label:{en:'Destination — after 5 hours',vi:'Đích đến — sau 5 giờ'},got:T.s4city}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,TRAVEL_ORDER,
+      [{key:'slow',label:STR.binSlow,cls:'living'},{key:'fast',label:STR.binFast,cls:'nonliving'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'📐',label:{en:'Ramp set up',vi:'Đã dựng máng dốc'},got:T.s6ramp},
+      {emoji:'🎾',label:{en:'Ball released',vi:'Đã thả bóng'},got:T.s6ball},
+      {emoji:'⏱️',label:{en:'Stopwatch used',vi:'Đã dùng đồng hồ bấm giờ'},got:T.s6watch}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookBall);
+    b.onclick=()=>focusThing('ball');
+    box.appendChild(b);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('sign'); bounceThing('sign'); setTimeout(()=>{ focusVisual('horse'); bounceThing('horse'); },900); }
+  else if(i===1){ focusThing('bus'); setTimeout(()=>focusThing('finish'),900); }
+  else if(i===2){ focusThing('bike'); setTimeout(()=>focusThing('car'),900); }
+  else if(i===3){ focusThing('plane'); setTimeout(()=>focusThing('city'),900); }
+  else if(i===4){ demoSort(TRAVEL,T.s5correct); }
+  else if(i===5){ focusThing('ramp'); setTimeout(()=>focusThing('ball'),900); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recBus)+'</span><b>'+(FOUND.bus?'✓':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recBike)+'</span><b>'+(FOUND.bike?'✓':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recCar)+'</span><b>'+(FOUND.car?'✓':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recPlane)+'</span><b>'+(FOUND.plane?'✓':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(1),label:STR.didCalc},
+    {got:doneSteps.has(2),label:STR.didRearr},
+    {got:doneSteps.has(4),label:STR.didSort},
+    {got:doneSteps.has(5),label:STR.didInvest}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let ballMesh=null;
+let lastRW=0, lastRH=0;
+const ORB={r:11.0, th:0.14, ph:1.06, tx:0.2, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildSign(){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,1.5,10),stdMat(0x77828e,0.6));
+  post.position.y=0.75; g.add(post);
+  const disc=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.07,24),stdMat(0xd23c2a,0.5)));
+  disc.rotation.x=Math.PI/2; disc.position.y=1.62; g.add(disc);
+  const inner=new THREE.Mesh(new THREE.CylinderGeometry(0.31,0.31,0.075,24),stdMat(0xffffff,0.5));
+  inner.rotation.x=Math.PI/2; inner.position.y=1.62; g.add(inner);
+  g.position.set(-4.6,0,1.4); g.userData.baseY=0;
+  return g;
+}
+function buildHorse(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.55,0.42),stdMat(0x9a6a3a,0.85)));
+  body.position.y=0.85; g.add(body);
+  const neck=new THREE.Mesh(new THREE.BoxGeometry(0.28,0.55,0.3),stdMat(0x9a6a3a,0.85));
+  neck.position.set(0.62,1.15,0); neck.rotation.z=-0.5; g.add(neck);
+  const head=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.24,0.26),stdMat(0x8a5c30,0.85));
+  head.position.set(0.88,1.32,0); g.add(head);
+  [[-0.42,-0.14],[0.42,-0.14],[-0.42,0.14],[0.42,0.14]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.05,0.62,8),stdMat(0x8a5c30,0.85));
+    leg.position.set(p[0],0.31,p[1]); g.add(leg);
+  });
+  const tail=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.02,0.55,8),stdMat(0x5e3f1f,0.9));
+  tail.position.set(-0.66,0.95,0); tail.rotation.z=0.5; g.add(tail);
+  g.position.set(-3.0,0,1.5); g.userData.baseY=0;
+  return g;
+}
+function buildBus(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.3,1.05,0.95),stdMat(0xf2b134,0.55)));
+  body.position.y=0.78; g.add(body);
+  const win=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.4,0.98),stdMat(0x9fd4e8,0.3));
+  win.position.y=0.98; g.add(win);
+  [[-0.78,-0.5],[0.78,-0.5],[-0.78,0.5],[0.78,0.5]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.21,0.08,16),stdMat(0x2b3542,0.6));
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.21,p[1]); g.add(w);
+  });
+  g.position.set(0.2,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildFinish(){
+  const g=new THREE.Group();
+  [-0.55,0.55].forEach(x=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,1.8,8),stdMat(0x39424e,0.6));
+    post.position.set(x,0.9,0); g.add(post);
+  });
+  const banner=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.3,0.32,0.06),stdMat(0xffffff,0.7)));
+  banner.position.y=1.85; g.add(banner);
+  const stripe=new THREE.Mesh(new THREE.BoxGeometry(1.3,0.1,0.065),stdMat(0xd23c2a,0.6));
+  stripe.position.y=1.85; g.add(stripe);
+  g.position.set(3.4,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildBike(){
+  const g=new THREE.Group();
+  [[-0.45],[0.45]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.05,18),stdMat(0x2b3542,0.5));
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.3,0); g.add(w);
+  });
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(0.95,0.07,0.07),stdMat(0x2e7fd9,0.5));
+  frame.position.y=0.55; frame.rotation.z=0.25; g.add(frame);
+  const rider=new THREE.Mesh(new THREE.SphereGeometry(0.19,12,10),stdMat(0xf2c99a,0.7));
+  rider.position.set(0.05,1.05,0); g.add(rider);
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.13,0.45,10),stdMat(0x2e9e4f,0.7));
+  torso.position.set(0.0,0.78,0); torso.rotation.z=0.4; g.add(torso);
+  g.position.set(-4.3,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildCar(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.55,0.42,0.8),stdMat(0xd23c2a,0.45)));
+  body.position.y=0.42; g.add(body);
+  const cab=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.38,0.72),stdMat(0x9fd4e8,0.3));
+  cab.position.set(-0.05,0.8,0); g.add(cab);
+  [[-0.52,-0.42],[0.52,-0.42],[-0.52,0.42],[0.52,0.42]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.07,14),stdMat(0x2b3542,0.6));
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.17,p[1]); g.add(w);
+  });
+  g.position.set(1.6,0,1.6); g.userData.baseY=0;
+  return g;
+}
+function buildPlane(){
+  const g=new THREE.Group();
+  const fus=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.14,1.9,14),stdMat(0xe8edf2,0.4)));
+  fus.rotation.z=Math.PI/2; fus.position.y=0.62; g.add(fus);
+  const wing=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.06,1.7),stdMat(0x2e7fd9,0.5));
+  wing.position.set(0.05,0.55,0); g.add(wing);
+  const tail=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.45,0.06),stdMat(0xd23c2a,0.5));
+  tail.position.set(-0.9,0.85,0); g.add(tail);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.4,8),stdMat(0x77828e,0.7));
+  post.position.y=0.2; g.add(post);
+  g.position.set(4.3,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildCity(){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.45,8),stdMat(0x77828e,0.6));
+  post.position.y=0.72; g.add(post);
+  const flag=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.36,0.04),stdMat(0xd23c2a,0.6)));
+  flag.position.set(0.33,1.3,0); g.add(flag);
+  [[-0.55,0.35,0.5],[0.6,0.25,0.38]].forEach(p=>{
+    const h=new THREE.Mesh(new THREE.BoxGeometry(0.45,p[1]*2,0.4),stdMat(0xb08954,0.9));
+    h.position.set(p[0],p[1],0.35); g.add(h);
+  });
+  g.position.set(-1.2,0,2.6); g.userData.baseY=0;
+  return g;
+}
+function buildRamp(){
+  const g=new THREE.Group();
+  const slope=shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.1,0.09,0.7),stdMat(0xb08954,0.8)));
+  slope.rotation.z=0.42; slope.position.y=0.48; g.add(slope);
+  const books=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.35,0.75),stdMat(0x2e7fd9,0.8));
+  books.position.set(-0.85,0.18,0); g.add(books);
+  const tape1=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.03,0.74),stdMat(0xe86a9e,0.7));
+  tape1.position.set(1.15,0.02,0); g.add(tape1);
+  const tape2=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.03,0.74),stdMat(0x3d7bd6,0.7));
+  tape2.position.set(1.75,0.02,0); g.add(tape2);
+  g.position.set(-2.3,0,-0.2); g.userData.baseY=0;
+  return g;
+}
+function buildBall(){
+  const g=new THREE.Group();
+  ballMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19,16,12),stdMat(0xb7d93c,0.6)));
+  g.add(ballMesh);
+  g.position.set(-1.25,0.98,-0.2); g.userData.baseY=0.98;
+  return g;
+}
+function buildStopwatch(){
+  const g=new THREE.Group();
+  const face=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.09,22),stdMat(0xffffff,0.4)));
+  face.rotation.x=Math.PI/2; face.position.y=0.52; g.add(face);
+  const rim=new THREE.Mesh(new THREE.CylinderGeometry(0.33,0.33,0.06,22),stdMat(0x39424e,0.5));
+  rim.rotation.x=Math.PI/2; rim.position.set(0,0.52,-0.02); g.add(rim);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,0.25,8),stdMat(0x77828e,0.6));
+  post.position.y=0.13; g.add(post);
+  const btn=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.08,0.08),stdMat(0xd23c2a,0.5));
+  btn.position.y=0.9; g.add(btn);
+  g.position.set(0.9,0,-0.3); g.userData.baseY=0;
+  return g;
+}
+function buildTree(){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.13,0.9,10),stdMat(0x8a5c30,0.9));
+  trunk.position.y=0.45; g.add(trunk);
+  const top=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.62,14,10),stdMat(0x2e9e4f,0.9)));
+  top.position.y=1.35; g.add(top);
+  g.position.set(5.0,0,2.4); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdcecf7);
+  scene3.fog=new THREE.Fog(0xdcecf7,20,38);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-8; sunL.shadow.camera.right=8; sunL.shadow.camera.top=8; sunL.shadow.camera.bottom=-8;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(14,0.3,8.4),stdMat(0x9dc98a,1));
+  ground.position.set(0.3,-0.17,0); ground.receiveShadow=true; scene3.add(ground);
+  const road=new THREE.Mesh(new THREE.BoxGeometry(13.4,0.06,1.9),stdMat(0x55606c,1));
+  road.position.set(0.3,0.01,-2.0); road.receiveShadow=true; scene3.add(road);
+  const path2=new THREE.Mesh(new THREE.BoxGeometry(13.4,0.05,1.6),stdMat(0xd8c49a,1));
+  path2.position.set(0.3,0.01,1.7); path2.receiveShadow=true; scene3.add(path2);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc7d3de,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.34; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8f1f8,1));
+  wall.position.set(0,6,-5.8); scene3.add(wall);
+  reg('sign',buildSign());
+  reg('horse',buildHorse());
+  reg('bus',buildBus());
+  reg('finish',buildFinish());
+  reg('bike',buildBike());
+  reg('car',buildCar());
+  reg('plane',buildPlane());
+  reg('city',buildCity());
+  reg('ramp',buildRamp());
+  reg('ball',buildBall());
+  reg('stopwatch',buildStopwatch());
+  reg('tree',buildTree());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.45); p.position.set(0,1.2,0); addProxy('sign',p,G.sign); }
+  { const p=sphProxy(0.58); p.position.set(0,0.8,0); addProxy('horse',p,G.horse); }
+  { const p=sphProxy(0.8); p.position.set(0,0.7,0); addProxy('bus',p,G.bus); }
+  { const p=sphProxy(0.45); p.position.set(0,1.1,0); addProxy('finish',p,G.finish); }
+  { const p=sphProxy(0.5); p.position.set(0,0.55,0); addProxy('bike',p,G.bike); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('car',p,G.car); }
+  { const p=sphProxy(0.6); p.position.set(0,0.6,0); addProxy('plane',p,G.plane); }
+  { const p=sphProxy(0.42); p.position.set(0,0.9,0); addProxy('city',p,G.city); }
+  { const p=sphProxy(0.45); p.position.set(-0.85,0.3,0); addProxy('ramp',p,G.ramp); }
+  { const p=sphProxy(0.36); addProxy('ball',p,G.ball); }
+  { const p=sphProxy(0.42); p.position.set(0,0.5,0); addProxy('stopwatch',p,G.stopwatch); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(15,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['sign','horse'],
+  ['bus','finish'],
+  ['bike','car'],
+  ['plane','city'],
+  [],
+  ['ramp','ball','stopwatch']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='sign') T.s1sign=true;
+    if(id==='horse') T.s1horse=true;
+  }else if(curStep===1){
+    if(id==='bus'){ T.s2bus=true; FOUND.bus=true; }
+    if(id==='finish') T.s2finish=true;
+  }else if(curStep===2){
+    if(id==='bike'){ T.s3bike=true; FOUND.bike=true; }
+    if(id==='car'){ T.s3car=true; FOUND.car=true; }
+  }else if(curStep===3){
+    if(id==='plane'){ T.s4plane=true; FOUND.plane=true; }
+    if(id==='city') T.s4city=true;
+  }else if(curStep===5){
+    if(id==='ramp') T.s6ramp=true;
+    if(id==='ball') T.s6ball=true;
+    if(id==='stopwatch') T.s6watch=true;
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){ /* all track objects stay visible; tap scoping gates them */ }
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(ballMesh) ballMesh.rotation.y=now*0.0006;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExList(el,arr,ansObj,ordArr,doneSet){
+  el.innerHTML='';
+  arr.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(qi+1)+'. '+biInl(qq.pre)+' ';
+    (ordArr[qi]||qq.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      let cls='wordopt';
+      if(ansObj[qi]===oi) cls+=' crossed';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+qi+'" data-o="'+oi+'">'+biInl(qq.opts[oi])+'</button>'+(pos<qq.opts.length-1?' / ':'');
+    });
+    html+='';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    el.appendChild(row);
+  });
+  el.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      ansObj[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1Q.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1Q.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  renderExList($('ex1List'),EX1Q,EX1ANS,EX1_ORD,EX1DONE);
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2Q.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2Q.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderExList($('ex2List'),EX2Q,EX2ANS,EX2_ORD,EX2DONE);
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3Q.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3Q.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  renderExList($('ex3List'),EX3Q,EX3ANS,EX3_ORD,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1Q.map((qq,qi)=>qi).filter(qi=>EX1ANS[qi]===EX1Q[qi].a));
+  EX2DONE=new Set(EX2Q.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2Q[qi].a));
+  EX3DONE=new Set(EX3Q.map((qq,qi)=>qi).filter(qi=>EX3ANS[qi]===EX3Q[qi].a));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1Q.map(q=>fyIdx(q.opts.length));
+  EX2_ORD=EX2Q.map(q=>fyIdx(q.opts.length));
+  EX3_ORD=EX3Q.map(q=>fyIdx(q.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===1){ FOUND.bus=false; }
+  if(step===2){ FOUND.bike=false; FOUND.car=false; }
+  if(step===3){ FOUND.plane=false; }
+  if(step===4){ TRAVEL.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function validAns(dst,src,arr){
+  if(!src||typeof src!=='object') return;
+  Object.keys(src).forEach(k=>{
+    const qi=Number(k), oi=src[k];
+    if(Number.isInteger(qi)&&qi>=0&&qi<arr.length&&Number.isInteger(oi)&&oi>=0&&oi<arr[qi].opts.length) dst[qi]=oi;
+  });
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1Q.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2Q.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3Q.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    validAns(EX1ANS,s.exAns.a1,EX1Q);
+    validAns(EX2ANS,s.exAns.a2,EX2Q);
+    validAns(EX3ANS,s.exAns.a3,EX3Q);
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1Q.forEach((qq,qi)=>{ if(EX1DONE.has(qi)) EX1ANS[qi]=qq.a; });
+    EX2Q.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3Q.forEach((qq,qi)=>{ if(EX3DONE.has(qi)) EX3ANS[qi]=qq.a; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1sign=true; t.s1horse=true; }
+  else if(i===1){ t.s2bus=true; t.s2finish=true; }
+  else if(i===2){ t.s3bike=true; t.s3car=true; }
+  else if(i===3){ t.s4plane=true; t.s4city=true; }
+  else if(i===4){ TRAVEL.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.s6ramp=true; t.s6ball=true; t.s6watch=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-3-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

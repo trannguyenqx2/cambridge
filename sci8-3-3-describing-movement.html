@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.3 Describing movement — Mô tả chuyển động · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="3.3 Describing movement" data-vi="3.3 Mô tả chuyển động (Describing movement)">3.3 Describing movement</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How can a graph describe a journey better than words?" data-vi="Làm sao một đồ thị mô tả hành trình tốt hơn lời nói?">How can a graph describe a journey better than words?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Distance against time" data-vi="Quãng đường theo thời gian (distance against time)">Distance against time</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Slope tells the speed" data-vi="Độ dốc cho biết tốc độ (speed)">Slope tells the speed</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Flat means stopped" data-vi="Ngang nghĩa là đứng yên (stationary)">Flat means stopped</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Steeper means faster" data-vi="Dốc hơn nghĩa là nhanh hơn">Steeper means faster</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the movement course!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên đường chuyển động!">🖱 Drag to look around · Scroll to zoom · Tap things on the movement course!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.3. The movement course in this lesson is a simulation — all journeys and timings on it are examples to read and calculate from." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 3 Lực và năng lượng (Forces and energy) · Mục 3.3. Đường chuyển động trong bài này là mô phỏng — mọi hành trình và thời gian trên đó là ví dụ để đọc và tính toán.">Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.3. The movement course in this lesson is a simulation — all journeys and timings on it are examples to read and calculate from.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.3, pages 78–84; Workbook 8 (ISBN 9781108742856), pages 47–50. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 3 Forces and energy (Lực và năng lượng), mục 3.3, trang 78–84; Sách bài tập 8 (ISBN 9781108742856), trang 47–50. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.3, pages 78–84; Workbook 8 (ISBN 9781108742856), pages 47–50. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn how to use graphs to describe movement; understand what a distance–time graph shows; learn to draw a distance–time graph. Key words: distance–time graph, stationary, at rest, sketch, safety precautions, constant speed." data-vi="Mục tiêu: học cách dùng đồ thị để mô tả chuyển động; hiểu đồ thị quãng đường – thời gian (distance–time graph) cho thấy điều gì; học vẽ đồ thị quãng đường – thời gian. Từ khóa: distance–time graph (đồ thị quãng đường – thời gian), stationary (đứng yên), at rest (ở trạng thái nghỉ), sketch (phác thảo), safety precautions (biện pháp an toàn), constant speed (tốc độ không đổi).">Objectives: learn how to use graphs to describe movement; understand what a distance–time graph shows; learn to draw a distance–time graph. Key words: distance–time graph, stationary, at rest, sketch, safety precautions, constant speed.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D movement course — walking at a constant speed, reading the four sections of the car journey (A to B, stationary at B, faster to C, back to A), calculating the book’s train speeds from graph values (2000 m in 200 s = 10 m/s out, 2000 m in 100 s = 20 m/s back), comparing steep, gentle and flat sketch lines, describing Marcus’s ride, and planning the walking-and-running investigation with safety precautions. The lesson checks the action itself (the dark Show me line), and the answer stays locked until the action is done. Show me how only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên đường chuyển động 3D — đi bộ với tốc độ không đổi, đọc bốn phần của hành trình ô tô (A tới B, đứng yên ở B, nhanh hơn tới C, quay về A), tính tốc độ tàu trong sách từ giá trị đồ thị (2000 m trong 200 s = 10 m/s đi, 2000 m trong 100 s = 20 m/s về), so sánh các đường phác thảo dốc đứng, thoai thoải và nằm ngang, mô tả chuyến xe của Marcus, và lên kế hoạch khảo sát đi bộ và chạy với các biện pháp an toàn (safety precautions). Bài học tự kiểm tra hành động đó (dòng tối Căn cứ), và đáp án chỉ mở khi hành động đã hoàn thành. Xem cách làm chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D movement course — walking at a constant speed, reading the four sections of the car journey, calculating train speeds from graph values, comparing sketch lines, describing Marcus’s ride, and planning the walking-and-running investigation. The lesson checks the action itself (the dark Show me line), and the answer stays locked until the action is done. Show me how only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-3-3 "Describing movement" (Science 8, Unit 3)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= scene things ================= */
+const THINGS={
+  walker:{emoji:'🚶', name:{en:'Walker',vi:'Người đi bộ (walker)'}, short:{en:'Walker',vi:'Người đi bộ'}, ring:0.55, labelY:1.75, fx:-5.0, fz:1.6, fr:5.0},
+  flag:{emoji:'🏁', name:{en:'Finish flag',vi:'Cờ đích (finish flag)'}, short:{en:'Finish flag',vi:'Cờ đích'}, ring:0.5, labelY:1.7, fx:-3.7, fz:1.6, fr:5.0},
+  car:{emoji:'🚗', name:{en:'Car',vi:'Ô tô (car)'}, short:{en:'Car',vi:'Ô tô'}, ring:0.85, labelY:1.05, fx:-2.4, fz:1.6, fr:5.2},
+  stopsign:{emoji:'🛑', name:{en:'Stop sign at B',vi:'Biển dừng ở B (stop sign)'}, short:{en:'Stop at B',vi:'Dừng ở B'}, ring:0.5, labelY:1.75, fx:-1.1, fz:1.6, fr:5.0},
+  destc:{emoji:'🏠', name:{en:'Destination C',vi:'Điểm đến C (destination)'}, short:{en:'Destination C',vi:'Điểm đến C'}, ring:0.7, labelY:1.55, fx:0.2, fz:1.6, fr:5.2},
+  starta:{emoji:'🅰️', name:{en:'Starting position A',vi:'Vị trí xuất phát A (starting position)'}, short:{en:'Start A',vi:'Xuất phát A'}, ring:0.5, labelY:1.55, fx:1.5, fz:1.6, fr:5.0},
+  train:{emoji:'🚂', name:{en:'Train',vi:'Tàu hỏa (train)'}, short:{en:'Train',vi:'Tàu hỏa'}, ring:0.85, labelY:1.15, fx:2.9, fz:1.6, fr:5.2},
+  stopwatch:{emoji:'⏱️', name:{en:'Stopwatch',vi:'Đồng hồ bấm giờ (stopwatch)'}, short:{en:'Stopwatch',vi:'Đồng hồ bấm giờ'}, ring:0.5, labelY:0.95, fx:5.4, fz:1.6, fr:5.0},
+  stationr:{emoji:'🚉', name:{en:'Station R sign',vi:'Biển ga R (station R)'}, short:{en:'Station R',vi:'Ga R'}, ring:0.5, labelY:1.55, fx:4.2, fz:1.6, fr:5.0},
+  steepboard:{emoji:'📈', name:{en:'Steep line board',vi:'Bảng đường dốc đứng (steep line)'}, short:{en:'Steep line',vi:'Đường dốc đứng'}, ring:0.95, labelY:1.85, fx:-5.0, fz:-1.7, fr:5.4},
+  gentleboard:{emoji:'📈', name:{en:'Gentle line board',vi:'Bảng đường dốc thoai thoải (gentle line)'}, short:{en:'Gentle line',vi:'Đường dốc thoai thoải'}, ring:0.95, labelY:1.85, fx:-3.6, fz:-1.7, fr:5.4},
+  flatboard:{emoji:'➖', name:{en:'Flat line board',vi:'Bảng đường nằm ngang (flat line)'}, short:{en:'Flat line',vi:'Đường nằm ngang'}, ring:0.95, labelY:1.85, fx:-2.2, fz:-1.7, fr:5.4},
+  bike:{emoji:'🚲', name:{en:'Marcus’s bicycle',vi:'Xe đạp của Marcus (bicycle)'}, short:{en:'Bicycle',vi:'Xe đạp'}, ring:0.6, labelY:0.95, fx:-0.8, fz:-1.7, fr:5.0},
+  friend:{emoji:'🧍', name:{en:'Friend',vi:'Người bạn (friend)'}, short:{en:'Friend',vi:'Người bạn'}, ring:0.55, labelY:1.75, fx:0.6, fz:-1.7, fr:5.0},
+  shop:{emoji:'🏪', name:{en:'Shop',vi:'Cửa hàng (shop)'}, short:{en:'Shop',vi:'Cửa hàng'}, ring:0.7, labelY:1.55, fx:2.0, fz:-1.7, fr:5.2},
+  tape:{emoji:'📏', name:{en:'Tape measure',vi:'Thước dây (tape measure)'}, short:{en:'Tape measure',vi:'Thước dây'}, ring:0.5, labelY:0.85, fx:3.4, fz:-1.7, fr:5.0},
+  runner:{emoji:'🏃', name:{en:'Runner',vi:'Người chạy (runner)'}, short:{en:'Runner',vi:'Người chạy'}, ring:0.55, labelY:1.75, fx:4.7, fz:-1.7, fr:5.0},
+  timer:{emoji:'⏰', name:{en:'Course timer',vi:'Đồng hồ của đường chạy (timer)'}, short:{en:'Timer',vi:'Đồng hồ'}, ring:0.55, labelY:1.55, fx:5.9, fz:-1.7, fr:5.0}
+};
+const FOCUSORDER=['walker','car','train','steepboard','bike','runner','tape','shop'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the movement course',vi:'Trên đường chuyển động'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the course!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên đường!'},
+  u2T:{en:'My graph readings',vi:'Số liệu đồ thị của con'},
+  u2Brief:{en:'What you have read from the journeys so far.',vi:'Những gì con đã đọc được từ các hành trình tới lúc này.'},
+  recSections:{en:'Car journey sections read',vi:'Phần hành trình ô tô đã đọc'},
+  recLines:{en:'Sketch lines read',vi:'Đường phác thảo (sketch) đã đọc'},
+  recSpeeds:{en:'Speeds calculated',vi:'Tốc độ (speed) đã tính'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your journey checklist.',vi:'Danh sách hành trình của con.'},
+  didWalk:{en:'Walked at a constant speed',vi:'Đã đi bộ với tốc độ không đổi (constant speed)'},
+  didCar:{en:'Read the four sections of the car journey',vi:'Đã đọc bốn phần của hành trình ô tô'},
+  didTrain:{en:'Calculated the train speeds from a graph',vi:'Đã tính tốc độ tàu từ đồ thị'},
+  didSketch:{en:'Compared steep, gentle and flat lines',vi:'Đã so sánh đường dốc đứng, thoai thoải và nằm ngang'},
+  didMarcus:{en:'Described Marcus’s ride, part by part',vi:'Đã mô tả chuyến xe của Marcus, từng phần'},
+  didInvest:{en:'Planned the walking and running investigation',vi:'Đã lên kế hoạch khảo sát đi bộ và chạy'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binUp:{en:'SLOPES UP — moving away',vi:'DỐC LÊN — đang đi ra xa (moving away)'},
+  binNotUp:{en:'DOES NOT SLOPE UP — flat or down',vi:'KHÔNG DỐC LÊN — ngang hoặc dốc xuống'},
+  lookBoard:{en:'Look at the steep line board 📈',vi:'Ngắm bảng đường dốc đứng 📈'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — What can a graph tell us?',vi:'Bài tập 1 · Focus — Đồ thị cho ta biết gì?'},
+  ex1Inst:{en:'The Workbook asks what can be worked out from a distance–time graph. Tap the 4 things a distance–time graph CAN tell us.',vi:'Sách bài tập hỏi có thể tính được gì từ đồ thị quãng đường – thời gian (distance–time graph). Chạm vào 4 điều đồ thị NÀY cho ta biết được.'},
+  ex2T:{en:'Exercise 2 · Practice — Which way does the line go?',vi:'Bài tập 2 · Practice — Đường đồ thị đi hướng nào?'},
+  ex2Inst:{en:'For each movement, decide what its distance–time graph does. Tap a movement card, then tap SLOPES UP if the distance from the start grows, or DOES NOT SLOPE UP if the line stays flat or slopes down.',vi:'Với mỗi chuyển động, hãy quyết định đồ thị quãng đường – thời gian của nó thế nào. Chạm vào một thẻ chuyển động, rồi chạm DỐC LÊN (SLOPES UP) nếu khoảng cách từ điểm xuất phát tăng, hoặc KHÔNG DỐC LÊN nếu đường giữ ngang hoặc dốc xuống.'},
+  ex3T:{en:'Exercise 3 · Challenge — The aeroplane journey: cross out the wrong answer',vi:'Bài tập 3 · Challenge — Hành trình máy bay: gạch bỏ đáp án sai'},
+  ex3Inst:{en:'An aeroplane flies 3600 km from airport A to airport B in 4.5 hours, waits 1.5 hours at B, then flies back in 4.0 hours. In each sentence, tap the WRONG answer to cross it out.',vi:'Một máy bay bay 3600 km từ sân bay A tới sân bay B trong 4,5 giờ, chờ 1,5 giờ ở B, rồi bay về trong 4,0 giờ. Trong mỗi câu, chạm vào đáp án SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:'I’ve read it — Start',vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'distance–time graph',vi:'đồ thị quãng đường – thời gian'},
+  {en:'stationary',vi:'đứng yên'},
+  {en:'at rest',vi:'ở trạng thái nghỉ'},
+  {en:'sketch',vi:'bản phác thảo'},
+  {en:'safety precautions',vi:'biện pháp an toàn'},
+  {en:'constant speed',vi:'tốc độ không đổi'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Walking at a steady pace',vi:'Đi bộ với nhịp đều'}, word:{en:'distance–time graph',vi:'đồ thị quãng đường – thời gian'},
+  q:{en:'Getting started: you stand on a path and walk at a constant speed. What happens to the distance you have walked?',vi:'Khởi động: con đứng trên một con đường và đi bộ với tốc độ không đổi (constant speed). Quãng đường con đã đi thay đổi thế nào?'},
+  act:{en:'Tap the walker to start the steady walk. Then tap the finish flag at the end of the path.',vi:'Chạm vào người đi bộ (walker) để bắt đầu chuyến đi đều nhịp. Rồi chạm vào cờ đích (finish flag) ở cuối đường.'},
+  see:{en:'The walker and the flag bounce and show their names. Both found completes the step.',vi:'Người đi bộ và cờ đích nảy lên và hiện tên. Tìm đủ cả hai là hoàn thành bước.'},
+  concl:[
+    {en:'At a constant speed (constant speed), you cover the same extra distance in every second, so the distance from the start grows steadily.',vi:'Với tốc độ không đổi (constant speed), mỗi giây con đi thêm một quãng như nhau, nên khoảng cách từ điểm xuất phát tăng đều.'},
+    {en:'Plot distance travelled on the vertical axis and time on the horizontal axis and you get a distance–time graph (distance–time graph). For this walk it is a straight line sloping upwards.',vi:'Đặt quãng đường đã đi trên trục đứng và thời gian (time) trên trục ngang, con được một đồ thị quãng đường – thời gian (distance–time graph). Với chuyến đi này, đó là một đường thẳng dốc lên.'}]},
+ {tag:{en:'The car journey: A to B to C and back',vi:'Hành trình ô tô: A tới B tới C rồi quay về'}, word:{en:'stationary',vi:'đứng yên'},
+  q:{en:'A car drives from A to B, waits, drives faster to C, then returns to A. What does its graph do in each part?',vi:'Một ô tô đi từ A tới B, chờ, đi nhanh hơn tới C, rồi quay về A. Đồ thị của nó thế nào trong từng phần?'},
+  act:{en:'Tap the four parts of the journey in any order: the car (A to B), the stop sign (waiting at B), destination C (the faster drive), and starting position A (the return).',vi:'Chạm vào bốn phần của hành trình theo thứ tự bất kỳ: ô tô (car) (A tới B), biển dừng (stop sign) (chờ ở B), điểm đến C (destination) (đoạn đi nhanh hơn), và vị trí xuất phát A (starting position) (đoạn quay về).'},
+  see:{en:'Each part bounces and shows its name. All four parts found completes the step.',vi:'Mỗi phần nảy lên và hiện tên. Tìm đủ bốn phần là hoàn thành bước.'},
+  concl:[
+    {en:'A to B: a straight line sloping up — the car moves away at a constant speed, covering the same distance each second.',vi:'A tới B: một đường thẳng dốc lên — ô tô đi ra xa với tốc độ không đổi (constant speed), mỗi giây đi một quãng như nhau.'},
+    {en:'At B: a horizontal line — the car is stationary (stationary), also called at rest (at rest). Its distance does not change, but time still passes, and its speed is zero.',vi:'Ở B: một đường nằm ngang — ô tô đứng yên (stationary), còn gọi là ở trạng thái nghỉ (at rest). Khoảng cách của nó không đổi, nhưng thời gian vẫn trôi, và tốc độ của nó bằng không.'},
+    {en:'B to C: a steeper upward line — the car is faster, so it covers a greater distance in each second.',vi:'B tới C: một đường dốc lên dốc hơn — ô tô nhanh hơn, nên mỗi giây nó đi được quãng dài hơn.'},
+    {en:'C back to A: a straight line sloping down — the distance from the start gets smaller as the car returns.',vi:'C quay về A: một đường thẳng dốc xuống — khoảng cách từ điểm xuất phát nhỏ dần khi ô tô quay về.'}]},
+ {tag:{en:'Train speeds from a graph',vi:'Tốc độ tàu từ đồ thị'}, word:{en:'speed = distance ÷ time',vi:'tốc độ = quãng đường ÷ thời gian'},
+  q:{en:'The book’s worked example: a train runs from station P to station R, 2000 m away. How fast does it go?',vi:'Ví dụ mẫu trong sách: một đoàn tàu chạy từ ga P tới ga R, cách nhau 2000 m. Nó đi nhanh bao nhiêu?'},
+  act:{en:'Tap the train, then tap the stopwatch, then tap the station R sign. The graph shows: P to R in 200 s, a stop at R of 140 s, and the return to P in 100 s.',vi:'Chạm vào tàu hỏa (train), rồi chạm vào đồng hồ bấm giờ (stopwatch), rồi chạm vào biển ga R (station R). Đồ thị cho thấy: P tới R trong 200 s, dừng ở R 140 s, và quay về P trong 100 s.'},
+  see:{en:'All three bounce and show their names. The numbers from the graph are ready to use.',vi:'Cả ba nảy lên và hiện tên. Các số từ đồ thị đã sẵn sàng để tính.'},
+  concl:[
+    {en:'Use speed = distance ÷ time. Outwards: 2000 m ÷ 200 s = 10 m/s.',vi:'Dùng tốc độ (speed) = quãng đường ÷ thời gian. Đi: 2000 m ÷ 200 s = 10 m/s.'},
+    {en:'At R the graph is horizontal for 140 s — the train is stationary (stationary) at the station.',vi:'Ở R đồ thị nằm ngang trong 140 s — tàu đứng yên (stationary) ở ga.'},
+    {en:'Coming back: 2000 m ÷ 100 s = 20 m/s. The return line is steeper and slopes down, because the train covers the distance in half the time and heads back to the start.',vi:'Về: 2000 m ÷ 100 s = 20 m/s. Đường quay về dốc hơn và dốc xuống, vì tàu đi hết quãng đường trong nửa thời gian và hướng về điểm xuất phát.'}]},
+ {tag:{en:'Sketching faster, slower and still',vi:'Phác thảo nhanh hơn, chậm hơn và đứng yên'}, word:{en:'sketch',vi:'bản phác thảo'},
+  q:{en:'How do you sketch (sketch) lines for a faster object, a slower object, and one that does not move at all?',vi:'Con phác thảo (sketch) các đường cho một vật nhanh hơn, một vật chậm hơn, và một vật không hề di chuyển như thế nào?'},
+  act:{en:'Tap the three graph boards: the steep line board, the gentle line board and the flat line board.',vi:'Chạm vào ba bảng đồ thị: bảng đường dốc đứng (steep line), bảng đường dốc thoai thoải (gentle line) và bảng đường nằm ngang (flat line).'},
+  see:{en:'Each board bounces and shows its name. All three boards read completes the step.',vi:'Mỗi bảng nảy lên và hiện tên. Đọc đủ ba bảng là hoàn thành bước.'},
+  concl:[
+    {en:'A sketch (sketch) graph needs only the quantity names on its axes — no numbers and no scale.',vi:'Một đồ thị phác thảo (sketch) chỉ cần tên các đại lượng trên hai trục — không cần số và không cần thang chia.'},
+    {en:'The steeper the upward line, the faster the object: it covers a greater distance in each second. A gentler upward line means a slower object.',vi:'Đường dốc lên càng dốc, vật càng nhanh: mỗi giây nó đi quãng dài hơn. Đường dốc lên thoai thoải hơn nghĩa là vật chậm hơn.'},
+    {en:'A flat, horizontal line means the distance never changes — the object is stationary (stationary).',vi:'Một đường nằm ngang (flat) nghĩa là khoảng cách không bao giờ đổi — vật đứng yên (stationary).'}]},
+ {tag:{en:'Marcus rides to the shop',vi:'Marcus đạp xe tới cửa hàng'}, word:{en:'at rest',vi:'ở trạng thái nghỉ'},
+  q:{en:'Marcus rides to a shop: steady cycling, a stop to talk to a friend, then cycling again more slowly. What would his graph look like?',vi:'Marcus đạp xe tới cửa hàng: đạp đều, dừng lại nói chuyện với bạn, rồi đạp tiếp chậm hơn. Đồ thị của cậu sẽ thế nào?'},
+  act:{en:'Tap the three parts of Marcus’s journey: his bicycle (the steady first ride), his friend (the stop to talk), and the shop (the slower last ride).',vi:'Chạm vào ba phần trong hành trình của Marcus: xe đạp (bicycle) của cậu (đoạn đầu đạp đều), người bạn (friend) (lúc dừng nói chuyện), và cửa hàng (shop) (đoạn cuối đạp chậm hơn).'},
+  see:{en:'Each part bounces and shows its name. All three parts found completes the step.',vi:'Mỗi phần nảy lên và hiện tên. Tìm đủ ba phần là hoàn thành bước.'},
+  concl:[
+    {en:'First part: a straight upward line — Marcus rides away from home at a constant speed.',vi:'Phần đầu: một đường thẳng dốc lên — Marcus rời nhà với tốc độ không đổi (constant speed).'},
+    {en:'Middle part: a horizontal line — Marcus is at rest (at rest) talking to his friend, so his distance from home stays the same while time passes.',vi:'Phần giữa: một đường nằm ngang — Marcus ở trạng thái nghỉ (at rest) nói chuyện với bạn, nên khoảng cách từ nhà giữ nguyên trong khi thời gian trôi.'},
+    {en:'Last part: an upward line again, but gentler than the first — he is moving away again, at a lower constant speed than before.',vi:'Phần cuối: lại một đường dốc lên, nhưng thoai thoải hơn phần đầu — cậu lại đi ra xa, với tốc độ không đổi thấp hơn trước.'}]},
+ {tag:{en:'Walking and running investigation',vi:'Khảo sát đi bộ và chạy'}, word:{en:'safety precautions',vi:'biện pháp an toàn'},
+  q:{en:'Think like a scientist: how would you measure and compare the average speeds of walking and running?',vi:'Tư duy như nhà khoa học: con đo và so sánh tốc độ trung bình của đi bộ và chạy như thế nào?'},
+  act:{en:'Plan the investigation on a safe, clear course. Tap the tape measure (measure out a 20 m course), then tap the runner, then tap the course timer (time each trial). In our simulation: walking 20 m took 16 s and running 20 m took 5 s.',vi:'Lên kế hoạch khảo sát trên một đường an toàn, quang đãng. Chạm vào thước dây (tape measure) (đo một đường chạy 20 m), rồi chạm vào người chạy (runner), rồi chạm vào đồng hồ của đường chạy (timer) (bấm giờ từng lượt). Trong mô phỏng của ta: đi bộ 20 m mất 16 s và chạy 20 m mất 5 s.'},
+  see:{en:'All three bounce and show their names. The two speeds are ready to calculate.',vi:'Cả ba nảy lên và hiện tên. Hai tốc độ đã sẵn sàng để tính.'},
+  concl:[
+    {en:'Average walking speed = 20 m ÷ 16 s = 1.25 m/s. Average running speed = 20 m ÷ 5 s = 4 m/s.',vi:'Tốc độ đi bộ trung bình = 20 m ÷ 16 s = 1,25 m/s. Tốc độ chạy trung bình = 20 m ÷ 5 s = 4 m/s.'},
+    {en:'On the same distance–time graph (distance–time graph), the running line is much steeper than the walking line, because the runner covers the same distance in much less time.',vi:'Trên cùng một đồ thị quãng đường – thời gian (distance–time graph), đường chạy dốc hơn hẳn đường đi bộ, vì người chạy đi hết cùng quãng đường trong thời gian ít hơn nhiều.'},
+    {en:'Safety precautions (safety precautions) for the runner: use a safe, clear space, look where you are going, and wear suitable shoes.',vi:'Các biện pháp an toàn (safety precautions) cho người chạy: dùng một khoảng trống an toàn, quang đãng, nhìn đường khi chạy, và mang giày phù hợp.'},
+    {en:'I can sketch a distance–time graph for an object moving at a constant speed away from, or back towards, a starting position, and for a stationary object.',vi:'Con phác thảo được đồ thị quãng đường – thời gian (distance–time graph) cho một vật chuyển động với tốc độ không đổi ra xa, hoặc quay về, vị trí xuất phát, và cho một vật đứng yên (stationary).'},
+    {en:'I can tell whether objects are moving quickly or slowly, are stationary, and which direction they are moving, from a distance–time graph.',vi:'Con nhận biết được từ đồ thị vật đang chuyển động nhanh hay chậm, đang đứng yên (stationary), và đang chuyển động theo hướng nào.'},
+    {en:'I can draw a distance–time graph accurately and read values from it.',vi:'Con vẽ chính xác được một đồ thị quãng đường – thời gian (distance–time graph) và đọc được các giá trị từ nó.'}]}
+];
+const QUIZ=[
+ {q:{en:'On a distance–time graph, what does a horizontal (flat) line show?',vi:'Trên đồ thị quãng đường – thời gian (distance–time graph), một đường nằm ngang cho thấy điều gì?'},
+  o:[{en:'The object is moving very fast',vi:'Vật đang chuyển động rất nhanh'},{en:'The distance is growing quickly',vi:'Khoảng cách đang tăng nhanh'},{en:'The object is stationary — its distance does not change',vi:'Vật đứng yên (stationary) — khoảng cách của nó không đổi'}],a:2,
+  e:{en:'Time keeps passing along the horizontal axis, but the distance stays the same — so the object is not moving.',vi:'Thời gian vẫn trôi trên trục ngang, nhưng khoảng cách giữ nguyên — nên vật không chuyển động.'}},
+ {q:{en:'Two objects move away from the same start. Object X has the steeper line on a distance–time graph. What does that mean?',vi:'Hai vật cùng rời một điểm xuất phát. Vật X có đường dốc hơn trên đồ thị quãng đường – thời gian. Điều đó nghĩa là gì?'},
+  o:[{en:'X is moving faster — it covers more distance in each second',vi:'X chuyển động nhanh hơn — mỗi giây nó đi quãng dài hơn'},{en:'X is stationary',vi:'X đứng yên (stationary)'},{en:'X is moving back to the start',vi:'X đang quay về điểm xuất phát'}],a:0,
+  e:{en:'A steeper upward slope means a greater distance is covered in the same time — a higher speed.',vi:'Đường dốc lên dốc hơn nghĩa là trong cùng thời gian đi được quãng dài hơn — tốc độ (speed) cao hơn.'}},
+ {q:{en:'A train travels 2000 m from station P to station R in 200 s. What is its speed?',vi:'Một đoàn tàu đi 2000 m từ ga P tới ga R trong 200 s. Tốc độ của nó là bao nhiêu?'},
+  o:[{en:'20 m/s',vi:'20 m/s'},{en:'10 m/s',vi:'10 m/s'},{en:'5 m/s',vi:'5 m/s'}],a:1,
+  e:{en:'Speed = distance ÷ time = 2000 m ÷ 200 s = 10 m/s. (20 m/s is the faster return journey, which took only 100 s.)',vi:'Tốc độ (speed) = quãng đường ÷ thời gian = 2000 m ÷ 200 s = 10 m/s. (20 m/s là chuyến về nhanh hơn, chỉ mất 100 s.)'}},
+ {q:{en:'On a distance–time graph, a straight line slopes downwards. What is the object doing?',vi:'Trên đồ thị quãng đường – thời gian, một đường thẳng dốc xuống. Vật đang làm gì?'},
+  o:[{en:'Moving away faster and faster',vi:'Đi ra xa ngày càng nhanh'},{en:'Moving back towards its starting position',vi:'Đang quay về vị trí xuất phát của nó'},{en:'Staying stationary',vi:'Đang đứng yên (stationary)'}],a:1,
+  e:{en:'A downward slope means the distance from the start is getting smaller — the object is returning.',vi:'Đường dốc xuống nghĩa là khoảng cách từ điểm xuất phát đang nhỏ dần — vật đang quay về.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_speed',emoji:'🏃',en:'the speed of an object',vi:'tốc độ của một vật (speed)',keyw:true},
+ {id:'e_force',emoji:'💪',en:'the force on an object',vi:'lực tác dụng lên một vật (force)',keyw:false},
+ {id:'e_distance',emoji:'📍',en:'the distance at any moment',vi:'khoảng cách ở bất kỳ lúc nào (distance)',keyw:true},
+ {id:'e_mass',emoji:'⚖️',en:'the mass of an object',vi:'khối lượng của một vật (mass)',keyw:false},
+ {id:'e_time',emoji:'⏱️',en:'the time a journey takes',vi:'thời gian một hành trình mất (time)',keyw:true},
+ {id:'e_weight',emoji:'🏋️',en:'the weight of an object',vi:'trọng lượng của một vật (weight)',keyw:false},
+ {id:'e_stationary',emoji:'⏸️',en:'whether an object is stationary',vi:'vật có đứng yên hay không (stationary)',keyw:true},
+ {id:'e_colour',emoji:'🎨',en:'the colour of an object',vi:'màu của một vật (colour)',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_awayfast',emoji:'🚀',en:'Moving away from the start, fast',vi:'Đi ra xa điểm xuất phát, nhanh',ans:'away'},
+ {id:'x_rest',emoji:'🧍',en:'Standing still at a bus stop',vi:'Đứng yên ở trạm xe buýt',ans:'notaway'},
+ {id:'x_awayslow',emoji:'🐢',en:'Moving away from the start, slowly',vi:'Đi ra xa điểm xuất phát, chậm',ans:'away'},
+ {id:'x_return',emoji:'↩️',en:'Walking back towards the start',vi:'Đi quay về điểm xuất phát',ans:'notaway'},
+ {id:'x_awaysteady',emoji:'🚶',en:'Moving away at a constant speed',vi:'Đi ra xa với tốc độ không đổi (constant speed)',ans:'away'},
+ {id:'x_athome',emoji:'🏠',en:'At rest at home, not moving',vi:'Ở trạng thái nghỉ (at rest) ở nhà, không chuyển động',ans:'notaway'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'The total time for the whole aeroplane journey is',vi:'Tổng thời gian của cả hành trình máy bay là'},
+  wrong:1,
+  opts:[{en:'10 hours',vi:'10 giờ'},{en:'9 hours',vi:'9 giờ'}],
+  e:{en:'4.5 h out + 1.5 h waiting + 4.0 h back = 10 hours in total — cross out “9 hours”.',vi:'4,5 giờ đi + 1,5 giờ chờ + 4,0 giờ về = tổng cộng 10 giờ — hãy gạch bỏ “9 giờ”.'}},
+ {pre:{en:'The speed from A to B is 3600 km ÷ 4.5 h, which is',vi:'Tốc độ từ A tới B là 3600 km ÷ 4,5 giờ, tức là'},
+  wrong:1,
+  opts:[{en:'800 km/h',vi:'800 km/h'},{en:'900 km/h',vi:'900 km/h'}],
+  e:{en:'3600 ÷ 4.5 = 800 km/h — cross out “900 km/h” (that is the speed of the faster return flight).',vi:'3600 ÷ 4,5 = 800 km/h — hãy gạch bỏ “900 km/h” (đó là tốc độ của chuyến về nhanh hơn).'}},
+ {pre:{en:'The speed back from B to A is 3600 km ÷ 4.0 h, which is',vi:'Tốc độ từ B về A là 3600 km ÷ 4,0 giờ, tức là'},
+  wrong:0,
+  opts:[{en:'800 km/h',vi:'800 km/h'},{en:'900 km/h',vi:'900 km/h'}],
+  e:{en:'3600 ÷ 4.0 = 900 km/h — cross out “800 km/h”.',vi:'3600 ÷ 4,0 = 900 km/h — hãy gạch bỏ “800 km/h”.'}},
+ {pre:{en:'On the graph, the 1.5 hours spent at airport B is shown by',vi:'Trên đồ thị, 1,5 giờ ở sân bay B được thể hiện bằng'},
+  wrong:0,
+  opts:[{en:'a steep upward line',vi:'một đường dốc lên dốc đứng'},{en:'a horizontal line',vi:'một đường nằm ngang'}],
+  e:{en:'At B the distance does not change while time passes, so the line is horizontal — cross out “a steep upward line”.',vi:'Ở B khoảng cách không đổi trong khi thời gian trôi, nên đường đồ thị nằm ngang — hãy gạch bỏ “một đường dốc lên dốc đứng”.'}},
+ {pre:{en:'The return line on the graph is steeper because the aeroplane is',vi:'Đường quay về trên đồ thị dốc hơn vì máy bay đang'},
+  wrong:1,
+  opts:[{en:'faster on the way back',vi:'nhanh hơn trên đường về'},{en:'slower on the way back',vi:'chậm hơn trên đường về'}],
+  e:{en:'The return takes less time (4.0 h instead of 4.5 h) for the same distance, so the aeroplane is faster and its line is steeper — cross out “slower”.',vi:'Chuyến về mất ít thời gian hơn (4,0 giờ thay vì 4,5 giờ) cho cùng quãng đường, nên máy bay nhanh hơn và đường đồ thị dốc hơn — hãy gạch bỏ “chậm hơn”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-3-3';
+const SUMKEY='camb:sum:sci8-3-3';
+const BOT_CODE='sci8-3.3';
+let FOUND={wlk:false,flg:false,car:false,stp:false,dst:false,sta:false,trn:false,clk:false,stn:false,ste:false,gen:false,fla:false,bik:false,frd:false,shp:false,tap:false,run:false,tmr:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1walk:false, s1flag:false,
+  s2car:false, s2stop:false, s2dest:false, s2start:false,
+  s3train:false, s3clock:false, s3station:false,
+  s4steep:false, s4gentle:false, s4flat:false,
+  s5bike:false, s5friend:false, s5shop:false,
+  s6tape:false, s6runner:false, s6timer:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.s1walk&&T.s1flag;
+  if(i===1) return T.s2car&&T.s2stop&&T.s2dest&&T.s2start;
+  if(i===2) return T.s3train&&T.s3clock&&T.s3station;
+  if(i===3) return T.s4steep&&T.s4gentle&&T.s4flat;
+  if(i===4) return T.s5bike&&T.s5friend&&T.s5shop;
+  if(i===5) return T.s6tape&&T.s6runner&&T.s6timer;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Walker '+(T.s1walk?'✓':'…')+' · finish flag '+(T.s1flag?'✓':'…')+'. Tap them on the course!',
+                     'Người đi bộ '+(T.s1walk?'✓':'…')+' · cờ đích '+(T.s1flag?'✓':'…')+'. Hãy chạm vào chúng trên đường!');
+  if(i===1) return B('Journey parts: car A→B '+(T.s2car?'✓':'…')+' · stop at B '+(T.s2stop?'✓':'…')+' · destination C '+(T.s2dest?'✓':'…')+' · back to A '+(T.s2start?'✓':'…')+'.',
+                     'Các phần hành trình: ô tô A→B '+(T.s2car?'✓':'…')+' · dừng ở B '+(T.s2stop?'✓':'…')+' · điểm đến C '+(T.s2dest?'✓':'…')+' · quay về A '+(T.s2start?'✓':'…')+'.');
+  if(i===2) return B('Train '+(T.s3train?'✓':'…')+' · stopwatch '+(T.s3clock?'✓':'…')+' · station R '+(T.s3station?'✓':'…')+'. Graph values: 2000 m · 200 s out · 140 s stopped · 100 s back.',
+                     'Tàu '+(T.s3train?'✓':'…')+' · đồng hồ bấm giờ '+(T.s3clock?'✓':'…')+' · ga R '+(T.s3station?'✓':'…')+'. Giá trị đồ thị: 2000 m · đi 200 s · dừng 140 s · về 100 s.');
+  if(i===3) return B('Boards read: steep '+(T.s4steep?'✓':'…')+' · gentle '+(T.s4gentle?'✓':'…')+' · flat '+(T.s4flat?'✓':'…')+'.',
+                     'Bảng đã đọc: dốc đứng '+(T.s4steep?'✓':'…')+' · thoai thoải '+(T.s4gentle?'✓':'…')+' · nằm ngang '+(T.s4flat?'✓':'…')+'.');
+  if(i===4) return B('Marcus’s journey: bicycle '+(T.s5bike?'✓':'…')+' · friend (stop) '+(T.s5friend?'✓':'…')+' · shop '+(T.s5shop?'✓':'…')+'.',
+                     'Hành trình của Marcus: xe đạp '+(T.s5bike?'✓':'…')+' · bạn (dừng lại) '+(T.s5friend?'✓':'…')+' · cửa hàng '+(T.s5shop?'✓':'…')+'.');
+  if(i===5) return B('Investigation: 20 m course measured '+(T.s6tape?'✓':'…')+' · runner '+(T.s6runner?'✓':'…')+' · timer '+(T.s6timer?'✓':'…')+'. Simulation: walk 20 m in 16 s · run 20 m in 5 s.',
+                     'Khảo sát: đã đo đường 20 m '+(T.s6tape?'✓':'…')+' · người chạy '+(T.s6runner?'✓':'…')+' · đồng hồ '+(T.s6timer?'✓':'…')+'. Mô phỏng: đi bộ 20 m trong 16 s · chạy 20 m trong 5 s.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🚶',label:{en:'Walker',vi:'Người đi bộ'},got:T.s1walk},
+      {emoji:'🏁',label:{en:'Finish flag',vi:'Cờ đích'},got:T.s1flag}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🚗',label:{en:'Car A→B',vi:'Ô tô A→B'},got:T.s2car},
+      {emoji:'🛑',label:{en:'Stop at B',vi:'Dừng ở B'},got:T.s2stop},
+      {emoji:'🏠',label:{en:'Destination C',vi:'Điểm đến C'},got:T.s2dest},
+      {emoji:'🅰️',label:{en:'Back to A',vi:'Quay về A'},got:T.s2start}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🚂',label:{en:'Train',vi:'Tàu hỏa'},got:T.s3train},
+      {emoji:'⏱️',label:{en:'Stopwatch',vi:'Đồng hồ bấm giờ'},got:T.s3clock},
+      {emoji:'🚉',label:{en:'Station R',vi:'Ga R'},got:T.s3station}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'📈',label:{en:'Steep line — faster',vi:'Đường dốc đứng — nhanh hơn'},got:T.s4steep},
+      {emoji:'📈',label:{en:'Gentle line — slower',vi:'Đường thoai thoải — chậm hơn'},got:T.s4gentle},
+      {emoji:'➖',label:{en:'Flat line — stationary',vi:'Đường ngang — đứng yên'},got:T.s4flat}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🚲',label:{en:'Steady ride',vi:'Đoạn đạp đều'},got:T.s5bike},
+      {emoji:'🧍',label:{en:'Stop to talk',vi:'Dừng nói chuyện'},got:T.s5friend},
+      {emoji:'🏪',label:{en:'Slower ride to the shop',vi:'Đoạn đạp chậm hơn tới cửa hàng'},got:T.s5shop}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'📏',label:{en:'20 m course measured',vi:'Đã đo đường 20 m'},got:T.s6tape},
+      {emoji:'🏃',label:{en:'Runner',vi:'Người chạy'},got:T.s6runner},
+      {emoji:'⏰',label:{en:'Timer',vi:'Đồng hồ'},got:T.s6timer}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookBoard);
+    b.onclick=()=>focusThing('steepboard');
+    box.appendChild(b);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusThing('walker'); setTimeout(()=>focusThing('flag'),900); }
+  else if(i===1){ focusThing('car'); setTimeout(()=>focusThing('stopsign'),900); }
+  else if(i===2){ focusThing('train'); setTimeout(()=>focusThing('stationr'),900); }
+  else if(i===3){ focusThing('steepboard'); setTimeout(()=>focusThing('flatboard'),900); }
+  else if(i===4){ focusThing('bike'); setTimeout(()=>focusThing('shop'),900); }
+  else if(i===5){ focusThing('tape'); setTimeout(()=>focusThing('runner'),900); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  const sections=(FOUND.car?1:0)+(FOUND.stp?1:0)+(FOUND.dst?1:0)+(FOUND.sta?1:0);
+  const lines=(FOUND.ste?1:0)+(FOUND.gen?1:0)+(FOUND.fla?1:0);
+  const speeds=(doneSteps.has(2)?2:0)+(doneSteps.has(5)?2:0);
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recSections)+'</span><b>'+sections+' / 4</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recLines)+'</span><b>'+lines+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recSpeeds)+'</span><b>'+speeds+' / 4</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didWalk},
+    {got:doneSteps.has(1),label:STR.didCar},
+    {got:doneSteps.has(2),label:STR.didTrain},
+    {got:doneSteps.has(3),label:STR.didSketch},
+    {got:doneSteps.has(4),label:STR.didMarcus},
+    {got:doneSteps.has(5),label:STR.didInvest}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group,x,z){ group.position.set(x,0,z); group.userData.baseY=0; group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildPerson(bodyC,skinC){
+  const g=new THREE.Group();
+  [-0.09,0.09].forEach(x=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.5,8),stdMat(0x33424f,0.8));
+    leg.position.set(x,0.25,0); g.add(leg);
+  });
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.19,0.62,12),stdMat(bodyC,0.7)));
+  body.position.y=0.81; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.19,14,10),stdMat(skinC,0.6));
+  head.position.y=1.31; g.add(head);
+  return g;
+}
+function buildFlag(){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,1.5,8),stdMat(0x8d99a6,0.6));
+  pole.position.y=0.75; g.add(pole);
+  const fl=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.34,0.03),stdMat(0xd23c2a,0.7)));
+  fl.position.set(0.3,1.28,0); g.add(fl);
+  return g;
+}
+function buildCar(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.3,0.55),stdMat(0x2e7fd9,0.45)));
+  body.position.y=0.38; g.add(body);
+  const cabin=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.6,0.28,0.5),stdMat(0xbfe3f2,0.35)));
+  cabin.position.set(-0.05,0.66,0); g.add(cabin);
+  [[-0.38,0.29],[0.38,0.29],[-0.38,-0.29],[0.38,-0.29]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.08,14),stdMat(0x222a33,0.7));
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.13,p[1]); g.add(w);
+  });
+  return g;
+}
+function buildStop(){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.3,8),stdMat(0x8d99a6,0.6));
+  pole.position.y=0.65; g.add(pole);
+  const sign=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.06,8),stdMat(0xd23c2a,0.6)));
+  sign.rotation.x=Math.PI/2; sign.position.y=1.35; g.add(sign);
+  return g;
+}
+function buildHouse(bodyC,roofC,awning){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.7,0.7),stdMat(bodyC,0.8)));
+  base.position.y=0.35; g.add(base);
+  const roof=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.68,0.4,4),stdMat(roofC,0.7)));
+  roof.rotation.y=Math.PI/4; roof.position.y=0.9; g.add(roof);
+  const door=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.4,0.03),stdMat(0x5b4632,0.8));
+  door.position.set(0,0.2,0.36); g.add(door);
+  if(awning){
+    const aw=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.06,0.5),stdMat(0xe07b24,0.7)));
+    aw.position.set(0,0.62,0.45); g.add(aw);
+  }
+  return g;
+}
+function buildSign(boardC){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.15,8),stdMat(0x8d99a6,0.6));
+  pole.position.y=0.57; g.add(pole);
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.72,0.44,0.05),stdMat(boardC,0.6)));
+  board.position.y=1.2; g.add(board);
+  return g;
+}
+function buildTrain(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.25,0.48,0.55),stdMat(0x39424e,0.55)));
+  body.position.y=0.5; g.add(body);
+  const cab=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.35,0.3,0.5),stdMat(0xd23c2a,0.55)));
+  cab.position.set(0.35,0.88,0); g.add(cab);
+  const chim=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.09,0.3,10),stdMat(0x141a21,0.6));
+  chim.position.set(-0.4,0.88,0); g.add(chim);
+  [[-0.4,0.29],[0.4,0.29],[-0.4,-0.29],[0.4,-0.29]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.08,14),stdMat(0x141a21,0.7));
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.14,p[1]); g.add(w);
+  });
+  return g;
+}
+function buildWatch(){
+  const g=new THREE.Group();
+  const stem=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.22,0.09),stdMat(0x8d99a6,0.6));
+  stem.position.y=0.11; g.add(stem);
+  const disc=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,0.09,20),stdMat(0xf2b134,0.5)));
+  disc.rotation.x=Math.PI/2; disc.position.y=0.45; g.add(disc);
+  const btn=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.1,8),stdMat(0xb03a3a,0.6));
+  btn.position.y=0.76; g.add(btn);
+  return g;
+}
+function buildBoard(slope,lineC){
+  const g=new THREE.Group();
+  [-0.42,0.42].forEach(x=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,1.0,8),stdMat(0x8d99a6,0.7));
+    post.position.set(x,0.5,0); g.add(post);
+  });
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.05,0.85,0.05),stdMat(0xffffff,0.95)));
+  board.position.y=1.05; g.add(board);
+  const axH=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.03,0.02),stdMat(0x555f6b,0.9));
+  axH.position.set(0,0.72,0.04); g.add(axH);
+  const axV=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.65,0.02),stdMat(0x555f6b,0.9));
+  axV.position.set(-0.42,1.05,0.04); g.add(axV);
+  const line=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.045,0.02),stdMat(lineC,0.7)));
+  line.position.set(0,1.05,0.05); line.rotation.z=slope; g.add(line);
+  return g;
+}
+function buildBike(){
+  const g=new THREE.Group();
+  [-0.34,0.34].forEach(x=>{
+    const w=new THREE.Mesh(new THREE.TorusGeometry(0.26,0.035,8,20),stdMat(0x222a33,0.6));
+    w.position.set(x,0.27,0); g.add(w);
+  });
+  const bar=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.62,8),stdMat(0xd23c2a,0.6));
+  bar.rotation.z=Math.PI/2; bar.position.y=0.55; g.add(bar);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.3,8),stdMat(0x8d99a6,0.6));
+  post.position.set(0.3,0.62,0); g.add(post);
+  return g;
+}
+function buildTape(){
+  const g=new THREE.Group();
+  const disc=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.13,18),stdMat(0xf2b134,0.6)));
+  disc.rotation.x=Math.PI/2; disc.position.y=0.32; g.add(disc);
+  const strip=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.06,0.02),stdMat(0xf7e08a,0.7));
+  strip.position.set(0.42,0.1,0); g.add(strip);
+  return g;
+}
+function buildTimer(){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,1.0,8),stdMat(0x8d99a6,0.6));
+  pole.position.y=0.5; g.add(pole);
+  const disc=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.07,20),stdMat(0xffffff,0.5)));
+  disc.rotation.x=Math.PI/2; disc.position.y=1.08; g.add(disc);
+  const hand=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.2,0.02),stdMat(0xd23c2a,0.6));
+  hand.position.set(0,1.14,0.05); g.add(hand);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdcecf7);
+  scene3.fog=new THREE.Fog(0xdcecf7,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13,0.35,7.5),stdMat(0x9db98a,0.95));
+  bench.position.set(0.3,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc7d3de,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8f1f8,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  reg('walker',buildPerson(0x2e7fd9,0xf2c09a),-5.0,1.6);
+  reg('flag',buildFlag(),-3.7,1.6);
+  reg('car',buildCar(),-2.4,1.6);
+  reg('stopsign',buildStop(),-1.1,1.6);
+  reg('destc',buildHouse(0xf7e8c9,0xb08954,false),0.2,1.6);
+  reg('starta',buildSign(0x2e7fd9),1.5,1.6);
+  reg('train',buildTrain(),2.9,1.6);
+  reg('stationr',buildSign(0xd23c2a),4.2,1.6);
+  reg('stopwatch',buildWatch(),5.4,1.6);
+  reg('steepboard',buildBoard(0.95,0xd23c2a),-5.0,-1.7);
+  reg('gentleboard',buildBoard(0.42,0xe07b24),-3.6,-1.7);
+  reg('flatboard',buildBoard(0,0x2e7fd9),-2.2,-1.7);
+  reg('bike',buildBike(),-0.8,-1.7);
+  reg('friend',buildPerson(0x2e9e4f,0xf2c09a),0.6,-1.7);
+  reg('shop',buildHouse(0xc9e4f7,0x44586e,true),2.0,-1.7);
+  reg('tape',buildTape(),3.4,-1.7);
+  reg('runner',buildPerson(0xd23c2a,0xc98a5a),4.7,-1.7);
+  reg('timer',buildTimer(),5.9,-1.7);
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.55); p.position.set(0,0.8,0); addProxy('walker',p,G.walker); }
+  { const p=sphProxy(0.45); p.position.set(0,0.8,0); addProxy('flag',p,G.flag); }
+  { const p=sphProxy(0.65); p.position.set(0,0.45,0); addProxy('car',p,G.car); }
+  { const p=sphProxy(0.45); p.position.set(0,0.9,0); addProxy('stopsign',p,G.stopsign); }
+  { const p=sphProxy(0.6); p.position.set(0,0.6,0); addProxy('destc',p,G.destc); }
+  { const p=sphProxy(0.45); p.position.set(0,0.9,0); addProxy('starta',p,G.starta); }
+  { const p=sphProxy(0.65); p.position.set(0,0.5,0); addProxy('train',p,G.train); }
+  { const p=sphProxy(0.45); p.position.set(0,0.9,0); addProxy('stationr',p,G.stationr); }
+  { const p=sphProxy(0.45); p.position.set(0,0.4,0); addProxy('stopwatch',p,G.stopwatch); }
+  { const p=sphProxy(0.6); p.position.set(0,1.0,0); addProxy('steepboard',p,G.steepboard); }
+  { const p=sphProxy(0.6); p.position.set(0,1.0,0); addProxy('gentleboard',p,G.gentleboard); }
+  { const p=sphProxy(0.6); p.position.set(0,1.0,0); addProxy('flatboard',p,G.flatboard); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('bike',p,G.bike); }
+  { const p=sphProxy(0.55); p.position.set(0,0.8,0); addProxy('friend',p,G.friend); }
+  { const p=sphProxy(0.6); p.position.set(0,0.6,0); addProxy('shop',p,G.shop); }
+  { const p=sphProxy(0.45); p.position.set(0,0.3,0); addProxy('tape',p,G.tape); }
+  { const p=sphProxy(0.55); p.position.set(0,0.8,0); addProxy('runner',p,G.runner); }
+  { const p=sphProxy(0.5); p.position.set(0,0.8,0); addProxy('timer',p,G.timer); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['walker','flag'],
+  ['car','stopsign','destc','starta'],
+  ['train','stopwatch','stationr'],
+  ['steepboard','gentleboard','flatboard'],
+  ['bike','friend','shop'],
+  ['tape','runner','timer']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='walker'){ T.s1walk=true; FOUND.wlk=true; }
+    if(id==='flag'){ T.s1flag=true; FOUND.flg=true; }
+  }else if(curStep===1){
+    if(id==='car'){ T.s2car=true; FOUND.car=true; }
+    if(id==='stopsign'){ T.s2stop=true; FOUND.stp=true; }
+    if(id==='destc'){ T.s2dest=true; FOUND.dst=true; }
+    if(id==='starta'){ T.s2start=true; FOUND.sta=true; }
+  }else if(curStep===2){
+    if(id==='train'){ T.s3train=true; FOUND.trn=true; }
+    if(id==='stopwatch'){ T.s3clock=true; FOUND.clk=true; }
+    if(id==='stationr'){ T.s3station=true; FOUND.stn=true; }
+  }else if(curStep===3){
+    if(id==='steepboard'){ T.s4steep=true; FOUND.ste=true; }
+    if(id==='gentleboard'){ T.s4gentle=true; FOUND.gen=true; }
+    if(id==='flatboard'){ T.s4flat=true; FOUND.fla=true; }
+  }else if(curStep===4){
+    if(id==='bike'){ T.s5bike=true; FOUND.bik=true; }
+    if(id==='friend'){ T.s5friend=true; FOUND.frd=true; }
+    if(id==='shop'){ T.s5shop=true; FOUND.shp=true; }
+  }else if(curStep===5){
+    if(id==='tape'){ T.s6tape=true; FOUND.tap=true; }
+    if(id==='runner'){ T.s6runner=true; FOUND.run=true; }
+    if(id==='timer'){ T.s6timer=true; FOUND.tmr=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* every object stays on the course for every step — taps are scoped by STEP_TARGETS */
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — what a graph can tell us */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — slopes up or not */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binUp);
+  $('ex2BinNot').innerHTML=bi(STR.binNotUp);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='away'?'↗':'→')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong answer */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('away');
+$('ex2BinNot').onclick=()=>ex2Place('notaway');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.wlk=false; FOUND.flg=false; }
+  if(step===1){ FOUND.car=false; FOUND.stp=false; FOUND.dst=false; FOUND.sta=false; }
+  if(step===2){ FOUND.trn=false; FOUND.clk=false; FOUND.stn=false; }
+  if(step===3){ FOUND.ste=false; FOUND.gen=false; FOUND.fla=false; }
+  if(step===4){ FOUND.bik=false; FOUND.frd=false; FOUND.shp=false; }
+  if(step===5){ FOUND.tap=false; FOUND.run=false; FOUND.tmr=false; }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='away'||s.exAns.a2[id]==='notaway')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1walk=!!FOUND.wlk; t.s1flag=!!FOUND.flg; }
+  else if(i===1){ t.s2car=!!FOUND.car; t.s2stop=!!FOUND.stp; t.s2dest=!!FOUND.dst; t.s2start=!!FOUND.sta; }
+  else if(i===2){ t.s3train=!!FOUND.trn; t.s3clock=!!FOUND.clk; t.s3station=!!FOUND.stn; }
+  else if(i===3){ t.s4steep=!!FOUND.ste; t.s4gentle=!!FOUND.gen; t.s4flat=!!FOUND.fla; }
+  else if(i===4){ t.s5bike=!!FOUND.bik; t.s5friend=!!FOUND.frd; t.s5shop=!!FOUND.shp; }
+  else if(i===5){ t.s6tape=!!FOUND.tap; t.s6runner=!!FOUND.run; t.s6timer=!!FOUND.tmr; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-3-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>7.2 Food chains and webs — Chuỗi và lưới thức ăn · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.producer{background:#0d9d58}
+.binbtn.herbivore{background:#d9930d}
+.binbtn.carnivore{background:#b03a3a}
+.chbtn{flex:1;font-size:18px;font-weight:800;padding:12px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.3}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.chrow{display:flex;gap:8px;margin-top:10px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="7.2 Food chains and webs" data-vi="7.2 Chuỗi và lưới thức ăn">7.2 Food chains and webs</span>
+    <span class="eqchip i18n" data-en="Unit 7 · Microorganisms in the environment" data-vi="Bài 7 · Vi sinh vật trong môi trường (Microorganisms in the environment)">Unit 7 · Microorganisms in the environment</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does energy move from one organism to the next?" data-vi="Năng lượng di chuyển từ sinh vật này sang sinh vật khác như thế nào?">How does energy move from one organism to the next?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Sun" data-vi="Mặt trời (Sun)">Sun</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Producer" data-vi="Sinh vật sản xuất (producer)">Producer</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Consumer" data-vi="Sinh vật tiêu thụ (consumer)">Consumer</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Food web" data-vi="Lưới thức ăn (food web)">Food web</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the organisms on the plains!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các sinh vật trên đồng cỏ!">🖱 Drag to look around · Scroll to zoom · Tap the organisms on the plains!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 7 Microorganisms in the environment · Section 7.2. The plains in this lesson are a simulation." data-vi="Khoa học Cambridge cấp hai cơ sở 7 · Bài 7 Vi sinh vật trong môi trường · Mục 7.2. Đồng cỏ trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 7 Microorganisms in the environment · Section 7.2. The plains in this lesson are a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 7 Microorganisms in the environment, section 7.2, pages 232–237; Workbook 7 (ISBN 9781108742818), pages 131–134. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 7 Vi sinh vật trong môi trường (Microorganisms in the environment), mục 7.2, trang 232–237; Workbook 7 (ISBN 9781108742818), trang 131–134. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 7 Microorganisms in the environment, section 7.2, pages 232–237; Workbook 7 (ISBN 9781108742818), pages 131–134. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: construct food chains and food webs with arrows showing energy transfer; use the correct terms for the organisms in a chain or web; judge how well chains and webs describe feeding relationships. Key words: carnivore, consumer, ecology, food chain, food web, herbivore, predator, prey, producer." data-vi="Mục tiêu: xây dựng chuỗi thức ăn (food chain) và lưới thức ăn (food web) với các mũi tên chỉ sự truyền năng lượng; dùng đúng thuật ngữ cho các sinh vật trong chuỗi hoặc lưới; đánh giá mức độ mô tả quan hệ ăn uống của chuỗi và lưới thức ăn. Từ khóa: carnivore (động vật ăn thịt), consumer (sinh vật tiêu thụ), ecology (sinh thái học), food chain (chuỗi thức ăn), food web (lưới thức ăn), herbivore (động vật ăn cỏ), predator (động vật săn mồi), prey (con mồi), producer (sinh vật sản xuất).">Objectives: construct food chains and food webs with arrows showing energy transfer; use the correct terms for the organisms in a chain or web; judge how well chains and webs describe feeding relationships. Key words: carnivore, consumer, ecology, food chain, food web, herbivore, predator, prey, producer.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — most of them by tapping organisms in the 3D plains scene, in the order energy flows. The lesson checks the action itself (the dark 'Show me' line), and the conclusion stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the plains' panel only move the camera; building a chain means tapping the organisms themselves. The key idea to watch: arrows in a food chain point in the direction the energy travels — from the organism that is eaten to the one that eats it." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — phần lớn là chạm vào các sinh vật ngay trong khung cảnh đồng cỏ 3D, theo đúng thứ tự năng lượng di chuyển. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và kết luận chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên đồng cỏ' chỉ di chuyển camera; muốn xây chuỗi thì phải chạm vào chính các sinh vật. Ý quan trọng cần nhớ: mũi tên trong chuỗi thức ăn chỉ theo hướng năng lượng di chuyển — từ sinh vật bị ăn tới sinh vật ăn nó.">How it works: each step asks for one real action — most of them by tapping organisms in the 3D plains scene, in the order energy flows. The lesson checks the action itself (the dark 'Show me' line), and the conclusion stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the plains' panel only move the camera; building a chain means tapping the organisms themselves. The key idea to watch: arrows in a food chain point in the direction the energy travels — from the organism that is eaten to the one that eats it.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-7-2 "Food chains and webs" (Science 7, Unit 7)
+   Loaded between camb-engine.js and camb-bridge.js. Shared-engine build:
+   all rule-shaped mechanics (gates, locks, scoring, wallet, bot) live in
+   camb-engine.js; this script carries only this lesson's data, scene and
+   the registered CAMB_LESSON hooks (see migration/engine/API.md).
+   ===================================================================== */
+
+/* ================= organisms on the plains ================= */
+const THINGS={
+  sun:      {emoji:'☀️', name:{en:'Sun',vi:'Mặt trời (Sun)'},                 short:{en:'Sun',vi:'Mặt trời'},        ring:0.9,  labelY:1.15, fx:0,    fz:0,    fr:10.5},
+  rice:     {emoji:'🌾', name:{en:'Rice plant',vi:'Cây lúa (rice)'},          short:{en:'Rice',vi:'Lúa'},            ring:0.75, labelY:1.25, fx:-4.4, fz:1.9,  fr:5.2},
+  grass:    {emoji:'🌱', name:{en:'Grass',vi:'Cỏ (grass)'},                   short:{en:'Grass',vi:'Cỏ'},            ring:0.8,  labelY:0.95, fx:-1.7, fz:-2.1, fr:5.2},
+  acacia:   {emoji:'🌳', name:{en:'Acacia tree',vi:'Cây keo (acacia)'},       short:{en:'Acacia',vi:'Cây keo'},      ring:0.95, labelY:2.9,  fx:3.9,  fz:-2.2, fr:6.4},
+  deer:     {emoji:'🦌', name:{en:'Deer',vi:'Hươu (deer)'},                   short:{en:'Deer',vi:'Hươu'},           ring:0.55, labelY:1.25, fx:-1.3, fz:0.4,  fr:5.0},
+  tiger:    {emoji:'🐅', name:{en:'Tiger',vi:'Hổ (tiger)'},                   short:{en:'Tiger',vi:'Hổ'},            ring:0.6,  labelY:1.3,  fx:1.6,  fz:0.9,  fr:5.2},
+  langur:   {emoji:'🐒', name:{en:'Langur monkey',vi:'Khỉ langur (langur)'},  short:{en:'Langur',vi:'Khỉ langur'},   ring:0.5,  labelY:1.15, fx:3.3,  fz:1.6,  fr:5.0},
+  leopard:  {emoji:'🐆', name:{en:'Leopard',vi:'Báo hoa mai (leopard)'},      short:{en:'Leopard',vi:'Báo'},         ring:0.58, labelY:1.25, fx:-3.1, fz:0.2,  fr:5.2},
+  springbok:{emoji:'🐐', name:{en:'Springbok',vi:'Linh dương springbok (springbok)'}, short:{en:'Springbok',vi:'Springbok'}, ring:0.55, labelY:1.3, fx:2.4, fz:-1.5, fr:5.0},
+  cheetah:  {emoji:'🐆', name:{en:'Cheetah',vi:'Báo gêpa (cheetah)'},         short:{en:'Cheetah',vi:'Báo gêpa'},    ring:0.58, labelY:1.25, fx:4.6,  fz:-0.5, fr:5.2},
+  zebra:    {emoji:'🦓', name:{en:'Zebra',vi:'Ngựa vằn (zebra)'},             short:{en:'Zebra',vi:'Ngựa vằn'},      ring:0.58, labelY:1.35, fx:-4.5, fz:-1.4, fr:5.4},
+  termite:  {emoji:'🐜', name:{en:'Termites',vi:'Mối (termites)'},            short:{en:'Termites',vi:'Mối'},        ring:0.5,  labelY:0.95, fx:0.6,  fz:2.3,  fr:4.6},
+  aardvark: {emoji:'🐾', name:{en:'Aardvark',vi:'Lợn đất (aardvark)'},        short:{en:'Aardvark',vi:'Lợn đất'},    ring:0.55, labelY:1.1,  fx:1.9,  fz:2.6,  fr:5.0},
+  arun:     {emoji:'🧍', name:{en:'Arun',vi:'Arun (bạn học sinh)'},           short:{en:'Arun',vi:'Arun'},           ring:0.5,  labelY:1.85, fx:-2.9, fz:2.2,  fr:5.0}
+};
+const FOCUSORDER=['sun','rice','grass','acacia','deer','tiger','langur','leopard','springbok','cheetah','zebra','termite','aardvark','arun'];
+/* the ordered chains the learner builds by tapping, step index -> ids in energy-flow order */
+const CHAINS={0:['grass','deer','tiger'],1:['sun','rice','arun'],4:['acacia','springbok','cheetah']};
+const CHAINLBL={
+  0:{en:'grass → deer → tiger',vi:'cỏ (grass) → hươu (deer) → hổ (tiger)'},
+  1:{en:'Sun → rice → Arun',vi:'Mặt trời (Sun) → lúa (rice) → Arun'},
+  4:{en:'acacia → springbok → cheetah',vi:'cây keo (acacia) → springbok → báo gêpa (cheetah)'}
+};
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the plains',vi:'Trên đồng cỏ'},
+  u1Brief:{en:'Tap a name to LOOK at the organism. Looking is not building — to build a chain, tap the organisms themselves, in energy-flow order!',vi:'Chạm vào một tên để NGẮM sinh vật đó. Ngắm chưa phải là xây chuỗi — muốn xây chuỗi thức ăn (food chain), hãy chạm vào chính các sinh vật, theo thứ tự năng lượng di chuyển!'},
+  u2T:{en:'My food web',vi:'Lưới thức ăn của con'},
+  u2Brief:{en:'The chains and links you have built so far.',vi:'Các chuỗi và mối liên kết con đã xây được.'},
+  grpChain1:{en:'🦌 First chain: grass → deer → tiger',vi:'🦌 Chuỗi đầu tiên: cỏ → hươu → hổ'},
+  grpSun:{en:'🌾 Sun energy: Sun → rice → Arun',vi:'🌾 Năng lượng từ Mặt trời: Mặt trời → lúa → Arun'},
+  grpWeb:{en:'🕸 Web links: langur + leopard added',vi:'🕸 Thêm mắt xích: khỉ langur + báo hoa mai'},
+  grpAfrican:{en:'🌳 African chain: acacia → springbok → cheetah',vi:'🌳 Chuỗi châu Phi: cây keo → springbok → báo gêpa'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your food-web checklist.',vi:'Danh sách kiểm tra lưới thức ăn của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundChain:{en:'I built my first food chain',vi:'Con đã xây chuỗi thức ăn đầu tiên'},
+  foundSun:{en:'I traced energy from the Sun',vi:'Con đã lần theo năng lượng từ Mặt trời'},
+  foundSorted:{en:'I sorted producers, herbivores and carnivores',vi:'Con đã phân loại sinh vật sản xuất, động vật ăn cỏ và ăn thịt'},
+  foundWeb:{en:'I added links to make a food web',vi:'Con đã thêm mắt xích để tạo lưới thức ăn'},
+  foundAfrican:{en:'I traced a chain in the African web',vi:'Con đã lần theo một chuỗi trong lưới châu Phi'},
+  foundModel:{en:'I judged the food web as a model',vi:'Con đã đánh giá lưới thức ăn như một mô hình'},
+  binProducer:{en:'PRODUCER 🌱',vi:'SINH VẬT SẢN XUẤT 🌱'},
+  binHerbivore:{en:'HERBIVORE 🦌',vi:'ĂN CỎ (HERBIVORE) 🦌'},
+  binCarnivore:{en:'CARNIVORE 🐅',vi:'ĂN THỊT (CARNIVORE) 🐅'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 7.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 7.2'},
+  exIntro:{en:'Workbook tasks for this lesson, in the book order: Focus, Practice, Challenge. They do not change your steps.',vi:'Các bài tập kiểu sách bài tập (Workbook) cho bài này, theo đúng thứ tự của sách: Focus, Practice, Challenge. Chúng không ảnh hưởng tới các bước học.'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 7.2A · Focus — Arctic hares: complete the chains',vi:'Bài tập 7.2A · Focus — Thỏ Bắc cực: hoàn thành các chuỗi'},
+  ex1Inst:{en:'Four Arctic food chains share one animal — the Arctic hare. Choose the correct word to complete each statement and turn the chains into one food web.',vi:'Bốn chuỗi thức ăn Bắc cực có chung một con vật — thỏ Bắc cực (Arctic hare). Chọn từ đúng để hoàn thành mỗi câu và nối các chuỗi thành một lưới thức ăn (food web).'},
+  ex2T:{en:'Exercise 7.2B · Practice — The sea grass web: name each role',vi:'Bài tập 7.2B · Practice — Lưới cỏ biển: gọi tên từng vai trò'},
+  ex2Inst:{en:'In a sea grass forest, energy flows from sea grass and phytoplankton to the animals that eat them, and on to their predators. Choose the correct term for each organism.',vi:'Trong rừng cỏ biển (sea grass), năng lượng đi từ cỏ biển và thực vật phù du (phytoplankton) tới các con vật ăn chúng, rồi tới kẻ săn mồi của chúng. Chọn thuật ngữ đúng cho mỗi sinh vật.'},
+  ex3T:{en:'Exercise 7.2C · Challenge — African plains: predators and prey',vi:'Bài tập 7.2C · Challenge — Đồng cỏ châu Phi: kẻ săn mồi và con mồi'},
+  ex3Inst:{en:'Use the feeding information from the grassy plains to choose the correct word in each statement.',vi:'Dùng thông tin về quan hệ ăn uống ở đồng cỏ để chọn từ đúng trong mỗi câu.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'carnivore',vi:'động vật ăn thịt'},
+  {en:'consumer',vi:'sinh vật tiêu thụ'},
+  {en:'ecology',vi:'sinh thái học'},
+  {en:'food chain',vi:'chuỗi thức ăn'},
+  {en:'food web',vi:'lưới thức ăn'},
+  {en:'herbivore',vi:'động vật ăn cỏ'},
+  {en:'predator',vi:'động vật săn mồi'},
+  {en:'prey',vi:'con mồi'},
+  {en:'producer',vi:'sinh vật sản xuất'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started — your first chain',vi:'Khởi động — chuỗi đầu tiên'}, word:{en:'food chain',vi:'chuỗi thức ăn'},
+  q:{en:'Tigers eat deer. Deer eat grass. Can you build this food chain?',vi:'Hổ ăn hươu. Hươu ăn cỏ. Con xây được chuỗi thức ăn (food chain) này không?'},
+  act:{en:'Tap the organisms in the order the energy flows: first the grass, then the deer that eats it, then the tiger.',vi:'Chạm vào các sinh vật theo thứ tự năng lượng di chuyển: đầu tiên là cỏ (grass), rồi hươu (deer) ăn cỏ, rồi hổ (tiger).'},
+  see:{en:'Each correct organism bounces, gets a ring, and joins your chain.',vi:'Mỗi sinh vật đúng sẽ nảy lên, có vòng tròn và nhập vào chuỗi của con.'},
+  concl:[
+    {en:'A food chain shows how energy passes from one organism to the next: grass → deer → tiger.',vi:'Chuỗi thức ăn (food chain) cho thấy năng lượng truyền từ sinh vật này sang sinh vật khác: cỏ → hươu → hổ.'},
+    {en:'The arrows point the way the energy travels — from the food to the animal that eats it.',vi:'Các mũi tên chỉ theo hướng năng lượng di chuyển — từ thức ăn tới con vật ăn nó.'}]},
+ {tag:{en:'Energy starts in the Sun',vi:'Năng lượng bắt đầu từ Mặt trời'}, word:{en:'producer',vi:'sinh vật sản xuất'},
+  q:{en:'Arun eats rice for lunch. Where did the energy in the rice come from?',vi:'Arun ăn cơm vào bữa trưa. Năng lượng trong gạo đến từ đâu?'},
+  act:{en:'Trace the energy: tap the Sun, then the rice plant that stored the energy, then Arun who eats the rice.',vi:'Lần theo năng lượng: chạm vào Mặt trời (Sun), rồi cây lúa (rice) đã trữ năng lượng, rồi Arun người ăn cơm.'},
+  see:{en:'Your chain grows link by link: Sun → rice → Arun.',vi:'Chuỗi của con dài ra từng mắt xích: Mặt trời → lúa → Arun.'},
+  concl:[
+    {en:'The energy in food begins in the Sun. Plants use sunlight energy to make their own food.',vi:'Năng lượng trong thức ăn bắt đầu từ Mặt trời (Sun). Cây dùng năng lượng ánh sáng mặt trời để tự làm thức ăn.'},
+    {en:'The first organism in a food chain is a producer — the rice plant produces food. Arun is a consumer: he eats ready-made food.',vi:'Sinh vật đầu tiên trong chuỗi thức ăn là sinh vật sản xuất (producer) — cây lúa tạo ra thức ăn. Arun là sinh vật tiêu thụ (consumer): bạn ấy ăn thức ăn có sẵn.'}]},
+ {tag:{en:'Name the roles',vi:'Gọi tên các vai trò'}, word:{en:'herbivore',vi:'động vật ăn cỏ'},
+  q:{en:'Can you sort the organisms into producers, herbivores and carnivores?',vi:'Con phân loại được các sinh vật thành sinh vật sản xuất (producer), động vật ăn cỏ (herbivore) và động vật ăn thịt (carnivore) không?'},
+  act:{en:'Tap a card, then tap PRODUCER, HERBIVORE or CARNIVORE.',vi:'Chạm vào một thẻ, rồi chạm PRODUCER (sản xuất), HERBIVORE (ăn cỏ) hoặc CARNIVORE (ăn thịt).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Producers make their own food. Every other organism in a chain is a consumer.',vi:'Sinh vật sản xuất (producer) tự làm thức ăn. Mọi sinh vật còn lại trong chuỗi đều là sinh vật tiêu thụ (consumer).'},
+    {en:'Consumers that eat only plants are herbivores. Consumers that eat other animals are carnivores.',vi:'Sinh vật tiêu thụ chỉ ăn cây là động vật ăn cỏ (herbivore). Sinh vật tiêu thụ ăn các con vật khác là động vật ăn thịt (carnivore).'}]},
+ {tag:{en:'From a chain to a web',vi:'Từ chuỗi thành lưới'}, word:{en:'food web',vi:'lưới thức ăn'},
+  q:{en:'Tigers also eat langur monkeys, and leopards also eat deer. Can you add both links?',vi:'Hổ còn ăn khỉ langur, và báo hoa mai cũng ăn hươu. Con thêm được cả hai mắt xích không?'},
+  act:{en:'Tap the langur (the tiger eats it too) and tap the leopard (it eats deer too). Now the chains join into a web.',vi:'Chạm vào khỉ langur (langur) (hổ cũng ăn nó) và chạm vào báo hoa mai (leopard) (nó cũng ăn hươu). Giờ các chuỗi nối lại thành một lưới.'},
+  see:{en:'Each link you add is ticked off in the step card.',vi:'Mỗi mắt xích con thêm sẽ được đánh dấu trong thẻ bước.'},
+  concl:[
+    {en:'When chains join and share organisms, the diagram is a food web, not just a food chain.',vi:'Khi các chuỗi nối lại và dùng chung sinh vật, sơ đồ là lưới thức ăn (food web), không chỉ là chuỗi thức ăn.'},
+    {en:'Animals that catch, kill and eat other animals are predators; the animals they eat are their prey. The tiger and the leopard are predators — the langur and the deer are prey.',vi:'Con vật bắt, giết và ăn con vật khác là động vật săn mồi (predator); con vật bị ăn là con mồi (prey) của chúng. Hổ và báo hoa mai là kẻ săn mồi — khỉ langur và hươu là con mồi.'}]},
+ {tag:{en:'Trace a chain in the web',vi:'Lần theo một chuỗi trong lưới'}, word:{en:'ecology',vi:'sinh thái học'},
+  q:{en:'On the African plains, can you trace the chain that starts at the acacia tree and ends at the cheetah?',vi:'Trên đồng cỏ châu Phi, con lần theo được chuỗi bắt đầu ở cây keo (acacia) và kết thúc ở báo gêpa (cheetah) không?'},
+  act:{en:'Tap in energy-flow order: the acacia tree, then the springbok that eats its leaves, then the cheetah that hunts the springbok.',vi:'Chạm theo thứ tự năng lượng di chuyển: cây keo (acacia), rồi springbok ăn lá của nó, rồi báo gêpa (cheetah) săn springbok.'},
+  see:{en:'You are tracing one path of energy through the whole food web.',vi:'Con đang lần theo một đường đi của năng lượng xuyên qua cả lưới thức ăn.'},
+  concl:[
+    {en:'A food web contains many food chains. Tracing finger-by-finger along the arrows follows one chain inside the web.',vi:'Một lưới thức ăn (food web) chứa nhiều chuỗi thức ăn. Lần tay theo các mũi tên là đi theo một chuỗi bên trong lưới.'},
+    {en:'The study of organisms in their environment is called ecology — food webs are one of its tools.',vi:'Việc nghiên cứu sinh vật trong môi trường của chúng gọi là sinh thái học (ecology) — lưới thức ăn là một trong các công cụ của nó.'}]},
+ {tag:{en:'How good is the model?',vi:'Mô hình này tốt đến đâu?'}, word:{en:'food web',vi:'lưới thức ăn'},
+  q:{en:'A food web is a model. How well does it describe what really happens?',vi:'Lưới thức ăn là một mô hình (model). Nó mô tả điều thực sự xảy ra tốt đến đâu?'},
+  act:{en:'Answer the three thinking questions. Choose the best ending for each statement.',vi:'Trả lời ba câu hỏi tư duy. Chọn cách kết thúc đúng nhất cho mỗi câu.'},
+  see:{en:'Each good answer is ticked off. You need all three.',vi:'Mỗi đáp án tốt sẽ được đánh dấu. Con cần cả ba.'},
+  concl:[
+    {en:'I can use descriptions to construct a food chain or a food web.',vi:'Con dùng được các mô tả để xây chuỗi thức ăn (food chain) hoặc lưới thức ăn (food web).'},
+    {en:'I can use arrows to show how energy transfers from one organism to another.',vi:'Con dùng được mũi tên để chỉ năng lượng truyền từ sinh vật này sang sinh vật khác.'},
+    {en:'I can classify the organisms in a food web as producers, consumers, herbivores, carnivores, predators or prey.',vi:'Con phân loại được các sinh vật trong lưới thức ăn thành producer, consumer, herbivore, carnivore, predator hoặc prey.'},
+    {en:'I can describe some strengths and limitations of food chains and food webs as models.',vi:'Con mô tả được một số điểm mạnh và hạn chế của chuỗi và lưới thức ăn với vai trò mô hình.'}]}
+];
+const CARDS3=[
+ {id:'k_rice',emoji:'🌾',en:'Rice plant',vi:'Cây lúa',ans:'producer'},
+ {id:'k_springbok',emoji:'🐐',en:'Springbok',vi:'Springbok',ans:'herbivore'},
+ {id:'k_tiger',emoji:'🐅',en:'Tiger',vi:'Hổ',ans:'carnivore'},
+ {id:'k_acacia',emoji:'🌳',en:'Acacia tree',vi:'Cây keo',ans:'producer'},
+ {id:'k_deer',emoji:'🦌',en:'Deer',vi:'Hươu',ans:'herbivore'},
+ {id:'k_cheetah',emoji:'🐆',en:'Cheetah',vi:'Báo gêpa',ans:'carnivore'}
+];
+const CARDS3_ORDER=mixOrder(CARDS3,c=>c.ans,2);
+/* step 6 thinking questions (correct positions spread: 1, 0, 2) */
+const GAME=[
+ {q:{en:'A food web is a useful model because it shows…',vi:'Lưới thức ăn là một mô hình hữu ích vì nó cho thấy…'},
+  opts:[{en:'every single thing that happens on the plains',vi:'mọi điều xảy ra trên đồng cỏ'},
+        {en:'how energy passes between organisms that live together',vi:'năng lượng truyền giữa các sinh vật sống cùng nhau như thế nào'},
+        {en:'what the weather will be tomorrow',vi:'thời tiết ngày mai sẽ thế nào'}],a:1},
+ {q:{en:'A food web is not a perfect model because…',vi:'Lưới thức ăn không phải là mô hình hoàn hảo vì…'},
+  opts:[{en:'a real habitat has far too many organisms and feeding links to draw them all',vi:'một môi trường sống thật có quá nhiều sinh vật và mối liên kết ăn uống, không vẽ hết được'},
+        {en:'the arrows point the wrong way',vi:'các mũi tên chỉ sai hướng'},
+        {en:'plants are never in food webs',vi:'cây không bao giờ có trong lưới thức ăn'}],a:0},
+ {q:{en:'If all the grass on the plains died, the web model predicts that…',vi:'Nếu toàn bộ cỏ trên đồng cỏ chết hết, mô hình lưới dự đoán rằng…'},
+  opts:[{en:'nothing would change for the animals',vi:'không có gì thay đổi với các con vật'},
+        {en:'the tigers would eat more grass instead',vi:'hổ sẽ chuyển sang ăn nhiều cỏ hơn'},
+        {en:'the animals that eat grass would have less food, and their predators would be affected too',vi:'các con vật ăn cỏ sẽ ít thức ăn hơn, và kẻ săn mồi của chúng cũng bị ảnh hưởng'}],a:2}
+];
+const QUIZ=[
+ {q:{en:'In a food chain, what do the arrows show?',vi:'Trong chuỗi thức ăn (food chain), các mũi tên cho thấy điều gì?'},
+  o:[{en:'Which animal is biggest',vi:'Con vật nào to nhất'},{en:'How energy is transferred from one organism to the next',vi:'Năng lượng được truyền từ sinh vật này sang sinh vật tiếp theo như thế nào'},{en:'Which way the animals walk',vi:'Các con vật đi về hướng nào'}],a:1,
+  e:{en:'The arrows point in the direction the energy travels — from the organism that is eaten to the one that eats it.',vi:'Các mũi tên chỉ theo hướng năng lượng di chuyển — từ sinh vật bị ăn tới sinh vật ăn nó.'}},
+ {q:{en:'Which organism is a producer?',vi:'Sinh vật nào là sinh vật sản xuất (producer)?'},
+  o:[{en:'A deer',vi:'Một con hươu'},{en:'A tiger',vi:'Một con hổ'},{en:'An acacia tree',vi:'Một cây keo (acacia)'}],a:2,
+  e:{en:'Plants are producers — they use energy from sunlight to make their own food. Deer and tigers are consumers.',vi:'Cây là sinh vật sản xuất (producer) — chúng dùng năng lượng ánh sáng mặt trời để tự làm thức ăn. Hươu và hổ là sinh vật tiêu thụ (consumer).'}},
+ {q:{en:'A springbok eats only plants. A springbok is a…',vi:'Springbok chỉ ăn cây. Springbok là…'},
+  o:[{en:'herbivore',vi:'động vật ăn cỏ (herbivore)'},{en:'carnivore',vi:'động vật ăn thịt (carnivore)'},{en:'producer',vi:'sinh vật sản xuất (producer)'}],a:0,
+  e:{en:'Consumers that consume only plants are herbivores. A springbok eats acacia leaves and grass.',vi:'Sinh vật tiêu thụ (consumer) chỉ ăn cây là động vật ăn cỏ (herbivore). Springbok ăn lá keo và cỏ.'}},
+ {q:{en:'A leopard catches and eats a deer. Which pairing is correct?',vi:'Báo hoa mai bắt và ăn một con hươu. Cặp nào đúng?'},
+  o:[{en:'Leopard = prey, deer = predator',vi:'Báo = con mồi (prey), hươu = kẻ săn mồi (predator)'},{en:'Leopard = producer, deer = consumer',vi:'Báo = sinh vật sản xuất (producer), hươu = sinh vật tiêu thụ (consumer)'},{en:'Leopard = predator, deer = prey',vi:'Báo = kẻ săn mồi (predator), hươu = con mồi (prey)'}],a:2,
+  e:{en:'Animals that catch, kill and eat other animals are predators. The animals they eat are their prey.',vi:'Con vật bắt, giết và ăn con vật khác là động vật săn mồi (predator). Con vật bị ăn là con mồi (prey) của chúng.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+/* 7.2A Focus — Arctic hares: four chains, one web (choose the correct word) */
+const EX1=[
+ {pre:{en:'Food chain 1: grasses → Arctic hare →',vi:'Chuỗi thức ăn 1: cỏ → thỏ Bắc cực →'},correct:0,
+  opts:[{en:'Arctic wolf',vi:'sói Bắc cực (Arctic wolf)'},{en:'Arctic willow',vi:'liễu Bắc cực (Arctic willow)'}],
+  e:{en:'In this chain the hare is eaten by the Arctic wolf. The willow is a plant — it starts chains, it does not end them.',vi:'Trong chuỗi này, thỏ bị sói Bắc cực (Arctic wolf) ăn. Liễu là cây — nó bắt đầu chuỗi chứ không kết thúc chuỗi.'}},
+ {pre:{en:'Food chain 2: Arctic willow → Arctic hare →',vi:'Chuỗi thức ăn 2: liễu Bắc cực → thỏ Bắc cực →'},correct:1,
+  opts:[{en:'grasses',vi:'cỏ (grasses)'},{en:'snowy owl',vi:'cú tuyết (snowy owl)'}],
+  e:{en:'Snowy owls hunt Arctic hares. Grasses are producers — nothing in this chain eats them at the end.',vi:'Cú tuyết (snowy owl) săn thỏ Bắc cực. Cỏ là sinh vật sản xuất (producer) — không có sinh vật nào ở cuối chuỗi này ăn cỏ.'}},
+ {pre:{en:'Food chain 3: purple saxifrage → …… → Arctic fox. The missing animal is the',vi:'Chuỗi thức ăn 3: hoa saxifrage tím → …… → cáo Bắc cực. Con vật còn thiếu là'},correct:0,
+  opts:[{en:'Arctic hare',vi:'thỏ Bắc cực (Arctic hare)'},{en:'Arctic wolf',vi:'sói Bắc cực (Arctic wolf)'}],
+  e:{en:'The hare eats the saxifrage, and the fox eats the hare. The hare is the shared middle link in all four chains — that is what joins them into a web.',vi:'Thỏ ăn hoa saxifrage, và cáo ăn thỏ. Thỏ là mắt xích giữa chung của cả bốn chuỗi — chính điều đó nối chúng thành một lưới.'}},
+ {pre:{en:'The Arctic wolf catches, kills and eats hares, so the wolf is a',vi:'Sói Bắc cực bắt, giết và ăn thỏ, nên sói là'},correct:1,
+  opts:[{en:'producer',vi:'sinh vật sản xuất (producer)'},{en:'predator',vi:'động vật săn mồi (predator)'}],
+  e:{en:'A predator catches, kills and eats other animals. Only plants are producers.',vi:'Động vật săn mồi (predator) bắt, giết và ăn các con vật khác. Chỉ cây mới là sinh vật sản xuất (producer).'}},
+ {pre:{en:'The hare is eaten by the wolf, the owl, the fox and the gyrfalcon, so the hare is their',vi:'Thỏ bị sói, cú, cáo và chim ưng ăn, nên thỏ là … của chúng'},correct:0,
+  opts:[{en:'prey',vi:'con mồi (prey)'},{en:'producer',vi:'sinh vật sản xuất (producer)'}],
+  e:{en:'The animal that is eaten is the prey of the animals that eat it. The hare is prey for four different predators.',vi:'Con vật bị ăn là con mồi (prey) của những con vật ăn nó. Thỏ là con mồi của bốn kẻ săn mồi khác nhau.'}}
+];
+/* 7.2B Practice — the sea grass web: name each organism's role */
+const EX2=[
+ {pre:{en:'Sea grass uses sunlight to make its own food, so sea grass is a',vi:'Cỏ biển dùng ánh sáng mặt trời để tự làm thức ăn, nên cỏ biển là'},correct:0,
+  opts:[{en:'producer',vi:'sinh vật sản xuất (producer)'},{en:'herbivore',vi:'động vật ăn cỏ (herbivore)'},{en:'carnivore',vi:'động vật ăn thịt (carnivore)'}],
+  e:{en:'Sea grass is a plant. Plants produce their own food, so they are producers.',vi:'Cỏ biển là cây. Cây tự tạo thức ăn, nên chúng là sinh vật sản xuất (producer).'}},
+ {pre:{en:'Phytoplankton also make their own food and are eaten by many animals, so phytoplankton are',vi:'Thực vật phù du (phytoplankton) cũng tự làm thức ăn và bị nhiều con vật ăn, nên chúng là'},correct:1,
+  opts:[{en:'predators',vi:'động vật săn mồi (predators)'},{en:'producers',vi:'sinh vật sản xuất (producers)'},{en:'prey animals',vi:'động vật con mồi'}],
+  e:{en:'Phytoplankton are tiny protoctists that make their own food — like plants, they are producers, even though many animals eat them.',vi:'Thực vật phù du (phytoplankton) là sinh vật nguyên sinh rất nhỏ tự làm thức ăn — giống như cây, chúng là sinh vật sản xuất (producer), dù nhiều con vật ăn chúng.'}},
+ {pre:{en:'Sea urchins eat sea grass and phytoplankton, so a sea urchin is a',vi:'Nhím biển ăn cỏ biển và thực vật phù du, nên nhím biển là'},correct:2,
+  opts:[{en:'producer',vi:'sinh vật sản xuất (producer)'},{en:'carnivore',vi:'động vật ăn thịt (carnivore)'},{en:'herbivore',vi:'động vật ăn cỏ (herbivore)'}],
+  e:{en:'A sea urchin eats only plant-like producers, so it is a herbivore.',vi:'Nhím biển chỉ ăn các sinh vật sản xuất giống cây, nên nó là động vật ăn cỏ (herbivore).'}},
+ {pre:{en:'Queen conch eat sea grass, so a queen conch is a',vi:'Ốc nữ hoàng (queen conch) ăn cỏ biển, nên nó là'},correct:0,
+  opts:[{en:'herbivore',vi:'động vật ăn cỏ (herbivore)'},{en:'carnivore',vi:'động vật ăn thịt (carnivore)'},{en:'predator',vi:'động vật săn mồi (predator)'}],
+  e:{en:'The queen conch feeds on sea grass — a plant — so it is a herbivore.',vi:'Ốc nữ hoàng ăn cỏ biển — một loài cây — nên nó là động vật ăn cỏ (herbivore).'}},
+ {pre:{en:'Helmet snails eat sea urchins and pen shells, so a helmet snail is a',vi:'Ốc mũ (helmet snail) ăn nhím biển và sò bút, nên nó là'},correct:1,
+  opts:[{en:'herbivore',vi:'động vật ăn cỏ (herbivore)'},{en:'carnivore',vi:'động vật ăn thịt (carnivore)'},{en:'producer',vi:'sinh vật sản xuất (producer)'}],
+  e:{en:'Helmet snails eat other animals, so they are carnivores.',vi:'Ốc mũ ăn các con vật khác, nên chúng là động vật ăn thịt (carnivore).'}},
+ {pre:{en:'Humans eat helmet snails and stingrays in this web, so here humans are',vi:'Trong lưới này, con người ăn ốc mũ và cá đuối, nên ở đây con người là'},correct:2,
+  opts:[{en:'producers',vi:'sinh vật sản xuất (producers)'},{en:'herbivores',vi:'động vật ăn cỏ (herbivores)'},{en:'carnivores',vi:'động vật ăn thịt (carnivores)'}],
+  e:{en:'In this food web humans eat animals (snails and stingrays), so in this web they act as carnivores.',vi:'Trong lưới thức ăn này, con người ăn động vật (ốc và cá đuối), nên trong lưới này họ đóng vai trò động vật ăn thịt (carnivore).'}}
+];
+/* 7.2C Challenge — African plains information: predators, prey and roles */
+const EX3=[
+ {pre:{en:'Giraffes and impala eat the leaves of acacia trees, so giraffes and impala are',vi:'Hươu cao cổ và linh dương impala ăn lá cây keo, nên chúng là'},correct:1,
+  opts:[{en:'carnivores',vi:'động vật ăn thịt (carnivores)'},{en:'herbivores',vi:'động vật ăn cỏ (herbivores)'}],
+  e:{en:'They eat only plant material (acacia leaves), so they are herbivores.',vi:'Chúng chỉ ăn chất cây (lá keo), nên chúng là động vật ăn cỏ (herbivore).'}},
+ {pre:{en:'Many kinds of birds eat locusts, so locusts are the birds’',vi:'Nhiều loài chim ăn châu chấu (locusts), nên châu chấu là … của chim'},correct:0,
+  opts:[{en:'prey',vi:'con mồi (prey)'},{en:'producers',vi:'sinh vật sản xuất (producers)'}],
+  e:{en:'Locusts are eaten by the birds, so locusts are the birds’ prey. Locusts themselves eat grass.',vi:'Châu chấu bị chim ăn, nên châu chấu là con mồi (prey) của chim. Bản thân châu chấu ăn cỏ.'}},
+ {pre:{en:'Eagles eat birds, so eagles are',vi:'Đại bàng (eagles) ăn chim, nên đại bàng là'},correct:1,
+  opts:[{en:'herbivores',vi:'động vật ăn cỏ (herbivores)'},{en:'carnivores',vi:'động vật ăn thịt (carnivores)'}],
+  e:{en:'Eagles eat other animals (birds), so they are carnivores — and predators of birds.',vi:'Đại bàng ăn các con vật khác (chim), nên chúng là động vật ăn thịt (carnivore) — và là kẻ săn mồi của chim.'}},
+ {pre:{en:'Wild dogs, cheetahs and lions hunt the plant-eating vertebrates, so they are the herbivores’',vi:'Chó hoang, báo gêpa và sư tử săn các động vật có xương sống ăn cỏ, nên chúng là … của động vật ăn cỏ'},correct:0,
+  opts:[{en:'predators',vi:'kẻ săn mồi (predators)'},{en:'producers',vi:'sinh vật sản xuất (producers)'}],
+  e:{en:'They catch, kill and eat the herbivores, so they are predators and the herbivores are their prey.',vi:'Chúng bắt, giết và ăn động vật ăn cỏ, nên chúng là động vật săn mồi (predator) và động vật ăn cỏ là con mồi của chúng.'}},
+ {pre:{en:'Acacia trees and grass make their own food using sunlight, so they are the web’s',vi:'Cây keo và cỏ tự làm thức ăn bằng ánh sáng mặt trời, nên chúng là … của lưới'},correct:1,
+  opts:[{en:'predators',vi:'kẻ săn mồi (predators)'},{en:'producers',vi:'sinh vật sản xuất (producers)'}],
+  e:{en:'Every food web starts with producers. Here the producers are the acacia trees and the grass — everything else depends on them.',vi:'Mọi lưới thức ăn đều bắt đầu bằng sinh vật sản xuất (producer). Ở đây chúng là cây keo và cỏ — mọi sinh vật khác đều phụ thuộc vào chúng.'}}
+];
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 5 + 6 + 5 = 16 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+let EX1_ORD=EX1.map(s=>fyIdx(s.opts.length));
+let EX2_ORD=EX2.map(s=>fyIdx(s.opts.length));
+let EX3_ORD=EX3.map(s=>fyIdx(s.opts.length));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-7-2';
+const SUMKEY='camb:sum:sci7-7-2';
+const BOT_CODE='sci7-7.2';
+let FOUND={chain:false,sun:false,sorted:false,web:false,african:false,model:false};
+let SORTED=new Set();
+function newTrack(){return {
+  seq:[], hint:null,
+  s3correct:new Set(), s3sel:null,
+  langur:false, leopard:false,
+  s6idx:0, s6correct:0
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.seq.length>=3;
+  if(i===1) return T.seq.length>=3;
+  if(i===2) return T.s3correct.size>=5;
+  if(i===3) return T.langur&&T.leopard;
+  if(i===4) return T.seq.length>=3;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function chainLine(i){
+  const ch=CHAINS[i]; if(!ch) return '';
+  return ch.map((id,k)=> (k<T.seq.length? '✓ ':'… ')+L(THINGS[id].short)).join(' → ');
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0||i===1||i===4){
+    if(T.hint&&CHAINS[i].indexOf(T.hint)>=0){
+      const exp=CHAINS[i][T.seq.length];
+      return B('That is the '+THINGS[T.hint].short.en+' — it comes later in this chain. Next tap the '+THINGS[exp].short.en+'.',
+               'Đó là '+THINGS[T.hint].short.vi+' — nó ở phía sau trong chuỗi này. Hãy chạm tiếp vào '+THINGS[exp].short.vi+'.');
+    }
+    return B('Your chain: '+chainLine(i)+'.', 'Chuỗi của con: '+chainLine(i)+'.');
+  }
+  if(i===2){
+    const c=T.s3sel? CARDS3.find(x=>x.id===T.s3sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap PRODUCER, HERBIVORE or CARNIVORE.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm PRODUCER, HERBIVORE hoặc CARNIVORE.');
+    return B('Cards right: '+T.s3correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s3correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===3){
+    return B('Web links added: the langur '+(T.langur?'✓':'…')+' · the leopard '+(T.leopard?'✓':'…')+'.',
+             'Mắt xích đã thêm: khỉ langur '+(T.langur?'✓':'…')+' · báo hoa mai '+(T.leopard?'✓':'…')+'.');
+  }
+  if(i===5){
+    return B('Thinking answers right: '+T.s6correct+' of 3.', 'Câu trả lời tư duy đúng: '+T.s6correct+' / 3.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0||curStep===1||curStep===4){
+    statPills(box,CHAINS[curStep].map((id,k)=>({emoji:THINGS[id].emoji,label:THINGS[id].short,got:k<T.seq.length})));
+  }else if(curStep===2){
+    buildSort(box,CARDS3_ORDER,
+      [{key:'producer',label:STR.binProducer,cls:'producer'},{key:'herbivore',label:STR.binHerbivore,cls:'herbivore'},{key:'carnivore',label:STR.binCarnivore,cls:'carnivore'}],
+      T.s3correct,()=>T.s3sel,v=>{T.s3sel=v;},null,onSortPlaced);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🐒',label:{en:'Langur — the tiger eats it too',vi:'Khỉ langur — hổ cũng ăn nó'},got:T.langur},
+      {emoji:'🐆',label:{en:'Leopard — it eats deer too',vi:'Báo hoa mai — nó cũng ăn hươu'},got:T.leopard}
+    ]);
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const g=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=(T.s6idx+1)+'/3 · '+bi(g.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='chrow'; row.style.flexWrap='wrap';
+      g.opts.forEach((o,oi)=>{
+        const b=document.createElement('button'); b.className='chbtn'+(oi===1?' alt':(oi===2?' alt2':''));
+        b.style.flex='1 1 100%'; b.innerHTML=bi(o);
+        b.onclick=()=>s6Answer(oi);
+        row.appendChild(b);
+      });
+      box.appendChild(row);
+    }else{
+      const p=document.createElement('p'); p.style.margin='2px 0 0';
+      p.innerHTML='<b>'+bi({en:'All three thinking answers are in ✓',vi:'Cả ba câu trả lời tư duy đã xong ✓'})+'</b>';
+      box.appendChild(p);
+    }
+  }
+}
+function s6Answer(oi){
+  if(stepLocked()){ flashReadBtn(); return; }
+  const g=GAME[T.s6idx]; if(!g) return;
+  if(oi===g.a){ T.s6correct++; T.s6idx++; if(T.s6correct>=3) FOUND.model=true; }
+  else addMistake();
+  saveProg(); renderStepExtra(); renderMirrors(); refreshEvidence();
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('grass'); bounceThing('grass'); setTimeout(()=>{ focusVisual('deer'); bounceThing('deer'); },900); setTimeout(()=>{ focusVisual('tiger'); bounceThing('tiger'); },1800); }
+  else if(i===1){ focusVisual('sun'); setTimeout(()=>{ focusVisual('rice'); bounceThing('rice'); },900); setTimeout(()=>{ focusVisual('arun'); bounceThing('arun'); },1800); }
+  else if(i===2){ demoSort(CARDS3,T.s3correct); }
+  else if(i===3){ focusVisual('langur'); bounceThing('langur'); setTimeout(()=>{ focusVisual('leopard'); bounceThing('leopard'); },900); }
+  else if(i===4){ focusVisual('acacia'); bounceThing('acacia'); setTimeout(()=>{ focusVisual('springbok'); bounceThing('springbok'); },900); setTimeout(()=>{ focusVisual('cheetah'); bounceThing('cheetah'); },1800); }
+  else if(i===5){ focusVisual('acacia'); bounceThing('acacia'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,got)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+(got?'✓':'…')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.grpChain1,FOUND.chain||doneSteps.has(0))+
+    row(STR.grpSun,FOUND.sun||doneSteps.has(1))+
+    row(STR.grpWeb,FOUND.web||doneSteps.has(3))+
+    row(STR.grpAfrican,FOUND.african||doneSteps.has(4));
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.chain||doneSteps.has(0),label:STR.foundChain},
+    {got:FOUND.sun||doneSteps.has(1),label:STR.foundSun},
+    {got:FOUND.sorted||doneSteps.has(2),label:STR.foundSorted},
+    {got:FOUND.web||doneSteps.has(3),label:STR.foundWeb},
+    {got:FOUND.african||doneSteps.has(4),label:STR.foundAfrican},
+    {got:FOUND.model||doneSteps.has(5),label:STR.foundModel}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.1, ph:1.05, tx:0, ty:0.4, tz:0};
+const POS={ /* x,z on the ground for each organism */
+  rice:[-4.4,1.9], grass:[-1.7,-2.1], acacia:[3.9,-2.2], deer:[-1.3,0.4],
+  tiger:[1.6,0.9], langur:[3.3,1.6], leopard:[-3.1,0.2], springbok:[2.4,-1.5],
+  cheetah:[4.6,-0.5], zebra:[-4.5,-1.4], termite:[0.6,2.3], aardvark:[1.9,2.6], arun:[-2.9,2.2]
+};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildSun(){
+  const g=new THREE.Group();
+  const s=new THREE.Mesh(new THREE.SphereGeometry(0.55,18,14),new THREE.MeshBasicMaterial({color:0xffd94d}));
+  g.add(s);
+  for(let k=0;k<8;k++){
+    const a=k/8*Math.PI*2;
+    const ray=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.34,6),new THREE.MeshBasicMaterial({color:0xffc93d}));
+    ray.position.set(Math.cos(a)*0.78,Math.sin(a)*0.78,0); ray.rotation.z=a-Math.PI/2; g.add(ray);
+  }
+  g.position.set(-5.5,5.6,-5.5); g.userData.baseY=5.6;
+  return g;
+}
+function buildAcacia(){
+  const g=new THREE.Group();
+  const trunk=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.22,1.6,10),stdMat(0x8a5a2b,0.95)));
+  trunk.position.y=0.8; g.add(trunk);
+  [[0,2.05,0,1.15],[ -0.85,1.85,0.15,0.8],[0.85,1.9,-0.1,0.82]].forEach(p=>{
+    const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(p[3],16,12),stdMat(0x4da34f,0.9)));
+    s.scale.y=0.45; s.position.set(p[0],p[1],p[2]); g.add(s);
+  });
+  const p=POS.acacia; g.position.set(p[0],0,p[1]); g.userData.baseY=0;
+  return g;
+}
+function buildGrassTuft(x,z,scale,col){
+  const g=new THREE.Group();
+  for(let k=0;k<7;k++){
+    const c=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.55,6),stdMat(col,1));
+    c.position.set((k%3-1)*0.16,0.26,((k/3)|0-0.5)*0.18); c.rotation.z=(k%3-1)*0.18; g.add(c);
+  }
+  g.position.set(x,0,z); g.scale.setScalar(scale||1); g.userData.baseY=0;
+  return g;
+}
+function buildRice(){
+  const g=new THREE.Group();
+  [[-0.3,0.1],[0.05,-0.15],[0.35,0.15]].forEach(o=>{
+    const stalk=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.035,1.0,8),stdMat(0x9db84e,0.9));
+    stalk.position.set(o[0],0.5,o[1]); g.add(stalk);
+    for(let k=0;k<4;k++){
+      const gr=new THREE.Mesh(new THREE.SphereGeometry(0.055,8,6),stdMat(0xe8d44d,0.8));
+      gr.scale.y=1.5; gr.position.set(o[0]+(k%2?0.09:-0.09),0.95-k*0.09,o[1]); g.add(gr);
+    }
+  });
+  const p=POS.rice; g.position.set(p[0],0,p[1]); g.userData.baseY=0;
+  return g;
+}
+/* generic low-poly quadruped: colours/sizes make each animal */
+function buildAnimal(cfg){
+  const g=new THREE.Group();
+  const mat=stdMat(cfg.col,0.85), dark=stdMat(cfg.dark||cfg.col,0.85);
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.32,16,12),mat));
+  body.scale.set(1.25,0.9,0.8); body.position.y=0.52; g.add(body);
+  if(cfg.stripes){
+    for(let k=0;k<4;k++){
+      const st=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.5,0.44),stdMat(0x222222,0.9));
+      st.position.set(-0.24+k*0.16,0.55,0); st.rotation.z=0.15; g.add(st);
+    }
+  }
+  const headG2=new THREE.Group(); headG2.position.set(0.42,0.72,0);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.17,14,10),mat)); headG2.add(head);
+  if(cfg.snout){
+    const sn=new THREE.Mesh(new THREE.ConeGeometry(0.07,cfg.snout,8),dark);
+    sn.rotation.z=-Math.PI/2-0.35; sn.position.set(0.2,-0.05,0); headG2.add(sn);
+  }
+  [-0.09,0.09].forEach(dz=>{
+    const ear=new THREE.Mesh(new THREE.ConeGeometry(0.05,cfg.ear||0.12,8),dark);
+    ear.position.set(-0.02,0.17,dz); headG2.add(ear);
+    const eye=new THREE.Mesh(new THREE.SphereGeometry(0.018,6,6),stdMat(0x222222,0.5));
+    eye.position.set(0.13,0.04,dz*0.7); headG2.add(eye);
+  });
+  if(cfg.horn){
+    [-0.14,0.14].forEach(dz=>{
+      const h=new THREE.Mesh(new THREE.ConeGeometry(0.03,0.34,6),stdMat(0xd9c08a,0.9));
+      h.position.set(-0.05,0.3,dz); h.rotation.x=dz>0?0.25:-0.25; headG2.add(h);
+    });
+  }
+  g.add(headG2);
+  [[-0.26,-0.15],[0.26,-0.15],[-0.26,0.15],[0.26,0.15]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.035,0.42,8),dark);
+    leg.position.set(p[0],0.21,p[1]); g.add(leg);
+  });
+  const tail=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.03,cfg.tail||0.4,8),dark);
+  tail.position.set(-0.42,0.62,0); tail.rotation.z=0.7; g.add(tail);
+  const p=POS[cfg.id]; g.position.set(p[0],0,p[1]); g.rotation.y=cfg.rot||0.4;
+  g.scale.setScalar(cfg.scale||1); g.userData.baseY=0;
+  return g;
+}
+function buildTermites(){
+  const g=new THREE.Group();
+  const mound=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.34,0.55,10),stdMat(0xb07a3f,0.95)));
+  mound.position.y=0.27; g.add(mound);
+  [[0.12,0.1],[-0.1,0.16],[0.02,-0.14]].forEach(o=>{
+    const t=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),stdMat(0x6b4a26,0.8));
+    t.position.set(o[0],0.05,o[1]); g.add(t);
+  });
+  const p=POS.termite; g.position.set(p[0],0,p[1]); g.userData.baseY=0;
+  return g;
+}
+function buildArun(){
+  const g=new THREE.Group();
+  const legs=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.5,0.18),stdMat(0x3d5a80,0.9));
+  legs.position.y=0.25; g.add(legs);
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.2,0.55,12),stdMat(0xe07b24,0.85)));
+  body.position.y=0.78; g.add(body);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,14,10),stdMat(0xd9a066,0.7)));
+  head.position.y=1.22; g.add(head);
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(0.165,14,10),stdMat(0x2c2c2c,0.9));
+  hair.scale.y=0.55; hair.position.y=1.32; g.add(hair);
+  [-0.26,0.26].forEach(dx=>{
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.5,8),stdMat(0xe07b24,0.85));
+    arm.position.set(dx,0.8,0); arm.rotation.z=dx>0?-0.25:0.25; g.add(arm);
+  });
+  const bowl=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.08,0.07,14),stdMat(0xd23c2a,0.6));
+  bowl.position.set(0.3,0.62,0.12); g.add(bowl);
+  const p=POS.arun; g.position.set(p[0],0,p[1]); g.rotation.y=0.7; g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0xc9a86a,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-8; sunL.shadow.camera.right=8; sunL.shadow.camera.top=8; sunL.shadow.camera.bottom=-8;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* ground: dry savanna */
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd9c27a,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const patch=new THREE.Mesh(new THREE.CircleGeometry(3.4,28),stdMat(0xa9bd62,1));
+  patch.rotation.x=-Math.PI/2; patch.position.set(-1.5,0.0,-1.6); patch.receiveShadow=true; scene3.add(patch);
+  /* decorations: distant tufts + clouds (not clickable) */
+  [[-5.5,3.4],[5.6,2.8],[-6,0.5],[6.2,-2.6],[0.5,-3.6],[-3.4,-3.4]].forEach(p=>{
+    const t=buildGrassTuft(p[0],p[1],1.25,0x9db84e); scene3.add(t);
+  });
+  [[-3.5,6.2,-8],[3.8,6.8,-9]].forEach(p=>{
+    const cl=new THREE.Group();
+    [[0,0,0,0.55],[0.6,0.05,0.1,0.4],[-0.55,0.02,-0.05,0.42]].forEach(s=>{
+      const m=new THREE.Mesh(new THREE.SphereGeometry(s[3],12,8),new THREE.MeshBasicMaterial({color:0xffffff}));
+      m.position.set(s[0],s[1],s[2]); m.scale.y=0.55; cl.add(m);
+    });
+    cl.position.set(p[0],p[1],p[2]); scene3.add(cl);
+  });
+  /* the organisms */
+  reg('sun',buildSun());
+  reg('rice',buildRice());
+  reg('grass',buildGrassTuft(POS.grass[0],POS.grass[1],1.5,0x57b84c));
+  reg('acacia',buildAcacia());
+  reg('deer',buildAnimal({id:'deer',col:0xb0793f,dark:0x8a5a2b,rot:0.5,horn:true}));
+  reg('tiger',buildAnimal({id:'tiger',col:0xe8892b,dark:0x8a4d12,rot:-0.4,stripes:true,scale:1.12}));
+  reg('langur',buildAnimal({id:'langur',col:0x9aa3ad,dark:0x5f6a73,rot:0.9,scale:0.72,tail:0.62,ear:0.09}));
+  reg('leopard',buildAnimal({id:'leopard',col:0xd9a83f,dark:0x7a5a17,rot:2.6,scale:1.05}));
+  reg('springbok',buildAnimal({id:'springbok',col:0xd9b36c,dark:0xa97e3f,rot:-2.4,horn:true,scale:0.95}));
+  reg('cheetah',buildAnimal({id:'cheetah',col:0xe8c86a,dark:0x9c7c33,rot:-1.9,scale:1.02}));
+  reg('zebra',buildAnimal({id:'zebra',col:0xf2f2f2,dark:0xcccccc,rot:0.9,stripes:true,scale:1.05}));
+  reg('termite',buildTermites());
+  reg('aardvark',buildAnimal({id:'aardvark',col:0x9c8468,dark:0x77644a,rot:2.9,snout:0.34,ear:0.2,scale:0.95}));
+  reg('arun',buildArun());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(1.05); addProxy('sun',p,G.sun); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('rice',p,G.rice); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('grass',p,G.grass); }
+  { const p=sphProxy(1.3); p.position.set(0,1.9,0); addProxy('acacia',p,G.acacia); }
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('deer',p,G.deer); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('tiger',p,G.tiger); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('langur',p,G.langur); }
+  { const p=sphProxy(0.6); p.position.set(0,0.55,0); addProxy('leopard',p,G.leopard); }
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('springbok',p,G.springbok); }
+  { const p=sphProxy(0.6); p.position.set(0,0.55,0); addProxy('cheetah',p,G.cheetah); }
+  { const p=sphProxy(0.6); p.position.set(0,0.55,0); addProxy('zebra',p,G.zebra); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('termite',p,G.termite); }
+  { const p=sphProxy(0.58); p.position.set(0,0.5,0); addProxy('aardvark',p,G.aardvark); }
+  { const p=sphProxy(0.55); p.position.set(0,0.85,0); addProxy('arun',p,G.arun); }
+  /* highlight ring */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click an organism */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    if(id==='sun'){ ringMesh.visible=false; }
+    else{
+      const p=thingPos(id);
+      ringMesh.position.set(p.x,0.045,p.z);
+      const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+      ringMesh.visible=true;
+    }
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t||id==='sun') return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  if(id==='sun'){ addAnim(0.6,f=>{ const s=1+Math.sin(f*Math.PI)*0.18; g.scale.set(s,s,s); },()=>g.scale.set(1,1,1)); return; }
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['grass','deer','tiger'],      /* step 1: build the first chain in order */
+  ['sun','rice','arun'],         /* step 2: trace Sun energy in order */
+  [],                            /* step 3: card sort — no scene targets */
+  ['langur','leopard'],          /* step 4: add the two web links */
+  ['acacia','springbok','cheetah'], /* step 5: trace the African chain in order */
+  []                             /* step 6: thinking questions — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0||curStep===1||curStep===4){
+    const chain=CHAINS[curStep], exp=chain[T.seq.length];
+    if(id===exp){
+      T.seq.push(id); T.hint=null;
+      if(T.seq.length>=3){
+        if(curStep===0) FOUND.chain=true;
+        if(curStep===1) FOUND.sun=true;
+        if(curStep===4) FOUND.african=true;
+      }
+    }else{
+      T.hint=id; addMistake();
+    }
+    saveProg(); renderMirrors();
+  }else if(curStep===3){
+    if(id==='langur') T.langur=true;
+    if(id==='leopard') T.leopard=true;
+    if(T.langur&&T.leopard) FOUND.web=true;
+    saveProg(); renderMirrors();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* all organisms stay on the plains for every step */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* gentle life: the langur sits up in the acacia area and bobs; zebra grazes (head group is inside the animal group, so bob the whole animal slightly) */
+  if(G.langur) G.langur.position.y=Math.max(0,Math.sin(t*1.4))*0.03;
+  if(G.tiger) G.tiger.rotation.y=0.4+Math.sin(t*0.35)*0.06-0.8; /* base rot baked below */
+  if(G.sun) G.sun.rotation.z=t*0.05;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet,ordArr){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ord=ordArr[si]||s1.opts.map((_,i)=>i);
+    html+=ord.map(oi=>{
+      let cls='wordopt';
+      if(ansObj[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s1.correct) cls+=' rightmark';
+      return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(s1.opts[oi])+'</button>';
+    }).join(' / ');
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE,EX1_ORD);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE,EX2_ORD);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE,EX3_ORD);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(s=>fyIdx(s.opts.length));
+  EX2_ORD=EX2.map(s=>fyIdx(s.opts.length));
+  EX3_ORD=EX3.map(s=>fyIdx(s.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects (SORTED.add + saveProg + console render), passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); if(T.s3correct.size>=5) FOUND.sorted=true; saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + per-step evidence-mirror clearing. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.chain=false; }
+  if(step===1){ FOUND.sun=false; }
+  if(step===2){ CARDS3.forEach(c=>SORTED.delete(c.id)); FOUND.sorted=false; }
+  if(step===3){ FOUND.web=false; }
+  if(step===4){ FOUND.african=false; }
+  if(step===5){ FOUND.model=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    const grab=(obj,arr,dst)=>{ if(obj&&typeof obj==='object') Object.keys(obj).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<arr.length&&Number.isInteger(obj[k])&&obj[k]>=0&&obj[k]<arr[si].opts.length) dst[si]=obj[k]; }); };
+    grab(s.exAns.a1,EX1,EX1ANS); grab(s.exAns.a2,EX2,EX2ANS); grab(s.exAns.a3,EX3,EX3ANS);
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* MIGRATION (rule 10): seed a DONE step's track for old saves that carry no trk. */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0) t.seq=CHAINS[0].slice();
+  else if(i===1) t.seq=CHAINS[1].slice();
+  else if(i===2){ CARDS3.forEach(c=>{ if(SORTED.has(c.id)) t.s3correct.add(c.id); }); if(t.s3correct.size===0) CARDS3.slice(0,5).forEach(c=>t.s3correct.add(c.id)); }
+  else if(i===3){ t.langur=true; t.leopard=true; }
+  else if(i===4) t.seq=CHAINS[4].slice();
+  else if(i===5){ t.s6idx=3; t.s6correct=3; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-7-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

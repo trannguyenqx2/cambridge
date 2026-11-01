@@ -1,0 +1,1361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>8.1 Simple chemical reactions — Phản ứng hóa học đơn giản · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+.binbtn.useful{background:#0d9d58}
+.binbtn.physical{background:#0b76d1}
+.binbtn.chemical{background:#d23c2a}
+.binbtn.wasted{background:#b03a3a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="8.1 Simple chemical reactions" data-vi="8.1 Phản ứng hóa học đơn giản (Simple chemical reactions)">8.1 Simple chemical reactions</span>
+    <span class="eqchip i18n" data-en="Unit 8 · Changes to materials" data-vi="Bài 8 · Sự biến đổi của vật liệu (Changes to materials)">Unit 8 · Changes to materials</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/7 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How can we tell that a chemical reaction has happened?" data-vi="Làm sao biết một phản ứng hóa học đã xảy ra?">How can we tell that a chemical reaction has happened?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="New substances form" data-vi="Các chất mới được tạo thành">New substances form</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Burning makes oxides" data-vi="Sự cháy tạo ra oxides">Burning makes oxides</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Metals react with acid" data-vi="Kim loại phản ứng với axit">Metals react with acid</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Test the gas!" data-vi="Kiểm tra khí thoát ra!">Test the gas!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 8 Changes to materials · Section 8.1. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 8 · Sự biến đổi của vật liệu (Changes to materials) · Mục 8.1. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 8 Changes to materials · Section 8.1. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 8 Changes to materials, section 8.1, pages 253–261; Workbook 7 (ISBN 9781108742818), pages 144–148. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 8 · Sự biến đổi của vật liệu (Changes to materials), mục 8.1, trang 253–261; Sách bài tập 7 (ISBN 9781108742818), trang 144–148. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 8 Changes to materials, section 8.1, pages 253–261; Workbook 7 (ISBN 9781108742818), pages 144–148. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives (from the book): learn about the chemical properties of some metals; learn to recognise that a chemical reaction has taken place. Key words: chemical reaction, combine, product, react, reactant. The section opens with the hazard symbols (Getting started): toxic, flammable and corrosive — the safety thread runs through the burning-magnesium practical and the potassium demonstration." data-vi="Mục tiêu (theo sách): tìm hiểu tính chất hóa học của một số kim loại; học cách nhận biết một phản ứng hóa học (chemical reaction) đã xảy ra. Từ khóa: chemical reaction (phản ứng hóa học), combine (kết hợp), product (sản phẩm), react (phản ứng), reactant (chất phản ứng). Mục học mở đầu bằng các ký hiệu nguy hiểm (Getting started): độc (toxic), dễ cháy (flammable) và ăn mòn (corrosive) — mạch an toàn xuyên suốt phần thực hành đốt magie và buổi trình diễn kali.">Objectives: learn about the chemical properties of some metals; learn to recognise that a chemical reaction has taken place. Key words: chemical reaction, combine, product, react, reactant.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — combining iron and sulfur into iron sulfide, burning magnesium ribbon in a Bunsen flame (with the book’s safety rules and its exact properties table: magnesium melts at 651 °C, oxygen at −214 °C, magnesium oxide at 2800 °C), sorting the book’s photograph changes into physical changes and chemical reactions, and watching potassium react with water as a teacher demonstration before testing the gas from magnesium in hydrochloric acid with a lit splint (the squeaky pop means hydrogen). The Workbook Challenge graph values are used exactly as printed (0.5 g → 70 cm³ up to 5.0 g → 510 cm³). The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — kết hợp sắt và lưu huỳnh thành iron sulfide, đốt dải magie trong ngọn lửa Bunsen (với các quy tắc an toàn của sách và bảng tính chất chính xác của sách: magie nóng chảy ở 651 °C, oxygen ở −214 °C, magnesium oxide ở 2800 °C), phân loại các biến đổi trong ảnh của sách thành biến đổi vật lý và phản ứng hóa học, và quan sát kali phản ứng với nước như một buổi trình diễn của giáo viên trước khi kiểm tra khí từ magie trong axit hydrochloric bằng một que đang cháy (tiếng nổ nhỏ “pop” nghĩa là hydrogen). Các giá trị đồ thị thử thách (Challenge) của sách bài tập được dùng đúng như in (0,5 g → 70 cm³ tới 5,0 g → 510 cm³). Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D bench or with sorting cards and choice buttons. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-8-1 "Simple chemical reactions"
+   (Science 7, Unit 8 · Changes to materials)
+   Loaded between camb-engine.js and camb-bridge.js.
+   Book section 8.1 covers chemical vs physical properties, iron +
+   sulfur, burning (carbon and magnesium, with the book's burning-
+   magnesium practical and its properties table), reactions with
+   water (potassium demonstration) and reactions with acid
+   (magnesium + hydrochloric acid, the hydrogen pop test).
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  iron:{kind:'pile', emoji:'⚙️', name:{en:'Iron filings',vi:'Mạt sắt (iron filings)'}, short:{en:'Iron',vi:'Sắt'}, labelY:1.4, fx:-4.7, fz:-1.8, fr:5.2},
+  sulfur:{kind:'pile', emoji:'🟡', name:{en:'Sulfur powder',vi:'Bột lưu huỳnh (sulfur powder)'}, short:{en:'Sulfur',vi:'Lưu huỳnh'}, labelY:1.4, fx:-3.3, fz:-1.8, fr:5.2},
+  charcoal:{kind:'lumps', emoji:'⬛', name:{en:'Charcoal lumps',vi:'Các cục than củi (charcoal)'}, short:{en:'Charcoal',vi:'Than củi'}, labelY:1.4, fx:-1.9, fz:-1.8, fr:5.2},
+  mgRibbon:{kind:'ribbon', emoji:'✨', name:{en:'Magnesium ribbon',vi:'Dải magie (magnesium ribbon)'}, short:{en:'Magnesium ribbon',vi:'Dải magie'}, labelY:1.5, fx:-0.3, fz:-1.8, fr:5.2},
+  bunsen:{kind:'burner', emoji:'🔥', name:{en:'Bunsen burner',vi:'Đèn Bunsen (Bunsen burner)'}, short:{en:'Bunsen burner',vi:'Đèn Bunsen'}, labelY:1.6, fx:1.3, fz:-1.8, fr:5.2},
+  splint:{kind:'splint', emoji:'🪵', name:{en:'Lit splint',vi:'Que diêm đang cháy (lit splint)'}, short:{en:'Lit splint',vi:'Que đang cháy'}, labelY:1.5, fx:2.9, fz:-1.8, fr:5.2},
+  tongs:{kind:'tool', emoji:'🥢', name:{en:'Tongs',vi:'Kẹp (tongs)'}, short:{en:'Tongs',vi:'Kẹp'}, labelY:1.4, fx:4.6, fz:-1.8, fr:5.2},
+  mgOxide:{kind:'dish', emoji:'⚪', name:{en:'Dish of magnesium oxide powder',vi:'Đĩa bột magie oxide (magnesium oxide)'}, short:{en:'Magnesium oxide',vi:'Magie oxide'}, labelY:1.5, fx:-3.6, fz:1.8, fr:5.2},
+  trough:{kind:'trough', emoji:'🛁', name:{en:'Trough of water (teacher demonstration)',vi:'Máng nước (buổi trình diễn của giáo viên)'}, short:{en:'Water trough',vi:'Máng nước'}, labelY:1.5, fx:-0.9, fz:1.8, fr:5.4},
+  acidTube:{kind:'tube', emoji:'🧪', name:{en:'Test tube: magnesium in hydrochloric acid',vi:'Ống nghiệm: magie trong axit hydrochloric'}, short:{en:'Magnesium in acid',vi:'Magie trong axit'}, labelY:1.5, fx:1.6, fz:1.8, fr:5.2}
+};
+const FOCUSORDER=['iron','sulfur','charcoal','mgRibbon','bunsen','splint','tongs','mgOxide','trough','acidTube'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to run a reaction, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn thực hiện một phản ứng, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My reaction record',vi:'Bản ghi phản ứng của con'},
+  u2Brief:{en:'What you have found out about simple chemical reactions.',vi:'Những điều con đã tìm hiểu về các phản ứng hóa học đơn giản (chemical reactions).'},
+  rowCombine:{en:'Iron + sulfur combined',vi:'Sắt + lưu huỳnh đã kết hợp'},
+  rowBurn:{en:'Magnesium burning actions done',vi:'Thao tác đốt magie đã làm'},
+  rowSort:{en:'Changes sorted',vi:'Biến đổi đã phân loại'},
+  rowTest:{en:'Water / acid tests done',vi:'Thử nghiệm với nước / axit đã làm'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundCombine:{en:'I combined iron and sulfur into iron sulfide',vi:'Con đã kết hợp sắt (iron) và lưu huỳnh (sulfur) thành iron sulfide'},
+  foundBurn:{en:'I burned magnesium and made magnesium oxide',vi:'Con đã đốt magie (magnesium) và tạo ra magnesium oxide'},
+  foundProps:{en:'I compared the properties of a product and its reactants',vi:'Con đã so sánh tính chất của một sản phẩm (product) với các chất phản ứng (reactants) của nó'},
+  foundSort:{en:'I sorted physical changes from chemical reactions',vi:'Con đã phân loại biến đổi vật lý (physical changes) và phản ứng hóa học (chemical reactions)'},
+  foundTest:{en:'I saw reactions with water and acid, and tested for hydrogen',vi:'Con đã thấy các phản ứng với nước và axit, và đã kiểm tra khí hydrogen'},
+  foundGame:{en:'I answered the reaction check',vi:'Con đã trả lời phần kiểm tra về phản ứng'},
+  binPhysical:{en:'PHYSICAL CHANGE 🔵',vi:'BIẾN ĐỔI VẬT LÝ 🔵 (PHYSICAL CHANGE)'},
+  binChemical:{en:'CHEMICAL REACTION 🔴',vi:'PHẢN ỨNG HÓA HỌC 🔴 (CHEMICAL REACTION)'},
+  tapDish:{en:'👆 Tap the dish of magnesium oxide on the bench first!',vi:'👆 Trước tiên hãy chạm vào đĩa magnesium oxide trên bàn!'},
+  qProps:{en:'Magnesium melts at 651 °C and oxygen at −214 °C, but magnesium oxide melts at 2800 °C. Which statement is right?',vi:'Magie nóng chảy ở 651 °C và oxygen ở −214 °C, nhưng magnesium oxide nóng chảy ở 2800 °C. Phát biểu nào đúng?'},
+  chPropHigh:{en:'The product melts at a much higher temperature than both reactants',vi:'Sản phẩm (product) nóng chảy ở nhiệt độ cao hơn nhiều so với cả hai chất phản ứng (reactants)'},
+  chPropSame:{en:'The product is the same substance as magnesium',vi:'Sản phẩm là cùng một chất với magie'},
+  chPropSolid:{en:'Oxygen is a solid at room temperature',vi:'Oxygen là chất rắn ở nhiệt độ phòng'},
+  qHydrogen:{en:'You hold a lit splint at the mouth of the tube of gas from the acid reaction. The gas burns with a squeaky pop. What is the gas?',vi:'Con đưa một que đang cháy tới miệng ống chứa khí từ phản ứng với axit. Khí cháy với tiếng nổ nhỏ “pop”. Đó là khí gì?'},
+  chHydrogen:{en:'Hydrogen',vi:'Hydrogen (khí hiđrô)'},
+  chOxygen:{en:'Oxygen',vi:'Oxygen (khí ô-xi)'},
+  chCarbonD:{en:'Carbon dioxide',vi:'Carbon dioxide (khí cacbonic)'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 8.1',vi:'📝 Bài tập — Sách bài tập (Workbook) 8.1'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Physical and chemical reactions (Workbook 8.1A)',vi:'Bài tập 1 · Focus — Biến đổi vật lý và phản ứng hóa học (Workbook 8.1A)'},
+  ex1Inst:{en:'For each change, tap the correct ending: is it a physical change (no new substance) or a chemical change (a new substance forms)?',vi:'Với mỗi biến đổi, chạm vào phần kết đúng: đó là biến đổi vật lý (không tạo chất mới) hay biến đổi hóa học (tạo chất mới)?'},
+  ex2T:{en:'Exercise 2 · Practice — Atoms in chemical reactions (Workbook 8.1B)',vi:'Bài tập 2 · Practice — Nguyên tử trong phản ứng hóa học (Workbook 8.1B)'},
+  ex2Inst:{en:'Complete each sentence about burning magnesium, metals in acid, the hydrogen test and word equations.',vi:'Hoàn thành mỗi câu về đốt magie, kim loại trong axit, phép thử hydrogen và các phương trình chữ.'},
+  ex3T:{en:'Exercise 3 · Challenge — Metal and acid data (Workbook 8.1C)',vi:'Bài tập 3 · Challenge — Dữ liệu kim loại và axit (Workbook 8.1C)'},
+  ex3Inst:{en:'Arun and Marcus measured the volume of hydrogen given off for different masses of metal reacting with acid. Use their results: 0.5 g → 70 cm³, 1.0 g → 120 cm³, 2.0 g → 220 cm³, 5.0 g → 510 cm³.',vi:'Arun và Marcus đã đo thể tích khí hydrogen thoát ra với các khối lượng kim loại khác nhau phản ứng với axit. Hãy dùng kết quả của hai bạn: 0,5 g → 70 cm³, 1,0 g → 120 cm³, 2,0 g → 220 cm³, 5,0 g → 510 cm³.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'chemical reaction',vi:'phản ứng hóa học'},
+  {en:'reactant',vi:'chất phản ứng'},
+  {en:'product',vi:'sản phẩm'},
+  {en:'combine',vi:'kết hợp'},
+  {en:'react',vi:'phản ứng'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Iron + sulfur',vi:'Sắt + lưu huỳnh'}, word:{en:'reactant',vi:'chất phản ứng (reactant)'},
+  q:{en:'Iron is a grey metal and sulfur is a yellow powder. What happens when the two are heated together?',vi:'Sắt là một kim loại màu xám và lưu huỳnh là một loại bột màu vàng. Điều gì xảy ra khi đun nóng cả hai cùng nhau?'},
+  act:{en:'Tap the iron filings and then the sulfur powder on the bench to combine them and heat the mixture.',vi:'Chạm vào mạt sắt (iron filings) rồi bột lưu huỳnh (sulfur powder) trên bàn để kết hợp chúng và đun nóng hỗn hợp.'},
+  see:{en:'The iron atoms and sulfur atoms join together and a brand-new dark substance appears: iron sulfide.',vi:'Các nguyên tử sắt và nguyên tử lưu huỳnh liên kết với nhau và một chất mới màu sẫm xuất hiện: iron sulfide.'},
+  concl:[
+    {en:'When iron and sulfur are heated together, they react and form one new substance — iron sulfide. A chemical reaction has taken place.',vi:'Khi sắt (iron) và lưu huỳnh (sulfur) được đun nóng cùng nhau, chúng phản ứng (react) và tạo thành một chất mới duy nhất — iron sulfide. Một phản ứng hóa học (chemical reaction) đã xảy ra.'},
+    {en:'The substances that react together are called the reactants. Here the reactants are iron and sulfur.',vi:'Các chất phản ứng với nhau được gọi là chất phản ứng (reactants). Ở đây các chất phản ứng là sắt và lưu huỳnh.'},
+    {en:'The new substance made in a reaction is called the product. Here there is only one product: iron sulfide.',vi:'Chất mới được tạo ra trong một phản ứng được gọi là sản phẩm (product). Ở đây chỉ có một sản phẩm: iron sulfide.'}]},
+ {tag:{en:'Burning magnesium',vi:'Đốt magie'}, word:{en:'chemical reaction',vi:'phản ứng hóa học (chemical reaction)'},
+  q:{en:'Burning is a chemical reaction with oxygen from the air. What is made when magnesium metal burns?',vi:'Sự cháy là một phản ứng hóa học với oxygen từ không khí. Điều gì được tạo ra khi kim loại magie cháy?'},
+  act:{en:'Safety first: wear safety glasses and never look straight at the bright flame. Hold the magnesium ribbon with the tongs (tap the ribbon), then tap the Bunsen burner to light it and burn the ribbon at arm’s length.',vi:'An toàn trước tiên: đeo kính bảo hộ và không bao giờ nhìn thẳng vào ngọn lửa sáng chói. Dùng kẹp giữ dải magie (chạm vào dải magie), rồi chạm vào đèn Bunsen (Bunsen burner) để châm lửa và đốt dải magie ở khoảng cách một cánh tay.'},
+  see:{en:'The ribbon burns with a very bright white flame. Afterwards only a white powder is left: magnesium oxide.',vi:'Dải magie cháy với ngọn lửa trắng rất sáng. Sau đó chỉ còn lại một loại bột màu trắng: magnesium oxide.'},
+  concl:[
+    {en:'Burning is a chemical reaction: the burning substance reacts with oxygen in the air, and new substances called oxides can form.',vi:'Sự cháy là một phản ứng hóa học (chemical reaction): chất cháy phản ứng với oxygen trong không khí, và các chất mới gọi là oxides có thể được tạo thành.'},
+    {en:'When magnesium burns, it combines with oxygen: magnesium + oxygen → magnesium oxide. Magnesium and oxygen are the reactants; magnesium oxide is the product.',vi:'Khi magie cháy, nó kết hợp (combine) với oxygen: magnesium + oxygen → magnesium oxide. Magie và oxygen là các chất phản ứng (reactants); magnesium oxide là sản phẩm (product).'},
+    {en:'Charcoal burning is the same kind of reaction: carbon + oxygen → carbon dioxide, and ash is left behind.',vi:'Than củi cháy cũng là cùng loại phản ứng: carbon + oxygen → carbon dioxide, và tro còn lại phía sau.'}]},
+ {tag:{en:'A product is different',vi:'Sản phẩm thì khác'}, word:{en:'product',vi:'sản phẩm (product)'},
+  q:{en:'Magnesium is a soft, shiny metal that conducts electricity. Is its product, magnesium oxide, just the same?',vi:'Magie là một kim loại mềm, sáng bóng và dẫn điện. Sản phẩm của nó, magnesium oxide, có giống hệt vậy không?'},
+  act:{en:'Tap the dish of white magnesium oxide powder on the bench. Then use the book’s table to answer the melting-point question.',vi:'Chạm vào đĩa bột magnesium oxide màu trắng trên bàn. Sau đó dùng bảng trong sách để trả lời câu hỏi về nhiệt độ nóng chảy.'},
+  see:{en:'The table says: magnesium is a solid, soft, shiny and malleable, melting at 651 °C. Oxygen is a colourless gas, melting at −214 °C. Magnesium oxide is a white powder that does NOT conduct electricity and melts at 2800 °C.',vi:'Bảng cho biết: magie là chất rắn, mềm, sáng bóng và dễ dát mỏng, nóng chảy ở 651 °C. Oxygen là khí không màu, nóng chảy ở −214 °C. Magnesium oxide là bột màu trắng KHÔNG dẫn điện và nóng chảy ở 2800 °C.'},
+  concl:[
+    {en:'The properties of a product are different from the properties of its reactants — that is a sign that a new substance has been made.',vi:'Tính chất của một sản phẩm (product) khác với tính chất của các chất phản ứng (reactants) của nó — đó là dấu hiệu cho thấy một chất mới đã được tạo thành.'},
+    {en:'One similarity remains: magnesium oxide is a solid at room temperature, just like magnesium. Nearly everything else — look, conductivity and melting point — has changed.',vi:'Vẫn còn một điểm giống nhau: magnesium oxide là chất rắn ở nhiệt độ phòng, giống như magie. Hầu như mọi điều khác — vẻ ngoài, khả năng dẫn điện và nhiệt độ nóng chảy — đều đã thay đổi.'}]},
+ {tag:{en:'Physical or chemical?',vi:'Vật lý hay hóa học?'}, word:{en:'chemical reaction',vi:'phản ứng hóa học (chemical reaction)'},
+  q:{en:'Some changes make new substances and some do not. Can you sort the changes in the book’s photographs?',vi:'Một số biến đổi tạo ra chất mới và một số thì không. Con phân loại được các biến đổi trong các bức ảnh của sách không?'},
+  act:{en:'Sort each change card: tap a card, then tap PHYSICAL CHANGE if no new substance forms, or CHEMICAL REACTION if a new substance forms.',vi:'Phân loại mỗi thẻ biến đổi: chạm vào một thẻ, rồi chạm BIẾN ĐỔI VẬT LÝ nếu không có chất mới nào được tạo thành, hoặc PHẢN ỨNG HÓA HỌC nếu có chất mới được tạo thành.'},
+  see:{en:'Melting ice and melting chocolate are physical changes — the substance is still the same afterwards. Toast, fireworks, burning coal and a copper roof turning green are chemical reactions.',vi:'Nước đá tan và sô-cô-la tan chảy là biến đổi vật lý — chất vẫn là chính nó sau biến đổi. Bánh mì nướng, pháo hoa, than cháy và mái đồng chuyển màu xanh lá là các phản ứng hóa học.'},
+  concl:[
+    {en:'In a physical change, no new substances are formed. Melting and freezing change the state, but the substance stays the same.',vi:'Trong một biến đổi vật lý, không có chất mới nào được tạo thành. Tan chảy và đông đặc làm thay đổi trạng thái, nhưng chất vẫn giữ nguyên.'},
+    {en:'In a chemical change, new substances are formed — that is how you recognise that a chemical reaction has taken place.',vi:'Trong một biến đổi hóa học, các chất mới được tạo thành — đó là cách con nhận biết một phản ứng hóa học (chemical reaction) đã xảy ra.'}]},
+ {tag:{en:'Water and acid',vi:'Nước và axit'}, word:{en:'react',vi:'phản ứng (react)'},
+  q:{en:'Some metals react fiercely with water, and many fizz in acid. What gas do these reactions give off — and how can you prove it?',vi:'Một số kim loại phản ứng mãnh liệt với nước, và nhiều kim loại sủi bọt trong axit. Các phản ứng này thoát ra khí gì — và làm sao chứng minh được?'},
+  act:{en:'Watch the teacher demonstration: tap the water trough, where a tiny piece of potassium fizzes and the gas catches fire (keep behind the safety screen!). Then tap the test tube of magnesium in hydrochloric acid, and answer the splint-test question.',vi:'Xem buổi trình diễn của giáo viên: chạm vào máng nước, nơi một mẩu kali (potassium) rất nhỏ sủi bọt và khí bốc cháy (hãy đứng sau màn chắn an toàn!). Sau đó chạm vào ống nghiệm magie trong axit hydrochloric, và trả lời câu hỏi về phép thử bằng que đang cháy.'},
+  see:{en:'Potassium reacts so strongly with water that the hydrogen it gives off burns. In acid, magnesium bubbles steadily: the gas is hydrogen, and magnesium chloride forms in the tube.',vi:'Kali phản ứng mạnh với nước đến mức khí hydrogen mà nó thoát ra bốc cháy. Trong axit, magie sủi bọt đều đặn: khí đó là hydrogen, và magnesium chloride được tạo thành trong ống.'},
+  concl:[
+    {en:'Bubbles in a reaction tell you a gas is being made — but bubbles alone cannot tell you WHICH gas it is. You must test the gas.',vi:'Bọt khí trong một phản ứng cho con biết một chất khí đang được tạo thành — nhưng chỉ bọt khí thôi thì không cho biết đó là khí NÀO. Con phải kiểm tra khí đó.'},
+    {en:'Hydrogen burns with a squeaky pop when a lit splint is put at the mouth of the tube — that pop is the test for hydrogen.',vi:'Hydrogen cháy với tiếng nổ nhỏ “pop” khi đưa một que đang cháy tới miệng ống — tiếng nổ đó là phép thử cho hydrogen.'},
+    {en:'Magnesium + hydrochloric acid → magnesium chloride + hydrogen. Reacting with acid like this is a chemical property of magnesium; being soft, shiny and solid are physical properties.',vi:'Magnesium + hydrochloric acid → magnesium chloride + hydrogen. Phản ứng với axit như vậy là một tính chất hóa học của magie; mềm, sáng bóng và là chất rắn là các tính chất vật lý.'}]},
+ {tag:{en:'Reaction check',vi:'Kiểm tra phản ứng'}, word:{en:'combine',vi:'kết hợp (combine)'},
+  q:{en:'Can you use the key words of this lesson correctly?',vi:'Con dùng đúng các từ khóa của bài này chưa?'},
+  act:{en:'Answer the three check questions about reactants, products and word equations.',vi:'Trả lời ba câu hỏi kiểm tra về chất phản ứng (reactants), sản phẩm (products) và phương trình chữ.'},
+  see:{en:'Right answers move the check on. Three right answers finish it!',vi:'Đáp án đúng đưa phần kiểm tra đi tiếp. Ba đáp án đúng là hoàn thành!'},
+  concl:[
+    {en:'I can describe some of the chemical properties of some metals.',vi:'Con có thể mô tả một số tính chất hóa học của một số kim loại.'},
+    {en:'I can recognise that a chemical reaction has taken place.',vi:'Con có thể nhận biết một phản ứng hóa học (chemical reaction) đã xảy ra.'},
+    {en:'I can test a gas to see if it is hydrogen.',vi:'Con có thể kiểm tra một chất khí để xem nó có phải là hydrogen hay không.'}]}
+];
+const CARDS4=[
+ {id:'c_toast',emoji:'🍞',en:'Making toast',vi:'Nướng bánh mì (making toast)',ans:'chemical'},
+ {id:'c_choc',emoji:'🍫',en:'Melting chocolate',vi:'Sô-cô-la tan chảy (melting chocolate)',ans:'physical'},
+ {id:'c_firework',emoji:'🎆',en:'Fireworks going off',vi:'Pháo hoa nổ (fireworks)',ans:'chemical'},
+ {id:'c_ice',emoji:'🧊',en:'Ice melting',vi:'Nước đá tan (ice melting)',ans:'physical'},
+ {id:'c_coal',emoji:'🔥',en:'Coal burning',vi:'Than cháy (coal burning)',ans:'chemical'},
+ {id:'c_roof',emoji:'🏠',en:'A copper roof turning green',vi:'Mái đồng chuyển màu xanh lá (copper roof)',ans:'chemical'}
+];
+const CARDS4_ORDER=mixOrder(CARDS4,c=>c.ans,2);
+const SORT_BINS=[
+  {key:'physical',label:STR.binPhysical,cls:'physical'},
+  {key:'chemical',label:STR.binChemical,cls:'chemical'}
+];
+const GAME=[
+ {q:{en:'What are the products when zinc reacts with hydrochloric acid?',vi:'Các sản phẩm (products) khi kẽm (zinc) phản ứng với axit hydrochloric là gì?'},
+  opts:[{en:'Zinc chloride and hydrogen',vi:'Zinc chloride và hydrogen'},{en:'Zinc oxide and water',vi:'Zinc oxide và nước'},{en:'Zinc sulfate and oxygen',vi:'Zinc sulfate và oxygen'}],a:0},
+ {q:{en:'In the reaction magnesium + oxygen → magnesium oxide, which are the reactants?',vi:'Trong phản ứng magnesium + oxygen → magnesium oxide, những chất nào là chất phản ứng (reactants)?'},
+  opts:[{en:'Magnesium oxide only',vi:'Chỉ magnesium oxide'},{en:'Oxygen only',vi:'Chỉ oxygen'},{en:'Magnesium and oxygen',vi:'Magie và oxygen'}],a:2},
+ {q:{en:'How do you know a chemical reaction has taken place when magnesium is put into hydrochloric acid?',vi:'Làm sao con biết một phản ứng hóa học đã xảy ra khi cho magie vào axit hydrochloric?'},
+  opts:[{en:'The tube gets colder',vi:'Ống nghiệm lạnh đi'},{en:'New substances form — hydrogen gas and magnesium chloride',vi:'Các chất mới được tạo thành — khí hydrogen và magnesium chloride'},{en:'The magnesium changes shape only',vi:'Magie chỉ thay đổi hình dạng'}],a:1}
+];
+const QUIZ=[
+ {q:{en:'Iron and sulfur are heated together. What is the product?',vi:'Sắt (iron) và lưu huỳnh (sulfur) được đun nóng cùng nhau. Sản phẩm (product) là gì?'},
+  o:[{en:'Iron oxide',vi:'Iron oxide'},{en:'Iron sulfide',vi:'Iron sulfide'},{en:'A mixture of iron and sulfur, unchanged',vi:'Một hỗn hợp sắt và lưu huỳnh, không thay đổi'}],a:1,
+  e:{en:'Heated together, iron and sulfur react and combine into one new substance, iron sulfide. Iron and sulfur are the reactants.',vi:'Khi đun nóng cùng nhau, sắt và lưu huỳnh phản ứng (react) và kết hợp (combine) thành một chất mới duy nhất, iron sulfide. Sắt và lưu huỳnh là các chất phản ứng (reactants).'}},
+ {q:{en:'What is formed when magnesium reacts with hydrochloric acid?',vi:'Điều gì được tạo thành khi magie phản ứng với axit hydrochloric?'},
+  o:[{en:'Magnesium oxide and water',vi:'Magnesium oxide và nước'},{en:'Hydrogen only',vi:'Chỉ hydrogen'},{en:'Magnesium chloride and hydrogen',vi:'Magnesium chloride và hydrogen'}],a:2,
+  e:{en:'Magnesium + hydrochloric acid → magnesium chloride + hydrogen. The bubbles are hydrogen gas.',vi:'Magnesium + hydrochloric acid → magnesium chloride + hydrogen. Các bọt khí là khí hydrogen.'}},
+ {q:{en:'How do you test a gas to find out if it is hydrogen?',vi:'Làm sao kiểm tra một chất khí để biết nó có phải là hydrogen?'},
+  o:[{en:'Put a lit splint at the tube mouth — hydrogen burns with a squeaky pop',vi:'Đưa một que đang cháy tới miệng ống — hydrogen cháy với tiếng nổ nhỏ “pop”'},{en:'Put a glowing splint in — it relights',vi:'Đưa một que còn than hồng vào — nó bùng cháy lại'},{en:'Bubble it through limewater — it turns milky',vi:'Sục khí qua nước vôi trong — nó chuyển đục'}],a:0,
+  e:{en:'Hydrogen burns with a squeaky pop with a lit splint. A glowing splint relighting tests for oxygen, not hydrogen.',vi:'Hydrogen cháy với tiếng nổ nhỏ “pop” với một que đang cháy. Que còn than hồng bùng cháy lại là phép thử cho oxygen, không phải hydrogen.'}},
+ {q:{en:'Which of these changes is a chemical reaction?',vi:'Biến đổi nào sau đây là một phản ứng hóa học (chemical reaction)?'},
+  o:[{en:'Ice melting into water',vi:'Nước đá tan thành nước'},{en:'Magnesium burning in air',vi:'Magie cháy trong không khí'},{en:'Water boiling into steam',vi:'Nước sôi thành hơi nước'}],a:1,
+  e:{en:'Burning magnesium forms a new substance, magnesium oxide, so it is a chemical reaction. Melting and boiling are physical changes — no new substance forms.',vi:'Đốt magie tạo thành một chất mới, magnesium oxide, nên đó là một phản ứng hóa học. Tan chảy và sôi là các biến đổi vật lý — không có chất mới nào được tạo thành.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'When ice melts to form water, it is a',vi:'Khi nước đá tan thành nước, đó là một'},correct:0,
+  opts:[{en:'physical change',vi:'biến đổi vật lý (physical change)'},{en:'chemical change',vi:'biến đổi hóa học (chemical change)'}],
+  e:{en:'Melting is a physical change: the water is still water — no new substance is formed.',vi:'Tan chảy là một biến đổi vật lý: nước vẫn là nước — không có chất mới nào được tạo thành.'}},
+ {pre:{en:'When iron atoms bond with sulfur atoms, it is a',vi:'Khi các nguyên tử sắt liên kết với các nguyên tử lưu huỳnh, đó là một'},correct:1,
+  opts:[{en:'physical change',vi:'biến đổi vật lý (physical change)'},{en:'chemical change',vi:'biến đổi hóa học (chemical change)'}],
+  e:{en:'Iron and sulfur bonding makes a new substance, iron sulfide — a chemical change.',vi:'Sắt và lưu huỳnh liên kết tạo ra một chất mới, iron sulfide — một biến đổi hóa học.'}},
+ {pre:{en:'When you cook an egg, it is a',vi:'Khi con nấu một quả trứng, đó là một'},correct:0,
+  opts:[{en:'chemical change',vi:'biến đổi hóa học (chemical change)'},{en:'physical change',vi:'biến đổi vật lý (physical change)'}],
+  e:{en:'Cooking an egg changes its substances for good — a chemical change. You cannot uncook an egg!',vi:'Nấu một quả trứng làm thay đổi các chất của nó vĩnh viễn — một biến đổi hóa học. Con không thể “nấu ngược” một quả trứng!'}},
+ {pre:{en:'When your cells use food to release energy, it is a',vi:'Khi các tế bào của con dùng thức ăn để giải phóng năng lượng, đó là một'},correct:1,
+  opts:[{en:'physical change',vi:'biến đổi vật lý (physical change)'},{en:'chemical change',vi:'biến đổi hóa học (chemical change)'}],
+  e:{en:'Using food to release energy makes new substances inside your cells — a chemical change, not a physical one.',vi:'Dùng thức ăn để giải phóng năng lượng tạo ra các chất mới bên trong tế bào — một biến đổi hóa học, không phải vật lý.'}},
+ {pre:{en:'When you let off fireworks, it is a',vi:'Khi con đốt pháo hoa, đó là một'},correct:0,
+  opts:[{en:'chemical change',vi:'biến đổi hóa học (chemical change)'},{en:'physical change',vi:'biến đổi vật lý (physical change)'}],
+  e:{en:'Fireworks burn and explode, forming new substances such as gases and ashes — a chemical change.',vi:'Pháo hoa cháy và nổ, tạo thành các chất mới như khí và tro — một biến đổi hóa học.'}},
+ {pre:{en:'In a physical change, the number of new substances formed is',vi:'Trong một biến đổi vật lý, số chất mới được tạo thành là'},correct:1,
+  opts:[{en:'always one',vi:'luôn luôn một'},{en:'none — no new substances are formed',vi:'không — không có chất mới nào được tạo thành'}],
+  e:{en:'That is the key idea: in a physical change, no new substances are formed. The substance only changes state, shape or place.',vi:'Đó là ý then chốt: trong một biến đổi vật lý, không có chất mới nào được tạo thành. Chất chỉ thay đổi trạng thái, hình dạng hoặc vị trí.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'When magnesium burns, one magnesium atom bonds with one oxygen atom. The product is',vi:'Khi magie cháy, một nguyên tử magie liên kết với một nguyên tử oxygen. Sản phẩm (product) là'},correct:1,
+  opts:[{en:'magnesium chloride',vi:'magnesium chloride'},{en:'magnesium oxide',vi:'magnesium oxide'}],
+  e:{en:'Burning magnesium combines it with oxygen, so the white powder product is magnesium oxide.',vi:'Đốt magie làm nó kết hợp (combine) với oxygen, nên sản phẩm bột trắng là magnesium oxide.'}},
+ {pre:{en:'Hydrogen reacts with oxygen to form one compound. That compound is',vi:'Hydrogen phản ứng với oxygen tạo thành một hợp chất. Hợp chất đó là'},correct:0,
+  opts:[{en:'water',vi:'nước (water)'},{en:'carbon dioxide',vi:'carbon dioxide'}],
+  e:{en:'Hydrogen and oxygen are the elements (and the reactants); water is the compound they make.',vi:'Hydrogen và oxygen là các nguyên tố (và là các chất phản ứng — reactants); nước (water) là hợp chất mà chúng tạo thành.'}},
+ {pre:{en:'When an acid is added to a metal, it bubbles and gives off a gas. The gas is',vi:'Khi thêm axit vào một kim loại, nó sủi bọt và thoát ra một chất khí. Khí đó là'},correct:0,
+  opts:[{en:'hydrogen',vi:'hydrogen'},{en:'oxygen',vi:'oxygen'}],
+  e:{en:'Metals reacting with acids give off hydrogen gas — the bubbles you see in the tube.',vi:'Kim loại phản ứng với axit thoát ra khí hydrogen — các bọt khí con thấy trong ống.'}},
+ {pre:{en:'You test that gas with a lit splint at the mouth of the tube. Hydrogen burns with a',vi:'Con kiểm tra khí đó bằng một que đang cháy ở miệng ống. Hydrogen cháy với một'},correct:1,
+  opts:[{en:'quiet fizz',vi:'tiếng xì nhẹ'},{en:'squeaky pop',vi:'tiếng nổ nhỏ “pop” (squeaky pop)'}],
+  e:{en:'The squeaky pop is the test for hydrogen. Keep your finger over the tube end until the last moment — hydrogen is lighter than air and escapes upwards.',vi:'Tiếng nổ nhỏ “pop” là phép thử cho hydrogen. Hãy giữ ngón tay bịt miệng ống tới giây cuối — hydrogen nhẹ hơn không khí và thoát lên trên.'}},
+ {pre:{en:'Complete the word equation: zinc + ',vi:'Hoàn thành phương trình chữ: zinc + '},correct:0,
+  opts:[{en:'hydrochloric acid → zinc chloride + hydrogen',vi:'hydrochloric acid → zinc chloride + hydrogen'},{en:'sulfuric acid → zinc chloride + oxygen',vi:'sulfuric acid → zinc chloride + oxygen'}],
+  e:{en:'With hydrochloric acid, zinc makes zinc chloride and hydrogen: zinc + hydrochloric acid → zinc chloride + hydrogen.',vi:'Với axit hydrochloric, kẽm tạo ra zinc chloride và hydrogen: zinc + hydrochloric acid → zinc chloride + hydrogen.'}},
+ {pre:{en:'Complete the word equation: ',vi:'Hoàn thành phương trình chữ: '},correct:1,
+  opts:[{en:'copper + sulfuric acid → magnesium sulfate + hydrogen',vi:'copper + sulfuric acid → magnesium sulfate + hydrogen'},{en:'magnesium + sulfuric acid → magnesium sulfate + hydrogen',vi:'magnesium + sulfuric acid → magnesium sulfate + hydrogen'}],
+  e:{en:'The product magnesium sulfate contains magnesium, so magnesium must be one of the reactants: magnesium + sulfuric acid → magnesium sulfate + hydrogen.',vi:'Sản phẩm magnesium sulfate chứa magie, nên magie phải là một trong các chất phản ứng: magnesium + sulfuric acid → magnesium sulfate + hydrogen.'}},
+ {pre:{en:'The products of a reaction contain the elements magnesium, hydrogen and chlorine. The elements in the reactants are',vi:'Các sản phẩm của một phản ứng chứa các nguyên tố magie, hydrogen và chlorine. Các nguyên tố trong các chất phản ứng là'},correct:1,
+  opts:[{en:'a different set of elements',vi:'một tập hợp nguyên tố khác'},{en:'the same elements — magnesium, hydrogen and chlorine',vi:'cùng các nguyên tố đó — magie, hydrogen và chlorine'}],
+  e:{en:'Atoms are rearranged in a reaction, never created from nothing: the products’ elements must all have been in the reactants.',vi:'Các nguyên tử được sắp xếp lại trong một phản ứng, không bao giờ tự sinh ra từ hư không: mọi nguyên tố của sản phẩm đều phải đã có trong các chất phản ứng.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'As the mass of metal used went up, the volume of hydrogen given off',vi:'Khi khối lượng kim loại dùng tăng lên, thể tích khí hydrogen thoát ra'},correct:0,
+  opts:[{en:'increased',vi:'tăng lên (increased)'},{en:'decreased',vi:'giảm xuống (decreased)'}],
+  e:{en:'Every bigger mass gave a bigger volume — 0.5 g gave 70 cm³ and 5.0 g gave 510 cm³. More metal reacting means more hydrogen.',vi:'Mỗi khối lượng lớn hơn đều cho thể tích lớn hơn — 0,5 g cho 70 cm³ và 5,0 g cho 510 cm³. Nhiều kim loại phản ứng hơn nghĩa là nhiều hydrogen hơn.'}},
+ {pre:{en:'When 1.0 g of the metal reacted, the volume of hydrogen measured was',vi:'Khi 1,0 g kim loại phản ứng, thể tích hydrogen đo được là'},correct:1,
+  opts:[{en:'70 cm³',vi:'70 cm³'},{en:'120 cm³',vi:'120 cm³'}],
+  e:{en:'Read the table carefully: 0.5 g → 70 cm³, but 1.0 g → 120 cm³.',vi:'Hãy đọc bảng cẩn thận: 0,5 g → 70 cm³, nhưng 1,0 g → 120 cm³.'}},
+ {pre:{en:'When 5.0 g of the metal reacted, the volume of hydrogen measured was',vi:'Khi 5,0 g kim loại phản ứng, thể tích hydrogen đo được là'},correct:0,
+  opts:[{en:'510 cm³',vi:'510 cm³'},{en:'310 cm³',vi:'310 cm³'}],
+  e:{en:'The last row of the results table: 5.0 g of metal gave 510 cm³ of hydrogen. (310 cm³ was the value for 3.0 g.)',vi:'Hàng cuối của bảng kết quả: 5,0 g kim loại cho 510 cm³ hydrogen. (310 cm³ là giá trị của 3,0 g.)'}},
+ {pre:{en:'The points on the graph follow a rising pattern, so doubling the metal roughly',vi:'Các điểm trên đồ thị đi theo xu hướng tăng dần, nên gấp đôi lượng kim loại thì đại khái'},correct:1,
+  opts:[{en:'halves the gas',vi:'làm giảm một nửa lượng khí'},{en:'doubles the gas',vi:'làm tăng gấp đôi lượng khí'}],
+  e:{en:'The results rise steadily with mass — a line of best fit climbs from about 70 cm³ at 0.5 g to 510 cm³ at 5.0 g, so more metal gives proportionally more gas.',vi:'Kết quả tăng đều theo khối lượng — đường thẳng phù hợp nhất đi từ khoảng 70 cm³ ở 0,5 g tới 510 cm³ ở 5,0 g, nên nhiều kim loại hơn cho lượng khí nhiều hơn theo tỉ lệ.'}},
+ {pre:{en:'If their measuring cylinders only held 100 cm³, most volumes could not be measured in one fill, because most of the volumes are',vi:'Nếu ống đong của hai bạn chỉ chứa được 100 cm³, hầu hết các thể tích không thể đo trong một lần đong, vì hầu hết các thể tích đều'},correct:1,
+  opts:[{en:'smaller than 100 cm³',vi:'nhỏ hơn 100 cm³'},{en:'bigger than 100 cm³',vi:'lớn hơn 100 cm³'}],
+  e:{en:'Only the 70 cm³ result fits in a 100 cm³ cylinder. The rest — 120 cm³ up to 510 cm³ — would overflow, so the gas could not be measured accurately in one go.',vi:'Chỉ kết quả 70 cm³ vừa trong một ống đong 100 cm³. Phần còn lại — từ 120 cm³ tới 510 cm³ — sẽ tràn ra, nên khí không thể được đo chính xác trong một lần.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 7 + 5 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-8-1';
+const SUMKEY='camb:sum:sci7-8-1';
+const BOT_CODE='sci7-8.1';
+let FOUND={combined:false,burned:false,props:false,sorted:false,reacted:false,game:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1:new Set(),
+  s2:new Set(),
+  s3pos:false, s3ans:false, s3wrong:false,
+  s4correct:new Set(), s4sel:null,
+  s5:new Set(), s5ans:false, s5wrong:false,
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=2;
+  if(i===1) return T.s2.size>=2;
+  if(i===2) return T.s3pos&&T.s3ans;
+  if(i===3) return T.s4correct.size>=6;
+  if(i===4) return T.s5.size>=2&&T.s5ans;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Reactants combined and heated: '+T.s1.size+' of 2 (iron filings · sulfur powder → iron sulfide).',
+             'Chất phản ứng đã kết hợp và đun nóng: '+T.s1.size+' / 2 (mạt sắt · bột lưu huỳnh → iron sulfide).');
+  }
+  if(i===1){
+    return B('Magnesium burning actions done: '+T.s2.size+' of 2 (hold the ribbon in the tongs · burn it in the Bunsen flame).',
+             'Thao tác đốt magie đã làm: '+T.s2.size+' / 2 (giữ dải magie bằng kẹp · đốt nó trong ngọn lửa Bunsen).');
+  }
+  if(i===2){
+    if(!T.s3pos) return B('Tap the dish of magnesium oxide on the bench.','Hãy chạm vào đĩa magnesium oxide trên bàn.');
+    if(T.s3wrong&&!T.s3ans) return B('Think again! The product is a white powder that does not conduct electricity — it is a new substance, not magnesium. Compare the melting points: 2800 °C against 651 °C and −214 °C.','Nghĩ lại nào! Sản phẩm là bột trắng không dẫn điện — nó là một chất mới, không phải magie. Hãy so sánh các nhiệt độ nóng chảy: 2800 °C so với 651 °C và −214 °C.');
+    if(!T.s3ans) return B('You tapped the magnesium oxide dish. Now answer the melting-point question.','Con đã chạm vào đĩa magnesium oxide. Giờ trả lời câu hỏi về nhiệt độ nóng chảy.');
+    return B('Magnesium oxide melts at 2800 °C — far higher than magnesium (651 °C) or oxygen (−214 °C). A product’s properties differ from its reactants’.','Magnesium oxide nóng chảy ở 2800 °C — cao hơn nhiều so với magie (651 °C) hay oxygen (−214 °C). Tính chất của sản phẩm khác với của các chất phản ứng.');
+  }
+  if(i===3){
+    return B('Changes sorted correctly: '+T.s4correct.size+' of 6 (physical: melting chocolate, melting ice · chemical: toast, fireworks, burning coal, green copper roof).',
+             'Biến đổi đã phân loại đúng: '+T.s4correct.size+' / 6 (vật lý: sô-cô-la tan, nước đá tan · hóa học: bánh mì nướng, pháo hoa, than cháy, mái đồng xanh).');
+  }
+  if(i===4){
+    const base='Reactions watched: '+T.s5.size+' of 2 (potassium in water · magnesium in acid)';
+    const baseVi='Phản ứng đã quan sát: '+T.s5.size+' / 2 (kali trong nước · magie trong axit)';
+    if(T.s5ans) return B(base+' · Hydrogen test answered: the squeaky pop means hydrogen.',baseVi+' · Đã trả lời phép thử hydrogen: tiếng nổ “pop” nghĩa là hydrogen.');
+    if(T.s5.size>=2) return B(base+' · Now answer: which gas burns with a squeaky pop?',baseVi+' · Giờ trả lời: khí nào cháy với tiếng nổ nhỏ “pop”?');
+    if(T.s5wrong) return B(base+' · Think again about the splint test!','Nghĩ lại về phép thử bằng que đang cháy nào!');
+    return B(base+'.',baseVi+'.');
+  }
+  if(i===5){
+    if(T.s6idx>=GAME.length) return B('Check finished! You answered all 3 questions right.','Đã xong phần kiểm tra! Con đã trả lời đúng cả 3 câu.');
+    return B('Check question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — check the reactants and products carefully!' : ''),
+             'Câu hỏi kiểm tra '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — hãy kiểm tra các chất phản ứng và sản phẩm cẩn thận!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function onSortPlaced(c){ SORTED.add(c.id); FOUND.sorted=true; saveProg(); renderMirrors(); }
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'⚙️',label:{en:'Iron filings',vi:'Mạt sắt'},got:T.s1.has('iron')},
+      {emoji:'🟡',label:{en:'Sulfur powder',vi:'Bột lưu huỳnh'},got:T.s1.has('sulfur')},
+      {emoji:'⬛',label:{en:'Iron sulfide — the product',vi:'Iron sulfide — sản phẩm'},got:T.s1.size>=2}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'✨',label:{en:'Ribbon held in the tongs',vi:'Dải magie được giữ bằng kẹp'},got:T.s2.has('mgRibbon')},
+      {emoji:'🔥',label:{en:'Burned in the Bunsen flame',vi:'Đã đốt trong ngọn lửa Bunsen'},got:T.s2.has('bunsen')},
+      {emoji:'⚪',label:{en:'White magnesium oxide left',vi:'Còn lại magnesium oxide trắng'},got:T.s2.size>=2}
+    ]);
+  }else if(curStep===2){
+    if(!T.s3pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapDish)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s3ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qProps);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chPropHigh,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3ans=true; FOUND.props=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chPropSame,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chPropSolid,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===3){
+    buildSort(box,CARDS4_ORDER,SORT_BINS,
+      T.s4correct,()=>T.s4sel,v=>{T.s4sel=v;},null,onSortPlaced);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🛁',label:{en:'Potassium + water (teacher demo)',vi:'Kali + nước (giáo viên trình diễn)'},got:T.s5.has('trough')},
+      {emoji:'🧪',label:{en:'Magnesium + hydrochloric acid',vi:'Magie + axit hydrochloric'},got:T.s5.has('acidTube')},
+      {emoji:'🪵',label:{en:'Hydrogen test answered',vi:'Đã trả lời phép thử hydrogen'},got:T.s5ans}
+    ]);
+    if(T.s5.size>=2&&!T.s5ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qHydrogen);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chHydrogen,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5ans=true; FOUND.reacted=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chOxygen,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chCarbonD,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.game=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('iron'); bounceThing('iron'); setTimeout(()=>{ focusVisual('sulfur'); bounceThing('sulfur'); },900); }
+  else if(i===1){ focusThing('mgRibbon'); bounceThing('mgRibbon'); setTimeout(()=>{ focusVisual('bunsen'); bounceThing('bunsen'); },900); }
+  else if(i===2){ focusThing('mgOxide'); bounceThing('mgOxide'); }
+  else if(i===3){ demoSort(CARDS4_ORDER,T.s4correct); }
+  else if(i===4){ focusVisual('trough'); bounceThing('trough'); setTimeout(()=>{ focusVisual('acidTube'); bounceThing('acidTube'); },900); }
+  else if(i===5){ focusThing('acidTube'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowCombine,(doneSteps.has(0)?2:T.s1.size),2)+
+    row(STR.rowBurn,(doneSteps.has(1)?2:T.s2.size),2)+
+    row(STR.rowSort,(doneSteps.has(3)?6:SORTED.size),6)+
+    row(STR.rowTest,(doneSteps.has(4)?3:T.s5.size+(T.s5ans?1:0)),3);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.combined||doneSteps.has(0),label:STR.foundCombine},
+    {got:FOUND.burned||doneSteps.has(1),label:STR.foundBurn},
+    {got:FOUND.props||doneSteps.has(2),label:STR.foundProps},
+    {got:FOUND.sorted||doneSteps.has(3),label:STR.foundSort},
+    {got:FOUND.reacted||doneSteps.has(4),label:STR.foundTest},
+    {got:FOUND.game||doneSteps.has(5),label:STR.foundGame}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildPile(px,pz,color){
+  const g=new THREE.Group();
+  const dish=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.34,0.12,16),stdMat(0xd7e6f2,0.4)));
+  dish.position.y=0.06; g.add(dish);
+  const pile=new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),stdMat(color,0.85));
+  pile.scale.y=0.55; pile.position.y=0.16; g.add(pile);
+  [[-0.14,0.3,0.08],[0.15,0.32,-0.05],[0.02,0.36,0.14]].forEach(p=>{
+    const bit=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,8),stdMat(color,0.8));
+    bit.position.set(p[0],p[1],p[2]); g.add(bit);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildCharcoal(px,pz){
+  const g=new THREE.Group();
+  const dish=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.36,0.12,16),stdMat(0x8a5a2b,0.7)));
+  dish.position.y=0.06; g.add(dish);
+  [[-0.16,0.2,0.06],[0.14,0.22,-0.08],[0.0,0.3,0.12],[-0.05,0.18,-0.16]].forEach(p=>{
+    const lump=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.16,0.2),stdMat(0x212f3c,0.95));
+    lump.position.set(p[0],p[1],p[2]); lump.rotation.set(p[0]*3,p[1]*4,p[2]*2); g.add(lump);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildRibbon(px,pz){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.7,0.08,0.44),stdMat(0x44586e,0.6)));
+  stand.position.y=0.04; g.add(stand);
+  const strip=new THREE.Mesh(new THREE.BoxGeometry(0.62,0.05,0.16),new THREE.MeshStandardMaterial({color:0xdfe8ee,roughness:0.25,metalness:0.7}));
+  strip.position.set(0,0.42,0); strip.rotation.z=0.18; g.add(strip);
+  [-0.24,0.24].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.36,8),stdMat(0x707c89,0.5));
+    post.position.set(dx,0.24,0); g.add(post);
+  });
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,8),new THREE.MeshBasicMaterial({color:0xfff2b0}));
+  glow.position.set(0.1,0.47,0); g.add(glow);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBurner(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.07,14),stdMat(0x44586e,0.5)));
+  base.position.y=0.04; g.add(base);
+  const barrel=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,0.62,12),stdMat(0x9aa7b4,0.35));
+  barrel.position.y=0.38; g.add(barrel);
+  const flame=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,10),new THREE.MeshBasicMaterial({color:0x5dade2}));
+  flame.scale.y=1.9; flame.position.y=0.85; g.add(flame);
+  const core=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),new THREE.MeshBasicMaterial({color:0xf9e79f}));
+  core.scale.y=1.8; core.position.y=0.8; g.add(core);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSplint(px,pz){
+  const g=new THREE.Group();
+  const holder=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.08,0.4),stdMat(0x8a5a2b,0.8)));
+  holder.position.y=0.04; g.add(holder);
+  const stick=new THREE.Mesh(new THREE.BoxGeometry(0.72,0.045,0.09),stdMat(0xd9a45b,0.8));
+  stick.position.set(0,0.42,0); stick.rotation.z=0.35; g.add(stick);
+  [-0.26,0.26].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.34,8),stdMat(0x707c89,0.5));
+    post.position.set(dx,0.22,0); g.add(post);
+  });
+  const flame=new THREE.Mesh(new THREE.SphereGeometry(0.075,8,8),new THREE.MeshBasicMaterial({color:0xf5b041}));
+  flame.scale.y=1.7; flame.position.set(0.3,0.62,0); g.add(flame);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildTongs(px,pz){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.7,0.08,0.44),stdMat(0x44586e,0.6)));
+  stand.position.y=0.04; g.add(stand);
+  [-0.07,0.07].forEach(dz=>{
+    const arm=new THREE.Mesh(new THREE.BoxGeometry(0.78,0.04,0.06),stdMat(0x9aa7b4,0.35));
+    arm.position.set(0,0.4,dz); arm.rotation.z=0.22; g.add(arm);
+  });
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.025,8,16),stdMat(0x707c89,0.4));
+  ring.position.set(-0.32,0.32,0); g.add(ring);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildDish(px,pz){
+  const g=new THREE.Group();
+  const dish=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.46,0.36,0.14,16),stdMat(0xeaf4fb,0.3)));
+  dish.position.y=0.07; g.add(dish);
+  const powder=new THREE.Mesh(new THREE.SphereGeometry(0.34,12,10),new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.95}));
+  powder.scale.y=0.45; powder.position.y=0.16; g.add(powder);
+  [[-0.16,0.26,0.08],[0.15,0.28,-0.06],[0.02,0.3,0.15]].forEach(p=>{
+    const bit=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),new THREE.MeshBasicMaterial({color:0xf4f6f7}));
+    bit.position.set(p[0],p[1],p[2]); g.add(bit);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildTrough(px,pz){
+  const g=new THREE.Group();
+  const tank=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.5,0.55,0.6),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.45})));
+  tank.position.y=0.3; g.add(tank);
+  const water=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.36,0.52),new THREE.MeshStandardMaterial({color:0x5dade2,roughness:0.2,transparent:true,opacity:0.75}));
+  water.position.y=0.26; g.add(water);
+  const metal=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),stdMat(0xd5cbe8,0.4));
+  metal.position.set(-0.3,0.42,0); g.add(metal);
+  const flame=new THREE.Mesh(new THREE.SphereGeometry(0.09,8,8),new THREE.MeshBasicMaterial({color:0xbb8fce}));
+  flame.scale.y=1.6; flame.position.set(-0.3,0.62,0); g.add(flame);
+  [[0.15,0.5,0.1],[0.35,0.44,-0.12],[0.5,0.52,0.05]].forEach(p=>{
+    const bub=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7}));
+    bub.position.set(p[0],p[1],p[2]); g.add(bub);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildAcidTube(px,pz){
+  const g=new THREE.Group();
+  const rack=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.14,0.42),stdMat(0x8a5a2b,0.8)));
+  rack.position.y=0.07; g.add(rack);
+  [-0.36,0,0.36].forEach((dx,ix)=>{
+    const tubeM=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.62,10,1,true),new THREE.MeshStandardMaterial({color:0xeaf4fb,roughness:0.15,transparent:true,opacity:0.55,side:THREE.DoubleSide}));
+    tubeM.position.set(dx,0.44,0); g.add(tubeM);
+    if(ix===1){
+      const liq=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.075,0.36,8),new THREE.MeshStandardMaterial({color:0xf9e79f,roughness:0.3,transparent:true,opacity:0.85}));
+      liq.position.set(dx,0.3,0); g.add(liq);
+      const strip=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.2,0.02),new THREE.MeshStandardMaterial({color:0xdfe8ee,roughness:0.3,metalness:0.6}));
+      strip.position.set(dx,0.28,0); g.add(strip);
+      [[-0.04,0.42,0.03],[0.04,0.48,-0.02],[0,0.54,0.04]].forEach(p=>{
+        const bub=new THREE.Mesh(new THREE.SphereGeometry(0.03,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.8}));
+        bub.position.set(dx+p[0],p[1],p[2]); g.add(bub);
+      });
+    }
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  const mat=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.06,1.6),stdMat(0x44586e,0.8));
+  mat.position.set(0.15,0.02,-1.8); scene3.add(mat);
+  reg('iron',buildPile(-4.7,-1.8,0x808b96));
+  reg('sulfur',buildPile(-3.3,-1.8,0xf4d03f));
+  reg('charcoal',buildCharcoal(-1.9,-1.8));
+  reg('mgRibbon',buildRibbon(-0.3,-1.8));
+  reg('bunsen',buildBurner(1.3,-1.8));
+  reg('splint',buildSplint(2.9,-1.8));
+  reg('tongs',buildTongs(4.6,-1.8));
+  reg('mgOxide',buildDish(-3.6,1.8));
+  reg('trough',buildTrough(-0.9,1.8));
+  reg('acidTube',buildAcidTube(1.6,1.8));
+  { const p=sphProxy(0.52); p.position.set(0,0.35,0); addProxy('iron',p,G.iron); }
+  { const p=sphProxy(0.52); p.position.set(0,0.35,0); addProxy('sulfur',p,G.sulfur); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('charcoal',p,G.charcoal); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('mgRibbon',p,G.mgRibbon); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('bunsen',p,G.bunsen); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('splint',p,G.splint); }
+  { const p=sphProxy(0.55); p.position.set(0,0.35,0); addProxy('tongs',p,G.tongs); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('mgOxide',p,G.mgOxide); }
+  { const p=sphProxy(0.75); p.position.set(0,0.35,0); addProxy('trough',p,G.trough); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('acidTube',p,G.acidTube); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['iron','sulfur'],
+  ['mgRibbon','bunsen'],
+  ['mgOxide'],
+  [],
+  ['trough','acidTube'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='iron'||id==='sulfur'){
+      T.s1.add(id);
+      if(T.s1.size>=2) FOUND.combined=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1){
+    if(id==='mgRibbon'||id==='bunsen'){
+      T.s2.add(id);
+      if(T.s2.size>=2) FOUND.burned=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===2&&id==='mgOxide'){
+    T.s3pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='trough'||id==='acidTube'){
+      T.s5.add(id);
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.combined=false; }
+  if(step===1){ FOUND.burned=false; }
+  if(step===2){ FOUND.props=false; }
+  if(step===3){ CARDS4.forEach(c=>SORTED.delete(c.id)); FOUND.sorted=false; }
+  if(step===4){ FOUND.reacted=false; }
+  if(step===5){ FOUND.game=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted.filter(id=>CARDS4.some(c=>c.id===id)));
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['iron','sulfur'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ ['mgRibbon','bunsen'].forEach(id=>t.s2.add(id)); }
+  else if(i===2){ t.s3pos=true; t.s3ans=true; }
+  else if(i===3){ CARDS4.forEach(c=>{ if(SORTED.has(c.id)) t.s4correct.add(c.id); }); if(t.s4correct.size<CARDS4.length) CARDS4.forEach(c=>t.s4correct.add(c.id)); }
+  else if(i===4){ ['trough','acidTube'].forEach(id=>t.s5.add(id)); t.s5ans=true; }
+  else if(i===5){ t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-8-1',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>
