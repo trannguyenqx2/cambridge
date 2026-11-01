@@ -1,0 +1,1477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>9.4 Practical circuits — Mạch điện thực tế · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fff6e0,#eef6ff)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.long{background:#7a4fd0}
+.binbtn.short{background:#0b76d1}
+.binbtn.good{background:#0d9d58}
+.binbtn.bad{background:#b03a3a}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.high{background:#b03a3a}
+.binbtn.series{background:#0b76d1}
+.binbtn.parallel{background:#7a4fd0}
+.binbtn.low{background:#0b76d1}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="9.4 Practical circuits" data-vi="9.4 Mạch điện thực tế (Practical circuits)">9.4 Practical circuits</span>
+    <span class="eqchip i18n" data-en="Unit 9 · Electricity" data-vi="Bài 9 · Điện (Electricity)">Unit 9 · Electricity</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do we draw, measure and control real circuits — with meters, dimmers and door switches?" data-vi="Làm thế nào để vẽ, đo và điều khiển các mạch điện thật — bằng đồng hồ đo, nút chỉnh độ sáng và công tắc cửa?">How do we draw, measure and control real circuits — with meters, dimmers and door switches?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Symbols and jobs of the parts" data-vi="Ký hiệu và chức năng của các linh kiện">Symbols and jobs of the parts</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Meters: series and parallel" data-vi="Đồng hồ đo: nối tiếp (series) và song song (parallel)">Meters: series and parallel</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Variable resistors control brightness" data-vi="Biến trở (variable resistors) điều khiển độ sáng">Variable resistors control brightness</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Everyday circuits and designs" data-vi="Các mạch thường ngày và thiết kế mạch">Everyday circuits and designs</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the circuit bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn mạch điện!">🖱 Drag to look around · Scroll to zoom · Tap the models on the circuit bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 9 Electricity · Section 9.4. The circuit bench in this lesson is a simulation — the components are models, and the fridge, car, battery checker and 6 V lamp divider are simplified versions of the book's circuit diagrams." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 9 Điện (Electricity) · Mục 9.4. Bàn mạch điện trong bài học này là mô phỏng — các linh kiện đều là mô hình, và tủ lạnh, ô tô, bộ kiểm tra ắc quy cùng mạch chia áp đèn 6 V là các phiên bản đơn giản hóa của sơ đồ mạch trong sách.">Cambridge Lower Secondary Science 9 · Unit 9 Electricity · Section 9.4. The circuit bench in this lesson is a simulation — the components are models, and the fridge, car, battery checker and 6 V lamp divider are simplified versions of the book's circuit diagrams.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 9 Electricity, section 9.4 Practical circuits, pages 312–318; Workbook 9 (ISBN 9781108742894), pages 184–187. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section project (building a model school or house with circuits for its rooms) and the unit check-your-progress pages are classroom making and review tasks and are not part of this interactive lesson. The book's paper activity — drawing circuit diagrams for Circuits 1–4 and then building them with real components — is represented here by the design sort in step 6 and the exercises." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 9 Điện (Electricity), mục 9.4 Mạch điện thực tế (Practical circuits), trang 312–318; Sách bài tập 9 (ISBN 9781108742894), trang 184–187. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Dự án của mục (làm mô hình trường học hoặc nhà ở với mạch điện cho các phòng) và phần kiểm tra tiến bộ cuối bài là nhiệm vụ chế tạo và ôn tập trên lớp, không thuộc bài học tương tác này. Hoạt động trên giấy của sách — vẽ sơ đồ mạch cho các Mạch 1–4 rồi lắp chúng bằng linh kiện thật — được thể hiện ở đây bằng trò phân loại thiết kế ở bước 6 và các bài tập.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 9 Electricity, section 9.4 Practical circuits, pages 312–318; Workbook 9 (ISBN 9781108742894), pages 184–187. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section project (building a model school or house with circuits for its rooms) and the unit check-your-progress pages are classroom making and review tasks and are not part of this interactive lesson. The book's paper activity — drawing circuit diagrams for Circuits 1–4 and then building them with real components — is represented here by the design sort in step 6 and the exercises.</p>
+    <p class="i18n" data-en="Objectives (from the book): draw circuit diagrams that include symbols for cells, switches, resistors, variable resistors, ammeters, voltmeters, lamps and buzzers; and make circuits that include some or all of these components. Key words: dimmer, fixed resistor, variable resistor, volume." data-vi="Mục tiêu (theo sách): vẽ các sơ đồ mạch (circuit diagrams) có ký hiệu của pin (cells), công tắc (switches), điện trở (resistors), biến trở (variable resistors), ampe kế (ammeters), vôn kế (voltmeters), đèn (lamps) và chuông (buzzers); và lắp các mạch chứa một số hoặc tất cả các linh kiện này. Từ khóa: dimmer (nút chỉnh độ sáng), fixed resistor (điện trở cố định), variable resistor (biến trở), volume (âm lượng).">Objectives (from the book): draw circuit diagrams that include symbols for cells, switches, resistors, variable resistors, ammeters, voltmeters, lamps and buzzers; and make circuits that include some or all of these components. Key words: dimmer, fixed resistor, variable resistor, volume.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D circuit bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the circuit bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: the Getting started parts and meters (ammeter in series, voltmeter in parallel), then fixed and variable resistors (the variable resistor symbol carries an arrow; its resistance can be given as a range such as 1–50 Ω, as in the Workbook), the dimmer circuit (resistance up — current down — lamp dimmer), the book's everyday circuits (the fridge door switch, the car door buzzer that needs the headlamps on as well, the switched voltmeter branch that checks a 12 V battery, and the 6 V lamp run from a 12 V battery across one of two equal series resistors), and finally designing circuits by choosing series loops or parallel branches. The exercises use the Workbook's own structure: 9.4A Focus (the effects of increasing a variable resistor's resistance), 9.4B Practice (using one variable resistor with one lamp, with two lamps in series, and with two lamps in parallel, plus dimmers and volume controls) and 9.4C Challenge (comparing series and parallel circuits, as in the Workbook's circuits A–D)." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn mạch điện 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn mạch điện' chỉ di chuyển camera; muốn kiểm tra một ý thì phải chạm vào chính mô hình trên bàn. Các bước đi theo đúng thứ tự trong sách: các linh kiện và đồng hồ đo ở phần Khởi động (ampe kế nối tiếp — series, vôn kế song song — parallel), rồi điện trở cố định và biến trở (ký hiệu biến trở có mũi tên; điện trở của nó có thể cho theo khoảng như 1–50 Ω, như trong Workbook), mạch nút chỉnh độ sáng (điện trở tăng — dòng điện giảm — đèn mờ hơn), các mạch thường ngày trong sách (công tắc cửa tủ lạnh, còi cửa ô tô cần cả đèn pha đang bật, nhánh vôn kế có công tắc để kiểm tra ắc quy 12 V, và đèn 6 V chạy từ ắc quy 12 V nhờ nối hai đầu một trong hai điện trở nối tiếp bằng nhau), và cuối cùng là thiết kế mạch bằng cách chọn vòng nối tiếp hay nhánh song song. Bài tập dùng đúng cấu trúc của Workbook: 9.4A Focus (tác dụng của việc tăng điện trở của biến trở), 9.4B Practice (dùng một biến trở với một đèn, với hai đèn nối tiếp, và với hai đèn song song, cùng nút chỉnh độ sáng và âm lượng) và 9.4C Challenge (so sánh mạch nối tiếp và song song, như các mạch A–D của Workbook).">How it works: each step asks for one real action — tapping the models on the 3D circuit bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the circuit bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: the Getting started parts and meters (ammeter in series, voltmeter in parallel), then fixed and variable resistors (the variable resistor symbol carries an arrow; its resistance can be given as a range such as 1–50 Ω, as in the Workbook), the dimmer circuit (resistance up — current down — lamp dimmer), the book's everyday circuits (the fridge door switch, the car door buzzer that needs the headlamps on as well, the switched voltmeter branch that checks a 12 V battery, and the 6 V lamp run from a 12 V battery across one of two equal series resistors), and finally designing circuits by choosing series loops or parallel branches. The exercises use the Workbook's own structure: 9.4A Focus (the effects of increasing a variable resistor's resistance), 9.4B Practice (using one variable resistor with one lamp, with two lamps in series, and with two lamps in parallel, plus dimmers and volume controls) and 9.4C Challenge (comparing series and parallel circuits, as in the Workbook's circuits A–D).</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn long" id="ex1BinLong"></button>
+        <button class="binbtn short" id="ex1BinShort"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn good" id="ex3BinGood"></button>
+        <button class="binbtn bad" id="ex3BinBad"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-9-4 "Practical circuits"
+   (Science 9, Unit 9 · Electricity)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= Circuit bench models ================= */
+const LAB={
+  cell:   {emoji:'🔋', name:{en:'A cell — it supplies energy and pushes current round a circuit',vi:'Một pin (cell) — nó cung cấp năng lượng và đẩy dòng điện (current) chạy quanh mạch'}, short:{en:'Cell',vi:'Pin'}, ring:0.45, labelY:1.2, fx:-3.9, fz:-1.3, fr:4.4},
+  switchm:{emoji:'🔀', name:{en:'A switch — closing it completes the circuit so current can flow; opening it stops the current',vi:'Một công tắc (switch) — đóng nó thì mạch kín để dòng điện chạy; mở nó thì dòng điện dừng lại'}, short:{en:'Switch',vi:'Công tắc'}, ring:0.5, labelY:1.25, fx:-2.6, fz:-1.3, fr:4.4},
+  lamp:   {emoji:'💡', name:{en:'A lamp — it lights up when current flows through it',vi:'Một đèn (lamp) — nó sáng lên khi có dòng điện chạy qua'}, short:{en:'Lamp',vi:'Đèn'}, ring:0.5, labelY:1.35, fx:-1.3, fz:-1.3, fr:4.4},
+  buzzer: {emoji:'🔔', name:{en:'A buzzer — it makes a sound when current flows through it',vi:'Một chuông/còi (buzzer) — nó kêu khi có dòng điện chạy qua'}, short:{en:'Buzzer',vi:'Chuông (buzzer)'}, ring:0.5, labelY:1.25, fx:0.0, fz:-1.3, fr:4.4},
+  ammeter:{emoji:'A', name:{en:'An ammeter — it measures the current through a component, in amps',vi:'Một ampe kế (ammeter) — nó đo dòng điện (current) chạy qua một linh kiện, tính bằng ampe'}, short:{en:'Ammeter',vi:'Ampe kế'}, ring:0.5, labelY:1.3, fx:1.3, fz:-1.3, fr:4.4},
+  voltmeter:{emoji:'V', name:{en:'A voltmeter — it measures the voltage across a component, in volts',vi:'Một vôn kế (voltmeter) — nó đo hiệu điện thế (voltage) hai đầu một linh kiện, tính bằng vôn'}, short:{en:'Voltmeter',vi:'Vôn kế'}, ring:0.5, labelY:1.3, fx:2.6, fz:-1.3, fr:4.4},
+  fixed:  {emoji:'〰️', name:{en:'A fixed resistor — its resistance stays at one value and cannot be adjusted',vi:'Một điện trở cố định (fixed resistor) — điện trở (resistance) của nó giữ nguyên một giá trị và không chỉnh được'}, short:{en:'Fixed resistor',vi:'Điện trở cố định'}, ring:0.55, labelY:1.25, fx:-3.5, fz:1.7, fr:4.6},
+  varres: {emoji:'🎚️', name:{en:'A variable resistor — its resistance can be adjusted, like a sliding control',vi:'Một biến trở / điện trở biến đổi (variable resistor) — điện trở của nó chỉnh được, như một nút trượt'}, short:{en:'Variable resistor',vi:'Biến trở'}, ring:0.55, labelY:1.3, fx:-2.1, fz:1.7, fr:4.6},
+  fridge: {emoji:'🧊', name:{en:'A fridge — opening its door closes a switch and the inside light comes on',vi:'Một tủ lạnh (fridge) — mở cửa của nó sẽ đóng một công tắc và đèn bên trong sáng lên'}, short:{en:'Fridge',vi:'Tủ lạnh'}, ring:0.6, labelY:1.5, fx:-0.7, fz:1.7, fr:4.6},
+  car:    {emoji:'🚗', name:{en:'A car — its warning buzzer works only when the door is open AND the headlamps are on',vi:'Một chiếc ô tô (car) — còi cảnh báo của nó chỉ kêu khi cửa mở VÀ đèn pha (headlamps) đang bật'}, short:{en:'Car',vi:'Ô tô'}, ring:0.6, labelY:1.35, fx:0.7, fz:1.7, fr:4.6},
+  battind:{emoji:'⚡', name:{en:'A 12 V battery with a switched voltmeter branch — close the switch to check the battery voltage',vi:'Một ắc quy 12 V với một nhánh vôn kế (voltmeter) có công tắc — đóng công tắc để kiểm tra điện áp của ắc quy'}, short:{en:'Battery checker',vi:'Bộ kiểm tra ắc quy'}, ring:0.6, labelY:1.35, fx:2.1, fz:1.7, fr:4.6},
+  divider:{emoji:'🔅', name:{en:'A 6 V lamp connected across one of two equal resistors in series with a 12 V battery — it receives 6 V',vi:'Một đèn 6 V nối song song với một trong hai điện trở bằng nhau mắc nối tiếp với ắc quy 12 V — nó nhận 6 V'}, short:{en:'6 V lamp divider',vi:'Mạch chia áp cho đèn 6 V'}, ring:0.55, labelY:1.3, fx:3.5, fz:1.7, fr:4.4}
+};
+const FOCUSORDER=['cell','switchm','lamp','buzzer','ammeter','voltmeter','fixed','varres','fridge','car','battind','divider'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the circuit bench',vi:'Trên bàn mạch điện'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to test an idea, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn kiểm tra một ý, hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My practical circuits record',vi:'Bảng ghi mạch điện thực tế của con'},
+  u2Brief:{en:'What you have found out about real circuits, in the order of the book.',vi:'Những gì con đã tìm ra về các mạch điện thật, theo đúng thứ tự trong sách.'},
+  recParts:{en:'🔋 A circuit needs a cell, and a switch turns its current on and off',vi:'🔋 Một mạch cần một pin (cell), và một công tắc (switch) bật/tắt dòng điện của nó'},
+  recMeters:{en:'📏 An ammeter goes in series; a voltmeter goes in parallel across a component',vi:'📏 Một ampe kế (ammeter) mắc nối tiếp (in series); một vôn kế (voltmeter) mắc song song (in parallel) hai đầu một linh kiện'},
+  recRes:{en:'🎚️ A variable resistor can be adjusted; a fixed resistor cannot',vi:'🎚️ Một biến trở (variable resistor) chỉnh được; một điện trở cố định (fixed resistor) thì không'},
+  recDim:{en:'💡 More resistance → less current → a dimmer lamp',vi:'💡 Điện trở lớn hơn → dòng điện nhỏ hơn → đèn mờ hơn (dimmer)'},
+  recEvery:{en:'🚗 Everyday circuits use switches controlled by doors, and resistors to share voltage',vi:'🚗 Các mạch thường ngày dùng công tắc do cửa điều khiển, và điện trở để chia điện áp (voltage)'},
+  recDesign:{en:'✏️ Design first: series for the same current, parallel branches for separate control',vi:'✏️ Thiết kế trước: nối tiếp (series) để cùng dòng điện, các nhánh song song (parallel) để điều khiển riêng'},
+  u3T:{en:'Skills I found',vi:'Kĩ năng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for drawing, measuring and building practical circuits.',vi:'Danh sách kiểm tra về vẽ, đo và lắp các mạch điện thực tế.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundParts:{en:'I named the cell, switch, lamp and buzzer and said what each one does',vi:'Con đã kể tên pin (cell), công tắc (switch), đèn (lamp) và chuông (buzzer) và nói được chức năng của từng cái'},
+  foundMeters:{en:'I know an ammeter is connected in series and a voltmeter in parallel',vi:'Con biết ampe kế (ammeter) mắc nối tiếp (in series) và vôn kế (voltmeter) mắc song song (in parallel)'},
+  foundRes:{en:'I can draw the variable resistor symbol — a resistor with an arrow through it',vi:'Con vẽ được ký hiệu biến trở (variable resistor) — một điện trở có mũi tên xuyên qua'},
+  foundDim:{en:'Increasing a variable resistor’s resistance decreases the current and dims the lamp',vi:'Tăng điện trở của biến trở (variable resistor) làm giảm dòng điện (current) và làm đèn mờ đi'},
+  foundEvery:{en:'I explored the fridge light, the car door buzzer, the battery checker and the 6 V lamp circuit',vi:'Con đã khám phá đèn tủ lạnh, còi cửa ô tô, bộ kiểm tra ắc quy và mạch đèn 6 V'},
+  foundDesign:{en:'I sorted circuit designs into series loops and parallel branches',vi:'Con đã phân loại các thiết kế mạch thành vòng nối tiếp (series) và các nhánh song song (parallel)'},
+  binSeries:{en:'ONE SERIES LOOP ➡️',vi:'MỘT VÒNG NỐI TIẾP ➡️ (one series loop)'},
+  binParallel:{en:'PARALLEL BRANCHES ⫴',vi:'CÁC NHÁNH SONG SONG ⫴ (parallel branches)'},
+  binTrue:{en:'CORRECT ✓',vi:'ĐÚNG ✓ (correct)'},
+  binFalse:{en:'WRONG ✗',vi:'SAI ✗ (wrong)'},
+  lookLamp:{en:'Look at the lamp 💡',vi:'Ngắm chiếc đèn 💡'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 9.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 9.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — What happens when the resistance increases? (Workbook 9.4A)',vi:'Bài tập 1 · Focus — Điều gì xảy ra khi điện trở tăng? (Workbook 9.4A)'},
+  ex1Inst:{en:'In the Workbook, a variable resistor is connected in series with a lamp and its resistance is increased. Here, tap a card, then judge it: is the statement CORRECT or WRONG?',vi:'Trong Workbook, một biến trở (variable resistor) được mắc nối tiếp (in series) với một đèn và điện trở của nó được tăng lên. Ở đây, chạm vào một thẻ, rồi xét nó: phát biểu đó ĐÚNG (CORRECT) hay SAI (WRONG)?'},
+  ex2T:{en:'Exercise 2 · Practice — Using variable resistors (Workbook 9.4B)',vi:'Bài tập 2 · Practice — Dùng biến trở (Workbook 9.4B)'},
+  ex2Inst:{en:'In the Workbook you draw circuit diagrams that use a variable resistor to control one lamp, or two lamps in series or in parallel. For each question here, tap the ONE correct answer.',vi:'Trong Workbook, con vẽ các sơ đồ mạch dùng một biến trở (variable resistor) để điều khiển một đèn, hoặc hai đèn mắc nối tiếp hay song song. Với mỗi câu hỏi ở đây, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Comparing circuits: series or parallel? (Workbook 9.4C)',vi:'Bài tập 3 · Challenge — So sánh các mạch: nối tiếp hay song song? (Workbook 9.4C)'},
+  ex3Inst:{en:'The Workbook asks you to compare circuit diagrams A–D: which lamps share a current, which get the full voltage of the cell, and which can be controlled separately. Tap a card, then sort it: is it true for lamps in PARALLEL BRANCHES, or for lamps in ONE SERIES LOOP?',vi:'Workbook yêu cầu con so sánh các sơ đồ mạch A–D: đèn nào dùng chung một dòng điện, đèn nào nhận đủ điện áp (voltage) của pin, và đèn nào điều khiển riêng được. Chạm vào một thẻ, rồi xếp nó: điều đó đúng với đèn trong CÁC NHÁNH SONG SONG (PARALLEL BRANCHES), hay với đèn trong MỘT VÒNG NỐI TIẾP (ONE SERIES LOOP)?'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'dimmer',vi:'nút chỉnh độ sáng'},
+  {en:'fixed resistor',vi:'điện trở cố định'},
+  {en:'variable resistor',vi:'biến trở / điện trở biến đổi'},
+  {en:'volume',vi:'âm lượng'},
+  {en:'cell',vi:'pin'},
+  {en:'switch',vi:'công tắc'},
+  {en:'ammeter',vi:'ampe kế'},
+  {en:'voltmeter',vi:'vôn kế'},
+  {en:'lamp',vi:'đèn'},
+  {en:'buzzer',vi:'chuông / còi điện'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started — the parts',vi:'Khởi động — các linh kiện'}, word:{en:'cell',vi:'pin (cell)'},
+  q:{en:'In Getting started you draw the symbol for each part of a circuit and write what it does. Can you name the four parts every simple circuit starts with?',vi:'Trong phần Khởi động, con vẽ ký hiệu cho từng linh kiện của một mạch và viết chức năng của nó. Con kể tên được bốn linh kiện mà mọi mạch đơn giản bắt đầu với chúng không?'},
+  act:{en:'Tap all four part models on the back row of the bench: the cell, the switch, the lamp and the buzzer.',vi:'Chạm vào cả bốn mô hình linh kiện ở hàng sau của bàn: pin (cell), công tắc (switch), đèn (lamp) và chuông (buzzer).'},
+  see:{en:'The cell supplies the energy, the switch turns the current on and off, and the lamp and buzzer show the current is flowing.',vi:'Pin (cell) cung cấp năng lượng, công tắc (switch) bật và tắt dòng điện, còn đèn (lamp) và chuông (buzzer) cho thấy dòng điện đang chạy.'},
+  concl:[
+    {en:'A cell supplies energy to a circuit and pushes the current round it. A switch opens or closes the circuit: closed means current can flow, open means it cannot.',vi:'Một pin (cell) cung cấp năng lượng cho mạch và đẩy dòng điện chạy quanh nó. Một công tắc (switch) mở hoặc đóng mạch: đóng thì dòng điện chạy được, mở thì không.'},
+    {en:'A lamp lights up and a buzzer sounds when current flows through them — that is how we know the circuit is working.',vi:'Một đèn (lamp) sáng lên và một chuông (buzzer) kêu khi có dòng điện chạy qua chúng — nhờ đó ta biết mạch đang hoạt động.'},
+    {en:'Every component has its own circuit symbol, so a whole circuit can be drawn neatly as a circuit diagram before it is built.',vi:'Mỗi linh kiện có ký hiệu mạch riêng, nên cả một mạch có thể được vẽ gọn gàng thành sơ đồ mạch (circuit diagram) trước khi lắp.'}]},
+ {tag:{en:'Measuring current and voltage',vi:'Đo dòng điện và hiệu điện thế'}, word:{en:'ammeter',vi:'ampe kế (ammeter)'},
+  q:{en:'Getting started also asks how meters are connected. How do you measure the current through a resistor, and the voltage across a lamp?',vi:'Phần Khởi động cũng hỏi cách nối các đồng hồ đo. Làm thế nào để đo dòng điện (current) qua một điện trở, và hiệu điện thế (voltage) hai đầu một đèn?'},
+  act:{en:'Tap the ammeter model. Then tap the voltmeter model.',vi:'Chạm vào mô hình ampe kế (ammeter). Sau đó chạm vào mô hình vôn kế (voltmeter).'},
+  see:{en:'The ammeter sits in the same path as the component. The voltmeter sits in its own branch, across the component.',vi:'Ampe kế (ammeter) nằm trên cùng đường đi với linh kiện. Vôn kế (voltmeter) nằm trong nhánh riêng của nó, hai đầu linh kiện.'},
+  concl:[
+    {en:'An ammeter measures current, in amps. It is connected in series — in the same path as the component — so the current through the component also flows through the ammeter.',vi:'Một ampe kế (ammeter) đo dòng điện (current), tính bằng ampe. Nó được mắc nối tiếp (in series) — trên cùng đường đi với linh kiện — để dòng điện qua linh kiện cũng chạy qua ampe kế.'},
+    {en:'A voltmeter measures voltage, in volts. It is connected in parallel — across the component, in its own branch — so it measures the voltage between the two ends of the component.',vi:'Một vôn kế (voltmeter) đo hiệu điện thế (voltage), tính bằng vôn. Nó được mắc song song (in parallel) — hai đầu linh kiện, trong nhánh riêng của nó — để đo hiệu điện thế giữa hai đầu linh kiện.'},
+    {en:'Series for current, parallel for voltage: swapping the meters round would not measure what you want.',vi:'Nối tiếp (series) để đo dòng điện, song song (parallel) để đo hiệu điện thế: hoán đổi hai đồng hồ cho nhau sẽ không đo được đại lượng con cần.'}]},
+ {tag:{en:'Fixed and variable resistors',vi:'Điện trở cố định và biến trở'}, word:{en:'variable resistor',vi:'biến trở (variable resistor)'},
+  q:{en:'In many circuits it is useful to be able to change the resistance. What is the difference between a fixed resistor and a variable resistor?',vi:'Trong nhiều mạch, việc thay đổi được điện trở (resistance) rất hữu ích. Điện trở cố định (fixed resistor) và biến trở (variable resistor) khác nhau thế nào?'},
+  act:{en:'Tap the fixed resistor model. Then tap the variable resistor model, with its sliding control.',vi:'Chạm vào mô hình điện trở cố định (fixed resistor). Sau đó chạm vào mô hình biến trở (variable resistor), với nút trượt của nó.'},
+  see:{en:'One resistor keeps a single value. The other can be adjusted over a range, just by turning or sliding its control.',vi:'Một điện trở giữ nguyên một giá trị duy nhất. Cái còn lại chỉnh được trong một khoảng giá trị, chỉ bằng cách xoay hoặc trượt nút điều khiển của nó.'},
+  concl:[
+    {en:'A fixed resistor has one resistance that cannot be changed. A variable resistor can be adjusted over a range — for example, its resistance might be described as 1–50 Ω.',vi:'Một điện trở cố định (fixed resistor) có một điện trở không thay đổi được. Một biến trở (variable resistor) chỉnh được trong một khoảng — ví dụ, điện trở của nó có thể được mô tả là 1–50 Ω.'},
+    {en:'The symbol for a variable resistor is the fixed resistor symbol with an arrow through it — the arrow shows that its value can change.',vi:'Ký hiệu của biến trở (variable resistor) là ký hiệu điện trở cố định có một mũi tên xuyên qua — mũi tên cho thấy giá trị của nó thay đổi được.'},
+    {en:'Variable resistors are used as dimmer switches for lamps, and as volume controls — in audio equipment, volume means how loud the sound is.',vi:'Biến trở được dùng làm công tắc chỉnh độ sáng (dimmer switches) cho đèn, và làm nút chỉnh âm lượng (volume) — trong thiết bị âm thanh, volume nghĩa là độ to của âm thanh.'}]},
+ {tag:{en:'A dimmer at work',vi:'Nút chỉnh độ sáng hoạt động'}, word:{en:'dimmer',vi:'nút chỉnh độ sáng (dimmer)'},
+  q:{en:'A variable resistor in series with a lamp works as a dimmer switch. What happens to the lamp when you turn the resistance up — and when you turn it down?',vi:'Một biến trở (variable resistor) mắc nối tiếp (in series) với một đèn hoạt động như nút chỉnh độ sáng (dimmer switch). Điều gì xảy ra với đèn khi con tăng điện trở — và khi con giảm nó?'},
+  act:{en:'Tap the variable resistor model again, as the dimmer control. Then tap the lamp model it controls.',vi:'Chạm lại vào mô hình biến trở (variable resistor), trong vai nút chỉnh độ sáng (dimmer). Sau đó chạm vào mô hình đèn (lamp) mà nó điều khiển.'},
+  see:{en:'The lamp on the bench glows gently: turn the resistance up and the current falls, so the lamp gets dimmer; turn it down and the lamp gets brighter.',vi:'Chiếc đèn trên bàn phát sáng nhẹ: tăng điện trở thì dòng điện giảm, nên đèn mờ hơn; giảm điện trở thì đèn sáng hơn.'},
+  concl:[
+    {en:'As the resistance of the variable resistor is increased, the current in the circuit decreases — and a smaller current through the lamp makes the lamp dimmer.',vi:'Khi điện trở của biến trở (variable resistor) tăng lên, dòng điện (current) trong mạch giảm xuống — và dòng điện qua đèn nhỏ hơn làm đèn mờ hơn (dimmer).'},
+    {en:'As the resistance is decreased, the current increases — and a larger current through the lamp makes the lamp brighter.',vi:'Khi điện trở giảm xuống, dòng điện tăng lên — và dòng điện qua đèn lớn hơn làm đèn sáng hơn.'},
+    {en:'That is exactly how the dimmer switches in a room control the brightness of its lamps, without changing the lamps themselves.',vi:'Đó chính là cách các công tắc chỉnh độ sáng (dimmer switches) trong một căn phòng điều khiển độ sáng của đèn, mà không cần thay chính những chiếc đèn.'}]},
+ {tag:{en:'Everyday circuits',vi:'Các mạch điện thường ngày'}, word:{en:'buzzer',vi:'chuông / còi (buzzer)'},
+  q:{en:'Circuits work all around us — in fridges, cars and batteries. What clever jobs can switches and resistors do in real circuits?',vi:'Mạch điện hoạt động khắp quanh ta — trong tủ lạnh, ô tô và ắc quy. Công tắc (switches) và điện trở (resistors) làm được những việc khéo léo nào trong các mạch thật?'},
+  act:{en:'Tap all four everyday-circuit models on the front row: the fridge, the car, the battery checker and the 6 V lamp divider.',vi:'Chạm vào cả bốn mô hình mạch thường ngày ở hàng trước: tủ lạnh (fridge), ô tô (car), bộ kiểm tra ắc quy và mạch chia áp cho đèn 6 V.'},
+  see:{en:'Four real circuits: a light that answers a door, a buzzer that needs two switches, a meter branch for a battery, and a lamp running safely on half a battery’s voltage.',vi:'Bốn mạch thật: một đèn hưởng ứng một cánh cửa, một còi cần tới hai công tắc, một nhánh đồng hồ đo cho ắc quy, và một đèn chạy an toàn với một nửa điện áp của ắc quy.'},
+  concl:[
+    {en:'In a fridge, the door itself works the switch: door open — switch closed — the inside light comes on; door closed — switch open — the light goes off.',vi:'Trong tủ lạnh (fridge), chính cánh cửa điều khiển công tắc: cửa mở — công tắc đóng — đèn bên trong sáng lên; cửa đóng — công tắc mở — đèn tắt.'},
+    {en:'A car’s warning buzzer is in a branch with two switches in series: the headlamp switch AND the door switch must both be closed, so the buzzer sounds only when the door is opened while the headlamps are on. The headlamps themselves are in parallel, so they switch on and off together.',vi:'Còi cảnh báo của ô tô nằm trong một nhánh có hai công tắc mắc nối tiếp (in series): công tắc đèn pha VÀ công tắc cửa đều phải đóng, nên còi chỉ kêu khi cửa được mở trong lúc đèn pha đang bật. Bản thân các đèn pha (headlamps) mắc song song (in parallel), nên chúng bật và tắt cùng nhau.'},
+    {en:'A battery voltage indicator puts a voltmeter in parallel across a 12 V battery, with a switch in that branch: close the switch only when you want to check the voltage.',vi:'Một bộ chỉ thị điện áp ắc quy đặt một vôn kế (voltmeter) song song (in parallel) hai đầu ắc quy 12 V, với một công tắc trong nhánh đó: chỉ đóng công tắc khi con muốn kiểm tra điện áp (voltage).'},
+    {en:'Two equal resistors in series share the battery voltage equally. A 6 V lamp connected in parallel with one of them receives 6 V from a 12 V battery, so it works safely and properly.',vi:'Hai điện trở bằng nhau mắc nối tiếp (in series) chia đều điện áp của ắc quy. Một đèn 6 V nối song song (in parallel) với một trong hai điện trở đó nhận 6 V từ ắc quy 12 V, nên nó hoạt động an toàn và đúng cách.'}]},
+ {tag:{en:'Design the circuit',vi:'Thiết kế mạch điện'}, word:{en:'volume',vi:'âm lượng (volume)'},
+  q:{en:'Now design like a scientist: for each job, should the parts sit in one series loop, or in parallel branches of their own?',vi:'Giờ hãy thiết kế như một nhà khoa học: với mỗi nhiệm vụ, các linh kiện nên nằm trong một vòng nối tiếp (series loop) duy nhất, hay trong các nhánh song song (parallel branches) riêng của chúng?'},
+  act:{en:'Tap a card, then tap ONE SERIES LOOP or PARALLEL BRANCHES.',vi:'Chạm vào một thẻ, rồi chạm MỘT VÒNG NỐI TIẾP (ONE SERIES LOOP) hoặc CÁC NHÁNH SONG SONG (PARALLEL BRANCHES).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can draw the circuit symbol for a variable resistor, and say how variable resistors are used in circuits.',vi:'Con vẽ được ký hiệu mạch của biến trở (variable resistor), và nói được biến trở được dùng thế nào trong các mạch.'},
+    {en:'I can compare circuit diagrams that contain cells, switches, fixed resistors, variable resistors, ammeters, voltmeters, lamps and buzzers.',vi:'Con so sánh được các sơ đồ mạch có pin (cells), công tắc (switches), điện trở cố định (fixed resistors), biến trở (variable resistors), ampe kế (ammeters), vôn kế (voltmeters), đèn (lamps) và chuông (buzzers).'},
+    {en:'I can design and build circuits that contain some or all of these components, choosing series loops and parallel branches on purpose.',vi:'Con thiết kế và lắp được các mạch chứa một số hoặc tất cả các linh kiện này, chủ động chọn vòng nối tiếp (series) và nhánh song song (parallel).'}]}
+];
+const CARDS6=[
+ {id:'d_amm',emoji:'A',en:'An ammeter measuring the current through a resistor',vi:'Một ampe kế (ammeter) đo dòng điện (current) qua một điện trở',ans:'series'},
+ {id:'d_volt',emoji:'V',en:'A voltmeter measuring the voltage across a lamp',vi:'Một vôn kế (voltmeter) đo hiệu điện thế (voltage) hai đầu một đèn',ans:'parallel'},
+ {id:'d_divider',emoji:'🔅',en:'Two equal resistors sharing 12 V equally, so a lamp across one of them gets 6 V',vi:'Hai điện trở bằng nhau chia đều 12 V, nên một đèn nối hai đầu một điện trở nhận 6 V',ans:'series'},
+ {id:'d_head',emoji:'🚗',en:'Two car headlamps in their own branches, switched on and off together',vi:'Hai đèn pha ô tô trong các nhánh riêng của chúng, được bật và tắt cùng nhau',ans:'parallel'},
+ {id:'d_loop',emoji:'🔔',en:'A lamp and a buzzer in one single loop, so exactly the same current flows through both',vi:'Một đèn và một chuông (buzzer) trong một vòng duy nhất, nên đúng cùng một dòng điện chạy qua cả hai',ans:'series'},
+ {id:'d_battv',emoji:'⚡',en:'A voltmeter with its own switch, in a branch across a 12 V battery',vi:'Một vôn kế (voltmeter) với công tắc riêng của nó, trong một nhánh nối hai đầu ắc quy 12 V',ans:'parallel'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'A variable resistor is connected in series with a lamp. Its resistance is increased. What happens?',vi:'Một biến trở (variable resistor) được mắc nối tiếp (in series) với một đèn. Điện trở của nó được tăng lên. Điều gì xảy ra?'},
+  o:[{en:'The current through the lamp increases and the lamp gets brighter',vi:'Dòng điện qua đèn tăng lên và đèn sáng hơn'},
+     {en:'The current through the lamp decreases and the lamp gets dimmer',vi:'Dòng điện qua đèn giảm xuống và đèn mờ hơn (dimmer)'},
+     {en:'Nothing changes — a resistor cannot affect a lamp',vi:'Không có gì thay đổi — một điện trở không thể ảnh hưởng tới một đèn'}],a:1,
+  e:{en:'A larger resistance in the series path lets less current flow. A smaller current through the lamp makes it dimmer — this is how a dimmer switch works. Decreasing the resistance would do the opposite.',vi:'Điện trở lớn hơn trên đường nối tiếp (series) cho dòng điện chạy qua ít hơn. Dòng điện qua đèn nhỏ hơn làm nó mờ hơn — đó là cách nút chỉnh độ sáng (dimmer switch) hoạt động. Giảm điện trở sẽ cho kết quả ngược lại.'}},
+ {q:{en:'How should a voltmeter be connected to measure the voltage across a lamp?',vi:'Một vôn kế (voltmeter) nên được nối thế nào để đo hiệu điện thế (voltage) hai đầu một đèn?'},
+  o:[{en:'In parallel, across the lamp, in its own branch',vi:'Song song (in parallel), hai đầu chiếc đèn, trong nhánh riêng của nó'},
+     {en:'In series, in the same path as the lamp',vi:'Nối tiếp (in series), trên cùng đường đi với chiếc đèn'},
+     {en:'In place of the lamp, instead of it',vi:'Thay vào vị trí của chiếc đèn'}],a:0,
+  e:{en:'A voltmeter measures the voltage between two points, so it connects across the component — in parallel, in its own branch. An ammeter is the meter that goes in series, because it measures the current flowing through a path.',vi:'Một vôn kế (voltmeter) đo hiệu điện thế giữa hai điểm, nên nó nối hai đầu linh kiện — song song (in parallel), trong nhánh riêng của nó. Ampe kế (ammeter) mới là đồng hồ mắc nối tiếp (in series), vì nó đo dòng điện chạy qua một đường đi.'}},
+ {q:{en:'A car has a buzzer that warns the driver. The buzzer branch has the headlamp switch and the door switch in series. When does the buzzer sound?',vi:'Một chiếc ô tô có một còi (buzzer) cảnh báo người lái. Nhánh của còi có công tắc đèn pha và công tắc cửa mắc nối tiếp (in series). Khi nào còi kêu?'},
+  o:[{en:'Whenever the door is open, whether the headlamps are on or off',vi:'Bất cứ khi nào cửa mở, dù đèn pha bật hay tắt'},
+     {en:'Whenever the headlamps are on, whether the door is open or closed',vi:'Bất cứ khi nào đèn pha bật, dù cửa mở hay đóng'},
+     {en:'Only when the door is open AND the headlamps are switched on',vi:'Chỉ khi cửa mở VÀ đèn pha đang bật'}],a:2,
+  e:{en:'Both switches are in series in the buzzer branch, so current can reach the buzzer only when both are closed: the headlamp switch on, and the door switch closed by the open door. Either switch open breaks the branch.',vi:'Cả hai công tắc đều mắc nối tiếp (in series) trong nhánh của còi, nên dòng điện chỉ tới được còi khi cả hai cùng đóng: công tắc đèn pha bật, và công tắc cửa được cánh cửa đang mở đóng lại. Chỉ một công tắc mở cũng làm nhánh bị ngắt.'}},
+ {q:{en:'A 6 V lamp must run from a 12 V battery. Two equal resistors are connected in series with the battery, and the lamp is connected in parallel with one resistor. Why is the lamp safe?',vi:'Một đèn 6 V phải chạy từ ắc quy 12 V. Hai điện trở bằng nhau được mắc nối tiếp (in series) với ắc quy, và đèn được nối song song (in parallel) với một điện trở. Vì sao đèn an toàn?'},
+  o:[{en:'The resistors use up all of the 12 V, so the lamp receives no voltage at all',vi:'Các điện trở dùng hết cả 12 V, nên đèn không nhận điện áp nào cả'},
+     {en:'The two equal resistors share the 12 V equally, so the lamp receives 6 V — its correct voltage',vi:'Hai điện trở bằng nhau chia đều 12 V, nên đèn nhận 6 V — đúng điện áp của nó'},
+     {en:'Lamps can always run at twice their voltage without any problem',vi:'Đèn luôn chạy được ở gấp đôi điện áp của chúng mà không sao cả'}],a:1,
+  e:{en:'Equal resistors in series share the supply voltage equally: 6 V across each. The lamp, in parallel with one resistor, gets that resistor’s 6 V, so it lights normally instead of being damaged by the full 12 V.',vi:'Các điện trở bằng nhau mắc nối tiếp (in series) chia đều điện áp nguồn: 6 V hai đầu mỗi cái. Chiếc đèn, song song (in parallel) với một điện trở, nhận 6 V của điện trở đó, nên nó sáng bình thường thay vì bị hỏng bởi trọn 12 V.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'c_range',emoji:'🎚️',en:'A variable resistor can be adjusted over a range, such as 1–50 Ω',vi:'Một biến trở (variable resistor) chỉnh được trong một khoảng, chẳng hạn 1–50 Ω',ans:'long'},
+ {id:'c_currentup',emoji:'📈',en:'When its resistance increases, the current through the series lamp increases',vi:'Khi điện trở của nó tăng, dòng điện qua đèn mắc nối tiếp tăng lên',ans:'short'},
+ {id:'c_dimmer',emoji:'🔅',en:'When its resistance increases, the lamp gets dimmer',vi:'Khi điện trở của nó tăng, đèn mờ hơn (dimmer)',ans:'long'},
+ {id:'c_brighter',emoji:'🔆',en:'When its resistance increases, the lamp gets brighter',vi:'Khi điện trở của nó tăng, đèn sáng hơn',ans:'short'},
+ {id:'c_fixedval',emoji:'📌',en:'A variable resistor always has one single fixed resistance',vi:'Một biến trở (variable resistor) luôn có đúng một điện trở cố định duy nhất',ans:'short'},
+ {id:'c_currentdown',emoji:'📉',en:'When its resistance increases, the current through the series lamp decreases',vi:'Khi điện trở của nó tăng, dòng điện qua đèn mắc nối tiếp giảm xuống',ans:'long'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'What is the difference between a variable resistor and a fixed resistor?',vi:'Biến trở (variable resistor) và điện trở cố định (fixed resistor) khác nhau ở điểm nào?'},
+  opts:[{en:'A fixed resistor is always bigger than a variable resistor',vi:'Một điện trở cố định luôn lớn hơn một biến trở'},
+        {en:'The resistance of a variable resistor can be adjusted; the resistance of a fixed resistor stays at one value',vi:'Điện trở của biến trở chỉnh được; điện trở của điện trở cố định giữ nguyên một giá trị'},
+        {en:'A variable resistor is only used in lamps, never in other circuits',vi:'Một biến trở chỉ dùng trong đèn, không bao giờ dùng trong mạch khác'}],a:1,
+  e:{en:'That is the whole point of a variable resistor: turning or sliding its control changes its resistance, and so changes the current in the circuit. A fixed resistor keeps the value it was made with.',vi:'Đó chính là mục đích của biến trở (variable resistor): xoay hoặc trượt nút điều khiển của nó làm thay đổi điện trở của nó, và do đó thay đổi dòng điện (current) trong mạch. Một điện trở cố định (fixed resistor) giữ nguyên giá trị khi nó được chế tạo.'}},
+ {q:{en:'Which circuit uses a variable resistor to change the brightness of one lamp?',vi:'Mạch nào dùng một biến trở (variable resistor) để thay đổi độ sáng của một đèn?'},
+  opts:[{en:'The variable resistor in series with the lamp and the cell',vi:'Biến trở mắc nối tiếp (in series) với đèn và pin'},
+        {en:'The variable resistor in a separate branch that the lamp’s current never flows through',vi:'Biến trở trong một nhánh riêng mà dòng điện của đèn không bao giờ chạy qua'},
+        {en:'The variable resistor placed next to the lamp but not connected to the circuit',vi:'Biến trở đặt cạnh đèn nhưng không nối vào mạch'}],a:0,
+  e:{en:'The variable resistor must be in the lamp’s own path — in series with it — so that changing its resistance changes the current through the lamp, and so changes its brightness.',vi:'Biến trở phải nằm trên chính đường đi của đèn — mắc nối tiếp (in series) với nó — để việc thay đổi điện trở của nó làm thay đổi dòng điện qua đèn, và do đó thay đổi độ sáng của đèn.'}},
+ {q:{en:'Two lamps are connected in series. How can ONE variable resistor change the brightness of both lamps together?',vi:'Hai đèn được mắc nối tiếp (in series). Làm thế nào MỘT biến trở (variable resistor) thay đổi được độ sáng của cả hai đèn cùng lúc?'},
+  opts:[{en:'Connect it across only the first lamp',vi:'Nối nó hai đầu chỉ chiếc đèn đầu tiên'},
+        {en:'It cannot be done with only one variable resistor',vi:'Không thể làm được với chỉ một biến trở'},
+        {en:'Connect it in series with both lamps, in the same single loop',vi:'Nối nó nối tiếp (in series) với cả hai đèn, trong cùng một vòng duy nhất'}],a:2,
+  e:{en:'In a series loop the same current flows through everything. A variable resistor in that loop changes the current through both lamps at once, so both get brighter or dimmer together.',vi:'Trong một vòng nối tiếp (series), cùng một dòng điện chạy qua mọi linh kiện. Một biến trở trong vòng đó thay đổi dòng điện qua cả hai đèn cùng lúc, nên cả hai cùng sáng hơn hoặc cùng mờ đi.'}},
+ {q:{en:'Two lamps are connected in parallel, each in its own branch. Where must one variable resistor go to change the brightness of BOTH lamps?',vi:'Hai đèn được mắc song song (in parallel), mỗi đèn trong nhánh riêng của nó. Một biến trở (variable resistor) phải đặt ở đâu để thay đổi độ sáng của CẢ HAI đèn?'},
+  opts:[{en:'Inside the first lamp’s branch only',vi:'Chỉ trong nhánh của chiếc đèn đầu tiên'},
+        {en:'In the main line from the cell, before the circuit splits into branches, so it controls the total current',vi:'Trên đường chính từ pin (cell), trước khi mạch tách thành các nhánh, để nó điều khiển tổng dòng điện'},
+        {en:'Across the cell, in parallel with both lamps',vi:'Hai đầu pin (cell), song song với cả hai đèn'}],a:1,
+  e:{en:'A variable resistor in one branch would only change that branch’s lamp. In the main line it controls the current supplied to the whole circuit, so both lamps change together.',vi:'Một biến trở trong một nhánh sẽ chỉ thay đổi đèn của nhánh đó. Trên đường chính, nó điều khiển dòng điện cấp cho toàn mạch, nên cả hai đèn cùng thay đổi.'}},
+ {q:{en:'A dimmer switch for a room lamp contains which component?',vi:'Một công tắc chỉnh độ sáng (dimmer switch) cho đèn trong phòng chứa linh kiện nào?'},
+  opts:[{en:'A voltmeter',vi:'Một vôn kế (voltmeter)'},
+        {en:'A buzzer',vi:'Một chuông (buzzer)'},
+        {en:'A variable resistor that is turned to control the lamp’s brightness',vi:'Một biến trở (variable resistor) được xoay để điều khiển độ sáng của đèn'}],a:2,
+  e:{en:'Dimmer switches contain variable resistors. Turning the control changes the resistance, changes the current through the lamp, and so changes how brightly it shines.',vi:'Các công tắc chỉnh độ sáng (dimmer switches) chứa biến trở (variable resistors). Xoay nút điều khiển làm thay đổi điện trở, thay đổi dòng điện qua đèn, và do đó thay đổi độ sáng của nó.'}},
+ {q:{en:'On a music player, the volume control changes how loud the sound is. What does turning it actually adjust?',vi:'Trên một máy nghe nhạc, nút chỉnh âm lượng (volume) thay đổi độ to của âm thanh. Xoay nó thực ra điều chỉnh cái gì?'},
+  opts:[{en:'A variable resistor, which changes the current in the audio circuit',vi:'Một biến trở (variable resistor), làm thay đổi dòng điện trong mạch âm thanh'},
+        {en:'The cell, which is swapped for a bigger one',vi:'Pin (cell), được thay bằng một pin lớn hơn'},
+        {en:'A switch, which turns the sound fully on or fully off only',vi:'Một công tắc (switch), chỉ bật hẳn hoặc tắt hẳn âm thanh'}],a:0,
+  e:{en:'Volume controls are variable resistors — the sliding controls on sound recording equipment work this way. Adjusting the resistance adjusts the current, and so adjusts the loudness, smoothly rather than just on or off.',vi:'Các nút chỉnh âm lượng (volume) là biến trở (variable resistors) — các nút trượt trên thiết bị thu âm hoạt động theo cách này. Chỉnh điện trở làm thay đổi dòng điện, và do đó thay đổi độ to, một cách mượt mà thay vì chỉ bật hoặc tắt.'}}
+];
+const EX3=[
+ {id:'p_switch',emoji:'🎛️',en:'Each lamp can be switched off without turning off the other lamp',vi:'Mỗi đèn tắt được mà không tắt chiếc đèn còn lại',ans:'good'},
+ {id:'s_samei',emoji:'➡️',en:'Exactly the same current flows through every component',vi:'Đúng cùng một dòng điện chạy qua mọi linh kiện',ans:'bad'},
+ {id:'p_fullv',emoji:'🔋',en:'Each lamp receives the full voltage of the supply',vi:'Mỗi đèn nhận đủ hiệu điện thế (voltage) của nguồn',ans:'good'},
+ {id:'s_sharedv',emoji:'➗',en:'The supply voltage is shared out between the lamps',vi:'Hiệu điện thế của nguồn được chia ra giữa các đèn',ans:'bad'},
+ {id:'p_broken',emoji:'💔',en:'If one lamp breaks, the other lamp stays lit',vi:'Nếu một đèn hỏng, chiếc đèn còn lại vẫn sáng',ans:'good'},
+ {id:'s_meter',emoji:'A',en:'An ammeter placed anywhere in the loop reads the same current',vi:'Một ampe kế (ammeter) đặt ở bất cứ đâu trong vòng đều chỉ cùng một dòng điện',ans:'bad'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 6 + 6 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-9-4';
+const SUMKEY='camb:sum:sci9-9-4';
+const BOT_CODE='sci9-9.4';
+let OBS={cell:false,switchm:false,lamp:false,buzzer:false,amm:false,volt:false,fixed:false,varres:false,fridge:false,car:false,batt:false,div:false};
+let SORTED=new Set();
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1cell:false, s1switch:false, s1lamp:false, s1buzzer:false, s1hint:null,
+  s2amm:false, s2volt:false,
+  s3fixed:false, s3var:false,
+  s4var:false, s4lamp:false,
+  s5fridge:false, s5car:false, s5batt:false, s5div:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1cell&&T.s1switch&&T.s1lamp&&T.s1buzzer;
+  if(i===1) return T.s2amm&&T.s2volt;
+  if(i===2) return T.s3fixed&&T.s3var;
+  if(i===3) return T.s4var&&T.s4lamp;
+  if(i===4) return T.s5fridge&&T.s5car&&T.s5batt&&T.s5div;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not one of the four starting parts. Look at the back row of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải một trong bốn linh kiện khởi đầu. Hãy nhìn hàng sau của bàn!');
+    }
+    return B('Parts named: cell '+(T.s1cell?'✓':'…')+' · switch '+(T.s1switch?'✓':'…')+' · lamp '+(T.s1lamp?'✓':'…')+' · buzzer '+(T.s1buzzer?'✓':'…')+'. Tap the part models on the bench!',
+             'Đã gọi tên các linh kiện: pin (cell) '+(T.s1cell?'✓':'…')+' · công tắc (switch) '+(T.s1switch?'✓':'…')+' · đèn (lamp) '+(T.s1lamp?'✓':'…')+' · chuông (buzzer) '+(T.s1buzzer?'✓':'…')+'. Hãy chạm vào các mô hình linh kiện trên bàn!');
+  }
+  if(i===1){
+    return B('Ammeter tapped '+(T.s2amm?'✓ (in series — measures current)':'…')+' · voltmeter tapped '+(T.s2volt?'✓ (in parallel — measures voltage)':'…')+'.',
+             'Đã chạm ampe kế (ammeter) '+(T.s2amm?'✓ (nối tiếp — đo dòng điện)':'…')+' · đã chạm vôn kế (voltmeter) '+(T.s2volt?'✓ (song song — đo hiệu điện thế)':'…')+'.');
+  }
+  if(i===2){
+    return B('Fixed resistor tapped '+(T.s3fixed?'✓':'…')+' · variable resistor tapped '+(T.s3var?'✓':'…')+'.',
+             'Đã chạm điện trở cố định (fixed resistor) '+(T.s3fixed?'✓':'…')+' · đã chạm biến trở (variable resistor) '+(T.s3var?'✓':'…')+'.');
+  }
+  if(i===3){
+    return B('Dimmer (variable resistor) tapped '+(T.s4var?'✓':'…')+' · the lamp it controls tapped '+(T.s4lamp?'✓':'…')+'.',
+             'Đã chạm nút chỉnh độ sáng (dimmer — biến trở) '+(T.s4var?'✓':'…')+' · đã chạm chiếc đèn nó điều khiển '+(T.s4lamp?'✓':'…')+'.');
+  }
+  if(i===4){
+    return B('Everyday circuits explored: fridge '+(T.s5fridge?'✓':'…')+' · car buzzer '+(T.s5car?'✓':'…')+' · battery checker '+(T.s5batt?'✓':'…')+' · 6 V lamp divider '+(T.s5div?'✓':'…')+'.',
+             'Đã khám phá các mạch thường ngày: tủ lạnh '+(T.s5fridge?'✓':'…')+' · còi ô tô '+(T.s5car?'✓':'…')+' · bộ kiểm tra ắc quy '+(T.s5batt?'✓':'…')+' · mạch chia áp đèn 6 V '+(T.s5div?'✓':'…')+'.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap ONE SERIES LOOP or PARALLEL BRANCHES.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm MỘT VÒNG NỐI TIẾP (ONE SERIES LOOP) hoặc CÁC NHÁNH SONG SONG (PARALLEL BRANCHES).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔋',label:{en:'Cell',vi:'Pin (cell)'},got:T.s1cell},
+      {emoji:'🔀',label:{en:'Switch',vi:'Công tắc (switch)'},got:T.s1switch},
+      {emoji:'💡',label:{en:'Lamp',vi:'Đèn (lamp)'},got:T.s1lamp},
+      {emoji:'🔔',label:{en:'Buzzer',vi:'Chuông (buzzer)'},got:T.s1buzzer}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'A',label:{en:'Ammeter — in series',vi:'Ampe kế (ammeter) — nối tiếp'},got:T.s2amm},
+      {emoji:'V',label:{en:'Voltmeter — in parallel',vi:'Vôn kế (voltmeter) — song song'},got:T.s2volt}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'〰️',label:{en:'Fixed resistor — one value',vi:'Điện trở cố định (fixed resistor) — một giá trị'},got:T.s3fixed},
+      {emoji:'🎚️',label:{en:'Variable resistor — adjustable, e.g. 1–50 Ω',vi:'Biến trở (variable resistor) — chỉnh được, vd 1–50 Ω'},got:T.s3var}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🎚️',label:{en:'Resistance up → current down → dimmer',vi:'Điện trở tăng → dòng điện giảm → đèn mờ hơn'},got:T.s4var},
+      {emoji:'💡',label:{en:'The lamp being controlled',vi:'Chiếc đèn đang được điều khiển'},got:T.s4lamp}
+    ]);
+    if(!T.s4lamp){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookLamp);
+      b.onclick=()=>focusThing('lamp');
+      box.appendChild(b);
+    }
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'Fridge door light',vi:'Đèn cửa tủ lạnh'},got:T.s5fridge},
+      {emoji:'🚗',label:{en:'Car door buzzer',vi:'Còi cửa ô tô'},got:T.s5car},
+      {emoji:'⚡',label:{en:'Battery voltage checker',vi:'Bộ kiểm tra điện áp ắc quy'},got:T.s5batt},
+      {emoji:'🔅',label:{en:'6 V lamp from 12 V',vi:'Đèn 6 V từ nguồn 12 V'},got:T.s5div}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'series',label:STR.binSeries,cls:'series'},{key:'parallel',label:STR.binParallel,cls:'parallel'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('cell'); bounceThing('cell'); setTimeout(()=>{ focusVisual('switchm'); bounceThing('switchm'); },900); setTimeout(()=>{ focusVisual('lamp'); bounceThing('lamp'); },1800); setTimeout(()=>{ focusVisual('buzzer'); bounceThing('buzzer'); },2700); }
+  else if(i===1){ focusVisual('ammeter'); bounceThing('ammeter'); setTimeout(()=>{ focusVisual('voltmeter'); bounceThing('voltmeter'); },900); }
+  else if(i===2){ focusVisual('fixed'); bounceThing('fixed'); setTimeout(()=>{ focusVisual('varres'); bounceThing('varres'); },900); }
+  else if(i===3){ focusVisual('varres'); bounceThing('varres'); setTimeout(()=>{ focusVisual('lamp'); bounceThing('lamp'); },900); }
+  else if(i===4){ focusVisual('fridge'); bounceThing('fridge'); setTimeout(()=>{ focusVisual('car'); bounceThing('car'); },900); setTimeout(()=>{ focusVisual('battind'); bounceThing('battind'); },1800); setTimeout(()=>{ focusVisual('divider'); bounceThing('divider'); },2700); }
+  else if(i===5){ demoSortMine(CARDS6,T.s6correct,{series:'series',parallel:'parallel'}); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recParts,OBS.cell&&OBS.switchm&&OBS.lamp&&OBS.buzzer)+
+    row(STR.recMeters,OBS.amm&&OBS.volt)+
+    row(STR.recRes,OBS.fixed&&OBS.varres)+
+    row(STR.recDim,OBS.varres&&OBS.lamp)+
+    row(STR.recEvery,OBS.fridge&&OBS.car&&OBS.batt&&OBS.div)+
+    row(STR.recDesign,doneSteps.has(5));
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.cell&&OBS.switchm&&OBS.lamp&&OBS.buzzer)||doneSteps.has(0),label:STR.foundParts},
+    {got:(OBS.amm&&OBS.volt)||doneSteps.has(1),label:STR.foundMeters},
+    {got:(OBS.fixed&&OBS.varres)||doneSteps.has(2),label:STR.foundRes},
+    {got:doneSteps.has(3),label:STR.foundDim},
+    {got:(OBS.fridge&&OBS.car&&OBS.batt&&OBS.div)||doneSteps.has(4),label:STR.foundEvery},
+    {got:doneSteps.has(5),label:STR.foundDesign}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let lampGlowMat=null, varKnob=null, fridgeLightMat=null, carLightMat=null, divLampMat=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; group.userData.baseX=group.position.x; G[id]=group; scene3.add(group); return group; }
+function standMesh(r){
+  const s=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,0.07,16),stdMat(0x8d99a6,0.5)));
+  s.position.y=0.04; return s;
+}
+function buildCell(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.5,14),stdMat(0x2b6cb0,0.5)));
+  body.rotation.z=Math.PI/2; body.position.y=0.32; g.add(body);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.08,10),stdMat(0xf4f7f9,0.3));
+  cap.position.set(0.29,0.32,0); cap.rotation.z=Math.PI/2; g.add(cap);
+  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.175,0.175,0.12,14),stdMat(0xffd23c,0.4));
+  band.rotation.z=Math.PI/2; band.position.set(-0.1,0.32,0); g.add(band);
+  g.position.set(-3.9,0,-1.3);
+  return g;
+}
+function buildSwitchm(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.09,0.3),stdMat(0x44586e,0.7)));
+  base.position.y=0.12; g.add(base);
+  const lever=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.05,0.09),stdMat(0xf2762e,0.45)));
+  lever.position.set(0.05,0.26,0); lever.rotation.z=0.5; g.add(lever);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.14,8),stdMat(0xf4f7f9,0.35));
+  post.position.set(-0.18,0.2,0); g.add(post);
+  g.position.set(-2.6,0,-1.3);
+  return g;
+}
+function buildLamp(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.22,10),stdMat(0x44586e,0.6));
+  stem.position.y=0.18; g.add(stem);
+  const bulb=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.21,14,12),stdMat(0xffe58a,0.3)));
+  bulb.position.y=0.48; g.add(bulb);
+  lampGlowMat=new THREE.MeshBasicMaterial({color:0xffd23c,transparent:true,opacity:0.35});
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),lampGlowMat);
+  glow.position.y=0.48; g.add(glow);
+  g.position.set(-1.3,0,-1.3);
+  return g;
+}
+function buildBuzzer(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  const dome=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.24,14,10,0,Math.PI*2,0,Math.PI/2),stdMat(0xd33a2c,0.5)));
+  dome.position.y=0.12; g.add(dome);
+  const btn=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.07,10),stdMat(0xf4f7f9,0.35));
+  btn.position.y=0.4; g.add(btn);
+  g.position.set(0.0,0,-1.3);
+  return g;
+}
+function buildMeter(needleAngle){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const box=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.52,0.55,0.18),stdMat(0x274b63,0.6)));
+  box.position.y=0.38; g.add(box);
+  const face=new THREE.Mesh(new THREE.CircleGeometry(0.19,20),new THREE.MeshBasicMaterial({color:0xffffff}));
+  face.position.set(0,0.42,0.095); g.add(face);
+  const needle=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.17,0.012),stdMat(0xd33a2c,0.3));
+  needle.position.set(0,0.44,0.1); needle.rotation.z=needleAngle; g.add(needle);
+  return g;
+}
+function buildAmmeter(){ const g=buildMeter(0.6); g.position.set(1.3,0,-1.3); return g; }
+function buildVoltmeter(){ const g=buildMeter(-0.6); g.position.set(2.6,0,-1.3); return g; }
+function buildFixed(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.4));
+  const wire=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.85,8),stdMat(0x8d99a6,0.4));
+  wire.rotation.z=Math.PI/2; wire.position.y=0.32; g.add(wire);
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.42,12),stdMat(0xc9a227,0.55)));
+  body.rotation.z=Math.PI/2; body.position.y=0.32; g.add(body);
+  [-0.1,0.08].forEach(x=>{
+    const ring=new THREE.Mesh(new THREE.CylinderGeometry(0.135,0.135,0.05,12),stdMat(0xb03a2e,0.5));
+    ring.rotation.z=Math.PI/2; ring.position.set(x,0.32,0); g.add(ring);
+  });
+  g.position.set(-3.5,0,1.7);
+  return g;
+}
+function buildVarres(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.42));
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.16,0.3),stdMat(0x44586e,0.65)));
+  body.position.y=0.2; g.add(body);
+  const track=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.04,0.08),stdMat(0xf4f7f9,0.35));
+  track.position.y=0.3; g.add(track);
+  varKnob=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.12,0.16,0.2),stdMat(0xf2762e,0.45)));
+  varKnob.position.set(-0.15,0.36,0); g.add(varKnob);
+  const arrow=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.26,10),stdMat(0xffd23c,0.4));
+  arrow.position.set(0.1,0.52,0); arrow.rotation.z=-0.9; g.add(arrow);
+  g.position.set(-2.1,0,1.7);
+  return g;
+}
+function buildFridge(){
+  const g=new THREE.Group();
+  const bodyBox=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,1.05,0.45),stdMat(0xdfeaf5,0.4)));
+  bodyBox.position.y=0.55; g.add(bodyBox);
+  const doorLine=new THREE.Mesh(new THREE.BoxGeometry(0.64,0.03,0.47),stdMat(0x8d99a6,0.5));
+  doorLine.position.y=0.78; g.add(doorLine);
+  fridgeLightMat=new THREE.MeshBasicMaterial({color:0x9db8cf});
+  const light=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),fridgeLightMat);
+  light.position.set(0,0.62,0.26); g.add(light);
+  const handle=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.3,0.05),stdMat(0x44586e,0.5));
+  handle.position.set(0.24,0.62,0.25); g.add(handle);
+  g.position.set(-0.7,0,1.7);
+  return g;
+}
+function buildCar(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.46,0.5,0.07,16),stdMat(0x2e6da4,0.7)));
+  base.position.y=0.04; g.add(base);
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.22,0.45),stdMat(0x3d8bfd,0.5)));
+  body.position.y=0.22; g.add(body);
+  const cabin=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.2,0.38),stdMat(0xbcd8f2,0.4)));
+  cabin.position.set(-0.05,0.42,0); g.add(cabin);
+  [[-0.28,-0.24],[0.28,-0.24],[-0.28,0.24],[0.28,0.24]].forEach(p=>{
+    const wheel=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.05,12),stdMat(0x22384f,0.6));
+    wheel.rotation.x=Math.PI/2; wheel.position.set(p[0],0.1,p[1]); g.add(wheel);
+  });
+  carLightMat=new THREE.MeshBasicMaterial({color:0xd8e4ee});
+  [-0.12,0.12].forEach(z=>{
+    const hl=new THREE.Mesh(new THREE.SphereGeometry(0.055,10,8),carLightMat);
+    hl.position.set(0.44,0.24,z); g.add(hl);
+  });
+  g.position.set(0.7,0,1.7);
+  return g;
+}
+function buildBattind(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.48,0.07,16),stdMat(0x2e6da4,0.7)));
+  base.position.y=0.04; g.add(base);
+  const batt=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.6,0.34,0.4),stdMat(0x22384f,0.6)));
+  batt.position.y=0.25; g.add(batt);
+  const meter=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.07,16),stdMat(0xf4f7f9,0.35)));
+  meter.position.set(0,0.48,0.05); g.add(meter);
+  const needle=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.12,0.02),stdMat(0xd33a2c,0.3));
+  needle.position.set(0,0.53,0.05); needle.rotation.z=-0.5; g.add(needle);
+  [-0.18,0.18].forEach(x=>{
+    const term=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.09,8),stdMat(0xffd23c,0.4));
+    term.position.set(x,0.46,-0.12); g.add(term);
+  });
+  g.position.set(2.1,0,1.7);
+  return g;
+}
+function buildDivider(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.42));
+  [-0.22,0.05].forEach(x=>{
+    const r=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.2,10),stdMat(0xc9a227,0.55)));
+    r.position.set(x,0.25,0); g.add(r);
+  });
+  divLampMat=new THREE.MeshBasicMaterial({color:0x9db8cf});
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.13,12,10),divLampMat);
+  bulb.position.set(-0.22,0.55,0); g.add(bulb);
+  const wire=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.55,6),stdMat(0x8d99a6,0.4));
+  wire.rotation.z=Math.PI/2; wire.position.set(0.05,0.25,0); g.add(wire);
+  g.position.set(3.5,0,1.7);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xeaf3fb);
+  scene3.fog=new THREE.Fog(0xeaf3fb,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0xb7c9d8,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the circuit bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd3dee8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(10.4,0.18,5.4),stdMat(0x8a6a4a,0.9)));
+  bench.position.set(-0.2,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-5.3,-2.3],[4.9,-2.3],[-5.3,2.7],[4.9,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(8.6,2.6,0.08),stdMat(0x274b63,0.95));
+  board.position.set(-0.2,1.7,-3.4); scene3.add(board);
+  /* the models */
+  reg('cell',buildCell());
+  reg('switchm',buildSwitchm());
+  reg('lamp',buildLamp());
+  reg('buzzer',buildBuzzer());
+  reg('ammeter',buildAmmeter());
+  reg('voltmeter',buildVoltmeter());
+  reg('fixed',buildFixed());
+  reg('varres',buildVarres());
+  reg('fridge',buildFridge());
+  reg('car',buildCar());
+  reg('battind',buildBattind());
+  reg('divider',buildDivider());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.52); p.position.set(0,0.32,0); addProxy('cell',p,G.cell); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('switchm',p,G.switchm); }
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('lamp',p,G.lamp); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('buzzer',p,G.buzzer); }
+  { const p=sphProxy(0.55); p.position.set(0,0.38,0); addProxy('ammeter',p,G.ammeter); }
+  { const p=sphProxy(0.55); p.position.set(0,0.38,0); addProxy('voltmeter',p,G.voltmeter); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('fixed',p,G.fixed); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('varres',p,G.varres); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('fridge',p,G.fridge); }
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('car',p,G.car); }
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('battind',p,G.battind); }
+  { const p=sphProxy(0.55); p.position.set(0,0.35,0); addProxy('divider',p,G.divider); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a model */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['cell','switchm','lamp','buzzer'],   /* step 1: the four starting parts */
+  ['ammeter','voltmeter'],              /* step 2: the two meters */
+  ['fixed','varres'],                   /* step 3: fixed vs variable */
+  ['varres','lamp'],                    /* step 4: the dimmer and its lamp */
+  ['fridge','car','battind','divider'], /* step 5: everyday circuits */
+  []                                    /* step 6: card sort — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='cell'){ T.s1cell=true; OBS.cell=true; T.s1hint=null; }
+    else if(id==='switchm'){ T.s1switch=true; OBS.switchm=true; T.s1hint=null; }
+    else if(id==='lamp'){ T.s1lamp=true; OBS.lamp=true; T.s1hint=null; }
+    else if(id==='buzzer'){ T.s1buzzer=true; OBS.buzzer=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='ammeter'){ T.s2amm=true; OBS.amm=true; }
+    else if(id==='voltmeter'){ T.s2volt=true; OBS.volt=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='fixed'){ T.s3fixed=true; OBS.fixed=true; }
+    else if(id==='varres'){ T.s3var=true; OBS.varres=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='varres'){ T.s4var=true; OBS.varres=true; }
+    else if(id==='lamp'){ T.s4lamp=true; OBS.lamp=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='fridge'){ T.s5fridge=true; OBS.fridge=true; }
+    else if(id==='car'){ T.s5car=true; OBS.car=true; }
+    else if(id==='battind'){ T.s5batt=true; OBS.batt=true; }
+    else if(id==='divider'){ T.s5div=true; OBS.div=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* the lamp glow breathes gently — it is on whenever the bench is live */
+  if(lampGlowMat) lampGlowMat.opacity=0.28+Math.sin(t*2.2)*0.12;
+  /* the variable resistor knob slides once the variable resistor has been used */
+  if(varKnob) varKnob.position.x=OBS.varres? 0.15 : -0.15;
+  /* the fridge light comes on once the fridge door circuit has been explored */
+  if(fridgeLightMat) fridgeLightMat.color.setHex(OBS.fridge? 0xffd23c : 0x9db8cf);
+  /* the car headlamps light once the car circuit has been explored */
+  if(carLightMat) carLightMat.color.setHex(OBS.car? 0xffd23c : 0xd8e4ee);
+  /* the 6 V lamp lights at its safe voltage once the divider has been explored */
+  if(divLampMat) divLampMat.color.setHex(OBS.div? 0xffb400 : 0x9db8cf);
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='long'?'✓':'✗';
+  return ans==='good'?'⫴':'➡️';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — variable resistor in series with a lamp, resistance up (Workbook 9.4A) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinLong').innerHTML=bi(STR.binTrue);
+  $('ex1BinShort').innerHTML=bi(STR.binFalse);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (Workbook 9.4B) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — comparing circuits: series or parallel? (Workbook 9.4C) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinGood').innerHTML=bi(STR.binParallel);
+  $('ex3BinBad').innerHTML=bi(STR.binSeries);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinLong').onclick=()=>ex1Place('long');
+$('ex1BinShort').onclick=()=>ex1Place('short');
+$('ex3BinGood').onclick=()=>ex3Place('good');
+$('ex3BinBad').onclick=()=>ex3Place('bad');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.cell=false; OBS.switchm=false; OBS.lamp=false; OBS.buzzer=false; }
+  if(step===1){ OBS.amm=false; OBS.volt=false; }
+  if(step===2){ OBS.fixed=false; OBS.varres=false; }
+  if(step===3){ /* step 4's evidence lives in the track only; OBS mirrors stay as the bench state */ }
+  if(step===4){ OBS.fridge=false; OBS.car=false; OBS.batt=false; OBS.div=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='long'||s.exAns.a1[id]==='short')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='good'||s.exAns.a3[id]==='bad')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS/SORTED). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1cell=!!OBS.cell; t.s1switch=!!OBS.switchm; t.s1lamp=!!OBS.lamp; t.s1buzzer=!!OBS.buzzer; }
+  else if(i===1){ t.s2amm=!!OBS.amm; t.s2volt=!!OBS.volt; }
+  else if(i===2){ t.s3fixed=!!OBS.fixed; t.s3var=!!OBS.varres; }
+  else if(i===3){ t.s4var=!!OBS.varres; t.s4lamp=!!OBS.lamp; }
+  else if(i===4){ t.s5fridge=!!OBS.fridge; t.s5car=!!OBS.car; t.s5batt=!!OBS.batt; t.s5div=!!OBS.div; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-9-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>7.4 Natural selection — Chọn lọc tự nhiên · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdeef2,#eef6ec)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.long{background:#7a4fd0}
+.binbtn.short{background:#0b76d1}
+.binbtn.good{background:#0d9d58}
+.binbtn.bad{background:#b03a3a}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.high{background:#b03a3a}
+.binbtn.low{background:#0b76d1}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="7.4 Natural selection" data-vi="7.4 Chọn lọc tự nhiên (Natural selection)">7.4 Natural selection</span>
+    <span class="eqchip i18n" data-en="Unit 7 · Genes and inheritance" data-vi="Bài 7 · Gen và di truyền (Genes and inheritance)">Unit 7 · Genes and inheritance</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why do some individuals survive and pass on their genes — and how does a whole species change?" data-vi="Vì sao một số cá thể sống sót và truyền gen (genes) của chúng đi — và cả một loài thay đổi như thế nào?">Why do some individuals survive and pass on their genes — and how does a whole species change?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Variation in every species" data-vi="Biến dị (variation) trong mọi loài">Variation in every species</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Advantageous features help survival" data-vi="Đặc điểm có lợi (advantageous features) giúp sống sót">Advantageous features help survival</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Genes passed to offspring" data-vi="Gen (genes) được truyền cho con cái (offspring)">Genes passed to offspring</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Populations change over generations" data-vi="Quần thể (populations) thay đổi qua các thế hệ (generations)">Populations change over generations</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the selection bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn chọn lọc!">🖱 Drag to look around · Scroll to zoom · Tap the models on the selection bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 7 Genes and inheritance · Section 7.4. The selection bench in this lesson is a simulation — the giraffes, bacteria and moths are models, and their changes are hugely speeded up." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 7 Gen và di truyền (Genes and inheritance) · Mục 7.4. Bàn chọn lọc trong bài học này là mô phỏng — hươu cao cổ, vi khuẩn và bướm đều là mô hình, và các thay đổi của chúng được tăng tốc rất nhiều.">Cambridge Lower Secondary Science 9 · Unit 7 Genes and inheritance · Section 7.4. The selection bench in this lesson is a simulation — the giraffes, bacteria and moths are models, and their changes are hugely speeded up.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 7 Genes and inheritance, section 7.4 Natural selection, pages 251–259; Workbook 9 (ISBN 9781108742894), pages 141–146. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section project 'How we learnt about DNA' — a group research report contributing to a class timeline display — and the unit Check your progress pages are classroom research and review tasks and are not part of this interactive lesson." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 7 Gen và di truyền (Genes and inheritance), mục 7.4 Chọn lọc tự nhiên (Natural selection), trang 251–259; Sách bài tập 9 (ISBN 9781108742894), trang 141–146. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Dự án của mục 'How we learnt about DNA' — một báo cáo nghiên cứu nhóm đóng góp vào dòng thời gian trưng bày của lớp — và phần Kiểm tra tiến bộ (Check your progress) cuối bài là nhiệm vụ nghiên cứu và ôn tập trên lớp, không thuộc bài học tương tác này.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 7 Genes and inheritance, section 7.4 Natural selection, pages 251–259; Workbook 9 (ISBN 9781108742894), pages 141–146. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section project 'How we learnt about DNA' — a group research report contributing to a class timeline display — and the unit Check your progress pages are classroom research and review tasks and are not part of this interactive lesson.</p>
+    <p class="i18n" data-en="Objectives (from the book): learn about the scientific theory of natural selection; find out about some examples of natural selection in action. Key words: advantageous, feature, natural selection, resistant — plus variation, gene, offspring, generation, camouflage and antibiotic." data-vi="Mục tiêu (theo sách): tìm hiểu lý thuyết khoa học về chọn lọc tự nhiên (natural selection); tìm hiểu một số ví dụ về chọn lọc tự nhiên đang diễn ra. Từ khóa: advantageous (có lợi), feature (đặc điểm), natural selection (chọn lọc tự nhiên), resistant (kháng thuốc) — cùng variation (biến dị), gene (gen), offspring (con cái), generation (thế hệ), camouflage (ngụy trang) và antibiotic (kháng sinh).">Objectives (from the book): learn about the scientific theory of natural selection; find out about some examples of natural selection in action. Key words: advantageous, feature, natural selection, resistant — plus variation, gene, offspring, generation, camouflage and antibiotic.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D selection bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the selection bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: the Getting started waxy monkey leaf frog and the imaginary giraffe story (variation, the dry year, genes passed to offspring — the book's five-point summary of the theory), then the real evidence from bacteria and antibiotics, then the peppered moths (pale before 1849, dark by 1900, pale again today), and finally the book's Summary checklist as a sorting step. The exercises use the Workbook's own tasks: 7.4A blue-tailed lizards (where genes are found, what inheritance means, and which explanation of blue tails is correct), 7.4B the camouflaged-caterpillars pasta experiment (what to record, how to make the conclusion reliable, and the correct order of the five explanation sentences), and 7.4C using natural selection to explain how woolly mammoths developed from steppe mammoths." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn chọn lọc 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn chọn lọc' chỉ di chuyển camera; muốn kiểm tra một ý thì phải chạm vào chính mô hình trên bàn. Các bước đi theo đúng thứ tự trong sách: con ếch lá khỉ sáp ở phần Khởi động và câu chuyện hươu cao cổ tưởng tượng (biến dị, năm khô hạn, gen được truyền cho con cái — bản tóm tắt năm ý của lý thuyết trong sách), rồi bằng chứng thật từ vi khuẩn và kháng sinh (antibiotics), rồi bướm đêm tiêu (peppered moths) (nhạt màu trước 1849, sẫm màu vào 1900, nhạt màu trở lại ngày nay), và cuối cùng là danh sách tóm tắt (Summary checklist) của sách dưới dạng bước phân loại. Bài tập dùng chính nhiệm vụ của Workbook: 7.4A thằn lằn đuôi xanh (gen nằm ở đâu, di truyền (inheritance) nghĩa là gì, và lời giải thích nào về đuôi xanh là đúng), 7.4B thí nghiệm mì ống sâu bướm ngụy trang (ghi lại điều gì, làm sao để kết luận đáng tin cậy, và thứ tự đúng của năm câu giải thích), và 7.4C dùng chọn lọc tự nhiên (natural selection) để giải thích voi ma mút lông dài (woolly mammoths) phát triển từ voi ma mút thảo nguyên (steppe mammoths) như thế nào.">How it works: each step asks for one real action — tapping the models on the 3D selection bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the selection bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: the Getting started waxy monkey leaf frog and the imaginary giraffe story (variation, the dry year, genes passed to offspring — the book's five-point summary of the theory), then the real evidence from bacteria and antibiotics, then the peppered moths (pale before 1849, dark by 1900, pale again today), and finally the book's Summary checklist as a sorting step. The exercises use the Workbook's own tasks: 7.4A blue-tailed lizards (where genes are found, what inheritance means, and which explanation of blue tails is correct), 7.4B the camouflaged-caterpillars pasta experiment (what to record, how to make the conclusion reliable, and the correct order of the five explanation sentences), and 7.4C using natural selection to explain how woolly mammoths developed from steppe mammoths.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn long" id="ex1BinLong"></button>
+        <button class="binbtn short" id="ex1BinShort"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn good" id="ex3BinGood"></button>
+        <button class="binbtn bad" id="ex3BinBad"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-7-4 "Natural selection"
+   (Science 9, Unit 7 · Genes and inheritance)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= Selection bench models ================= */
+const LAB={
+  frog:  {emoji:'🐸', name:{en:'A waxy monkey leaf frog — a tiny frog of the hot, humid rainforest',vi:'Một con ếch lá khỉ sáp (waxy monkey leaf frog) — loài ếch nhỏ của rừng mưa nóng ẩm'}, short:{en:'Leaf frog',vi:'Ếch lá'}, ring:0.45, labelY:1.2, fx:-3.9, fz:-1.3, fr:4.4},
+  glong: {emoji:'🦒', name:{en:'A long-necked giraffe — one variety in the population',vi:'Một con hươu cao cổ cổ dài — một dạng trong quần thể (population)'}, short:{en:'Long neck',vi:'Cổ dài'}, ring:0.55, labelY:1.35, fx:-2.6, fz:-1.3, fr:4.4},
+  gshort:{emoji:'🦒', name:{en:'A short-necked giraffe — another variety in the same population',vi:'Một con hươu cao cổ cổ ngắn — một dạng khác trong cùng quần thể (population)'}, short:{en:'Short neck',vi:'Cổ ngắn'}, ring:0.65, labelY:1.55, fx:-1.3, fz:-1.3, fr:4.6},
+  tree:  {emoji:'🌳', name:{en:'A tree on the grassy plains — in a dry year only the high leaves are left',vi:'Một cái cây trên đồng cỏ — vào năm khô hạn chỉ còn lại lá ở trên cao'}, short:{en:'Tree',vi:'Cây'}, ring:0.5, labelY:1.25, fx:0.0, fz:-1.3, fr:4.4},
+  gene:  {emoji:'🧬', name:{en:'Genes — the instructions passed from parents to offspring',vi:'Gen (genes) — các chỉ dẫn được truyền từ bố mẹ sang con'}, short:{en:'Genes',vi:'Gen'}, ring:0.5, labelY:1.3, fx:1.3, fz:-1.3, fr:4.4},
+  calf:  {emoji:'🦒', name:{en:'A young giraffe — the offspring of a long-necked parent',vi:'Một con hươu cao cổ con — con (offspring) của một cá thể cổ dài'}, short:{en:'Offspring',vi:'Con cái'}, ring:0.5, labelY:1.3, fx:2.6, fz:-1.3, fr:4.4},
+  anti:  {emoji:'💊', name:{en:'An antibiotic — a medicine that kills bacteria',vi:'Một thuốc kháng sinh (antibiotic) — thuốc diệt vi khuẩn (bacteria)'}, short:{en:'Antibiotic',vi:'Kháng sinh'}, ring:0.6, labelY:1.35, fx:-3.5, fz:1.7, fr:4.6},
+  bactn: {emoji:'🦠', name:{en:'An ordinary bacterium — it has no gene for resistance',vi:'Một vi khuẩn (bacterium) thường — nó không có gen kháng thuốc'}, short:{en:'Ordinary bacterium',vi:'Vi khuẩn thường'}, ring:0.6, labelY:1.35, fx:-2.1, fz:1.7, fr:4.6},
+  bactr: {emoji:'🦠', name:{en:'A resistant bacterium — by chance it has a gene that resists the antibiotic',vi:'Một vi khuẩn (bacterium) kháng thuốc (resistant) — tình cờ nó có gen kháng lại kháng sinh (antibiotic)'}, short:{en:'Resistant bacterium',vi:'Vi khuẩn kháng thuốc'}, ring:0.5, labelY:1.15, fx:-0.7, fz:1.7, fr:4.4},
+  trunk: {emoji:'🌲', name:{en:'A dark tree trunk — soot from factory smoke has darkened the bark',vi:'Một thân cây sẫm màu — muội khói nhà máy đã làm vỏ cây tối đi'}, short:{en:'Dark trunk',vi:'Thân cây sẫm'}, ring:0.5, labelY:1.3, fx:0.7, fz:1.7, fr:4.4},
+  mothp: {emoji:'🦋', name:{en:'A pale peppered moth — camouflaged on lichen, easy to see on a dark trunk',vi:'Một con bướm đêm tiêu (peppered moth) màu nhạt — ngụy trang (camouflaged) tốt trên địa y, nhưng dễ thấy trên thân cây sẫm'}, short:{en:'Pale moth',vi:'Bướm nhạt màu'}, ring:0.6, labelY:1.4, fx:2.1, fz:1.7, fr:4.6},
+  mothd: {emoji:'🦋', name:{en:'A dark peppered moth — a variety with a gene for dark wings',vi:'Một con bướm đêm tiêu (peppered moth) màu sẫm — một dạng có gen cho cánh sẫm màu'}, short:{en:'Dark moth',vi:'Bướm sẫm màu'}, ring:0.5, labelY:1.25, fx:3.5, fz:1.7, fr:4.4}
+};
+const FOCUSORDER=['frog','glong','gshort','tree','gene','calf','anti','bactn','bactr','trunk','mothp','mothd'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the selection bench',vi:'Trên bàn chọn lọc'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to test an idea, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn kiểm tra một ý, hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My natural selection record',vi:'Bảng ghi chọn lọc tự nhiên của con'},
+  u2Brief:{en:'How natural selection works, in the order of the book.',vi:'Chọn lọc tự nhiên (natural selection) diễn ra như thế nào, theo đúng thứ tự trong sách.'},
+  recVar:{en:'🐸 In every species there is variation among individuals',vi:'🐸 Trong mọi loài đều có biến dị (variation) giữa các cá thể'},
+  recAdv:{en:'🦒 Individuals with advantageous features are more likely to survive',vi:'🦒 Các cá thể có đặc điểm có lợi (advantageous features) có khả năng sống sót cao hơn'},
+  recGenes:{en:'🧬 Survivors reproduce and pass their genes on to their offspring',vi:'🧬 Các cá thể sống sót sinh sản và truyền gen (genes) của chúng cho con cái (offspring)'},
+  recBact:{en:'🦠 Resistant bacteria survive antibiotics and multiply',vi:'🦠 Vi khuẩn kháng thuốc (resistant bacteria) sống sót qua kháng sinh (antibiotics) và sinh sôi'},
+  recMoth:{en:'🦋 Dark peppered moths became more common when the trunks darkened',vi:'🦋 Bướm đêm tiêu (peppered moths) sẫm màu trở nên phổ biến hơn khi thân cây tối đi'},
+  recSort:{en:'🔀 I sorted the ideas that are part of natural selection from those that are not',vi:'🔀 Con đã phân loại các ý thuộc về chọn lọc tự nhiên (natural selection) và các ý không thuộc về nó'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for the theory of natural selection.',vi:'Danh sách kiểm tra về lý thuyết chọn lọc tự nhiên (natural selection) của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundVar:{en:'I met the frog and saw variation in the giraffe population',vi:'Con đã gặp con ếch và thấy biến dị (variation) trong quần thể hươu cao cổ'},
+  foundAdv:{en:'In the dry year, only the long-necked giraffes could reach food',vi:'Vào năm khô hạn, chỉ hươu cao cổ cổ dài mới với tới được thức ăn'},
+  foundGenes:{en:'The survivors passed their genes on, so most offspring had long necks',vi:'Các cá thể sống sót đã truyền gen (genes) của chúng, nên hầu hết con cái có cổ dài'},
+  foundBact:{en:'One resistant bacterium survived the antibiotic and multiplied',vi:'Một vi khuẩn kháng thuốc (resistant) đã sống sót qua kháng sinh (antibiotic) và sinh sôi'},
+  foundMoth:{en:'On dark trunks the pale moths were seen and eaten; the dark moths survived',vi:'Trên thân cây sẫm, bướm nhạt màu bị nhìn thấy và bị ăn; bướm sẫm màu sống sót'},
+  foundSort:{en:'I sorted the five ideas of natural selection from the wrong ideas',vi:'Con đã phân loại năm ý của chọn lọc tự nhiên (natural selection) khỏi các ý sai'},
+  binSel:{en:'PART OF NATURAL SELECTION ✓',vi:'THUỘC VỀ CHỌN LỌC TỰ NHIÊN ✓ (part of natural selection)'},
+  binNotSel:{en:'NOT HOW IT WORKS ✗',vi:'KHÔNG PHẢI CÁCH NÓ DIỄN RA ✗ (not how it works)'},
+  lookBact:{en:'Look at the resistant bacterium 🦠',vi:'Ngắm vi khuẩn kháng thuốc 🦠'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 7.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 7.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Blue-tailed lizards: true or not? (Workbook 7.4A)',vi:'Bài tập 1 · Focus — Thằn lằn đuôi xanh: đúng hay không? (Workbook 7.4A)'},
+  ex1Inst:{en:'Some lizards have blue tails, and snakes are especially good at seeing blue. When a predator attacks, the tail drops off and wriggles, so the lizard escapes. Tap a card, then sort it: TRUE or NOT TRUE?',vi:'Một số thằn lằn có đuôi xanh, và rắn đặc biệt giỏi nhìn màu xanh. Khi kẻ săn mồi tấn công, cái đuôi rụng ra và quẫy, nên thằn lằn chạy thoát. Chạm vào một thẻ, rồi xếp nó: ĐÚNG (TRUE) hay KHÔNG ĐÚNG (NOT TRUE)?'},
+  ex2T:{en:'Exercise 2 · Practice — Camouflaged caterpillars (Workbook 7.4B)',vi:'Bài tập 2 · Practice — Sâu bướm ngụy trang (Workbook 7.4B)'},
+  ex2Inst:{en:'Sofia and Zara test whether green caterpillars are harder for a predator to find than yellow ones on grass, using 50 green and 50 yellow pasta “caterpillars”. For each question, tap the ONE correct answer.',vi:'Sofia và Zara kiểm tra xem sâu bướm xanh có khó bị kẻ săn mồi tìm thấy trên cỏ hơn sâu bướm vàng không, bằng 50 “sâu” mì ống xanh và 50 “sâu” vàng. Với mỗi câu hỏi, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Woolly mammoths (Workbook 7.4C)',vi:'Bài tập 3 · Challenge — Voi ma mút lông dài (Workbook 7.4C)'},
+  ex3Inst:{en:'Woolly mammoths had very long, thick hair and huge tusks, and developed from steppe mammoths when the climate turned much colder. Tap a card, then judge it: is it PART OF THE EXPLANATION of how natural selection could do this, or NOT NATURAL SELECTION?',vi:'Voi ma mút lông dài (woolly mammoths) có lông rất dài và dày cùng ngà rất lớn, và phát triển từ voi ma mút thảo nguyên (steppe mammoths) khi khí hậu trở nên lạnh hơn nhiều. Chạm vào một thẻ, rồi xét nó: đó là MỘT PHẦN CỦA LỜI GIẢI THÍCH (PART OF THE EXPLANATION) về cách chọn lọc tự nhiên (natural selection) có thể làm điều này, hay KHÔNG PHẢI CHỌN LỌC TỰ NHIÊN (NOT NATURAL SELECTION)?'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'natural selection',vi:'chọn lọc tự nhiên'},
+  {en:'advantageous',vi:'có lợi'},
+  {en:'feature',vi:'đặc điểm'},
+  {en:'resistant',vi:'kháng (thuốc)'},
+  {en:'variation',vi:'biến dị'},
+  {en:'gene',vi:'gen'},
+  {en:'offspring',vi:'con cái'},
+  {en:'generation',vi:'thế hệ'},
+  {en:'camouflage',vi:'ngụy trang'},
+  {en:'antibiotic',vi:'kháng sinh'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Variation in a species',vi:'Biến dị trong một loài'}, word:{en:'variation',vi:'biến dị (variation)'},
+  q:{en:'In Getting started you met a tiny rainforest frog, well adapted to survive among predators. The book then tells an imaginary story about giraffes. What is the first thing the story shows?',vi:'Trong phần Khởi động, con đã gặp một con ếch rừng mưa nhỏ bé, thích nghi (adapted) tốt để sống sót giữa các kẻ săn mồi. Sau đó sách kể một câu chuyện tưởng tượng về hươu cao cổ. Điều đầu tiên câu chuyện cho thấy là gì?'},
+  act:{en:'Tap the frog model. Then tap the long-necked giraffe and the short-necked giraffe on the back row.',vi:'Chạm vào mô hình con ếch. Sau đó chạm vào hươu cao cổ cổ dài và hươu cao cổ cổ ngắn ở hàng sau.'},
+  see:{en:'No two individuals are exactly alike: in this population some giraffes have genes for long necks and some for shorter necks.',vi:'Không có hai cá thể nào hoàn toàn giống nhau: trong quần thể (population) này, một số hươu cao cổ có gen cho cổ dài và một số có gen cho cổ ngắn hơn.'},
+  concl:[
+    {en:'The waxy monkey leaf frog is adapted to its hot, humid rainforest home — for example, it can protect its skin and hide from the many predators that hunt it.',vi:'Ếch lá khỉ sáp (waxy monkey leaf frog) thích nghi (adapted) với ngôi nhà rừng mưa nóng ẩm của nó — ví dụ, nó có thể bảo vệ làn da của mình và trốn tránh nhiều kẻ săn mồi.'},
+    {en:'Point 1 of the theory: in every species, there is variation among individual organisms — the giraffes in the story do not all have the same neck length.',vi:'Ý 1 của lý thuyết: trong mọi loài, đều có biến dị (variation) giữa các cá thể — các con hươu cao cổ trong câu chuyện không có cùng chiều dài cổ.'},
+    {en:'Point 2: some of this variation is caused by differences in their genes. Some giraffes have varieties of genes that give them long necks; others have varieties that give shorter necks.',vi:'Ý 2: một phần biến dị (variation) này do sự khác nhau trong gen (genes) của chúng gây ra. Một số hươu cao cổ có dạng gen cho cổ dài; số khác có dạng gen cho cổ ngắn hơn.'}]},
+ {tag:{en:'The dry year',vi:'Năm khô hạn'}, word:{en:'advantageous',vi:'có lợi (advantageous)'},
+  q:{en:'In some years the rains do not come, and food runs short. When all the lower leaves have been eaten, which giraffes can still feed?',vi:'Vào một số năm, mưa không đến và thức ăn trở nên khan hiếm. Khi mọi lá ở tầng thấp đã bị ăn hết, những con hươu cao cổ nào vẫn ăn được?'},
+  act:{en:'Tap the tree model. Then tap the short-necked giraffe, and then the long-necked giraffe.',vi:'Chạm vào mô hình cái cây. Sau đó chạm vào hươu cao cổ cổ ngắn, rồi chạm vào hươu cao cổ cổ dài.'},
+  see:{en:'Only the long-necked giraffes can reach the leaves that are left. Most of the short-necked giraffes die of starvation.',vi:'Chỉ hươu cao cổ cổ dài mới với tới được những chiếc lá còn lại. Hầu hết hươu cao cổ cổ ngắn chết vì đói.'},
+  concl:[
+    {en:'Point 3: some individuals have features that make it more likely they will survive than individuals without those features. A long neck is an advantageous feature when only high leaves remain.',vi:'Ý 3: một số cá thể có đặc điểm (features) khiến chúng có khả năng sống sót cao hơn các cá thể không có đặc điểm đó. Cổ dài là một đặc điểm có lợi (advantageous feature) khi chỉ còn lại lá ở trên cao.'},
+    {en:'In the story, most of the short-necked giraffes starved, because the feature they had was not useful in the changed conditions.',vi:'Trong câu chuyện, hầu hết hươu cao cổ cổ ngắn bị chết đói, vì đặc điểm (feature) của chúng không hữu ích trong điều kiện đã thay đổi.'},
+    {en:'Natural selection does not always produce change: if the environment stays the same and a population is already well adapted, there is nothing new for selection to favour.',vi:'Chọn lọc tự nhiên (natural selection) không phải lúc nào cũng tạo ra thay đổi: nếu môi trường giữ nguyên và một quần thể (population) đã thích nghi tốt rồi, thì không có gì mới để chọn lọc ưu ái cả.'}]},
+ {tag:{en:'Passing genes on',vi:'Truyền gen cho đời sau'}, word:{en:'offspring',vi:'con cái (offspring)'},
+  q:{en:'The surviving giraffes reproduce. What do they pass on to their offspring — and what do most of the offspring look like?',vi:'Những con hươu cao cổ sống sót sinh sản. Chúng truyền lại điều gì cho con cái (offspring) — và hầu hết con cái trông như thế nào?'},
+  act:{en:'Tap the genes model. Then tap the young giraffe — the offspring model.',vi:'Chạm vào mô hình gen (genes). Sau đó chạm vào hươu cao cổ con — mô hình con cái (offspring).'},
+  see:{en:'Only the survivors’ genes are passed on, so most of the offspring grow up with long necks, like their parents.',vi:'Chỉ gen (genes) của các cá thể sống sót mới được truyền lại, nên hầu hết con cái (offspring) lớn lên với cổ dài, giống bố mẹ chúng.'},
+  concl:[
+    {en:'Point 4: individuals with advantageous features are more likely to reproduce, and pass on the genes that produce those features to their offspring.',vi:'Ý 4: các cá thể có đặc điểm có lợi (advantageous features) có khả năng sinh sản cao hơn, và truyền các gen tạo ra đặc điểm đó cho con cái (offspring) của chúng.'},
+    {en:'Point 5: over many generations, the genes for advantageous features become a little more common, and the genes that are not so useful become a little less common.',vi:'Ý 5: qua nhiều thế hệ (generations), các gen cho đặc điểm có lợi (advantageous) trở nên phổ biến hơn một chút, và các gen không hữu ích lắm trở nên ít phổ biến hơn một chút.'},
+    {en:'This whole process is called natural selection. In the story it changed the giraffe population over time — a genetic change caused by some gene varieties becoming more common than others.',vi:'Toàn bộ quá trình này được gọi là chọn lọc tự nhiên (natural selection). Trong câu chuyện, nó đã làm thay đổi quần thể hươu cao cổ theo thời gian — một thay đổi di truyền do một số dạng gen trở nên phổ biến hơn các dạng khác.'}]},
+ {tag:{en:'Bacteria and antibiotics',vi:'Vi khuẩn và kháng sinh'}, word:{en:'resistant',vi:'kháng thuốc (resistant)'},
+  q:{en:'The giraffe story is imaginary, but bacteria give us real evidence. In a population of bacteria, one individual may — by chance — have a gene that makes it resistant to an antibiotic. What happens when the antibiotic is used?',vi:'Câu chuyện hươu cao cổ là tưởng tượng, nhưng vi khuẩn cho ta bằng chứng thật. Trong một quần thể (population) vi khuẩn, một cá thể có thể — tình cờ — có gen khiến nó kháng (resistant) một kháng sinh (antibiotic). Điều gì xảy ra khi kháng sinh được dùng?'},
+  act:{en:'Tap the antibiotic model. Then tap the ordinary bacterium, and then the resistant bacterium.',vi:'Chạm vào mô hình kháng sinh (antibiotic). Sau đó chạm vào vi khuẩn thường, rồi chạm vào vi khuẩn kháng thuốc (resistant).'},
+  see:{en:'The antibiotic kills the bacteria that are not resistant. The resistant one survives — and multiplies into a whole population of resistant bacteria.',vi:'Kháng sinh (antibiotic) giết các vi khuẩn không kháng thuốc. Vi khuẩn kháng thuốc sống sót — và sinh sôi thành cả một quần thể (population) vi khuẩn kháng thuốc.'},
+  concl:[
+    {en:'“Resistant” means the antibiotic can no longer kill that bacterium — the drug stops working against it.',vi:'“Kháng thuốc (resistant)” nghĩa là kháng sinh (antibiotic) không còn giết được vi khuẩn đó nữa — thuốc không còn tác dụng với nó.'},
+    {en:'Resistance develops by natural selection: the resistant variety survives, reproduces, and passes its resistance gene on, so over time the gene becomes more and more common in the population.',vi:'Tính kháng thuốc hình thành nhờ chọn lọc tự nhiên (natural selection): dạng kháng thuốc sống sót, sinh sản và truyền gen kháng thuốc của nó đi, nên theo thời gian gen đó ngày càng phổ biến trong quần thể (population).'},
+    {en:'That is why doctors advise saving antibiotics for serious illnesses and not using them unless we really need them: every use gives resistant bacteria a chance to be selected.',vi:'Đó là lý do bác sĩ khuyên dành kháng sinh (antibiotics) cho bệnh nặng và không dùng chúng trừ khi thật cần: mỗi lần dùng đều cho vi khuẩn kháng thuốc một cơ hội được chọn lọc.'}]},
+ {tag:{en:'Peppered moths',vi:'Bướm đêm tiêu'}, word:{en:'camouflage',vi:'ngụy trang (camouflage)'},
+  q:{en:'Peppered moths rest on tree trunks by day and are hunted by birds. Factory smoke killed the lichens and darkened the trunks. Which moths were then more likely to survive?',vi:'Bướm đêm tiêu (peppered moths) đậu trên thân cây vào ban ngày và bị chim săn ăn. Khói nhà máy giết chết địa y và làm thân cây tối đi. Khi đó những con bướm nào có khả năng sống sót cao hơn?'},
+  act:{en:'Tap the dark tree trunk model. Then tap the pale moth, and then the dark moth.',vi:'Chạm vào mô hình thân cây sẫm màu. Sau đó chạm vào bướm nhạt màu, rồi chạm vào bướm sẫm màu.'},
+  see:{en:'On a dark trunk the pale moths stand out and are eaten; the dark moths are camouflaged, survive and reproduce.',vi:'Trên thân cây sẫm, bướm nhạt màu nổi bật và bị ăn; bướm sẫm màu được ngụy trang (camouflaged), sống sót và sinh sản.'},
+  concl:[
+    {en:'Before 1849 almost all peppered moths were pale, camouflaged against lichen-covered bark. As smoke darkened the trunks, pale moths were more likely to be seen and eaten by birds.',vi:'Trước năm 1849 hầu hết bướm đêm tiêu (peppered moths) đều nhạt màu, ngụy trang (camouflaged) tốt trên vỏ cây phủ địa y. Khi khói làm thân cây tối đi, bướm nhạt màu dễ bị chim nhìn thấy và ăn hơn.'},
+    {en:'Dark moths were more likely to survive and reproduce, passing on their genes for dark colour. Over several generations the dark variety became more and more common — by 1900 almost all moths near some cities were dark.',vi:'Bướm sẫm màu có khả năng sống sót và sinh sản cao hơn, truyền gen cho màu sẫm của chúng đi. Qua vài thế hệ (generations), dạng sẫm màu ngày càng phổ biến — đến năm 1900 hầu hết bướm gần một số thành phố đều sẫm màu.'},
+    {en:'Today the air is cleaner, lichens grow again, and most peppered moths are pale once more — natural selection following the environment as it changes.',vi:'Ngày nay không khí sạch hơn, địa y mọc lại, và hầu hết bướm đêm tiêu lại nhạt màu — chọn lọc tự nhiên (natural selection) đi theo môi trường khi nó thay đổi.'}]},
+ {tag:{en:'The theory, sorted',vi:'Lý thuyết, đã phân loại'}, word:{en:'natural selection',vi:'chọn lọc tự nhiên (natural selection)'},
+  q:{en:'Can you pick out the real ideas of natural selection from the wrong ideas people sometimes have about it?',vi:'Con có phân biệt được các ý đúng của chọn lọc tự nhiên (natural selection) khỏi các ý sai mà đôi khi người ta vẫn nghĩ không?'},
+  act:{en:'Tap a card, then tap PART OF NATURAL SELECTION or NOT HOW IT WORKS.',vi:'Chạm vào một thẻ, rồi chạm THUỘC VỀ CHỌN LỌC TỰ NHIÊN (PART OF NATURAL SELECTION) hoặc KHÔNG PHẢI CÁCH NÓ DIỄN RA (NOT HOW IT WORKS).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can state the theory of natural selection.',vi:'Con trình bày được lý thuyết chọn lọc tự nhiên (natural selection).'},
+    {en:'I can explain how natural selection can produce genetic changes in a population over time.',vi:'Con giải thích được cách chọn lọc tự nhiên (natural selection) có thể tạo ra thay đổi di truyền trong một quần thể (population) theo thời gian.'},
+    {en:'I can describe examples of natural selection in action, such as antibiotic resistance in bacteria and the peppered moths.',vi:'Con mô tả được các ví dụ về chọn lọc tự nhiên (natural selection) đang diễn ra, như tính kháng kháng sinh (antibiotic resistance) ở vi khuẩn và bướm đêm tiêu (peppered moths).'}]}
+];
+const CARDS6=[
+ {id:'c_var',emoji:'🐸',en:'In every species, individuals vary — no two are exactly alike',vi:'Trong mọi loài, các cá thể có biến dị (variation) — không có hai cá thể nào hoàn toàn giống nhau',ans:'good'},
+ {id:'c_decide',emoji:'💭',en:'Animals decide to change their own bodies to suit their environment',vi:'Động vật tự quyết định thay đổi cơ thể của chúng để phù hợp với môi trường',ans:'bad'},
+ {id:'c_survive',emoji:'🦒',en:'Individuals with advantageous features are more likely to survive',vi:'Các cá thể có đặc điểm có lợi (advantageous features) có khả năng sống sót cao hơn',ans:'good'},
+ {id:'c_teach',emoji:'🎓',en:'Parents learn a useful feature in their lifetime, then pass the learnt feature to their offspring',vi:'Bố mẹ học được một đặc điểm hữu ích trong đời mình, rồi truyền đặc điểm đã học đó cho con cái (offspring)',ans:'bad'},
+ {id:'c_genes',emoji:'🧬',en:'Survivors reproduce and pass on the genes for their advantageous features',vi:'Các cá thể sống sót sinh sản và truyền các gen cho đặc điểm có lợi (advantageous) của chúng đi',ans:'good'},
+ {id:'c_instant',emoji:'⚡',en:'A new feature appears in one individual and instantly spreads to the whole species',vi:'Một đặc điểm mới xuất hiện ở một cá thể và lập tức lan ra toàn bộ loài',ans:'bad'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What is natural selection?',vi:'Chọn lọc tự nhiên (natural selection) là gì?'},
+  o:[{en:'The strongest individual in a species always wins every fight',vi:'Cá thể khỏe nhất trong một loài luôn thắng mọi trận đấu'},
+     {en:'Individuals with advantageous features are more likely to survive and reproduce, so the genes for those features become more common over generations',vi:'Các cá thể có đặc điểm có lợi (advantageous features) có khả năng sống sót và sinh sản cao hơn, nên các gen cho những đặc điểm đó trở nên phổ biến hơn qua các thế hệ (generations)'},
+     {en:'Animals change their bodies during their lifetime because they need to',vi:'Động vật thay đổi cơ thể trong đời mình vì chúng cần phải thế'}],a:1,
+  e:{en:'Natural selection needs variation, some of it caused by genes. Individuals whose features help them survive are more likely to reproduce and pass those genes on, so over many generations the advantageous genes become more common in the population.',vi:'Chọn lọc tự nhiên (natural selection) cần có biến dị (variation), một phần do gen gây ra. Các cá thể có đặc điểm giúp chúng sống sót có khả năng sinh sản cao hơn và truyền các gen đó đi, nên qua nhiều thế hệ (generations) các gen có lợi trở nên phổ biến hơn trong quần thể (population).'}},
+ {q:{en:'In a population of bacteria, one bacterium has a gene that makes it resistant to an antibiotic. The antibiotic is used. What happens next?',vi:'Trong một quần thể (population) vi khuẩn, một vi khuẩn có gen khiến nó kháng (resistant) một kháng sinh (antibiotic). Kháng sinh được dùng. Điều gì xảy ra tiếp theo?'},
+  o:[{en:'All the bacteria learn to resist the antibiotic',vi:'Tất cả vi khuẩn học cách kháng lại kháng sinh'},
+     {en:'The antibiotic changes its own genes so it can kill the resistant bacterium',vi:'Kháng sinh (antibiotic) tự thay đổi gen của nó để giết vi khuẩn kháng thuốc'},
+     {en:'The bacteria that are not resistant are killed; the resistant one survives and multiplies, forming a population of resistant bacteria',vi:'Các vi khuẩn không kháng thuốc bị giết; vi khuẩn kháng thuốc sống sót và sinh sôi, tạo thành một quần thể (population) vi khuẩn kháng thuốc'}],a:2,
+  e:{en:'This is natural selection in action. The antibiotic kills the non-resistant bacteria. The resistant bacterium — which had the resistance gene by chance, before the drug was used — survives, multiplies, and passes the gene on, so the whole population becomes resistant.',vi:'Đây là chọn lọc tự nhiên (natural selection) đang diễn ra. Kháng sinh (antibiotic) giết các vi khuẩn không kháng thuốc. Vi khuẩn kháng thuốc — vốn tình cờ có gen kháng thuốc từ trước khi thuốc được dùng — sống sót, sinh sôi và truyền gen đó đi, nên toàn bộ quần thể (population) trở nên kháng thuốc.'}},
+ {q:{en:'Why did dark peppered moths become more common than pale ones near English cities in the late nineteenth century?',vi:'Vì sao bướm đêm tiêu (peppered moths) sẫm màu trở nên phổ biến hơn bướm nhạt màu gần các thành phố Anh vào cuối thế kỷ mười chín?'},
+  o:[{en:'Factory smoke darkened the tree trunks, so pale moths were no longer camouflaged and were eaten more; dark moths survived, reproduced and passed on their genes for dark colour',vi:'Khói nhà máy làm thân cây tối đi, nên bướm nhạt màu không còn được ngụy trang (camouflaged) và bị ăn nhiều hơn; bướm sẫm màu sống sót, sinh sản và truyền gen cho màu sẫm của chúng đi'},
+     {en:'The moths turned dark because the soot stained their wings',vi:'Bướm trở nên sẫm màu vì muội khói nhuộm cánh của chúng'},
+     {en:'Pale moths chose to move away from the cities',vi:'Bướm nhạt màu chọn rời khỏi các thành phố'}],a:0,
+  e:{en:'The change was genetic, not a stain and not a choice. On darkened trunks, birds could see pale moths more easily. Dark moths were more likely to survive and reproduce, so each generation more offspring inherited the advantageous genes for dark colour — until, by 1900, almost all moths near some cities were dark.',vi:'Sự thay đổi này là di truyền, không phải vết nhuộm và cũng không phải lựa chọn. Trên thân cây đã tối đi, chim nhìn thấy bướm nhạt màu dễ hơn. Bướm sẫm màu có khả năng sống sót và sinh sản cao hơn, nên mỗi thế hệ (generation) càng nhiều con cái thừa hưởng gen có lợi (advantageous) cho màu sẫm — cho đến năm 1900, hầu hết bướm gần một số thành phố đều sẫm màu.'}},
+ {q:{en:'Doctors advise us not to use antibiotics unless we really need them. Why?',vi:'Bác sĩ khuyên ta không nên dùng kháng sinh (antibiotics) trừ khi thật cần. Vì sao?'},
+  o:[{en:'Antibiotics are too expensive to make',vi:'Kháng sinh (antibiotics) quá đắt để sản xuất'},
+     {en:'Every use of an antibiotic selects for resistant bacteria, so saving them for serious illnesses keeps them working when we need them most',vi:'Mỗi lần dùng kháng sinh (antibiotic) đều chọn lọc cho vi khuẩn kháng thuốc, nên dành chúng cho bệnh nặng giúp chúng còn hiệu quả khi ta cần nhất'},
+     {en:'Antibiotics stop working if they are kept in a cupboard too long',vi:'Kháng sinh (antibiotics) hết tác dụng nếu để trong tủ quá lâu'}],a:1,
+  e:{en:'Using an antibiotic kills the non-resistant bacteria and leaves the resistant ones to multiply — natural selection. The more often antibiotics are used, the faster resistant populations build up. Saving them for serious illnesses slows this down and keeps the medicines useful.',vi:'Dùng kháng sinh (antibiotic) giết các vi khuẩn không kháng thuốc và để lại vi khuẩn kháng thuốc sinh sôi — đó là chọn lọc tự nhiên (natural selection). Kháng sinh càng được dùng thường xuyên, quần thể kháng thuốc càng hình thành nhanh. Dành chúng cho bệnh nặng làm chậm quá trình này và giữ cho thuốc còn hữu ích.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'v_nucleus',emoji:'🧫',en:'The lizard’s genes are contained in the nucleus of its cells',vi:'Gen của thằn lằn nằm trong nhân (nucleus) của tế bào của nó',ans:'long'},
+ {id:'v_variationword',emoji:'🏷️',en:'Passing genes from parents to offspring is called variation',vi:'Truyền gen từ bố mẹ sang con cái được gọi là biến dị (variation)',ans:'short'},
+ {id:'v_tailtrick',emoji:'✂️',en:'A dropped tail wriggles and holds the predator’s attention while the lizard runs away',vi:'Một cái đuôi đã rụng sẽ quẫy và giữ sự chú ý của kẻ săn mồi trong khi thằn lằn chạy trốn',ans:'long'},
+ {id:'v_choose',emoji:'🎨',en:'A lizard can choose to change its tail colour when snakes arrive',vi:'Một con thằn lằn có thể chọn thay đổi màu đuôi khi rắn xuất hiện',ans:'short'},
+ {id:'v_bluesurvive',emoji:'🔵',en:'More blue-tailed parents survive the snakes, so more offspring inherit blue tails',vi:'Nhiều thằn lằn bố mẹ đuôi xanh sống sót qua rắn hơn, nên nhiều con cái thừa hưởng đuôi xanh hơn',ans:'long'},
+ {id:'v_learn',emoji:'🎓',en:'Lizards learn that blue tails are safer, so they produce offspring with blue tails',vi:'Thằn lằn học được rằng đuôi xanh an toàn hơn, nên chúng sinh ra con cái có đuôi xanh',ans:'short'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'What should Sofia and Zara record to test their idea?',vi:'Sofia và Zara nên ghi lại điều gì để kiểm tra ý tưởng của chúng?'},
+  opts:[{en:'The time Marcus takes to find 20 caterpillars',vi:'Thời gian Marcus cần để tìm 20 con sâu'},
+        {en:'How many green caterpillars and how many yellow caterpillars Marcus picks up',vi:'Marcus nhặt được bao nhiêu sâu xanh và bao nhiêu sâu vàng'},
+        {en:'Which hand Marcus uses to pick up the caterpillars',vi:'Marcus dùng tay nào để nhặt sâu'}],a:1,
+  e:{en:'Their idea is about which colour is found more easily, so the result that matters is the count of each colour that Marcus picks up. Time and hands tell them nothing about camouflage.',vi:'Ý tưởng của chúng là về màu nào dễ bị tìm thấy hơn, nên kết quả quan trọng là số lượng mỗi màu mà Marcus nhặt được. Thời gian và tay nào không nói gì về ngụy trang (camouflage) cả.'}},
+ {q:{en:'The girls want more results, so their conclusion is reliable. What should they do?',vi:'Hai bạn muốn có thêm kết quả, để kết luận đáng tin cậy. Chúng nên làm gì?'},
+  opts:[{en:'Repeat the experiment five times with the same caterpillars, using five different students to collect them',vi:'Lặp lại thí nghiệm năm lần với cùng các con sâu, dùng năm học sinh khác nhau để nhặt chúng'},
+        {en:'Repeat the experiment using 25 green caterpillars and 75 yellow caterpillars',vi:'Lặp lại thí nghiệm với 25 sâu xanh và 75 sâu vàng'},
+        {en:'Repeat the experiment using 50 blue caterpillars and 50 red caterpillars',vi:'Lặp lại thí nghiệm với 50 sâu xanh dương và 50 sâu đỏ'}],a:0,
+  e:{en:'Repeating the same fair test with different collectors gives more results without changing the test. Changing the numbers or the colours would make it a different experiment, so the results could not be combined.',vi:'Lặp lại cùng một phép thử công bằng với những người nhặt khác nhau cho thêm kết quả mà không thay đổi phép thử. Thay đổi số lượng hay màu sắc sẽ biến nó thành một thí nghiệm khác, nên không gộp kết quả được.'}},
+ {q:{en:'Their five explanation sentences are labelled A–E, and sentence D is number 1. What is the correct order of the other four?',vi:'Năm câu giải thích của chúng được gắn nhãn A–E, và câu D là số 1. Thứ tự đúng của bốn câu còn lại là gì?'},
+  opts:[{en:'B → A → E → C: adult moths are more likely to carry green genes, they mate and lay eggs, the eggs are more likely to carry green genes, so more green caterpillars hatch',vi:'B → A → E → C: bướm trưởng thành có khả năng mang gen xanh cao hơn, chúng giao phối và đẻ trứng, trứng có khả năng mang gen xanh cao hơn, nên nhiều sâu xanh nở ra hơn'},
+        {en:'A → B → C → E: the moths lay eggs first, then somehow become more likely to carry green genes',vi:'A → B → C → E: bướm đẻ trứng trước, rồi bằng cách nào đó trở nên có khả năng mang gen xanh cao hơn'},
+        {en:'C → E → A → B: more green caterpillars hatch before any eggs are laid',vi:'C → E → A → B: nhiều sâu xanh nở ra trước khi có trứng nào được đẻ'}],a:0,
+  e:{en:'D comes first: green caterpillars survive and become adult moths. So the adults are more likely to contain genes for green caterpillars (B). The adults mate and lay fertilised eggs (A). The eggs are more likely to contain green genes (E). So more green caterpillars hatch out (C).',vi:'D đứng đầu: sâu xanh sống sót và trở thành bướm trưởng thành. Nên bướm trưởng thành có khả năng chứa gen cho sâu xanh cao hơn (B). Bướm trưởng thành giao phối và đẻ trứng đã thụ tinh (A). Trứng có khả năng chứa gen xanh cao hơn (E). Nên nhiều sâu xanh nở ra hơn (C).'}},
+ {q:{en:'Why are the real caterpillars of this moth more likely to be green than yellow in a grassy area?',vi:'Vì sao sâu thật của loài bướm này trong vùng cỏ có khả năng là màu xanh hơn là màu vàng?'},
+  opts:[{en:'Green caterpillars eat more grass, so they grow faster',vi:'Sâu xanh ăn nhiều cỏ hơn, nên chúng lớn nhanh hơn'},
+        {en:'Yellow caterpillars decide to turn green as they grow',vi:'Sâu vàng quyết định chuyển thành xanh khi chúng lớn lên'},
+        {en:'Green caterpillars are camouflaged on grass, so predators find fewer of them; more survive to become moths and pass on their genes',vi:'Sâu xanh được ngụy trang (camouflaged) trên cỏ, nên kẻ săn mồi tìm thấy ít hơn; nhiều con sống sót thành bướm và truyền gen của chúng đi'}],a:2,
+  e:{en:'Camouflage is the advantageous feature here. Green caterpillars are less likely to be found and eaten, so more of them grow into adult moths and reproduce — natural selection makes green more common, generation by generation.',vi:'Ngụy trang (camouflage) là đặc điểm có lợi (advantageous feature) ở đây. Sâu xanh ít bị tìm thấy và ăn hơn, nên nhiều con lớn thành bướm trưởng thành và sinh sản — chọn lọc tự nhiên (natural selection) làm màu xanh phổ biến hơn, qua từng thế hệ (generation).'}},
+ {q:{en:'Marcus picks up the first 20 pasta caterpillars he can find: 6 green and 14 yellow. What does this suggest?',vi:'Marcus nhặt 20 con sâu mì ống đầu tiên anh ấy tìm thấy: 6 xanh và 14 vàng. Điều này gợi ý gì?'},
+  opts:[{en:'Yellow caterpillars are easier to spot on grass than green ones',vi:'Sâu vàng dễ bị phát hiện trên cỏ hơn sâu xanh'},
+        {en:'There must have been more yellow caterpillars than green ones',vi:'Chắc hẳn đã có nhiều sâu vàng hơn sâu xanh'},
+        {en:'Marcus prefers the colour yellow',vi:'Marcus thích màu vàng hơn'}],a:0,
+  e:{en:'Equal numbers were spread out — 50 of each — so picking up more than twice as many yellow ones suggests yellow stands out against the grass while green is camouflaged. That supports the girls’ idea.',vi:'Số lượng được rải ra bằng nhau — 50 con mỗi màu — nên việc nhặt được số sâu vàng nhiều hơn gấp đôi gợi ý rằng màu vàng nổi bật trên nền cỏ trong khi màu xanh được ngụy trang (camouflaged). Điều đó ủng hộ ý tưởng của hai bạn.'}},
+ {q:{en:'Why did the girls use equal numbers — 50 green and 50 yellow caterpillars?',vi:'Vì sao hai bạn dùng số lượng bằng nhau — 50 sâu xanh và 50 sâu vàng?'},
+  opts:[{en:'So the pasta would fill the bucket exactly',vi:'Để mì ống vừa đầy xô'},
+        {en:'To make the test fair: any difference in the numbers found is then due to colour, not to how many of each were there',vi:'Để phép thử công bằng: mọi khác biệt trong số lượng tìm thấy khi đó là do màu sắc, chứ không do số lượng mỗi loại có sẵn'},
+        {en:'Because green and yellow pasta cost the same',vi:'Vì mì ống xanh và vàng có giá bằng nhau'}],a:1,
+  e:{en:'A fair test changes only one thing — the colour — and keeps everything else the same, including how many of each caterpillar are spread out. Then the numbers Marcus finds can be blamed on the colour alone.',vi:'Một phép thử công bằng chỉ thay đổi một thứ — màu sắc — và giữ mọi thứ khác nguyên, kể cả số lượng mỗi loại sâu được rải ra. Khi đó số lượng Marcus tìm thấy chỉ có thể do màu sắc gây ra.'}}
+];
+const EX3=[
+ {id:'e_vary',emoji:'🐘',en:'Steppe mammoths varied: some individuals had thicker hair and longer tusks than others',vi:'Voi ma mút thảo nguyên có biến dị (variation): một số cá thể có lông dày hơn và ngà dài hơn các cá thể khác',ans:'good'},
+ {id:'e_growhair',emoji:'🧥',en:'Each mammoth grew extra hair during its own lifetime because it felt cold',vi:'Mỗi con voi ma mút tự mọc thêm lông trong đời mình vì nó cảm thấy lạnh',ans:'bad'},
+ {id:'e_survive',emoji:'❄️',en:'When the climate turned colder, the hairier mammoths were more likely to survive',vi:'Khi khí hậu trở nên lạnh hơn, các con voi ma mút nhiều lông hơn có khả năng sống sót cao hơn',ans:'good'},
+ {id:'e_choose',emoji:'⛏️',en:'Mammoths chose to grow longer tusks so they could clear snow away from plants',vi:'Voi ma mút chọn mọc ngà dài hơn để chúng có thể dọn tuyết khỏi cây cỏ',ans:'bad'},
+ {id:'e_genes',emoji:'🧬',en:'The surviving hairy mammoths reproduced and passed their genes for thick hair on to their calves',vi:'Các con voi ma mút nhiều lông sống sót đã sinh sản và truyền gen cho lông dày của chúng cho con của chúng',ans:'good'},
+ {id:'e_common',emoji:'📈',en:'Over many generations, very thick hair and huge tusks became more and more common',vi:'Qua nhiều thế hệ (generations), lông rất dày và ngà rất lớn trở nên ngày càng phổ biến',ans:'good'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 6 + 6 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-7-4';
+const SUMKEY='camb:sum:sci9-7-4';
+const BOT_CODE='sci9-7.4';
+let OBS={frog:false,long:false,short:false,tree:false,gene:false,calf:false,anti:false,norm:false,res:false,trunk:false,pale:false,dark:false};
+let SORTED=new Set();
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1frog:false, s1long:false, s1short:false, s1hint:null,
+  s2tree:false, s2long:false, s2short:false,
+  s3gene:false, s3calf:false,
+  s4anti:false, s4norm:false, s4res:false,
+  s5trunk:false, s5pale:false, s5dark:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1frog&&T.s1long&&T.s1short;
+  if(i===1) return T.s2tree&&T.s2long&&T.s2short;
+  if(i===2) return T.s3gene&&T.s3calf;
+  if(i===3) return T.s4anti&&T.s4norm&&T.s4res;
+  if(i===4) return T.s5trunk&&T.s5pale&&T.s5dark;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not the frog or a giraffe. Look at the back row of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải con ếch hay hươu cao cổ. Hãy nhìn hàng sau của bàn!');
+    }
+    return B('Frog tapped '+(T.s1frog?'✓':'…')+' · long-necked giraffe '+(T.s1long?'✓':'…')+' · short-necked giraffe '+(T.s1short?'✓':'…')+'. Tap the models on the bench!',
+             'Đã chạm ếch '+(T.s1frog?'✓':'…')+' · hươu cao cổ cổ dài '+(T.s1long?'✓':'…')+' · hươu cao cổ cổ ngắn '+(T.s1short?'✓':'…')+'. Hãy chạm vào các mô hình trên bàn!');
+  }
+  if(i===1){
+    return B('Tree tapped '+(T.s2tree?'✓ (only high leaves left)':'…')+' · short neck '+(T.s2short?'✓ (cannot reach — starves)':'…')+' · long neck '+(T.s2long?'✓ (reaches the food)':'…')+'.',
+             'Đã chạm cây '+(T.s2tree?'✓ (chỉ còn lá trên cao)':'…')+' · cổ ngắn '+(T.s2short?'✓ (không với tới — chết đói)':'…')+' · cổ dài '+(T.s2long?'✓ (với tới thức ăn)':'…')+'.');
+  }
+  if(i===2){
+    return B('Genes tapped '+(T.s3gene?'✓':'…')+' · offspring tapped '+(T.s3calf?'✓ (a young long-neck)':'…')+'.',
+             'Đã chạm gen (genes) '+(T.s3gene?'✓':'…')+' · đã chạm con cái (offspring) '+(T.s3calf?'✓ (một con non cổ dài)':'…')+'.');
+  }
+  if(i===3){
+    return B('Antibiotic tapped '+(T.s4anti?'✓':'…')+' · ordinary bacterium '+(T.s4norm?'✓ (killed by the antibiotic)':'…')+' · resistant bacterium '+(T.s4res?'✓ (survives and multiplies)':'…')+'.',
+             'Đã chạm kháng sinh (antibiotic) '+(T.s4anti?'✓':'…')+' · vi khuẩn thường '+(T.s4norm?'✓ (bị kháng sinh giết)':'…')+' · vi khuẩn kháng thuốc (resistant) '+(T.s4res?'✓ (sống sót và sinh sôi)':'…')+'.');
+  }
+  if(i===4){
+    return B('Dark trunk tapped '+(T.s5trunk?'✓':'…')+' · pale moth '+(T.s5pale?'✓ (seen and eaten)':'…')+' · dark moth '+(T.s5dark?'✓ (camouflaged — survives)':'…')+'.',
+             'Đã chạm thân cây sẫm '+(T.s5trunk?'✓':'…')+' · bướm nhạt màu '+(T.s5pale?'✓ (bị nhìn thấy và bị ăn)':'…')+' · bướm sẫm màu '+(T.s5dark?'✓ (được ngụy trang — sống sót)':'…')+'.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap PART OF NATURAL SELECTION or NOT HOW IT WORKS.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm THUỘC VỀ CHỌN LỌC TỰ NHIÊN (PART OF NATURAL SELECTION) hoặc KHÔNG PHẢI CÁCH NÓ DIỄN RA (NOT HOW IT WORKS).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🐸',label:{en:'Waxy monkey leaf frog',vi:'Ếch lá khỉ sáp (waxy monkey leaf frog)'},got:T.s1frog},
+      {emoji:'🦒',label:{en:'Long-necked giraffe',vi:'Hươu cao cổ cổ dài'},got:T.s1long},
+      {emoji:'🦒',label:{en:'Short-necked giraffe',vi:'Hươu cao cổ cổ ngắn'},got:T.s1short}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🌳',label:{en:'Only high leaves left',vi:'Chỉ còn lá trên cao'},got:T.s2tree},
+      {emoji:'🦒',label:{en:'Short neck — cannot reach',vi:'Cổ ngắn — không với tới'},got:T.s2short},
+      {emoji:'🦒',label:{en:'Long neck — can still feed',vi:'Cổ dài — vẫn ăn được'},got:T.s2long}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🧬',label:{en:'Genes passed on',vi:'Gen (genes) được truyền đi'},got:T.s3gene},
+      {emoji:'🦒',label:{en:'Offspring — mostly long necks',vi:'Con cái (offspring) — hầu hết cổ dài'},got:T.s3calf}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'💊',label:{en:'Antibiotic added',vi:'Đã thêm kháng sinh (antibiotic)'},got:T.s4anti},
+      {emoji:'🦠',label:{en:'Ordinary bacterium — killed',vi:'Vi khuẩn thường — bị giết'},got:T.s4norm},
+      {emoji:'🦠',label:{en:'Resistant bacterium — survives',vi:'Vi khuẩn kháng thuốc — sống sót'},got:T.s4res}
+    ]);
+    if(!T.s4res){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookBact);
+      b.onclick=()=>focusThing('bactr');
+      box.appendChild(b);
+    }
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🌲',label:{en:'Dark trunk',vi:'Thân cây sẫm'},got:T.s5trunk},
+      {emoji:'🦋',label:{en:'Pale moth — seen and eaten',vi:'Bướm nhạt màu — bị thấy và bị ăn'},got:T.s5pale},
+      {emoji:'🦋',label:{en:'Dark moth — camouflaged',vi:'Bướm sẫm màu — được ngụy trang'},got:T.s5dark}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'good',label:STR.binSel,cls:'good'},{key:'bad',label:STR.binNotSel,cls:'bad'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('frog'); bounceThing('frog'); setTimeout(()=>{ focusVisual('glong'); bounceThing('glong'); },900); setTimeout(()=>{ focusVisual('gshort'); bounceThing('gshort'); },1800); }
+  else if(i===1){ focusVisual('tree'); bounceThing('tree'); setTimeout(()=>{ focusVisual('gshort'); bounceThing('gshort'); },900); setTimeout(()=>{ focusVisual('glong'); bounceThing('glong'); },1800); }
+  else if(i===2){ focusVisual('gene'); bounceThing('gene'); setTimeout(()=>{ focusVisual('calf'); bounceThing('calf'); },900); }
+  else if(i===3){ focusVisual('anti'); bounceThing('anti'); setTimeout(()=>{ focusVisual('bactn'); bounceThing('bactn'); },900); setTimeout(()=>{ focusVisual('bactr'); bounceThing('bactr'); },1800); }
+  else if(i===4){ focusVisual('trunk'); bounceThing('trunk'); setTimeout(()=>{ focusVisual('mothp'); bounceThing('mothp'); },900); setTimeout(()=>{ focusVisual('mothd'); bounceThing('mothd'); },1800); }
+  else if(i===5){ demoSortMine(CARDS6,T.s6correct,{good:'good',bad:'bad'}); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recVar,OBS.frog&&OBS.long&&OBS.short)+
+    row(STR.recAdv,OBS.tree&&OBS.long&&OBS.short)+
+    row(STR.recGenes,OBS.gene&&OBS.calf)+
+    row(STR.recBact,OBS.anti&&OBS.norm&&OBS.res)+
+    row(STR.recMoth,OBS.trunk&&OBS.pale&&OBS.dark)+
+    row(STR.recSort,doneSteps.has(5));
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.frog&&OBS.long&&OBS.short)||doneSteps.has(0),label:STR.foundVar},
+    {got:(OBS.tree&&OBS.long&&OBS.short)||doneSteps.has(1),label:STR.foundAdv},
+    {got:(OBS.gene&&OBS.calf)||doneSteps.has(2),label:STR.foundGenes},
+    {got:(OBS.anti&&OBS.norm&&OBS.res)||doneSteps.has(3),label:STR.foundBact},
+    {got:(OBS.trunk&&OBS.pale&&OBS.dark)||doneSteps.has(4),label:STR.foundMoth},
+    {got:doneSteps.has(5),label:STR.foundSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let frogMesh=null, bactrMesh=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; group.userData.baseX=group.position.x; G[id]=group; scene3.add(group); return group; }
+function standMesh(r){
+  const s=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,0.07,16),stdMat(0x8d99a6,0.5)));
+  s.position.y=0.04; return s;
+}
+function buildFrog(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.3));
+  const leaf=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),stdMat(0x2e7d32,0.8)));
+  leaf.position.y=0.1; leaf.scale.set(1.2,0.18,0.9); g.add(leaf);
+  frogMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19,12,10),stdMat(0x66bb6a,0.6)));
+  frogMesh.position.y=0.3; frogMesh.scale.set(1.15,0.8,1); g.add(frogMesh);
+  [-0.1,0.1].forEach(x=>{
+    const eye=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),stdMat(0xf4f7f9,0.3));
+    eye.position.set(x,0.44,0.1); g.add(eye);
+    const pupil=new THREE.Mesh(new THREE.SphereGeometry(0.025,8,8),stdMat(0x16283f,0.3));
+    pupil.position.set(x,0.44,0.145); g.add(pupil);
+  });
+  g.position.set(-3.9,0,-1.3);
+  return g;
+}
+function buildGiraffe(neckLen,bodyCol){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.56,0.26,0.28),stdMat(bodyCol,0.85)));
+  body.position.y=0.48; g.add(body);
+  [[-0.2,-0.09],[0.2,-0.09],[-0.2,0.09],[0.2,0.09]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.36,6),stdMat(0xc98f3d,0.85));
+    leg.position.set(p[0],0.18,p[1]); g.add(leg);
+  });
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.075,neckLen,8),stdMat(bodyCol,0.85));
+  neck.position.set(0.3,0.55+neckLen/2,0); neck.rotation.z=-0.25; g.add(neck);
+  const head=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.2,0.11,0.12),stdMat(0xe0aa5e,0.85)));
+  head.position.set(0.3+Math.sin(0.25)*neckLen,0.6+neckLen,0); g.add(head);
+  const tail=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.03,0.3,6),stdMat(0xc98f3d,0.85));
+  tail.position.set(-0.32,0.5,0); tail.rotation.z=0.5; g.add(tail);
+  return g;
+}
+function buildGlong(){ const g=buildGiraffe(0.55,0xd9a05a); g.add(standMesh(0.4)); g.position.set(-2.6,0,-1.3); return g; }
+function buildGshort(){ const g=buildGiraffe(0.2,0xb98a4a); g.add(standMesh(0.4)); g.position.set(-1.3,0,-1.3); return g; }
+function buildTree(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const trunkM=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.1,1.0,8),stdMat(0x6d4c2f,0.95)));
+  trunkM.position.y=0.55; g.add(trunkM);
+  [[0,1.25,0,0.34],[0.22,1.12,0.08,0.24],[-0.22,1.14,-0.06,0.26]].forEach(p=>{
+    const fol=shadowed(new THREE.Mesh(new THREE.SphereGeometry(p[3],10,8),stdMat(0x43a047,0.8)));
+    fol.position.set(p[0],p[1],p[2]); g.add(fol);
+  });
+  g.position.set(0.0,0,-1.3);
+  return g;
+}
+function buildGene(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.3));
+  for(let i=0;i<8;i++){
+    const y=0.18+i*0.1, x=Math.sin(i*1.05)*0.13, z=Math.cos(i*1.05)*0.05;
+    const s1=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),stdMat(0x7a4fd0,0.4));
+    s1.position.set(x,y,z); g.add(s1);
+    const s2=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),stdMat(0x0b76d1,0.4));
+    s2.position.set(-x,y,-z); g.add(s2);
+    if(i%2===0){ const rung=new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,Math.abs(x)*2+0.02,6),stdMat(0xf2762e,0.4)); rung.position.set(0,y,0); rung.rotation.z=Math.PI/2; g.add(rung); }
+  }
+  g.position.set(1.3,0,-1.3);
+  return g;
+}
+function buildCalf(){ const g=buildGiraffe(0.5,0xe3b96e); g.scale.set(0.62,0.62,0.62); g.add(standMesh(0.4)); g.position.set(2.6,0,-1.3); return g; }
+function buildAnti(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.32));
+  const bottle=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.42,12),stdMat(0xf4f7f9,0.35)));
+  bottle.position.y=0.32; g.add(bottle);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.1,10),stdMat(0xe8590c,0.5));
+  cap.position.y=0.58; g.add(cap);
+  const crossV=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.2,0.02),stdMat(0xd33a2c,0.4));
+  crossV.position.set(0,0.32,0.165); g.add(crossV);
+  const crossH=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.05,0.02),stdMat(0xd33a2c,0.4));
+  crossH.position.set(0,0.32,0.165); g.add(crossH);
+  g.position.set(-3.5,0,1.7);
+  return g;
+}
+function buildBactn(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.22,12,10),stdMat(0x66bb6a,0.55)));
+  body.position.y=0.35; body.scale.set(1.35,0.75,0.75); g.add(body);
+  for(let i=0;i<6;i++){
+    const a=i*1.05;
+    const hair=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.12,5),stdMat(0x43a047,0.6));
+    hair.position.set(Math.cos(a)*0.26,0.35+Math.sin(a)*0.1,Math.sin(a)*0.14);
+    hair.rotation.z=a; g.add(hair);
+  }
+  g.position.set(-2.1,0,1.7);
+  return g;
+}
+function buildBactr(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  bactrMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.21,12,10),stdMat(0xe8590c,0.5)));
+  bactrMesh.position.y=0.35; g.add(bactrMesh);
+  for(let i=0;i<7;i++){
+    const a=i*0.9;
+    const spike=new THREE.Mesh(new THREE.ConeGeometry(0.04,0.14,6),stdMat(0xb03a2e,0.5));
+    spike.position.set(Math.cos(a)*0.22,0.35+Math.sin(a)*0.16,Math.sin(a)*0.1);
+    spike.rotation.z=a-1.2; g.add(spike);
+  }
+  g.position.set(-0.7,0,1.7);
+  return g;
+}
+function buildTrunk(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const trunkM=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,1.25,12),stdMat(0x3a2e26,0.95)));
+  trunkM.position.y=0.66; g.add(trunkM);
+  const branch=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.5,8),stdMat(0x3a2e26,0.95));
+  branch.position.set(0.22,1.05,0); branch.rotation.z=-0.8; g.add(branch);
+  g.position.set(0.7,0,1.7);
+  return g;
+}
+function buildMoth(col,wingCol){
+  const g=new THREE.Group();
+  g.add(standMesh(0.3));
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.06,0.34,8),stdMat(col,0.7)));
+  body.position.y=0.42; body.rotation.x=Math.PI/2; g.add(body);
+  [-1,1].forEach(s=>{
+    const wing=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19,10,8),stdMat(wingCol,0.75)));
+    wing.position.set(s*0.17,0.46,0); wing.scale.set(1,0.18,0.62); wing.rotation.y=s*0.35; g.add(wing);
+  });
+  return g;
+}
+function buildMothp(){ const g=buildMoth(0xd8dde2,0xeef1f4); g.position.set(2.1,0,1.7); return g; }
+function buildMothd(){ const g=buildMoth(0x2c2f33,0x3a3f45); g.position.set(3.5,0,1.7); return g; }
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xeaf3fb);
+  scene3.fog=new THREE.Fog(0xeaf3fb,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0xb7c9d8,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the selection bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd3dee8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(10.4,0.18,5.4),stdMat(0x8a6a4a,0.9)));
+  bench.position.set(-0.2,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-5.3,-2.3],[4.9,-2.3],[-5.3,2.7],[4.9,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(8.6,2.6,0.08),stdMat(0x274b63,0.95));
+  board.position.set(-0.2,1.7,-3.4); scene3.add(board);
+  /* the models */
+  reg('frog',buildFrog());
+  reg('glong',buildGlong());
+  reg('gshort',buildGshort());
+  reg('tree',buildTree());
+  reg('gene',buildGene());
+  reg('calf',buildCalf());
+  reg('anti',buildAnti());
+  reg('bactn',buildBactn());
+  reg('bactr',buildBactr());
+  reg('trunk',buildTrunk());
+  reg('mothp',buildMothp());
+  reg('mothd',buildMothd());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('frog',p,G.frog); }
+  { const p=sphProxy(0.55); p.position.set(0,0.48,0); addProxy('glong',p,G.glong); }
+  { const p=sphProxy(0.68); p.position.set(0,0.58,0); addProxy('gshort',p,G.gshort); }
+  { const p=sphProxy(0.52); p.position.set(0,0.42,0); addProxy('tree',p,G.tree); }
+  { const p=sphProxy(0.52); p.position.set(0,0.5,0); addProxy('gene',p,G.gene); }
+  { const p=sphProxy(0.52); p.position.set(0,0.5,0); addProxy('calf',p,G.calf); }
+  { const p=sphProxy(0.58); p.position.set(0,0.25,0); addProxy('anti',p,G.anti); }
+  { const p=sphProxy(0.58); p.position.set(0,0.25,0); addProxy('bactn',p,G.bactn); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('bactr',p,G.bactr); }
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('trunk',p,G.trunk); }
+  { const p=sphProxy(0.62); p.position.set(0,0.4,0); addProxy('mothp',p,G.mothp); }
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('mothd',p,G.mothd); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a model */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['frog','glong','gshort'],   /* step 1: the frog + variation in the giraffes */
+  ['tree','gshort','glong'],   /* step 2: the dry year */
+  ['gene','calf'],             /* step 3: genes passed to offspring */
+  ['anti','bactn','bactr'],    /* step 4: antibiotic resistance */
+  ['trunk','mothp','mothd'],   /* step 5: peppered moths */
+  []                           /* step 6: card sort — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='frog'){ T.s1frog=true; OBS.frog=true; T.s1hint=null; }
+    else if(id==='glong'){ T.s1long=true; OBS.long=true; T.s1hint=null; }
+    else if(id==='gshort'){ T.s1short=true; OBS.short=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='tree'){ T.s2tree=true; OBS.tree=true; }
+    else if(id==='gshort'){ T.s2short=true; OBS.short=true; }
+    else if(id==='glong'){ T.s2long=true; OBS.long=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='gene'){ T.s3gene=true; OBS.gene=true; }
+    else if(id==='calf'){ T.s3calf=true; OBS.calf=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='anti'){ T.s4anti=true; OBS.anti=true; }
+    else if(id==='bactn'){ T.s4norm=true; OBS.norm=true; }
+    else if(id==='bactr'){ T.s4res=true; OBS.res=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='trunk'){ T.s5trunk=true; OBS.trunk=true; }
+    else if(id==='mothp'){ T.s5pale=true; OBS.pale=true; }
+    else if(id==='mothd'){ T.s5dark=true; OBS.dark=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* the frog breathes gently; the resistant bacterium pulses and swells once it has survived */
+  if(frogMesh) frogMesh.position.y=0.3+Math.sin(t*2.0)*0.02;
+  if(bactrMesh){
+    const s=(OBS.res? 1.45:1)+Math.sin(t*2.4)*0.08;
+    bactrMesh.scale.set(s,s,s);
+  }
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='long'?'✓':'✗';
+  return ans==='good'?'✓':'✗';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — blue-tailed lizards: true or not? (Workbook 7.4A) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinLong').innerHTML=bi({en:'TRUE ✓',vi:'ĐÚNG ✓ (true)'});
+  $('ex1BinShort').innerHTML=bi({en:'NOT TRUE ✗',vi:'KHÔNG ĐÚNG ✗ (not true)'});
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (Workbook 7.4B) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — woolly mammoths: part of the explanation, or not? (Workbook 7.4C) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinGood').innerHTML=bi({en:'PART OF THE EXPLANATION ✓',vi:'MỘT PHẦN CỦA LỜI GIẢI THÍCH ✓ (part of the explanation)'});
+  $('ex3BinBad').innerHTML=bi({en:'NOT NATURAL SELECTION ✗',vi:'KHÔNG PHẢI CHỌN LỌC TỰ NHIÊN ✗ (not natural selection)'});
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinLong').onclick=()=>ex1Place('long');
+$('ex1BinShort').onclick=()=>ex1Place('short');
+$('ex3BinGood').onclick=()=>ex3Place('good');
+$('ex3BinBad').onclick=()=>ex3Place('bad');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.frog=false; OBS.long=false; OBS.short=false; }
+  if(step===1){ OBS.tree=false; }
+  if(step===2){ OBS.gene=false; OBS.calf=false; }
+  if(step===3){ OBS.anti=false; OBS.norm=false; OBS.res=false; }
+  if(step===4){ OBS.trunk=false; OBS.pale=false; OBS.dark=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='long'||s.exAns.a1[id]==='short')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='good'||s.exAns.a3[id]==='bad')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS/SORTED). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1frog=!!OBS.frog; t.s1long=!!OBS.long; t.s1short=!!OBS.short; }
+  else if(i===1){ t.s2tree=!!OBS.tree; t.s2long=!!OBS.long; t.s2short=!!OBS.short; }
+  else if(i===2){ t.s3gene=!!OBS.gene; t.s3calf=!!OBS.calf; }
+  else if(i===3){ t.s4anti=!!OBS.anti; t.s4norm=!!OBS.norm; t.s4res=!!OBS.res; }
+  else if(i===4){ t.s5trunk=!!OBS.trunk; t.s5pale=!!OBS.pale; t.s5dark=!!OBS.dark; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-7-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>
