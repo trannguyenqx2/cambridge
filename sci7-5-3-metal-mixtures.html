@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>5.3 Metal mixtures — Hỗn hợp kim loại (hợp kim) · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.element{background:#d9930d}
+.binbtn.compound{background:#7a4fd0}
+.binbtn.sample{background:#64748b}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="5.3 Metal mixtures" data-vi="5.3 Hỗn hợp kim loại (hợp kim)">5.3 Metal mixtures</span>
+    <span class="eqchip i18n" data-en="Unit 5 · Properties of materials" data-vi="Bài 5 · Tính chất của vật liệu (Properties of materials)">Unit 5 · Properties of materials</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why is a mixture of metals often better than a pure metal?" data-vi="Vì sao một hỗn hợp kim loại thường tốt hơn kim loại nguyên chất?">Why is a mixture of metals often better than a pure metal?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Pure metal" data-vi="Kim loại nguyên chất">Pure metal</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Mix different atoms in" data-vi="Trộn các nguyên tử khác vào">Mix different atoms in</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Layers get stuck" data-vi="Các lớp bị kẹt">Layers get stuck</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Harder alloy!" data-vi="Hợp kim cứng hơn!">Harder alloy!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 5 Properties of materials · Section 5.3. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 5 Tính chất của vật liệu (Properties of materials) · Mục 5.3. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 5 Properties of materials · Section 5.3. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 5 Properties of materials, section 5.3, pages 155–162; Workbook 7 (ISBN 9781108742818), pages 98–99. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 5 Tính chất của vật liệu (Properties of materials), mục 5.3, trang 155–162; Sách bài tập 7 (ISBN 9781108742818), trang 98–99. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 5 Properties of materials, section 5.3, pages 155–162; Workbook 7 (ISBN 9781108742818), pages 98–99. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives: learn about metal mixtures (alloys); use particle theory to explain the differences in the properties of metals and their alloys. Key words: alloy, bronze, disrupt, steel." data-vi="Mục tiêu: học về hỗn hợp kim loại (hợp kim (alloy)); dùng thuyết hạt (particle theory) để giải thích sự khác nhau về tính chất của kim loại và hợp kim của chúng. Từ khóa: alloy (hợp kim), bronze, disrupt (phá vỡ), steel (thép).">Objectives: learn about metal mixtures (alloys); use particle theory to explain the differences in the properties of metals and their alloys. Key words: alloy, bronze, disrupt, steel.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench or with sorting cards — meeting copper, tin and their alloy bronze; finding the element that turns iron into steel; comparing pure-metal and alloy atom-layer models; modelling atoms with the book’s bubble raft; sorting everyday alloys from pure metals; and reading the book’s brass and bronze data tables. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done. The book’s own values are kept exactly: copper melts at 1085 °C, zinc at 419.5 °C and tin at 232 °C, brass melts over 900–1000 °C and bronze over 860–1150 °C, duralumin is about five times stronger than pure aluminium, and 18 carat gold is 18 parts gold out of 24." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D hoặc với các thẻ phân loại — gặp đồng (copper), thiếc (tin) và hợp kim bronze của chúng; tìm nguyên tố biến sắt thành thép (steel); so sánh mô hình lớp nguyên tử của kim loại nguyên chất và hợp kim; mô hình hóa nguyên tử bằng bè bong bóng (bubble raft) của sách; phân loại hợp kim hằng ngày và kim loại nguyên chất; và đọc các bảng số liệu đồng thau (brass) và bronze của sách. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm. Các số liệu của sách được giữ nguyên: đồng nóng chảy ở 1085 °C, kẽm (zinc) ở 419,5 °C và thiếc ở 232 °C, đồng thau nóng chảy trong khoảng 900–1000 °C và bronze trong khoảng 860–1150 °C, duralumin chắc gấp khoảng năm lần nhôm nguyên chất, và vàng 18 carat là 18 phần vàng trên 24.">How it works: each step asks for one real action on the 3D bench or with sorting cards. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-5-3 "Metal mixtures"
+   (Science 7, Unit 5 · Properties of materials)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  copper: {kind:'metal', emoji:'🟤', name:{en:'Copper lumps',vi:'Các cục đồng (copper)'}, short:{en:'Copper',vi:'Đồng'}, labelY:1.15, fx:-4.6, fz:-1.8, fr:5.2},
+  tin:    {kind:'metal', emoji:'⚪', name:{en:'Tin pieces',vi:'Các miếng thiếc (tin)'}, short:{en:'Tin',vi:'Thiếc'}, labelY:1.15, fx:-3.0, fz:-1.8, fr:5.2},
+  bronze: {kind:'alloy', emoji:'🗿', name:{en:'Bronze statue head',vi:'Đầu tượng bằng đồng thau/bronze (bronze)'}, short:{en:'Bronze',vi:'Bronze'}, labelY:1.35, fx:-1.3, fz:-1.8, fr:5.2},
+  iron:   {kind:'metal', emoji:'⬜', name:{en:'Pure iron bar',vi:'Thanh sắt nguyên chất (pure iron)'}, short:{en:'Pure iron',vi:'Sắt nguyên chất'}, labelY:1.15, fx:0.4, fz:-1.8, fr:5.2},
+  steel:  {kind:'alloy', emoji:'🍴', name:{en:'Steel cutlery',vi:'Dao nĩa thép (steel cutlery)'}, short:{en:'Steel',vi:'Thép'}, labelY:1.15, fx:2.2, fz:-1.8, fr:5.2},
+  brass:  {kind:'alloy', emoji:'🎺', name:{en:'Brass trumpet',vi:'Kèn trumpet bằng đồng thau (brass)'}, short:{en:'Brass',vi:'Đồng thau (brass)'}, labelY:1.3, fx:4.0, fz:-1.8, fr:5.2},
+  puremodel:{kind:'model', emoji:'🔵', name:{en:'Model of a pure metal — atoms all one size, in rows',vi:'Mô hình kim loại nguyên chất — các nguyên tử cùng kích thước, xếp thành hàng'}, short:{en:'Pure metal model',vi:'Mô hình kim loại nguyên chất'}, labelY:1.7, fx:-3.8, fz:2.2, fr:5.6},
+  alloymodel:{kind:'model', emoji:'🟠', name:{en:'Model of an alloy — one atom is a different size',vi:'Mô hình hợp kim (alloy) — một nguyên tử có kích thước khác'}, short:{en:'Alloy model',vi:'Mô hình hợp kim'}, labelY:1.7, fx:-1.2, fz:2.2, fr:5.6},
+  bubbles:{kind:'model', emoji:'🫧', name:{en:'Petri dish of bubbles — a bubble raft',vi:'Đĩa Petri đầy bong bóng — một bè bong bóng (bubble raft)'}, short:{en:'Bubble raft',vi:'Bè bong bóng'}, labelY:1.3, fx:1.4, fz:2.2, fr:5.2},
+  syringe:{kind:'tool', emoji:'💉', name:{en:'Syringe of diluted washing-up liquid',vi:'Ống tiêm chứa nước rửa chén pha loãng (syringe)'}, short:{en:'Syringe',vi:'Ống tiêm'}, labelY:1.3, fx:3.6, fz:2.2, fr:5.2}
+};
+const FOCUSORDER=['copper','tin','bronze','iron','steel','brass','puremodel','alloymodel','bubbles','syringe'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to study a thing, tap it on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn nghiên cứu một vật, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My alloy record',vi:'Bản ghi hợp kim của con'},
+  u2Brief:{en:'What you have found out about pure metals and their alloys.',vi:'Những điều con đã tìm hiểu về kim loại nguyên chất và hợp kim (alloy) của chúng.'},
+  rowBronze:{en:'Bronze: ingredients + alloy met',vi:'Bronze: đã gặp nguyên liệu + hợp kim'},
+  rowSteel:{en:'Steel: iron, steel + the added element',vi:'Thép: sắt, thép + nguyên tố được thêm vào'},
+  rowLayers:{en:'Atom-layer models compared',vi:'Đã so sánh hai mô hình lớp nguyên tử'},
+  rowSort:{en:'Everyday items sorted',vi:'Đã phân loại các vật hằng ngày'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundBronze:{en:'I met bronze, an alloy of copper and tin',vi:'Con đã gặp bronze, một hợp kim (alloy) của đồng (copper) và thiếc (tin)'},
+  foundSteel:{en:'I found what turns iron into steel',vi:'Con đã tìm ra thứ biến sắt thành thép (steel)'},
+  foundLayers:{en:'I compared pure-metal and alloy atom layers',vi:'Con đã so sánh lớp nguyên tử của kim loại nguyên chất và hợp kim'},
+  foundBubble:{en:'I modelled atoms with a bubble raft',vi:'Con đã mô hình hóa nguyên tử bằng bè bong bóng (bubble raft)'},
+  foundEvery:{en:'I sorted alloys from pure metals',vi:'Con đã phân loại hợp kim và kim loại nguyên chất'},
+  foundData:{en:'I read the brass and bronze data tables',vi:'Con đã đọc bảng số liệu về đồng thau (brass) và bronze'},
+  binAlloy:{en:'ALLOY',vi:'HỢP KIM (ALLOY)'},
+  binPure:{en:'PURE METAL',vi:'KIM LOẠI NGUYÊN CHẤT (PURE METAL)'},
+  qSteel:{en:'Steel is mostly iron. Which element is mixed into the iron to make steel?',vi:'Thép (steel) chủ yếu là sắt. Nguyên tố nào được trộn vào sắt để tạo thành thép?'},
+  chCarbon:{en:'Carbon',vi:'Cacbon (carbon)'},
+  chTin:{en:'Tin',vi:'Thiếc (tin)'},
+  chZinc:{en:'Zinc',vi:'Kẽm (zinc)'},
+  tapBrass:{en:'👆 Tap the brass trumpet on the bench first!',vi:'👆 Trước hết hãy chạm vào kèn trumpet bằng đồng thau (brass) trên bàn!'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 5.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 5.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — What is an alloy? Give examples',vi:'Bài tập 1 · Focus — Hợp kim (alloy) là gì? Cho ví dụ'},
+  ex1Inst:{en:'For each statement, tap the correct ending.',vi:'Với mỗi câu, hãy chạm vào phần kết đúng.'},
+  ex2T:{en:'Exercise 2 · Practice — Why is steel stronger than pure iron?',vi:'Bài tập 2 · Practice — Vì sao thép (steel) chắc hơn sắt nguyên chất?'},
+  ex2Inst:{en:'Use particle theory. For each statement, tap the correct ending.',vi:'Hãy dùng thuyết hạt (particle theory). Với mỗi câu, hãy chạm vào phần kết đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Research an alloy',vi:'Bài tập 3 · Challenge — Nghiên cứu một hợp kim (alloy)'},
+  ex3Inst:{en:'Alloy case files: for each statement, tap the correct ending.',vi:'Hồ sơ hợp kim: với mỗi câu, hãy chạm vào phần kết đúng.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'alloy',vi:'hợp kim'},
+  {en:'bronze',vi:'bronze (hợp kim đồng–thiếc)'},
+  {en:'disrupt',vi:'phá vỡ / làm xáo trộn'},
+  {en:'steel',vi:'thép'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Copper + tin = bronze',vi:'Đồng + thiếc = bronze'}, word:{en:'alloy',vi:'hợp kim (alloy)'},
+  q:{en:'People have melted metals together for thousands of years. What do we call a mixture of metals?',vi:'Con người đã nấu chảy các kim loại với nhau từ hàng nghìn năm. Ta gọi một hỗn hợp kim loại là gì?'},
+  act:{en:'Tap the copper, the tin and the bronze statue head on the bench.',vi:'Chạm vào đồng (copper), thiếc (tin) và đầu tượng bronze trên bàn.'},
+  see:{en:'Each one bounces and shows its name. Copper is reddish brown, tin is a white metal, and bronze is duller than brass.',vi:'Mỗi thứ sẽ nảy lên và hiện tên. Đồng có màu nâu đỏ, thiếc là kim loại trắng, và bronze xỉn màu hơn đồng thau (brass).'},
+  concl:[
+    {en:'A metal mixture is called an alloy. Alloys are made by mixing metals together and melting them; the atoms mix but do not bond together.',vi:'Một hỗn hợp kim loại được gọi là hợp kim (alloy). Hợp kim được tạo ra bằng cách trộn các kim loại với nhau và nấu chảy; các nguyên tử trộn lẫn nhưng không liên kết (bond) với nhau.'},
+    {en:'Bronze is an alloy of copper and tin — and it is harder than either copper or tin on its own.',vi:'Bronze là hợp kim của đồng (copper) và thiếc (tin) — và nó cứng hơn cả đồng lẫn thiếc khi đứng riêng.'},
+    {en:'People were making bronze more than 4000 years ago; a bronze head from that time was found in what is now Iraq.',vi:'Con người đã làm bronze từ hơn 4000 năm trước; một đầu tượng bronze từ thời đó được tìm thấy ở vùng đất nay là Iraq.'}]},
+ {tag:{en:'Iron into steel',vi:'Sắt thành thép'}, word:{en:'steel',vi:'thép (steel)'},
+  q:{en:'Pure iron is not hard enough to be very useful. How does mixing turn it into something far more useful?',vi:'Sắt nguyên chất không đủ cứng để thật sự hữu ích. Việc trộn thêm thứ khác biến nó thành thứ hữu ích hơn nhiều như thế nào?'},
+  act:{en:'Tap the pure iron bar and the steel cutlery, then answer: which element is mixed into iron to make steel?',vi:'Chạm vào thanh sắt nguyên chất và dao nĩa thép (steel), rồi trả lời: nguyên tố nào được trộn vào sắt để tạo thành thép?'},
+  see:{en:'The iron bar is plain and soft. The steel cutlery is harder — and some steel even has chromium and nickel added so it does not rust.',vi:'Thanh sắt trơn và mềm. Dao nĩa thép cứng hơn — và một số loại thép còn được thêm crom (chromium) và niken (nickel) để không bị gỉ.'},
+  concl:[
+    {en:'Steel is an alloy of iron and carbon. Carbon is unusual here: it is not a metal, yet it is one of the elements in the mixture.',vi:'Thép (steel) là hợp kim của sắt (iron) và cacbon (carbon). Cacbon ở đây khá đặc biệt: nó không phải kim loại, nhưng lại là một trong các nguyên tố trong hỗn hợp.'},
+    {en:'Pure iron is not hard enough to be very useful, but mixed into steel it becomes much harder.',vi:'Sắt nguyên chất không đủ cứng để thật sự hữu ích, nhưng khi được trộn thành thép thì nó trở nên cứng hơn nhiều.'},
+    {en:'When chromium and nickel are added too, the steel does not rust — that is the steel used for cutlery.',vi:'Khi crom (chromium) và niken (nickel) cũng được thêm vào, thép sẽ không bị gỉ — đó là loại thép dùng làm dao nĩa.'}]},
+ {tag:{en:'Why alloys are harder',vi:'Vì sao hợp kim cứng hơn'}, word:{en:'disrupt',vi:'phá vỡ / làm xáo trộn (disrupt)'},
+  q:{en:'Why does mixing different atoms into a metal make it harder and stronger? Compare the two atom models.',vi:'Vì sao trộn các nguyên tử khác vào một kim loại lại làm nó cứng và chắc hơn? Hãy so sánh hai mô hình nguyên tử.'},
+  act:{en:'Tap the pure-metal model (atoms all one size, in rows) and the alloy model (one atom is a different size).',vi:'Chạm vào mô hình kim loại nguyên chất (các nguyên tử cùng kích thước, xếp thành hàng) và mô hình hợp kim (một nguyên tử có kích thước khác).'},
+  see:{en:'In the pure model the rows line up neatly. In the alloy model the different-sized atom breaks the regular pattern.',vi:'Trong mô hình nguyên chất các hàng xếp ngay ngắn. Trong mô hình hợp kim, nguyên tử khác kích thước phá vỡ (disrupt) mẫu xếp đều đặn đó.'},
+  concl:[
+    {en:'In a pure metal, all the atoms are the same size and sit in regular rows, so the layers can slide over one another easily when a force is applied.',vi:'Trong kim loại nguyên chất, mọi nguyên tử có cùng kích thước và nằm theo các hàng đều đặn, nên các lớp có thể trượt qua nhau dễ dàng khi có lực tác dụng.'},
+    {en:'That easy sliding is what happens when a metal is hammered into a new shape, and when it is stretched out.',vi:'Sự trượt dễ dàng đó là điều xảy ra khi kim loại bị búa đập thành hình mới, và khi nó bị kéo giãn ra.'},
+    {en:'In an alloy, a different-sized atom disrupts the regular pattern. The layers get stuck and cannot slip past one another easily — so the alloy is much harder and stronger.',vi:'Trong hợp kim (alloy), một nguyên tử khác kích thước sẽ phá vỡ (disrupt) mẫu đều đặn. Các lớp bị kẹt và không thể trượt qua nhau dễ dàng — nên hợp kim cứng và chắc hơn nhiều.'}]},
+ {tag:{en:'Modelling with bubbles',vi:'Mô hình hóa bằng bong bóng'}, word:{en:'alloy',vi:'hợp kim (alloy)'},
+  q:{en:'The book models metal atoms with a raft of bubbles in a Petri dish. Can you build the model — then spoil its pattern?',vi:'Sách mô hình hóa các nguyên tử kim loại bằng một bè bong bóng trong đĩa Petri. Con dựng mô hình được không — rồi phá vỡ mẫu xếp của nó?'},
+  act:{en:'Tap the Petri dish of bubbles (the bubble raft), then tap the syringe — in the book, a harder, longer push makes one much bigger bubble.',vi:'Chạm vào đĩa Petri đầy bong bóng (bè bong bóng (bubble raft)), rồi chạm vào ống tiêm (syringe) — trong sách, một lần đẩy mạnh hơn và lâu hơn tạo ra một bong bóng lớn hơn hẳn.'},
+  see:{en:'The small bubbles are all the same size and line up in rows that slide past each other. The one big bubble breaks the regular pattern around it.',vi:'Các bong bóng nhỏ đều cùng kích thước và xếp thành các hàng trượt qua nhau. Một bong bóng lớn phá vỡ mẫu đều đặn xung quanh nó.'},
+  concl:[
+    {en:'The rows of same-sized bubbles model the close-packed rows of atoms in a pure metal — and you can see how easily the rows slide.',vi:'Các hàng bong bóng cùng kích thước mô hình hóa các hàng nguyên tử xếp khít trong kim loại nguyên chất — và con thấy các hàng trượt dễ dàng thế nào.'},
+    {en:'The big bubble models an atom of a different metal: it disrupts the regular pattern, just as a different-sized atom does in a real alloy.',vi:'Bong bóng lớn mô hình hóa một nguyên tử của kim loại khác: nó phá vỡ (disrupt) mẫu đều đặn, đúng như một nguyên tử khác kích thước trong hợp kim thật.'},
+    {en:'It is only a model: bubbles can burst and are far bigger than atoms, but the sliding-and-sticking idea carries over.',vi:'Đây chỉ là mô hình: bong bóng có thể vỡ và lớn hơn nguyên tử rất nhiều, nhưng ý tưởng trượt-và-kẹt thì đúng cho cả hai.'}]},
+ {tag:{en:'Alloys in everyday life',vi:'Hợp kim trong đời sống'}, word:{en:'bronze',vi:'bronze (hợp kim đồng–thiếc)'},
+  q:{en:'Coins, rings and plane wings are rarely pure metal. Can you sort these everyday items into alloys and pure metals?',vi:'Tiền xu, nhẫn và cánh máy bay hiếm khi là kim loại nguyên chất. Con phân loại được các vật hằng ngày này thành hợp kim (alloy) và kim loại nguyên chất không?'},
+  act:{en:'Tap a card, then tap ALLOY or PURE METAL.',vi:'Chạm vào một thẻ, rồi chạm HỢP KIM (ALLOY) hoặc KIM LOẠI NGUYÊN CHẤT (PURE METAL).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Coins are alloys: the silver-coloured ones contain copper and nickel, and the copper-coloured ones contain copper, zinc and tin — pure metals would be too soft for all that wear.',vi:'Tiền xu là hợp kim: xu màu bạc chứa đồng (copper) và niken (nickel), xu màu đồng chứa đồng, kẽm (zinc) và thiếc (tin) — kim loại nguyên chất sẽ quá mềm trước sự mài mòn đó.'},
+    {en:'Most gold jewellery is an alloy of gold and copper. Pure gold is 24 carat (24 parts out of 24 are gold); 18 carat gold has 18 parts gold and 6 parts other metals.',vi:'Hầu hết đồ trang sức vàng là hợp kim của vàng và đồng. Vàng nguyên chất là 24 carat (24 phần trên 24 là vàng); vàng 18 carat có 18 phần vàng và 6 phần kim loại khác.'},
+    {en:'Planes are built with duralumin — aluminium with magnesium and copper added — because it is light but about five times stronger than pure aluminium. Replacement joints often use titanium alloys.',vi:'Máy bay được chế tạo bằng duralumin — nhôm (aluminium) thêm magie (magnesium) và đồng — vì nó nhẹ nhưng chắc gấp khoảng năm lần nhôm nguyên chất. Các khớp thay thế thường dùng hợp kim titan (titanium).'}]},
+ {tag:{en:'Brass and bronze data',vi:'Số liệu đồng thau và bronze'}, word:{en:'bronze',vi:'bronze (hợp kim đồng–thiếc)'},
+  q:{en:'Brass is copper mixed with zinc; bronze is copper mixed with tin. What do their data tables tell us?',vi:'Đồng thau (brass) là đồng trộn với kẽm (zinc); bronze là đồng trộn với thiếc (tin). Các bảng số liệu của chúng cho ta biết điều gì?'},
+  act:{en:'Tap the brass trumpet, then answer the three questions from the book’s data tables.',vi:'Chạm vào kèn trumpet bằng đồng thau (brass), rồi trả lời ba câu hỏi từ các bảng số liệu trong sách.'},
+  see:{en:'Copper melts at 1085 °C and zinc at 419.5 °C, but brass melts over a range: 900–1000 °C. Bronze melts over 860–1150 °C, while tin alone melts at 232 °C.',vi:'Đồng nóng chảy ở 1085 °C và kẽm ở 419,5 °C, nhưng đồng thau nóng chảy trong một khoảng: 900–1000 °C. Bronze nóng chảy trong khoảng 860–1150 °C, trong khi thiếc riêng lẻ nóng chảy ở 232 °C.'},
+  concl:[
+    {en:'I can describe some alloys and their uses.',vi:'Con mô tả được một số hợp kim (alloy) và công dụng của chúng.'},
+    {en:'I can explain that alloys have different properties from the metals they are made from.',vi:'Con giải thích được rằng hợp kim có tính chất khác với các kim loại tạo thành chúng.'},
+    {en:'I can explain the differences in the hardness of metals and their alloys using particle theory.',vi:'Con giải thích được sự khác nhau về độ cứng của kim loại và hợp kim của chúng bằng thuyết hạt (particle theory).'},
+    {en:'An element has one single melting point, but an alloy melts over a range — the range depends on the proportions mixed, because there are many different brasses and bronzes.',vi:'Một nguyên tố (element) có một nhiệt độ nóng chảy duy nhất, nhưng một hợp kim nóng chảy trong một khoảng — khoảng đó phụ thuộc vào tỉ lệ trộn, vì có nhiều loại đồng thau (brass) và bronze khác nhau.'}]}
+];
+const SORTC=[
+ {id:'c_coin',emoji:'🪙',en:'Coin — copper + nickel alloy',vi:'Tiền xu — hợp kim đồng + niken (alloy)',ans:'alloy'},
+ {id:'c_cuwire',emoji:'🔌',en:'Pure copper wire',vi:'Dây đồng nguyên chất (pure copper)',ans:'pure'},
+ {id:'c_ring',emoji:'💍',en:'18 carat gold ring — gold + copper',vi:'Nhẫn vàng 18 carat — vàng + đồng',ans:'alloy'},
+ {id:'c_goldbar',emoji:'🥇',en:'24 carat gold bar — pure gold',vi:'Thỏi vàng 24 carat — vàng nguyên chất (pure gold)',ans:'pure'},
+ {id:'c_wing',emoji:'✈️',en:'Plane wing — duralumin',vi:'Cánh máy bay — duralumin',ans:'alloy'},
+ {id:'c_sheet',emoji:'⬜',en:'Pure aluminium sheet',vi:'Tấm nhôm nguyên chất (pure aluminium)',ans:'pure'}
+];
+const SORTC_ORDER=mixOrder(SORTC,c=>c.ans,2);
+const GAME=[
+ {q:{en:'Bronze melts over a range of temperatures (860–1150 °C), not at one temperature. Why?',vi:'Bronze nóng chảy trong một khoảng nhiệt độ (860–1150 °C), không phải ở một nhiệt độ duy nhất. Vì sao?'},
+  opts:[{en:'Bronze is a pure element, so it melts slowly',vi:'Bronze là nguyên tố (element) nguyên chất nên nóng chảy chậm'},{en:'Different amounts of copper and tin make different bronzes, each with its own melting point',vi:'Các lượng đồng (copper) và thiếc (tin) khác nhau tạo ra các loại bronze khác nhau, mỗi loại có nhiệt độ nóng chảy riêng'},{en:'The thermometer cannot measure bronze',vi:'Nhiệt kế không đo được bronze'}],a:1},
+ {q:{en:'Give one property that brass and bronze share.',vi:'Cho một tính chất mà đồng thau (brass) và bronze cùng có.'},
+  opts:[{en:'Both are less ductile than copper',vi:'Cả hai đều kém dẻo (ductile) hơn đồng (copper)'},{en:'Both are pure elements',vi:'Cả hai đều là nguyên tố nguyên chất'},{en:'Both are made of copper and tin',vi:'Cả hai đều làm từ đồng và thiếc (tin)'}],a:0},
+ {q:{en:'Give one difference between copper and tin.',vi:'Cho một điểm khác nhau giữa đồng (copper) và thiếc (tin).'},
+  opts:[{en:'Tin is the reddish brown metal',vi:'Thiếc là kim loại màu nâu đỏ'},{en:'Copper conducts electricity less well than tin',vi:'Đồng dẫn điện kém hơn thiếc'},{en:'Tin melts at 232 °C — much lower than copper at 1085 °C',vi:'Thiếc nóng chảy ở 232 °C — thấp hơn nhiều so với đồng ở 1085 °C'}],a:2}
+];
+const QUIZ=[
+ {q:{en:'What is an alloy?',vi:'Hợp kim (alloy) là gì?'},
+  o:[{en:'A single pure metal, melted on its own',vi:'Một kim loại nguyên chất duy nhất, được nấu chảy riêng'},{en:'A metal mixture — different metals (sometimes with a non-metal) melted and mixed together, their atoms mixed but not bonded',vi:'Một hỗn hợp kim loại — các kim loại khác nhau (đôi khi cùng một phi kim) được nấu chảy và trộn với nhau, các nguyên tử trộn lẫn nhưng không liên kết'},{en:'A compound whose atoms are bonded together',vi:'Một hợp chất (compound) mà các nguyên tử liên kết với nhau'}],a:1,
+  e:{en:'An alloy is a mixture: the atoms of the different metals mix together when melted, but they do not bond — so bronze, brass and steel are all alloys.',vi:'Hợp kim là một hỗn hợp (mixture): các nguyên tử của các kim loại khác nhau trộn với nhau khi nấu chảy, nhưng chúng không liên kết — nên bronze, đồng thau (brass) và thép (steel) đều là hợp kim.'}},
+ {q:{en:'Which pair of metals is mixed to make bronze?',vi:'Cặp kim loại nào được trộn để tạo bronze?'},
+  o:[{en:'Copper and tin',vi:'Đồng (copper) và thiếc (tin)'},{en:'Copper and zinc',vi:'Đồng (copper) và kẽm (zinc)'},{en:'Iron and carbon',vi:'Sắt (iron) và cacbon (carbon)'}],a:0,
+  e:{en:'Bronze = copper + tin. Copper + zinc makes brass, and iron + carbon makes steel.',vi:'Bronze = đồng + thiếc. Đồng + kẽm tạo đồng thau (brass), và sắt + cacbon tạo thép (steel).'}},
+ {q:{en:'Why is an alloy usually harder than the pure metal it is made from?',vi:'Vì sao một hợp kim (alloy) thường cứng hơn kim loại nguyên chất tạo thành nó?'},
+  o:[{en:'Its atoms are all the same size, so the layers slide more easily',vi:'Các nguyên tử của nó đều cùng kích thước nên các lớp trượt dễ hơn'},{en:'It is always melted at a higher temperature',vi:'Nó luôn được nấu chảy ở nhiệt độ cao hơn'},{en:'Atoms of a different size disrupt the regular rows, so the layers cannot slide past one another easily',vi:'Các nguyên tử khác kích thước phá vỡ (disrupt) các hàng đều đặn, nên các lớp không thể trượt qua nhau dễ dàng'}],a:2,
+  e:{en:'In a pure metal the same-sized atoms sit in regular rows that slide easily. A different-sized atom disrupts the pattern and the layers get stuck — the alloy is harder and stronger.',vi:'Trong kim loại nguyên chất, các nguyên tử cùng kích thước nằm theo các hàng đều đặn và trượt dễ dàng. Một nguyên tử khác kích thước phá vỡ mẫu đó và các lớp bị kẹt — hợp kim cứng và chắc hơn.'}},
+ {q:{en:'The melting point of brass is given as a range (900–1000 °C), but copper has one melting point (1085 °C). Why the difference?',vi:'Nhiệt độ nóng chảy của đồng thau (brass) được cho là một khoảng (900–1000 °C), nhưng đồng (copper) có một nhiệt độ nóng chảy duy nhất (1085 °C). Vì sao khác nhau?'},
+  o:[{en:'Brass thermometers are less accurate',vi:'Nhiệt kế đo đồng thau kém chính xác hơn'},{en:'There are many different brasses, made with different proportions of copper and zinc, so there is no single melting point',vi:'Có nhiều loại đồng thau khác nhau, được làm với các tỉ lệ đồng và kẽm (zinc) khác nhau, nên không có một nhiệt độ nóng chảy duy nhất'},{en:'Copper is not really a metal',vi:'Đồng thực ra không phải kim loại'}],a:1,
+  e:{en:'Copper is an element, with one melting point. Brass is a mixture whose recipe varies, so its melting point is a range that depends on the proportions used.',vi:'Đồng là một nguyên tố (element), với một nhiệt độ nóng chảy duy nhất. Đồng thau là một hỗn hợp có công thức thay đổi, nên nhiệt độ nóng chảy của nó là một khoảng phụ thuộc vào tỉ lệ được dùng.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'An alloy is',vi:'Một hợp kim (alloy) là'},correct:0,
+  opts:[{en:'a mixture of metals (sometimes with a non-metal mixed in)',vi:'một hỗn hợp các kim loại (đôi khi có một phi kim trộn vào)'},{en:'one pure metal on its own',vi:'một kim loại nguyên chất đứng riêng'}],
+  e:{en:'Alloys are metal mixtures: the different atoms are mixed and melted together, but they are not bonded.',vi:'Hợp kim là hỗn hợp kim loại: các nguyên tử khác nhau được trộn và nấu chảy cùng nhau, nhưng chúng không liên kết.'}},
+ {pre:{en:'Bronze is an alloy made from',vi:'Bronze là hợp kim làm từ'},correct:1,
+  opts:[{en:'copper and zinc',vi:'đồng (copper) và kẽm (zinc)'},{en:'copper and tin',vi:'đồng (copper) và thiếc (tin)'}],
+  e:{en:'Bronze = copper + tin. Copper + zinc makes brass instead.',vi:'Bronze = đồng + thiếc. Đồng + kẽm tạo thành đồng thau (brass).'}},
+ {pre:{en:'Steel is an alloy made from',vi:'Thép (steel) là hợp kim làm từ'},correct:0,
+  opts:[{en:'iron and carbon',vi:'sắt (iron) và cacbon (carbon)'},{en:'iron and tin',vi:'sắt (iron) và thiếc (tin)'}],
+  e:{en:'Steel is iron mixed with carbon — carbon is not a metal, which makes steel an unusual alloy.',vi:'Thép là sắt trộn với cacbon — cacbon không phải kim loại, điều này làm thép là một hợp kim đặc biệt.'}},
+ {pre:{en:'Brass is an alloy made from',vi:'Đồng thau (brass) là hợp kim làm từ'},correct:1,
+  opts:[{en:'aluminium and magnesium',vi:'nhôm (aluminium) và magie (magnesium)'},{en:'copper and zinc',vi:'đồng (copper) và kẽm (zinc)'}],
+  e:{en:'Brass = copper + zinc. Different proportions of the two make the different types of brass.',vi:'Đồng thau = đồng + kẽm. Các tỉ lệ khác nhau của hai kim loại tạo ra các loại đồng thau khác nhau.'}},
+ {pre:{en:'Duralumin, used for planes, is an alloy of aluminium with',vi:'Duralumin, dùng cho máy bay, là hợp kim của nhôm với'},correct:0,
+  opts:[{en:'magnesium and copper',vi:'magie (magnesium) và đồng (copper)'},{en:'tin and lead only',vi:'chỉ thiếc (tin) và chì'}],
+  e:{en:'Adding magnesium and copper to aluminium makes duralumin — light, but about five times stronger than pure aluminium.',vi:'Thêm magie và đồng vào nhôm tạo ra duralumin — nhẹ, nhưng chắc gấp khoảng năm lần nhôm nguyên chất.'}},
+ {pre:{en:'Nitinol, the shape memory alloy in some glasses frames, is made from',vi:'Nitinol, hợp kim nhớ hình (shape memory alloy) trong một số gọng kính, được làm từ'},correct:1,
+  opts:[{en:'gold and silver',vi:'vàng và bạc'},{en:'nickel and titanium',vi:'niken (nickel) và titan (titanium)'}],
+  e:{en:'Nitinol is an alloy of nickel and titanium — a modern alloy with very useful properties.',vi:'Nitinol là hợp kim của niken và titan — một hợp kim hiện đại với các tính chất rất hữu ích.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'In pure iron, the atoms are',vi:'Trong sắt nguyên chất, các nguyên tử thì'},correct:0,
+  opts:[{en:'all the same size, arranged in regular rows',vi:'đều cùng kích thước, xếp thành các hàng đều đặn'},{en:'all different sizes, in a jumbled pattern',vi:'đều khác kích thước, theo mẫu lộn xộn'}],
+  e:{en:'A pure metal has only one kind of atom, all the same size, packed in regular rows.',vi:'Một kim loại nguyên chất chỉ có một loại nguyên tử, đều cùng kích thước, xếp khít thành các hàng đều đặn.'}},
+ {pre:{en:'When a force is applied to pure iron, the layers of atoms',vi:'Khi có lực tác dụng lên sắt nguyên chất, các lớp nguyên tử'},correct:1,
+  opts:[{en:'are locked firmly in place',vi:'bị khóa chặt tại chỗ'},{en:'slide over one another easily',vi:'trượt qua nhau dễ dàng'}],
+  e:{en:'Regular rows of same-sized atoms slide easily — that is why pure iron is soft enough to be hammered and stretched.',vi:'Các hàng đều đặn của nguyên tử cùng kích thước trượt dễ dàng — đó là lý do sắt nguyên chất đủ mềm để bị đập và kéo giãn.'}},
+ {pre:{en:'The carbon atoms added to iron are a different size, so they',vi:'Các nguyên tử cacbon (carbon) thêm vào sắt có kích thước khác, nên chúng'},correct:0,
+  opts:[{en:'disrupt the regular pattern of the iron atoms',vi:'phá vỡ (disrupt) mẫu đều đặn của các nguyên tử sắt'},{en:'make the rows slide even more smoothly',vi:'làm các hàng trượt còn trơn tru hơn'}],
+  e:{en:'A different-sized atom breaks up the regular rows — the key word is disrupt.',vi:'Một nguyên tử khác kích thước phá vỡ các hàng đều đặn — từ khóa ở đây là phá vỡ (disrupt).'}},
+ {pre:{en:'In steel, the layers of atoms',vi:'Trong thép (steel), các lớp nguyên tử'},correct:1,
+  opts:[{en:'slip past one another more easily than in pure iron',vi:'trượt qua nhau dễ hơn trong sắt nguyên chất'},{en:'cannot slip past one another easily — they get stuck',vi:'không thể trượt qua nhau dễ dàng — chúng bị kẹt'}],
+  e:{en:'The disrupted pattern stops the layers sliding, so the steel holds its shape under force.',vi:'Mẫu đã bị phá vỡ ngăn các lớp trượt, nên thép giữ được hình dạng khi chịu lực.'}},
+ {pre:{en:'Because its layers get stuck, steel is',vi:'Vì các lớp của nó bị kẹt, thép thì'},correct:0,
+  opts:[{en:'much harder and stronger than pure iron',vi:'cứng và chắc hơn sắt nguyên chất nhiều'},{en:'softer and weaker than pure iron',vi:'mềm và yếu hơn sắt nguyên chất'}],
+  e:{en:'Hardness and strength come from layers that cannot slide — steel is far more useful than soft pure iron.',vi:'Độ cứng và độ chắc đến từ các lớp không trượt được — thép hữu ích hơn sắt nguyên chất mềm rất nhiều.'}},
+ {pre:{en:'On its own, pure iron is',vi:'Khi đứng riêng, sắt nguyên chất thì'},correct:1,
+  opts:[{en:'the hardest metal of all',vi:'là kim loại cứng nhất trong tất cả'},{en:'not hard enough to be very useful',vi:'không đủ cứng để thật sự hữu ích'}],
+  e:{en:'The book’s point: pure iron is not hard enough to be very useful — mixing it into steel fixes that.',vi:'Ý chính của sách: sắt nguyên chất không đủ cứng để thật sự hữu ích — trộn nó thành thép (steel) khắc phục điều đó.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'Case file — coins: the silver-coloured coins in your pocket are not pure silver, because pure silver is',vi:'Hồ sơ — tiền xu: các xu màu bạc trong túi con không phải bạc nguyên chất, vì bạc nguyên chất thì'},correct:0,
+  opts:[{en:'too soft and far too expensive',vi:'quá mềm và quá đắt'},{en:'too hard to stamp patterns on',vi:'quá cứng để dập hoa văn'}],
+  e:{en:'Silver-coloured coins are alloys of copper and nickel: hardwearing, yet still soft enough to be stamped with complex patterns.',vi:'Xu màu bạc là hợp kim của đồng (copper) và niken (nickel): bền với mài mòn, nhưng vẫn đủ mềm để dập hoa văn phức tạp.'}},
+ {pre:{en:'Case file — gold: 18 carat gold means that out of 24 parts,',vi:'Hồ sơ — vàng: vàng 18 carat nghĩa là trong 24 phần,'},correct:1,
+  opts:[{en:'all 24 parts are pure gold',vi:'cả 24 phần đều là vàng nguyên chất'},{en:'18 parts are gold and 6 parts are other metals',vi:'18 phần là vàng và 6 phần là kim loại khác'}],
+  e:{en:'24 carat is pure gold (24/24). 18 carat gold is an alloy: 18 parts gold with 6 parts of metals such as copper, silver or zinc.',vi:'24 carat là vàng nguyên chất (24/24). Vàng 18 carat là hợp kim: 18 phần vàng với 6 phần kim loại như đồng, bạc hoặc kẽm (zinc).'}},
+ {pre:{en:'Case file — planes: duralumin is chosen for plane wings because it is',vi:'Hồ sơ — máy bay: duralumin được chọn cho cánh máy bay vì nó'},correct:0,
+  opts:[{en:'light, but about five times stronger than pure aluminium',vi:'nhẹ, nhưng chắc gấp khoảng năm lần nhôm nguyên chất'},{en:'heavier and weaker than pure aluminium',vi:'nặng hơn và yếu hơn nhôm nguyên chất'}],
+  e:{en:'Pure aluminium would not be strong enough for the stress on wings in flight; duralumin keeps the lightness and adds strength.',vi:'Nhôm nguyên chất sẽ không đủ chắc trước áp lực lên cánh khi bay; duralumin giữ được độ nhẹ và thêm độ chắc.'}},
+ {pre:{en:'Case file — body: an alloy used for a replacement joint inside the body must be',vi:'Hồ sơ — cơ thể: một hợp kim dùng cho khớp thay thế bên trong cơ thể phải'},correct:1,
+  opts:[{en:'soft, and quick to wear away',vi:'mềm, và nhanh bị mài mòn'},{en:'strong and hardwearing, and must not corrode easily',vi:'chắc và chịu mài mòn, và không được dễ bị ăn mòn (corrode)'}],
+  e:{en:'Joints take a lot of wear and tear, so replacement joints are often made with titanium alloys — strong, hardwearing and corrosion resistant.',vi:'Các khớp chịu nhiều mài mòn, nên khớp thay thế thường được làm bằng hợp kim titan (titanium) — chắc, chịu mài mòn và chống ăn mòn.'}},
+ {pre:{en:'Case file — glasses: some frames are made from a shape memory alloy because the frames can',vi:'Hồ sơ — kính: một số gọng được làm từ hợp kim nhớ hình (shape memory alloy) vì gọng có thể'},correct:0,
+  opts:[{en:'spring back to their original shape',vi:'bật trở lại hình dạng ban đầu'},{en:'melt and be remade every week',vi:'nóng chảy và được làm lại mỗi tuần'}],
+  e:{en:'A shape memory alloy such as Nitinol (nickel + titanium) returns to its original shape — ideal for frames that get bent.',vi:'Một hợp kim nhớ hình như Nitinol (niken + titan) trở lại hình dạng ban đầu — lý tưởng cho gọng kính hay bị bẻ cong.'}},
+ {pre:{en:'Case file — brass: brass is given a melting-point range (900–1000 °C) because',vi:'Hồ sơ — đồng thau (brass): đồng thau được cho một khoảng nhiệt độ nóng chảy (900–1000 °C) vì'},correct:1,
+  opts:[{en:'brass is a pure element',vi:'đồng thau là nguyên tố nguyên chất'},{en:'different brasses use different amounts of copper and zinc',vi:'các loại đồng thau khác nhau dùng các lượng đồng (copper) và kẽm (zinc) khác nhau'}],
+  e:{en:'There is no single brass recipe, so there is no single melting point — it depends on the proportions of copper and zinc.',vi:'Không có một công thức đồng thau duy nhất, nên không có một nhiệt độ nóng chảy duy nhất — nó phụ thuộc vào tỉ lệ đồng và kẽm.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 6 + 6 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-5-3';
+const SUMKEY='camb:sum:sci7-5-3';
+const BOT_CODE='sci7-5.3';
+let FOUND={bronze:false,steel:false,layers:false,bubble:false,every:false,data:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1:new Set(),
+  s2:new Set(), s2ans:false, s2wrong:false,
+  s3:new Set(),
+  s4:new Set(),
+  s5correct:new Set(), s5sel:null,
+  s6pos:false, s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=3;
+  if(i===1) return T.s2.size>=2&&T.s2ans;
+  if(i===2) return T.s3.size>=2;
+  if(i===3) return T.s4.size>=2;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6pos&&T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Things met: '+T.s1.size+' of 3 (copper · tin · bronze). Tap them on the bench!',
+             'Đã gặp: '+T.s1.size+' / 3 (đồng · thiếc · bronze). Hãy chạm vào chúng trên bàn!');
+  }
+  if(i===1){
+    if(T.s2.size>=2&&!T.s2ans) return B('Iron and steel met. Now answer: which element is mixed into iron to make steel?','Đã gặp sắt và thép. Giờ trả lời: nguyên tố nào được trộn vào sắt để tạo thành thép (steel)?');
+    if(T.s2wrong&&!T.s2ans) return B('Not that element — think about what makes steel an unusual alloy.','Không phải nguyên tố đó — hãy nghĩ xem điều gì làm thép là một hợp kim đặc biệt.');
+    return B('Things met: '+T.s2.size+' of 2 (pure iron · steel cutlery), and the added element '+(T.s2ans?'found ✓':'not found yet')+'.',
+             'Đã gặp: '+T.s2.size+' / 2 (sắt nguyên chất · dao nĩa thép), và nguyên tố được thêm vào '+(T.s2ans?'đã tìm ra ✓':'chưa tìm ra')+'.');
+  }
+  if(i===2){
+    return B('Models compared: '+T.s3.size+' of 2 (pure metal rows · alloy with a different-sized atom).',
+             'Đã so sánh mô hình: '+T.s3.size+' / 2 (hàng nguyên tử kim loại nguyên chất · hợp kim với nguyên tử khác kích thước).');
+  }
+  if(i===3){
+    return B('Bubble model built: '+T.s4.size+' of 2 (bubble raft of small bubbles · syringe adds one big bubble).',
+             'Đã dựng mô hình bong bóng: '+T.s4.size+' / 2 (bè bong bóng nhỏ · ống tiêm thêm một bong bóng lớn).');
+  }
+  if(i===4){
+    const c=T.s5sel? SORTC.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap ALLOY or PURE METAL.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm HỢP KIM (ALLOY) hoặc KIM LOẠI NGUYÊN CHẤT (PURE METAL).');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5){
+    if(!T.s6pos) return B('Tap the brass trumpet on the bench.','Hãy chạm vào kèn trumpet bằng đồng thau (brass) trên bàn.');
+    if(T.s6idx>=GAME.length) return B('Finished! You answered all 3 data questions right.','Hoàn thành! Con đã trả lời đúng cả 3 câu về số liệu.');
+    return B('Question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — check the melting points in the tables!' : ''),
+             'Câu hỏi '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — kiểm tra các nhiệt độ nóng chảy trong bảng!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🟤',label:{en:'Copper — reddish brown',vi:'Đồng — nâu đỏ'},got:T.s1.has('copper')},
+      {emoji:'⚪',label:{en:'Tin — white metal',vi:'Thiếc — kim loại trắng'},got:T.s1.has('tin')},
+      {emoji:'🗿',label:{en:'Bronze — harder alloy',vi:'Bronze — hợp kim cứng hơn'},got:T.s1.has('bronze')}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'⬜',label:{en:'Pure iron — soft',vi:'Sắt nguyên chất — mềm'},got:T.s2.has('iron')},
+      {emoji:'🍴',label:{en:'Steel — much harder',vi:'Thép — cứng hơn nhiều'},got:T.s2.has('steel')}
+    ]);
+    if(T.s2.size>=2&&!T.s2ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qSteel);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chTin,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chCarbon,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2ans=true; T.s2wrong=false; FOUND.steel=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chZinc,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); renderStepExtra(); refreshEvidence(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🔵',label:{en:'Pure metal — rows slide',vi:'Kim loại nguyên chất — các hàng trượt'},got:T.s3.has('puremodel')},
+      {emoji:'🟠',label:{en:'Alloy — layers get stuck',vi:'Hợp kim — các lớp bị kẹt'},got:T.s3.has('alloymodel')}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🫧',label:{en:'Bubble raft — rows of small bubbles',vi:'Bè bong bóng — các hàng bong bóng nhỏ'},got:T.s4.has('bubbles')},
+      {emoji:'💉',label:{en:'Syringe — adds one big bubble',vi:'Ống tiêm — thêm một bong bóng lớn'},got:T.s4.has('syringe')}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,SORTC_ORDER,
+      [{key:'alloy',label:STR.binAlloy,cls:'metal'},{key:'pure',label:STR.binPure,cls:'nonmetal'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    if(!T.s6pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapBrass)+'</b>';
+      box.appendChild(p);
+    }else if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.data=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('copper'); bounceThing('copper'); setTimeout(()=>{ focusVisual('tin'); bounceThing('tin'); },900); }
+  else if(i===1){ focusThing('iron'); bounceThing('iron'); setTimeout(()=>{ focusVisual('steel'); bounceThing('steel'); },900); }
+  else if(i===2){ focusThing('puremodel'); bounceThing('puremodel'); }
+  else if(i===3){ focusThing('bubbles'); bounceThing('bubbles'); }
+  else if(i===4){ demoSort(SORTC,T.s5correct); }
+  else if(i===5){ focusThing('brass'); bounceThing('brass'); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowBronze,(doneSteps.has(0)?3:T.s1.size),3)+
+    row(STR.rowSteel,(doneSteps.has(1)?3:(T.s2.size+(T.s2ans?1:0))),3)+
+    row(STR.rowLayers,(doneSteps.has(2)?2:T.s3.size),2)+
+    row(STR.rowSort,SORTC.filter(c=>SORTED.has(c.id)).length,6);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.bronze||doneSteps.has(0),label:STR.foundBronze},
+    {got:FOUND.steel||doneSteps.has(1),label:STR.foundSteel},
+    {got:FOUND.layers||doneSteps.has(2),label:STR.foundLayers},
+    {got:FOUND.bubble||doneSteps.has(3),label:STR.foundBubble},
+    {got:FOUND.every||doneSteps.has(4),label:STR.foundEvery},
+    {got:FOUND.data||doneSteps.has(5),label:STR.foundData}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildDish(contentFn,px,pz){
+  const g=new THREE.Group();
+  const dish=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.44,0.14,20),stdMat(0x9aa7b4,0.45)));
+  dish.position.y=0.07; g.add(dish);
+  contentFn(g);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildCopper(px,pz){
+  return buildDish(g=>{
+    for(let k=0;k<5;k++){
+      const lump=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.13,0),stdMat(0xb0662f,0.4)));
+      lump.position.set(Math.cos(k*1.9)*0.22,0.22,Math.sin(k*1.9)*0.22); lump.rotation.set(k,0.7,0.3); g.add(lump);
+    }
+  },px,pz);
+}
+function buildTin(px,pz){
+  return buildDish(g=>{
+    for(let k=0;k<5;k++){
+      const lump=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.13,0),stdMat(0xd7dde5,0.3)));
+      lump.position.set(Math.cos(k*1.7+1)*0.22,0.22,Math.sin(k*1.7+1)*0.22); lump.rotation.set(0.4,k,0.6); g.add(lump);
+    }
+  },px,pz);
+}
+function buildBronze(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.5,0.14,18),stdMat(0x6e5636,0.6)));
+  base.position.y=0.07; g.add(base);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,18,14),stdMat(0x9a7434,0.45)));
+  head.position.y=0.62; head.scale.y=1.2; g.add(head);
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.2,8),stdMat(0x9a7434,0.45));
+  nose.position.set(0,0.6,0.36); nose.rotation.x=Math.PI/2; g.add(nose);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildIron(px,pz){
+  const g=new THREE.Group();
+  const bar=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.0,0.16,0.34),stdMat(0x8b96a5,0.35)));
+  bar.position.y=0.16; bar.rotation.y=0.25; g.add(bar);
+  const bar2=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.14,0.3),stdMat(0x76828f,0.4)));
+  bar2.position.y=0.38; bar2.rotation.y=-0.2; g.add(bar2);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSteel(px,pz){
+  const g=new THREE.Group();
+  const plate=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.42,0.07,20),stdMat(0xe8eef4,0.25)));
+  plate.position.y=0.05; g.add(plate);
+  for(let k=0;k<3;k++){
+    const handle=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.05,0.62),stdMat(0xc7d2dd,0.2));
+    handle.position.set(-0.25+k*0.25,0.14,0.05); handle.rotation.y=(k-1)*0.25; g.add(handle);
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),stdMat(0xdfe8f0,0.2));
+    tip.position.set(-0.25+k*0.25+(k-1)*0.08,0.14,-0.32); tip.scale.z=1.5; g.add(tip);
+  }
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBrass(px,pz){
+  const g=new THREE.Group();
+  const bell=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.4,0.6,18,1,true),stdMat(0xd9a92e,0.3)));
+  bell.position.set(-0.35,0.45,0); bell.rotation.z=1.1; g.add(bell);
+  const tubeM=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.9,10),stdMat(0xe0b83a,0.3)));
+  tubeM.position.set(0.15,0.45,0); tubeM.rotation.z=1.1; g.add(tubeM);
+  const mouth=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.07,0.16,10),stdMat(0xc7d2dd,0.25));
+  mouth.position.set(0.55,0.72,0); mouth.rotation.z=1.1; g.add(mouth);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildModel(px,pz,alloy){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.8,8),stdMat(0x8a5a2b,0.9));
+  post.position.y=0.4; g.add(post);
+  const board=new THREE.Group(); board.position.y=1.35; board.rotation.x=-0.08;
+  const back=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.7,1.15,0.06),stdMat(0xffffff,0.7)));
+  board.add(back);
+  for(let r=0;r<3;r++) for(let c=0;c<5;c++){
+    const big=alloy&&r===1&&c===2;
+    const s=new THREE.Mesh(new THREE.SphereGeometry(big?0.17:0.105,12,10),stdMat(big?0xe07b24:(alloy?0x7db8e8:0x3d8bfd),0.45));
+    s.position.set(-0.56+c*0.28+(big?0.06:0),0.32-r*0.32,0.09); board.add(s);
+  }
+  g.add(board); g.userData.board=board;
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBubbles(px,pz){
+  const g=new THREE.Group();
+  const dish=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.52,0.14,22),stdMat(0xdff2ff,0.3)));
+  dish.position.y=0.07; g.add(dish);
+  for(let r=0;r<3;r++) for(let c=0;c<5;c++){
+    const b=new THREE.Mesh(new THREE.SphereGeometry(0.1,10,8),new THREE.MeshStandardMaterial({color:0xbfe3ff,roughness:0.1,transparent:true,opacity:0.75}));
+    b.position.set(-0.36+c*0.19,0.2,-0.18+r*0.19); b.scale.y=0.6; g.add(b);
+  }
+  const big=new THREE.Mesh(new THREE.SphereGeometry(0.19,12,10),new THREE.MeshStandardMaterial({color:0xffd9a0,roughness:0.1,transparent:true,opacity:0.8}));
+  big.position.set(0.05,0.24,0.02); big.scale.y=0.6; g.add(big); g.userData.bigBubble=big;
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSyringe(px,pz){
+  const g=new THREE.Group();
+  const barrel=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.85,12),new THREE.MeshStandardMaterial({color:0xdff2ff,roughness:0.15,transparent:true,opacity:0.6}));
+  barrel.position.set(0,0.55,0); barrel.rotation.z=0.7; g.add(barrel);
+  const plunger=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.4,8),stdMat(0xd23c2a,0.45));
+  plunger.position.set(-0.3,0.95,0); plunger.rotation.z=0.7; g.add(plunger);
+  const thumb=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.05,10),stdMat(0xd23c2a,0.45));
+  thumb.position.set(-0.44,1.1,0); thumb.rotation.z=0.7; g.add(thumb);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.35,10),new THREE.MeshBasicMaterial({color:0x7db8e8}));
+  liquid.position.set(0.1,0.4,0); liquid.rotation.z=0.7; g.add(liquid);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  reg('copper',buildCopper(-4.6,-1.8));
+  reg('tin',buildTin(-3.0,-1.8));
+  reg('bronze',buildBronze(-1.3,-1.8));
+  reg('iron',buildIron(0.4,-1.8));
+  reg('steel',buildSteel(2.2,-1.8));
+  reg('brass',buildBrass(4.0,-1.8));
+  reg('puremodel',buildModel(-3.8,2.2,false));
+  reg('alloymodel',buildModel(-1.2,2.2,true));
+  reg('bubbles',buildBubbles(1.4,2.2));
+  reg('syringe',buildSyringe(3.6,2.2));
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('copper',p,G.copper); }
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('tin',p,G.tin); }
+  { const p=sphProxy(0.65); p.position.set(0,0.55,0); addProxy('bronze',p,G.bronze); }
+  { const p=sphProxy(0.65); p.position.set(0,0.25,0); addProxy('iron',p,G.iron); }
+  { const p=sphProxy(0.65); p.position.set(0,0.25,0); addProxy('steel',p,G.steel); }
+  { const p=sphProxy(0.7); p.position.set(0,0.5,0); addProxy('brass',p,G.brass); }
+  { const p=sphProxy(0.9); p.position.set(0,1.3,0); addProxy('puremodel',p,G.puremodel); }
+  { const p=sphProxy(0.9); p.position.set(0,1.3,0); addProxy('alloymodel',p,G.alloymodel); }
+  { const p=sphProxy(0.7); p.position.set(0,0.25,0); addProxy('bubbles',p,G.bubbles); }
+  { const p=sphProxy(0.65); p.position.set(0,0.6,0); addProxy('syringe',p,G.syringe); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['copper','tin','bronze'],
+  ['iron','steel'],
+  ['puremodel','alloymodel'],
+  ['bubbles','syringe'],
+  [],
+  ['brass']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='copper'||id==='tin'||id==='bronze'){
+      T.s1.add(id);
+      if(T.s1.size>=3) FOUND.bronze=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1){
+    if(id==='iron'||id==='steel'){
+      T.s2.add(id);
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===2){
+    if(id==='puremodel'||id==='alloymodel'){
+      T.s3.add(id);
+      if(T.s3.size>=2) FOUND.layers=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===3){
+    if(id==='bubbles'||id==='syringe'){
+      T.s4.add(id);
+      if(T.s4.size>=2) FOUND.bubble=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===5&&id==='brass'){
+    T.s6pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.brass) G.brass.rotation.y=Math.sin(t*0.6)*0.15;
+  if(G.bubbles&&G.bubbles.userData.bigBubble){ const s=1+Math.sin(t*2)*0.06; G.bubbles.userData.bigBubble.scale.set(s,0.6*s,s); }
+  if(G.puremodel&&G.puremodel.userData.board) G.puremodel.userData.board.rotation.z=Math.sin(t*0.5)*0.02;
+  if(G.alloymodel&&G.alloymodel.userData.board) G.alloymodel.userData.board.rotation.z=Math.sin(t*0.5+1)*0.02;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){
+  SORTED.add(c.id);
+  if(curStep===4) FOUND.every=true;
+  saveProg(); renderMirrors();
+}
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.bronze=false; }
+  if(step===1){ FOUND.steel=false; }
+  if(step===2){ FOUND.layers=false; }
+  if(step===3){ FOUND.bubble=false; }
+  if(step===4){ SORTC.forEach(c=>SORTED.delete(c.id)); FOUND.every=false; }
+  if(step===5){ FOUND.data=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['copper','tin','bronze'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ ['iron','steel'].forEach(id=>t.s2.add(id)); t.s2ans=true; }
+  else if(i===2){ ['puremodel','alloymodel'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ ['bubbles','syringe'].forEach(id=>t.s4.add(id)); }
+  else if(i===4){ SORTC.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.s6pos=true; t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-5-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

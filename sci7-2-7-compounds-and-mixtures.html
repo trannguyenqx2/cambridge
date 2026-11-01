@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>2.7 Compounds and mixtures — Hợp chất và hỗn hợp · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.element{background:#d9930d}
+.binbtn.compound{background:#7a4fd0}
+.binbtn.sample{background:#64748b}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="2.7 Compounds and mixtures" data-vi="2.7 Hợp chất và hỗn hợp (Compounds and mixtures)">2.7 Compounds and mixtures</span>
+    <span class="eqchip i18n" data-en="Unit 2 · Materials and their structure" data-vi="Bài 2 · Vật liệu và cấu trúc của chúng (Materials and their structure)">Unit 2 · Materials and their structure</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Compound or mixture — how can you tell?" data-vi="Hợp chất hay hỗn hợp — làm sao phân biệt?">Compound or mixture — how can you tell?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Mix them" data-vi="Trộn chúng">Mix them</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Mixture" data-vi="Hỗn hợp (mixture)">Mixture</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Heat + bond" data-vi="Đun + liên kết">Heat + bond</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Compound!" data-vi="Hợp chất!">Compound!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.7. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 2 Vật liệu và cấu trúc của chúng (Materials and their structure) · Mục 2.7. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.7. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 2 Materials and their structure, section 2.7, pages 58–68; Workbook 7 (ISBN 9781108742818), pages 38–41. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 2 Vật liệu và cấu trúc của chúng (Materials and their structure), mục 2.7, trang 58–68; Sách bài tập 7 (ISBN 9781108742818), trang 38–41. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 2 Materials and their structure, section 2.7, pages 58–68; Workbook 7 (ISBN 9781108742818), pages 38–41. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives: make a compound and a mixture; learn about the difference between a compound and a mixture; give examples of mixtures. Key words: composition, evaporating basin, filings, mineral, mixture, natural emissions, pipe-clay triangle, pure." data-vi="Mục tiêu: tạo một hợp chất (compound) và một hỗn hợp (mixture); học sự khác nhau giữa hợp chất và hỗn hợp; cho ví dụ về hỗn hợp. Từ khóa: composition (thành phần), evaporating basin (bát bay hơi), filings (mạt sắt), mineral (khoáng chất), mixture (hỗn hợp), natural emissions (phát thải tự nhiên), pipe-clay triangle (tam giác đất sét), pure (tinh khiết).">Objectives: make a compound and a mixture; learn about the difference between a compound and a mixture; give examples of mixtures. Key words: composition, evaporating basin, filings, mineral, mixture, natural emissions, pipe-clay triangle, pure.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench or with sorting cards — comparing iron and sulfur, stirring a mixture and separating it with a magnet, heating the mixture into the compound iron sulfide and testing it with the magnet again, sorting elements from compounds, reading the compositions of air and mineral water, and evaporating drinking water to see what is left behind. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done. The book’s own values are kept exactly: air is about 78% nitrogen, 21% oxygen and 1% other gases, and the mineral water label lists bicarbonate 248 mg/l, calcium 55 mg/l and chloride 37 mg/l as its three most abundant minerals." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D hoặc với các thẻ phân loại — so sánh sắt và lưu huỳnh, khuấy một hỗn hợp (mixture) và tách nó bằng nam châm, đun hỗn hợp thành hợp chất (compound) sắt sulfide và thử lại bằng nam châm, phân loại nguyên tố và hợp chất, đọc thành phần của không khí và nước khoáng, và cho nước uống bay hơi để xem thứ gì còn lại. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm. Các số liệu của sách được giữ nguyên: không khí có khoảng 78% nitơ (nitrogen), 21% oxy (oxygen) và 1% các khí khác, và nhãn nước khoáng liệt kê bicarbonate 248 mg/l, canxi (calcium) 55 mg/l và clorua (chloride) 37 mg/l là ba khoáng chất nhiều nhất.">How it works: each step asks for one real action on the 3D bench or with sorting cards. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-2-7 "Compounds and mixtures"
+   (Science 7, Unit 2 · Materials and their structure)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  iron:   {kind:'element', emoji:'🧲', name:{en:'Iron filings',vi:'Mạt sắt (iron filings)'}, short:{en:'Iron',vi:'Sắt'}, labelY:1.15, fx:-4.4, fz:-1.8, fr:5.2},
+  sulfur: {kind:'element', emoji:'🟡', name:{en:'Powdered sulfur',vi:'Bột lưu huỳnh (sulfur)'}, short:{en:'Sulfur',vi:'Lưu huỳnh'}, labelY:1.15, fx:-2.8, fz:-1.8, fr:5.2},
+  beaker: {kind:'mixture', emoji:'🥛', name:{en:'Beaker of iron + sulfur mixture',vi:'Cốc hỗn hợp sắt + lưu huỳnh (mixture)'}, short:{en:'Mixture beaker',vi:'Cốc hỗn hợp'}, labelY:1.35, fx:-1.1, fz:-1.8, fr:5.2},
+  magnet: {kind:'tool', emoji:'🧲', name:{en:'Magnet',vi:'Nam châm (magnet)'}, short:{en:'Magnet',vi:'Nam châm'}, labelY:1.15, fx:0.6, fz:-1.8, fr:5.2},
+  tube:   {kind:'heating', emoji:'🧪', name:{en:'Boiling tube over the burner',vi:'Ống nghiệm đun trên đèn (boiling tube)'}, short:{en:'Heated tube',vi:'Ống đang đun'}, labelY:1.6, fx:2.4, fz:-1.8, fr:5.2},
+  sulfide:{kind:'compound', emoji:'⬛', name:{en:'Iron sulfide',vi:'Sắt sulfide (iron sulfide)'}, short:{en:'Iron sulfide',vi:'Sắt sulfide'}, labelY:1.15, fx:4.2, fz:-1.8, fr:5.2},
+  airboard:{kind:'chart', emoji:'🌬️', name:{en:'Air composition chart',vi:'Bảng thành phần không khí (composition of air)'}, short:{en:'Air chart',vi:'Bảng không khí'}, labelY:2.0, fx:-3.6, fz:2.2, fr:5.6},
+  bottle: {kind:'mixture', emoji:'💧', name:{en:'Bottle of mineral water',vi:'Chai nước khoáng (mineral water)'}, short:{en:'Mineral water',vi:'Nước khoáng'}, labelY:1.5, fx:1.5, fz:2.2, fr:5.2},
+  basin:  {kind:'apparatus', emoji:'🍵', name:{en:'Evaporating basin on a tripod',vi:'Bát bay hơi (evaporating basin) trên giá ba chân'}, short:{en:'Evaporating basin',vi:'Bát bay hơi'}, labelY:1.5, fx:3.3, fz:2.2, fr:5.2}
+};
+const FOCUSORDER=['iron','sulfur','beaker','magnet','tube','sulfide','airboard','bottle','basin'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to study a thing, tap it on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn nghiên cứu một vật, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My compound / mixture record',vi:'Bản ghi hợp chất / hỗn hợp của con'},
+  u2Brief:{en:'What you have found out about elements, compounds and mixtures.',vi:'Những điều con đã tìm hiểu về nguyên tố (element), hợp chất (compound) và hỗn hợp (mixture).'},
+  rowProps:{en:'Iron and sulfur compared',vi:'Đã so sánh sắt và lưu huỳnh'},
+  rowMix:{en:'Mixture made and separated',vi:'Đã tạo và tách hỗn hợp'},
+  rowComp:{en:'Compound made and tested',vi:'Đã tạo và thử hợp chất'},
+  rowSort:{en:'Elements / compounds sorted',vi:'Đã phân loại nguyên tố / hợp chất'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundProps:{en:'I compared iron and sulfur',vi:'Con đã so sánh sắt (iron) và lưu huỳnh (sulfur)'},
+  foundMix:{en:'I made a mixture and separated it',vi:'Con đã tạo một hỗn hợp (mixture) và tách nó ra'},
+  foundComp:{en:'I made the compound iron sulfide',vi:'Con đã tạo hợp chất (compound) sắt sulfide (iron sulfide)'},
+  foundClass:{en:'I sorted elements and compounds',vi:'Con đã phân loại nguyên tố (element) và hợp chất (compound)'},
+  foundEx:{en:'I gave examples of mixtures',vi:'Con đã cho ví dụ về hỗn hợp (mixture)'},
+  foundEvap:{en:'I tested water by evaporating it',vi:'Con đã kiểm tra nước bằng cách cho bay hơi (evaporating)'},
+  binElement:{en:'ELEMENT',vi:'NGUYÊN TỐ (ELEMENT)'},
+  binCompound:{en:'COMPOUND',vi:'HỢP CHẤT (COMPOUND)'},
+  tapBasin:{en:'👆 Tap the evaporating basin on the bench!',vi:'👆 Chạm vào bát bay hơi (evaporating basin) trên bàn!'},
+  qWater:{en:'After the water evaporated, a solid residue was left in the basin. The drinking water was…',vi:'Sau khi nước bay hơi, một chất rắn còn lại trong bát. Nước uống đó là…'},
+  chMixture:{en:'a mixture',vi:'một hỗn hợp (mixture)'},
+  chPure:{en:'pure — only water',vi:'tinh khiết (pure) — chỉ có nước'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 2.7',vi:'📝 Bài tập — Sách bài tập (Workbook) 2.7'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Marcus mixes, Sofia heats: true or false?',vi:'Bài tập 1 · Focus — Marcus trộn, Sofia đun: đúng hay sai?'},
+  ex1Inst:{en:'Marcus stirs iron filings and sulfur together in a beaker. Sofia heats iron filings and sulfur together. For each statement, tap TRUE or FALSE.',vi:'Marcus khuấy mạt sắt (filings) và lưu huỳnh trong một cốc. Sofia đun mạt sắt và lưu huỳnh cùng nhau. Với mỗi câu, hãy chạm ĐÚNG hoặc SAI.'},
+  ex2T:{en:'Exercise 2 · Practice — Reading particle diagrams',vi:'Bài tập 2 · Practice — Đọc sơ đồ hạt'},
+  ex2Inst:{en:'Each sentence describes a particle diagram. Tap the correct ending.',vi:'Mỗi câu mô tả một sơ đồ hạt. Hãy chạm vào phần kết đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Same two elements, two different results',vi:'Bài tập 3 · Challenge — Cùng hai nguyên tố, hai kết quả khác nhau'},
+  ex3Inst:{en:'Tap the correct ending for each statement about iron, sulfur, their mixture and their compound.',vi:'Chạm vào phần kết đúng cho mỗi câu về sắt, lưu huỳnh, hỗn hợp (mixture) và hợp chất (compound) của chúng.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'composition',vi:'thành phần'},
+  {en:'evaporating basin',vi:'bát bay hơi'},
+  {en:'filings',vi:'mạt (sắt)'},
+  {en:'mineral',vi:'khoáng chất'},
+  {en:'mixture',vi:'hỗn hợp'},
+  {en:'natural emissions',vi:'phát thải tự nhiên'},
+  {en:'pipe-clay triangle',vi:'tam giác đất sét'},
+  {en:'pure',vi:'tinh khiết'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Iron and sulfur',vi:'Sắt và lưu huỳnh'}, word:{en:'filings',vi:'mạt sắt (filings)'},
+  q:{en:'Before we mix or heat anything, what are iron and sulfur like on their own?',vi:'Trước khi trộn hay đun bất cứ thứ gì, sắt (iron) và lưu huỳnh (sulfur) riêng lẻ thì như thế nào?'},
+  act:{en:'Tap the iron filings and the powdered sulfur on the bench.',vi:'Chạm vào mạt sắt (iron filings) và bột lưu huỳnh (sulfur) trên bàn.'},
+  see:{en:'Each one bounces and shows its name. Iron is grey and magnetic; sulfur is yellow and is not magnetic.',vi:'Mỗi thứ sẽ nảy lên và hiện tên. Sắt màu xám và có từ tính; lưu huỳnh màu vàng và không có từ tính.'},
+  concl:[
+    {en:'Iron is a metal: it is hard, grey and strong, it carries heat and electricity, and it is magnetic.',vi:'Sắt (iron) là kim loại (metal): cứng, màu xám và chắc, dẫn nhiệt và dẫn điện, và có từ tính (magnetic).'},
+    {en:'Sulfur is a non-metal: it is yellow and brittle, it does not carry heat or electricity, and it is not magnetic.',vi:'Lưu huỳnh (sulfur) là phi kim (non-metal): màu vàng và giòn, không dẫn nhiệt và không dẫn điện, và không có từ tính.'},
+    {en:'Keep these properties in mind — they are the test we use in the next two steps.',vi:'Hãy nhớ các tính chất này — đó là phép thử ta dùng trong hai bước tiếp theo.'}]},
+ {tag:{en:'Make a mixture',vi:'Tạo một hỗn hợp'}, word:{en:'mixture',vi:'hỗn hợp (mixture)'},
+  q:{en:'What happens if we just stir iron filings and sulfur powder together in a beaker?',vi:'Điều gì xảy ra nếu ta chỉ khuấy mạt sắt và bột lưu huỳnh với nhau trong một cốc?'},
+  act:{en:'Tap the mixture beaker, then tap the magnet to try to separate the mixture again.',vi:'Chạm vào cốc hỗn hợp (mixture), rồi chạm vào nam châm (magnet) để thử tách hỗn hợp ra lại.'},
+  see:{en:'The mixture looks grey-yellow and speckled. The magnet pulls the iron filings out — the iron is still magnetic.',vi:'Hỗn hợp trông xám-vàng và lốm đốm. Nam châm hút mạt sắt ra — sắt vẫn còn từ tính.'},
+  concl:[
+    {en:'Stirring iron and sulfur together makes a mixture of two elements. Nothing new is formed.',vi:'Khuấy sắt và lưu huỳnh với nhau tạo thành một hỗn hợp (mixture) của hai nguyên tố (element). Không có chất mới nào được tạo thành.'},
+    {en:'In a mixture, each substance keeps its own properties — the iron is still magnetic, so a magnet can separate it from the sulfur.',vi:'Trong một hỗn hợp, mỗi chất giữ nguyên tính chất của mình — sắt vẫn có từ tính, nên nam châm có thể tách nó ra khỏi lưu huỳnh.'},
+    {en:'A mixture is not pure: it contains different kinds of particle simply mixed together.',vi:'Một hỗn hợp không tinh khiết (pure): nó chứa các loại hạt khác nhau chỉ đơn giản trộn lẫn với nhau.'}]},
+ {tag:{en:'Make a compound',vi:'Tạo một hợp chất'}, word:{en:'mixture',vi:'hỗn hợp (mixture)'},
+  q:{en:'What happens if we HEAT the iron and sulfur mixture instead of just stirring it?',vi:'Điều gì xảy ra nếu ta ĐUN hỗn hợp sắt và lưu huỳnh thay vì chỉ khuấy nó?'},
+  act:{en:'Tap the boiling tube over the burner, then tap the iron sulfide, then tap the magnet to test the cooled compound.',vi:'Chạm vào ống nghiệm đun (boiling tube) trên đèn, rồi chạm vào sắt sulfide (iron sulfide), rồi chạm vào nam châm (magnet) để thử hợp chất đã nguội.'},
+  see:{en:'The heated mixture glows, then sets into a hard black solid. This time the magnet pulls nothing out.',vi:'Hỗn hợp được đun sẽ phát sáng, rồi đông thành một chất rắn đen cứng. Lần này nam châm không hút ra được gì.'},
+  concl:[
+    {en:'When iron and sulfur are heated, their atoms bond together and form the compound iron sulfide.',vi:'Khi sắt và lưu huỳnh được đun nóng, các nguyên tử (atom) của chúng liên kết (bond) với nhau và tạo thành hợp chất (compound) sắt sulfide (iron sulfide).'},
+    {en:'Iron sulfide is a new substance with completely different properties: it is black and hard, it is not magnetic, and it does not carry heat or electricity.',vi:'Sắt sulfide là một chất mới với tính chất hoàn toàn khác: màu đen và cứng, không có từ tính, và không dẫn nhiệt hay điện.'},
+    {en:'Because the iron is bonded into the compound, a magnet cannot remove it — heating made a compound, not a mixture.',vi:'Vì sắt đã liên kết vào hợp chất, nam châm không thể lấy nó ra — đun nóng đã tạo ra hợp chất (compound), không phải hỗn hợp (mixture).'}]},
+ {tag:{en:'Element or compound?',vi:'Nguyên tố hay hợp chất?'}, word:{en:'pure',vi:'tinh khiết (pure)'},
+  q:{en:'Can you sort these substances from the start of the section into elements and compounds?',vi:'Con phân loại được các chất ở đầu mục này thành nguyên tố (element) và hợp chất (compound) không?'},
+  act:{en:'Tap a card, then tap ELEMENT or COMPOUND.',vi:'Chạm vào một thẻ, rồi chạm NGUYÊN TỐ (ELEMENT) hoặc HỢP CHẤT (COMPOUND).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'An element contains only one kind of atom: oxygen (O2), sodium and potassium (K) are elements.',vi:'Một nguyên tố (element) chỉ chứa một loại nguyên tử (atom): oxy (O2), natri (sodium) và kali (potassium) (K) là các nguyên tố.'},
+    {en:'A compound contains atoms of different elements bonded together: water (H2O), calcium oxide (CaO) and methane (CH4) are compounds.',vi:'Một hợp chất (compound) chứa các nguyên tử của các nguyên tố khác nhau liên kết với nhau: nước (H2O), canxi oxit (CaO) và metan (CH4) là các hợp chất.'}]},
+ {tag:{en:'Mixtures around us',vi:'Hỗn hợp quanh ta'}, word:{en:'composition',vi:'thành phần (composition)'},
+  q:{en:'Air and mineral water are both mixtures. Can you read their compositions?',vi:'Không khí và nước khoáng đều là hỗn hợp (mixture). Con đọc được thành phần (composition) của chúng không?'},
+  act:{en:'Answer the three questions: one about the air chart, one about the mineral water label, and one spotting a mixture.',vi:'Trả lời ba câu hỏi: một câu về bảng không khí, một câu về nhãn nước khoáng (mineral water), và một câu nhận diện một hỗn hợp.'},
+  see:{en:'Right answers move the game on. Three right answers finish it! Air is about 78% nitrogen and 21% oxygen; the label lists minerals in mg/l.',vi:'Đáp án đúng đưa trò chơi đi tiếp. Ba đáp án đúng là hoàn thành! Không khí có khoảng 78% nitơ (nitrogen) và 21% oxy (oxygen); nhãn liệt kê các khoáng chất (mineral) theo mg/l.'},
+  concl:[
+    {en:'Air is a mixture of elements and compounds: about 78% nitrogen, 21% oxygen, and about 1% carbon dioxide, argon, water vapour and other gases.',vi:'Không khí là hỗn hợp (mixture) của các nguyên tố và hợp chất: khoảng 78% nitơ (nitrogen), 21% oxy (oxygen), và khoảng 1% cacbon đioxit (carbon dioxide), argon, hơi nước và các khí khác.'},
+    {en:'The composition of air changes: water vapour varies with the weather, and carbon dioxide changes with natural emissions (natural emissions), respiration, plants making food, and burning fossil fuels.',vi:'Thành phần (composition) của không khí thay đổi: hơi nước thay đổi theo thời tiết, và cacbon đioxit thay đổi do phát thải tự nhiên (natural emissions), hô hấp, cây tạo thức ăn, và đốt nhiên liệu hóa thạch.'},
+    {en:'Mineral water is a mixture too — a solution of minerals dissolved in water. On the label, bicarbonate (248 mg/l) is the most abundant mineral, then calcium (55 mg/l), then chloride (37 mg/l).',vi:'Nước khoáng (mineral water) cũng là một hỗn hợp — một dung dịch các khoáng chất hòa tan trong nước. Trên nhãn, bicarbonate (248 mg/l) là khoáng chất nhiều nhất, tiếp theo là canxi (calcium) (55 mg/l), rồi clorua (chloride) (37 mg/l).'}]},
+ {tag:{en:'Is water a mixture?',vi:'Nước có phải là hỗn hợp?'}, word:{en:'evaporating basin',vi:'bát bay hơi (evaporating basin)'},
+  q:{en:'Is ordinary drinking water really pure water — or is it a mixture? Let us test it by evaporation.',vi:'Nước uống thông thường có thật sự là nước tinh khiết — hay nó là một hỗn hợp (mixture)? Hãy kiểm tra bằng cách cho bay hơi.'},
+  act:{en:'Tap the evaporating basin (on its pipe-clay triangle and tripod, heated gently). Then answer the question about what was left behind.',vi:'Chạm vào bát bay hơi (evaporating basin) (trên tam giác đất sét (pipe-clay triangle) và giá ba chân, được đun nhẹ). Sau đó trả lời câu hỏi về thứ còn lại.'},
+  see:{en:'The water boils and evaporates away — its particles spread out into the air. A solid residue stays in the basin.',vi:'Nước sôi và bay hơi đi — các hạt của nó lan ra không khí. Một chất rắn còn lại trong bát.'},
+  concl:[
+    {en:'I can distinguish between a compound and a mixture.',vi:'Con phân biệt được hợp chất (compound) và hỗn hợp (mixture).'},
+    {en:'I can explain the difference between a compound and a mixture.',vi:'Con giải thích được sự khác nhau giữa hợp chất và hỗn hợp.'},
+    {en:'I can give examples of mixtures.',vi:'Con cho được ví dụ về hỗn hợp (mixture).'},
+    {en:'The residue proves the drinking water was a mixture: dissolved substances were in the water all along. Safety glasses protect your eyes if the hot solution spits.',vi:'Chất còn lại chứng tỏ nước uống là một hỗn hợp: các chất hòa tan đã ở trong nước từ đầu. Kính an toàn bảo vệ mắt nếu dung dịch nóng bắn ra.'}]}
+];
+const SORTC=[
+ {id:'c_o2',emoji:'💨',en:'Oxygen — O2',vi:'Oxy — O2 (oxygen)',ans:'element'},
+ {id:'c_h2o',emoji:'💧',en:'Water — H2O',vi:'Nước — H2O (water)',ans:'compound'},
+ {id:'c_na',emoji:'🧂',en:'Sodium',vi:'Natri (sodium)',ans:'element'},
+ {id:'c_cao',emoji:'🪨',en:'Calcium oxide — CaO',vi:'Canxi oxit — CaO (calcium oxide)',ans:'compound'},
+ {id:'c_ch4',emoji:'🔥',en:'Methane — CH4',vi:'Metan — CH4 (methane)',ans:'compound'},
+ {id:'c_k',emoji:'🍌',en:'Potassium — K',vi:'Kali — K (potassium)',ans:'element'}
+];
+const SORTC_ORDER=mixOrder(SORTC,c=>c.ans,2);
+const GAME=[
+ {q:{en:'Which gas makes up most of the air (about 78%)?',vi:'Khí nào chiếm phần lớn nhất của không khí (khoảng 78%)?'},
+  opts:[{en:'Oxygen — about 21%',vi:'Oxy — khoảng 21% (oxygen)'},{en:'Carbon dioxide — about 1%',vi:'Cacbon đioxit — khoảng 1% (carbon dioxide)'},{en:'Nitrogen — about 78%',vi:'Nitơ — khoảng 78% (nitrogen)'}],a:2},
+ {q:{en:'On the mineral water label, which mineral is the most abundant (mg/l)?',vi:'Trên nhãn nước khoáng (mineral water), khoáng chất (mineral) nào nhiều nhất (mg/l)?'},
+  opts:[{en:'Bicarbonate — 248 mg/l',vi:'Bicarbonate — 248 mg/l'},{en:'Calcium — 55 mg/l',vi:'Canxi — 55 mg/l (calcium)'},{en:'Chloride — 37 mg/l',vi:'Clorua — 37 mg/l (chloride)'}],a:0},
+ {q:{en:'Which of these is a mixture?',vi:'Chất nào sau đây là hỗn hợp (mixture)?'},
+  opts:[{en:'Iron sulfide',vi:'Sắt sulfide (iron sulfide)'},{en:'Air',vi:'Không khí (air)'},{en:'Sulfur on its own',vi:'Lưu huỳnh (sulfur) riêng lẻ'}],a:1}
+];
+const QUIZ=[
+ {q:{en:'What is the difference between a compound and a mixture?',vi:'Sự khác nhau giữa hợp chất (compound) và hỗn hợp (mixture) là gì?'},
+  o:[{en:'There is no difference — both are just stirred together',vi:'Không khác gì — cả hai chỉ được khuấy trộn với nhau'},{en:'In a compound, atoms of different elements are bonded together into a new substance; in a mixture, substances are mixed but not bonded',vi:'Trong hợp chất, các nguyên tử của các nguyên tố khác nhau liên kết với nhau thành một chất mới; trong hỗn hợp, các chất được trộn nhưng không liên kết'},{en:'A mixture is always a gas and a compound is always a solid',vi:'Hỗn hợp luôn là chất khí và hợp chất luôn là chất rắn'}],a:1,
+  e:{en:'Heating iron and sulfur bonds their atoms into the compound iron sulfide. Just stirring them makes a mixture — no bonding, and no new substance.',vi:'Đun sắt và lưu huỳnh làm các nguyên tử của chúng liên kết thành hợp chất sắt sulfide. Chỉ khuấy chúng tạo thành hỗn hợp — không liên kết, và không có chất mới.'}},
+ {q:{en:'After iron and sulfur have been heated together, why can a magnet NOT pull the iron out?',vi:'Sau khi sắt và lưu huỳnh được đun cùng nhau, vì sao nam châm KHÔNG hút sắt ra được?'},
+  o:[{en:'The iron atoms are bonded into iron sulfide, a new substance that is not magnetic',vi:'Các nguyên tử sắt đã liên kết vào sắt sulfide (iron sulfide), một chất mới không có từ tính'},{en:'The magnet has become too hot to work',vi:'Nam châm đã trở nên quá nóng nên không hoạt động'},{en:'The iron has all evaporated away',vi:'Sắt đã bay hơi hết'}],a:0,
+  e:{en:'Iron sulfide has completely different properties from iron — it is black, hard and not magnetic — so the magnet finds no separate iron to attract.',vi:'Sắt sulfide có tính chất hoàn toàn khác sắt — màu đen, cứng và không có từ tính — nên nam châm không tìm thấy sắt riêng lẻ nào để hút.'}},
+ {q:{en:'Air is a mixture. About how much of the air is nitrogen?',vi:'Không khí là một hỗn hợp (mixture). Khoảng bao nhiêu phần của không khí là nitơ (nitrogen)?'},
+  o:[{en:'About 21%',vi:'Khoảng 21%'},{en:'About 1%',vi:'Khoảng 1%'},{en:'About 78%',vi:'Khoảng 78%'}],a:2,
+  e:{en:'Air is about 78% nitrogen and 21% oxygen. Carbon dioxide, argon, water vapour and other gases make up only about 1%.',vi:'Không khí có khoảng 78% nitơ và 21% oxy (oxygen). Cacbon đioxit, argon, hơi nước và các khí khác chỉ chiếm khoảng 1%.'}},
+ {q:{en:'Drinking water is heated in an evaporating basin until it all evaporates, and a solid residue is left. What does this show?',vi:'Nước uống được đun trong bát bay hơi (evaporating basin) cho tới khi bay hơi hết, và một chất rắn còn lại. Điều này cho thấy gì?'},
+  o:[{en:'The water was pure — the residue came from the basin',vi:'Nước đó tinh khiết — chất rắn đến từ cái bát'},{en:'The water was a mixture — other substances were dissolved in it',vi:'Nước đó là hỗn hợp (mixture) — các chất khác đã hòa tan trong nó'},{en:'Evaporating can turn water into a compound',vi:'Bay hơi có thể biến nước thành một hợp chất'}],a:1,
+  e:{en:'The residue was dissolved in the water all along, so the drinking water was a mixture of water and other substances — not pure water.',vi:'Chất rắn đó đã hòa tan trong nước từ đầu, nên nước uống là hỗn hợp của nước và các chất khác — không phải nước tinh khiết (pure).'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'Sofia produces a new product',vi:'Sofia tạo ra một sản phẩm mới'},correct:0,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'Sofia heats the iron and sulfur, so their atoms bond and a new product — iron sulfide — is formed.',vi:'Sofia đun sắt và lưu huỳnh, nên các nguyên tử của chúng liên kết và một sản phẩm mới — sắt sulfide — được tạo thành.'}},
+ {pre:{en:'Marcus produces a new product',vi:'Marcus tạo ra một sản phẩm mới'},correct:1,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'Marcus only stirs the two elements together. That makes a mixture, not a new product.',vi:'Marcus chỉ khuấy hai nguyên tố với nhau. Điều đó tạo thành hỗn hợp (mixture), không phải sản phẩm mới.'}},
+ {pre:{en:'Iron is magnetic',vi:'Sắt có từ tính (magnetic)'},correct:0,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'Iron is a metal and it is magnetic — that is why a magnet can pull iron filings out of a mixture.',vi:'Sắt là kim loại và có từ tính — đó là lý do nam châm hút được mạt sắt ra khỏi hỗn hợp.'}},
+ {pre:{en:'Something in Marcus’s beaker is attracted to a magnet',vi:'Có thứ trong cốc của Marcus bị nam châm hút'},correct:0,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'The iron filings in the mixture keep their own properties, so the magnet attracts them.',vi:'Mạt sắt trong hỗn hợp giữ nguyên tính chất của mình, nên nam châm hút chúng.'}},
+ {pre:{en:'At the end of Sofia’s experiment, something in her test tube is attracted to a magnet',vi:'Cuối thí nghiệm của Sofia, có thứ trong ống nghiệm của cô bị nam châm hút'},correct:1,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'Sofia’s tube now holds iron sulfide, which is not magnetic, so nothing is attracted.',vi:'Ống của Sofia giờ chứa sắt sulfide, chất này không có từ tính, nên không có gì bị hút.'}},
+ {pre:{en:'At the end of Sofia’s experiment, her test tube contains a compound',vi:'Cuối thí nghiệm của Sofia, ống nghiệm của cô chứa một hợp chất (compound)'},correct:0,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'Heating bonded the iron and sulfur atoms together into the compound iron sulfide.',vi:'Đun nóng đã liên kết các nguyên tử sắt và lưu huỳnh với nhau thành hợp chất sắt sulfide.'}},
+ {pre:{en:'At the end of Marcus’s experiment, his beaker contains a compound',vi:'Cuối thí nghiệm của Marcus, cốc của anh chứa một hợp chất (compound)'},correct:1,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'Marcus’s beaker contains a mixture — the iron and sulfur are mixed, but their atoms are not bonded.',vi:'Cốc của Marcus chứa một hỗn hợp (mixture) — sắt và lưu huỳnh được trộn, nhưng các nguyên tử của chúng không liên kết.'}},
+ {pre:{en:'Compounds have the same properties as the elements they are made from',vi:'Hợp chất (compound) có cùng tính chất với các nguyên tố tạo thành chúng'},correct:1,
+  opts:[{en:'TRUE',vi:'ĐÚNG (TRUE)'},{en:'FALSE',vi:'SAI (FALSE)'}],
+  e:{en:'A compound has completely different properties from its elements: iron is magnetic and grey, but iron sulfide is black and not magnetic.',vi:'Một hợp chất có tính chất hoàn toàn khác các nguyên tố của nó: sắt có từ tính và màu xám, nhưng sắt sulfide màu đen và không có từ tính.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'A diagram shows single atoms of two kinds, spread far apart. It shows',vi:'Một sơ đồ cho thấy các nguyên tử đơn lẻ thuộc hai loại, cách xa nhau. Nó cho thấy'},correct:0,
+  opts:[{en:'a mixture of elements, as a gas',vi:'một hỗn hợp các nguyên tố, ở thể khí (mixture of elements, gas)'},{en:'a solid compound',vi:'một hợp chất rắn (solid compound)'}],
+  e:{en:'Particles far apart are a gas, and separate atoms of two kinds mixed together are a mixture of elements.',vi:'Các hạt cách xa nhau là chất khí, và các nguyên tử riêng lẻ thuộc hai loại trộn với nhau là hỗn hợp các nguyên tố.'}},
+ {pre:{en:'A diagram shows particles packed close in a regular pattern, and every particle is two different atoms bonded together. It shows',vi:'Một sơ đồ cho thấy các hạt xếp khít theo mẫu đều đặn, và mỗi hạt là hai nguyên tử khác nhau liên kết với nhau. Nó cho thấy'},correct:1,
+  opts:[{en:'a mixture of elements, as a liquid',vi:'một hỗn hợp các nguyên tố, ở thể lỏng'},{en:'a compound, as a solid',vi:'một hợp chất (compound), ở thể rắn'}],
+  e:{en:'A regular packed pattern is a solid, and bonded pairs of different atoms are a compound.',vi:'Mẫu xếp khít đều đặn là chất rắn, và các cặp nguyên tử khác nhau liên kết với nhau là hợp chất.'}},
+ {pre:{en:'A diagram shows single atoms of one kind only, close together but jumbled. It shows',vi:'Một sơ đồ cho thấy các nguyên tử đơn lẻ thuộc một loại duy nhất, gần nhau nhưng lộn xộn. Nó cho thấy'},correct:0,
+  opts:[{en:'an element, as a liquid',vi:'một nguyên tố (element), ở thể lỏng'},{en:'a mixture of compounds',vi:'một hỗn hợp các hợp chất'}],
+  e:{en:'One kind of atom only is an element, and close but jumbled particles are a liquid.',vi:'Chỉ một loại nguyên tử là nguyên tố, và các hạt gần nhau nhưng lộn xộn là chất lỏng.'}},
+ {pre:{en:'A diagram shows two kinds of bonded particle mixed together, spread far apart. It shows',vi:'Một sơ đồ cho thấy hai loại hạt đã liên kết trộn với nhau, cách xa nhau. Nó cho thấy'},correct:1,
+  opts:[{en:'a single compound, as a solid',vi:'một hợp chất duy nhất, ở thể rắn'},{en:'a mixture of compounds, as a gas',vi:'một hỗn hợp các hợp chất (mixture of compounds), ở thể khí'}],
+  e:{en:'Two different compounds mixed together are a mixture of compounds, and far-apart particles are a gas.',vi:'Hai hợp chất khác nhau trộn với nhau là hỗn hợp các hợp chất, và các hạt cách xa nhau là chất khí.'}},
+ {pre:{en:'Air, drawn as particles, would show mostly single nitrogen molecules with some oxygen molecules, far apart. Air is',vi:'Không khí, khi vẽ dưới dạng hạt, sẽ cho thấy chủ yếu các phân tử nitơ đơn lẻ với một số phân tử oxy, cách xa nhau. Không khí là'},correct:0,
+  opts:[{en:'a mixture',vi:'một hỗn hợp (mixture)'},{en:'a compound',vi:'một hợp chất (compound)'}],
+  e:{en:'In air the different particles are mixed but not bonded to each other, so air is a mixture.',vi:'Trong không khí các hạt khác nhau được trộn nhưng không liên kết với nhau, nên không khí là hỗn hợp.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'An example of a compound made from iron and sulfur is',vi:'Một ví dụ về hợp chất tạo từ sắt và lưu huỳnh là'},correct:0,
+  opts:[{en:'iron sulfide',vi:'sắt sulfide (iron sulfide)'},{en:'iron filings stirred with sulfur powder',vi:'mạt sắt khuấy với bột lưu huỳnh'}],
+  e:{en:'Iron sulfide is the compound formed when iron and sulfur atoms bond on heating. Stirred filings and powder are only a mixture.',vi:'Sắt sulfide là hợp chất tạo thành khi các nguyên tử sắt và lưu huỳnh liên kết khi đun. Mạt sắt khuấy với bột chỉ là hỗn hợp.'}},
+ {pre:{en:'An example of a mixture of the same two elements is',vi:'Một ví dụ về hỗn hợp của cùng hai nguyên tố đó là'},correct:1,
+  opts:[{en:'iron sulfide',vi:'sắt sulfide (iron sulfide)'},{en:'iron filings stirred with sulfur powder, without heating',vi:'mạt sắt khuấy với bột lưu huỳnh, không đun'}],
+  e:{en:'Without heating, the iron and sulfur stay as separate substances mixed together — a mixture.',vi:'Khi không đun, sắt và lưu huỳnh vẫn là các chất riêng biệt trộn với nhau — một hỗn hợp.'}},
+ {pre:{en:'The difference between the compound and the mixture of iron and sulfur is that in the compound the atoms are',vi:'Sự khác nhau giữa hợp chất và hỗn hợp của sắt và lưu huỳnh là trong hợp chất các nguyên tử được'},correct:0,
+  opts:[{en:'bonded together',vi:'liên kết (bonded) với nhau'},{en:'just mixed, not bonded',vi:'chỉ trộn, không liên kết'}],
+  e:{en:'In a compound the different atoms are bonded tightly together; in a mixture they are only mixed.',vi:'Trong hợp chất các nguyên tử khác nhau liên kết chặt với nhau; trong hỗn hợp chúng chỉ được trộn.'}},
+ {pre:{en:'The properties of the compound iron sulfide are',vi:'Tính chất của hợp chất sắt sulfide thì'},correct:1,
+  opts:[{en:'the same as iron and sulfur',vi:'giống như sắt và lưu huỳnh'},{en:'completely different from iron and sulfur',vi:'hoàn toàn khác sắt và lưu huỳnh'}],
+  e:{en:'Iron sulfide is black, hard and not magnetic — completely different from grey magnetic iron and yellow brittle sulfur.',vi:'Sắt sulfide màu đen, cứng và không có từ tính — hoàn toàn khác sắt màu xám có từ tính và lưu huỳnh màu vàng giòn.'}},
+ {pre:{en:'The properties of the mixture are different from the compound because in the mixture the iron',vi:'Tính chất của hỗn hợp khác với hợp chất vì trong hỗn hợp sắt'},correct:0,
+  opts:[{en:'keeps its own properties, so a magnet can remove it',vi:'giữ nguyên tính chất của mình, nên nam châm lấy nó ra được'},{en:'has bonded to the sulfur',vi:'đã liên kết với lưu huỳnh'}],
+  e:{en:'In the mixture nothing has bonded, so the iron is still magnetic and a magnet can separate it.',vi:'Trong hỗn hợp không có gì liên kết, nên sắt vẫn có từ tính và nam châm tách nó ra được.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 8 + 5 + 5 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-2-7';
+const SUMKEY='camb:sum:sci7-2-7';
+const BOT_CODE='sci7-2.7';
+let FOUND={props:false,mix:false,comp:false,cls:false,ex:false,evap:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1:new Set(),
+  s2:new Set(),
+  s3:new Set(),
+  s4correct:new Set(), s4sel:null,
+  s5idx:0, s5correct:0, s5wrong:false,
+  s6pos:false, s6ans:false, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=2;
+  if(i===1) return T.s2.size>=2;
+  if(i===2) return T.s3.size>=3;
+  if(i===3) return T.s4correct.size>=5;
+  if(i===4) return T.s5correct>=3;
+  if(i===5) return T.s6pos&&T.s6ans;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Things compared: '+T.s1.size+' of 2 (iron filings · powdered sulfur). Tap them on the bench!',
+             'Đã so sánh: '+T.s1.size+' / 2 (mạt sắt · bột lưu huỳnh). Hãy chạm vào chúng trên bàn!');
+  }
+  if(i===1){
+    return B('Mixture steps done: '+T.s2.size+' of 2 (beaker of mixture · magnet separates the iron).',
+             'Các bước với hỗn hợp đã làm: '+T.s2.size+' / 2 (cốc hỗn hợp · nam châm tách sắt ra).');
+  }
+  if(i===2){
+    return B('Compound steps done: '+T.s3.size+' of 3 (heat the tube · iron sulfide forms · magnet test fails).',
+             'Các bước với hợp chất đã làm: '+T.s3.size+' / 3 (đun ống · sắt sulfide tạo thành · thử nam châm không tách được).');
+  }
+  if(i===3){
+    const c=T.s4sel? SORTC.find(x=>x.id===T.s4sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap ELEMENT or COMPOUND.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm NGUYÊN TỐ (ELEMENT) hoặc HỢP CHẤT (COMPOUND).');
+    return B('Cards right: '+T.s4correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s4correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===4){
+    if(T.s5idx>=GAME.length) return B('Finished! You answered all 3 questions right.','Hoàn thành! Con đã trả lời đúng cả 3 câu.');
+    return B('Question '+(T.s5idx+1)+' of 3 · Right answers: '+T.s5correct+(T.s5wrong? ' · Think again — check the percentages and the label values!' : ''),
+             'Câu hỏi '+(T.s5idx+1)+' / 3 · Đáp án đúng: '+T.s5correct+(T.s5wrong? ' · Nghĩ lại nào — kiểm tra các phần trăm và số trên nhãn!' : ''));
+  }
+  if(i===5){
+    if(!T.s6pos) return B('Tap the evaporating basin on the bench.','Hãy chạm vào bát bay hơi trên bàn.');
+    if(T.s6wrong&&!T.s6ans) return B('Think again! Something solid was left behind — where did it come from?','Nghĩ lại nào! Có chất rắn còn lại — nó đến từ đâu?');
+    if(!T.s6ans) return B('The water evaporated and a residue was left. Now answer: was the water pure, or a mixture?','Nước đã bay hơi và một chất rắn còn lại. Giờ trả lời: nước đó tinh khiết, hay là hỗn hợp?');
+    return B('The residue was dissolved in the water — the water was a mixture.','Chất rắn đó đã hòa tan trong nước — nước đó là hỗn hợp.');
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🧲',label:{en:'Iron — grey, magnetic',vi:'Sắt — xám, có từ tính'},got:T.s1.has('iron')},
+      {emoji:'🟡',label:{en:'Sulfur — yellow, brittle',vi:'Lưu huỳnh — vàng, giòn'},got:T.s1.has('sulfur')}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🥛',label:{en:'Mixture in the beaker',vi:'Hỗn hợp trong cốc'},got:T.s2.has('beaker')},
+      {emoji:'🧲',label:{en:'Magnet pulls iron out',vi:'Nam châm hút sắt ra'},got:T.s2.has('magnet')}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🧪',label:{en:'Heated — it glows',vi:'Đã đun — nó phát sáng'},got:T.s3.has('tube')},
+      {emoji:'⬛',label:{en:'Iron sulfide formed',vi:'Sắt sulfide đã tạo thành'},got:T.s3.has('sulfide')},
+      {emoji:'🧲',label:{en:'Magnet cannot separate it',vi:'Nam châm không tách được'},got:T.s3.has('magnet')}
+    ]);
+  }else if(curStep===3){
+    buildSort(box,SORTC_ORDER,
+      [{key:'element',label:STR.binElement,cls:'element'},{key:'compound',label:STR.binCompound,cls:'compound'}],
+      T.s4correct,()=>T.s4sel,v=>{T.s4sel=v;},null,onSortPlaced);
+  }else if(curStep===4){
+    if(T.s5idx<GAME.length){
+      const gq=GAME[T.s5idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s5correct++; T.s5idx++; T.s5wrong=false; if(T.s5correct>=3) FOUND.ex=true; saveProg(); renderMirrors(); }
+          else { T.s5wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }else if(curStep===5){
+    if(!T.s6pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapBasin)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s6ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qWater);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chPure,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s6wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chMixture,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s6ans=true; FOUND.evap=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('iron'); bounceThing('iron'); setTimeout(()=>{ focusVisual('sulfur'); bounceThing('sulfur'); },900); }
+  else if(i===1){ focusThing('beaker'); bounceThing('beaker'); setTimeout(()=>{ focusVisual('magnet'); bounceThing('magnet'); },900); }
+  else if(i===2){ focusThing('tube'); bounceThing('tube'); }
+  else if(i===3){ demoSort(SORTC,T.s4correct); }
+  else if(i===4){ focusThing('bottle'); bounceThing('bottle'); }
+  else if(i===5){ focusThing('basin'); bounceThing('basin'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowProps,(doneSteps.has(0)?2:T.s1.size),2)+
+    row(STR.rowMix,(doneSteps.has(1)?2:T.s2.size),2)+
+    row(STR.rowComp,(doneSteps.has(2)?3:T.s3.size),3)+
+    row(STR.rowSort,SORTC.filter(c=>SORTED.has(c.id)).length,6);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.props||doneSteps.has(0),label:STR.foundProps},
+    {got:FOUND.mix||doneSteps.has(1),label:STR.foundMix},
+    {got:FOUND.comp||doneSteps.has(2),label:STR.foundComp},
+    {got:FOUND.cls||doneSteps.has(3),label:STR.foundClass},
+    {got:FOUND.ex||doneSteps.has(4),label:STR.foundEx},
+    {got:FOUND.evap||doneSteps.has(5),label:STR.foundEvap}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildDish(contentFn,px,pz){
+  const g=new THREE.Group();
+  const dish=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.44,0.14,20),stdMat(0x9aa7b4,0.45)));
+  dish.position.y=0.07; g.add(dish);
+  contentFn(g);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildIron(px,pz){
+  return buildDish(g=>{
+    for(let k=0;k<14;k++){
+      const a=k*2.39, r=0.12+(k%4)*0.09;
+      const f=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.22,6),stdMat(0x6b7684,0.35));
+      f.position.set(Math.cos(a)*r,0.2,Math.sin(a)*r); f.rotation.set(0.7,k,0.4); g.add(f);
+    }
+    const bar=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.09,0.18),stdMat(0x8b96a5,0.3)));
+    bar.position.y=0.3; bar.rotation.y=0.5; g.add(bar);
+  },px,pz);
+}
+function buildSulfur(px,pz){
+  return buildDish(g=>{
+    const cone=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.34,0.4,18),stdMat(0xf2c41e,0.7)));
+    cone.position.y=0.33; g.add(cone);
+  },px,pz);
+}
+function buildBeaker(px,pz){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.36,0.8,18,1,true),new THREE.MeshStandardMaterial({color:0xdff2ff,roughness:0.12,transparent:true,opacity:0.35,side:THREE.DoubleSide}));
+  glass.position.y=0.42; g.add(glass);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.37,0.37,0.05,18),stdMat(0xb9c9d8,0.5));
+  base.position.y=0.03; g.add(base);
+  for(let k=0;k<16;k++){
+    const a=k*2.7, r=0.1+(k%3)*0.08;
+    const s=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6),stdMat(k%2?0xf2c41e:0x6b7684,0.5));
+    s.position.set(Math.cos(a)*r,0.16+(k%4)*0.1,Math.sin(a)*r); g.add(s);
+  }
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildMagnet(px,pz){
+  const g=new THREE.Group();
+  const left=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.16,0.55,0.16),stdMat(0xd23c2a,0.45)));
+  left.position.set(-0.2,0.32,0); g.add(left);
+  const right=left.clone(); right.position.x=0.2; g.add(right);
+  const top=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.56,0.16,0.16),stdMat(0xd23c2a,0.45)));
+  top.position.set(0,0.62,0); g.add(top);
+  [-0.2,0.2].forEach(dx=>{
+    const tip=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.1,0.16),stdMat(0xd7dde5,0.3));
+    tip.position.set(dx,0.08,0); g.add(tip);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildTube(px,pz){
+  const g=new THREE.Group();
+  const stand=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.08,0.5),stdMat(0x44586e,0.6));
+  stand.position.y=0.04; g.add(stand);
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.34,10),new THREE.MeshBasicMaterial({color:0xff8c1a}));
+  flame.position.y=0.28; g.add(flame); g.userData.flame=flame;
+  const tubeG=new THREE.Group(); tubeG.position.set(0.05,0.75,0); tubeG.rotation.z=-0.65;
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.95,14,1,true),new THREE.MeshStandardMaterial({color:0xdff2ff,roughness:0.12,transparent:true,opacity:0.4,side:THREE.DoubleSide}));
+  tubeG.add(glass);
+  const mix=new THREE.Mesh(new THREE.CylinderGeometry(0.115,0.115,0.3,12),new THREE.MeshBasicMaterial({color:0xff6a00}));
+  mix.position.y=-0.28; tubeG.add(mix);
+  g.add(tubeG);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildSulfide(px,pz){
+  return buildDish(g=>{
+    const lump=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.32,0),stdMat(0x232a33,0.55)));
+    lump.position.y=0.36; lump.rotation.set(0.3,0.8,0.15); g.add(lump);
+  },px,pz);
+}
+function buildAirBoard(px,pz){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,1.0,8),stdMat(0x8a5a2b,0.9));
+  post.position.y=0.5; g.add(post);
+  const board=new THREE.Group(); board.position.y=1.5; board.rotation.x=-0.1;
+  const back=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.6,1.25,0.06),stdMat(0xffffff,0.7)));
+  board.add(back);
+  const pie=new THREE.Group(); pie.position.z=0.06;
+  const n2=new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.44,0.04,24,1,false,0,Math.PI*2*0.78),stdMat(0x7db8e8,0.6));
+  n2.rotation.x=Math.PI/2; pie.add(n2);
+  const o2=new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.44,0.045,24,1,false,Math.PI*2*0.78,Math.PI*2*0.21),stdMat(0xd23c2a,0.6));
+  o2.rotation.x=Math.PI/2; pie.add(o2);
+  const rest=new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.44,0.05,24,1,false,Math.PI*2*0.99,Math.PI*2*0.01),stdMat(0xf2c41e,0.6));
+  rest.rotation.x=Math.PI/2; pie.add(rest);
+  board.add(pie); g.userData.pie=pie;
+  g.add(board);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBottle(px,pz){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.28,0.85,16),new THREE.MeshStandardMaterial({color:0x9fd4f2,roughness:0.15,transparent:true,opacity:0.65}));
+  body.position.y=0.48; g.add(body);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.12,0.14,12),stdMat(0x0b76d1,0.5));
+  cap.position.y=0.98; g.add(cap);
+  const label=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.42,0.02),stdMat(0xffffff,0.6));
+  label.position.set(0,0.5,0.26); g.add(label);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildBasin(px,pz){
+  const g=new THREE.Group();
+  [-0.3,0,0.3].forEach((dx,k)=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.55,8),stdMat(0x44586e,0.5));
+    leg.position.set(dx,0.27,k===1?0.25:-0.12); leg.rotation.z=dx*0.5; g.add(leg);
+  });
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.3,10),new THREE.MeshBasicMaterial({color:0x3d8bfd}));
+  flame.position.y=0.18; g.add(flame); g.userData.flame=flame;
+  const basinM=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.46,0.3,0.2,18),stdMat(0xf4f7fa,0.35)));
+  basinM.position.y=0.62; g.add(basinM);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.03,18),new THREE.MeshBasicMaterial({color:0x7db8e8}));
+  water.position.y=0.71; g.add(water);
+  const residue=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.2,0.02,14),stdMat(0xd9c08a,0.8));
+  residue.position.y=0.6; g.add(residue);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  reg('iron',buildIron(-4.4,-1.8));
+  reg('sulfur',buildSulfur(-2.8,-1.8));
+  reg('beaker',buildBeaker(-1.1,-1.8));
+  reg('magnet',buildMagnet(0.6,-1.8));
+  reg('tube',buildTube(2.4,-1.8));
+  reg('sulfide',buildSulfide(4.2,-1.8));
+  reg('airboard',buildAirBoard(-3.6,2.2));
+  reg('bottle',buildBottle(1.5,2.2));
+  reg('basin',buildBasin(3.3,2.2));
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('iron',p,G.iron); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('sulfur',p,G.sulfur); }
+  { const p=sphProxy(0.6); p.position.set(0,0.45,0); addProxy('beaker',p,G.beaker); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('magnet',p,G.magnet); }
+  { const p=sphProxy(0.7); p.position.set(0,0.6,0); addProxy('tube',p,G.tube); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('sulfide',p,G.sulfide); }
+  { const p=sphProxy(0.85); p.position.set(0,1.45,0); addProxy('airboard',p,G.airboard); }
+  { const p=sphProxy(0.6); p.position.set(0,0.5,0); addProxy('bottle',p,G.bottle); }
+  { const p=sphProxy(0.7); p.position.set(0,0.5,0); addProxy('basin',p,G.basin); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['iron','sulfur'],
+  ['beaker','magnet'],
+  ['tube','sulfide','magnet'],
+  [],
+  [],
+  ['basin']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='iron'||id==='sulfur'){
+      T.s1.add(id);
+      if(T.s1.size>=2) FOUND.props=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1){
+    if(id==='beaker'||id==='magnet'){
+      T.s2.add(id);
+      if(T.s2.size>=2) FOUND.mix=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===2){
+    if(id==='tube'||id==='sulfide'||id==='magnet'){
+      T.s3.add(id);
+      if(T.s3.size>=3) FOUND.comp=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===5&&id==='basin'){
+    T.s6pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.tube&&G.tube.userData.flame) G.tube.userData.flame.scale.y=1+Math.sin(t*11)*0.15;
+  if(G.basin&&G.basin.userData.flame) G.basin.userData.flame.scale.y=1+Math.sin(t*9+1)*0.12;
+  if(G.airboard&&G.airboard.userData.pie) G.airboard.userData.pie.rotation.z=Math.sin(t*0.5)*0.08;
+  if(G.beaker) G.beaker.rotation.y=Math.sin(t*0.6)*0.2;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){
+  SORTED.add(c.id);
+  if(curStep===3) FOUND.cls=true;
+  saveProg(); renderMirrors();
+}
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.props=false; }
+  if(step===1){ FOUND.mix=false; }
+  if(step===2){ FOUND.comp=false; }
+  if(step===3){ SORTC.forEach(c=>SORTED.delete(c.id)); FOUND.cls=false; }
+  if(step===4){ FOUND.ex=false; }
+  if(step===5){ FOUND.evap=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['iron','sulfur'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ ['beaker','magnet'].forEach(id=>t.s2.add(id)); }
+  else if(i===2){ ['tube','sulfide','magnet'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ SORTC.forEach(c=>{ if(SORTED.has(c.id)) t.s4correct.add(c.id); }); }
+  else if(i===4){ t.s5idx=GAME.length; t.s5correct=GAME.length; }
+  else if(i===5){ t.s6pos=true; t.s6ans=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-2-7',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>2.2 Changes of state — Sự chuyển trạng thái · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 .45em;font-size:.78em}
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.binbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25;min-width:120px}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.melt{background:#e07b24}
+.binbtn.freeze{background:#3d8bfd}
+.binbtn.condense{background:#00a3c8}
+.binbtn.boil{background:#d23c2a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:100px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.optrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.optbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;border:2px solid var(--acc);background:#eef6ff;color:var(--acc);min-width:100px}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:19px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.wordopt.chosen{border-color:var(--acc);background:#eef6ff}
+.wordopt.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="2.2 Changes of state" data-vi="2.2 Sự chuyển trạng thái (Changes of state)">2.2 Changes of state</span>
+    <span class="eqchip i18n" data-en="Unit 2 · Materials and their structure" data-vi="Bài 2 · Vật liệu và cấu trúc của chúng (Materials and their structure)">Unit 2 · Materials and their structure</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do particles explain changes of state?" data-vi="Các hạt (particles) giải thích sự đổi trạng thái (change of state) thế nào?">How do particles explain changes of state?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Particle models" data-vi="Mô hình hạt (particle models)">Particle models</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Name the change" data-vi="Gọi tên sự đổi trạng thái">Name the change</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Measure well" data-vi="Đo chính xác (measure)">Measure well</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Heat and record" data-vi="Đun và ghi lại">Heat and record</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the lab bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap things on the lab bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.2. The lab bench in this lesson is a simulation." data-vi="Khoa học Cambridge Lower Secondary 7 · Bài 2 Vật liệu và cấu trúc của chúng · Mục 2.2. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.2. The lab bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 2 Materials and their structure, section 2.2 Changes of state, pages 29–34; Workbook 7 (ISBN 9781108742818), section 2.2, pages 21–25. The particle-model opener follows the section's Getting started task. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 2 Materials and their structure (Vật liệu và cấu trúc của chúng), mục 2.2 Changes of state (Sự đổi trạng thái), trang 29–34; Workbook 7 (ISBN 9781108742818), mục 2.2, trang 21–25. Phần mở đầu mô hình hạt theo hoạt động Getting started của mục này. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 2 Materials and their structure, section 2.2 Changes of state, pages 29–34; Workbook 7 (ISBN 9781108742818), section 2.2, pages 21–25. The particle-model opener follows the section's Getting started task. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: draw and describe the particle structure of a solid, a liquid and a gas; name the changes of state (melt, freeze, condense, boil); measure the volume and the temperature of a liquid accurately with a measuring cylinder and a thermometer; investigate how the temperature of water changes as it is heated, and record the results in a table. Key words: boil, boiling point, change of state, condensation, condense, evaporation, freeze, measuring cylinder, melt, melting point, meniscus, steam, thermometer, water vapour." data-vi="Mục tiêu: vẽ và mô tả cấu trúc hạt (particle) của chất rắn, chất lỏng và chất khí; gọi tên các sự đổi trạng thái (change of state): nóng chảy (melt), đông đặc (freeze), ngưng tụ (condense), sôi (boil); đo chính xác thể tích và nhiệt độ của chất lỏng bằng ống đong (measuring cylinder) và nhiệt kế (thermometer); khảo sát nhiệt độ của nước thay đổi thế nào khi đun, và ghi kết quả vào bảng. Từ khóa: boil, boiling point (điểm sôi), change of state, condensation (ngưng tụ), condense, evaporation (bay hơi), freeze, measuring cylinder, melt, melting point (điểm nóng chảy), meniscus (mặt khum), steam (hơi nước nóng), thermometer, water vapour (hơi nước).">Objectives: draw and describe the particle structure of a solid, a liquid and a gas; name the changes of state (melt, freeze, condense, boil); measure the volume and the temperature of a liquid accurately with a measuring cylinder and a thermometer; investigate how the temperature of water changes as it is heated, and record the results in a table. Key words: boil, boiling point, change of state, condensation, condense, evaporation, freeze, measuring cylinder, melt, melting point, meniscus, steam, thermometer, water vapour.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D lab bench or with the sorting cards. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. In the heating investigation the thermometer readings are fixed (20, 45, 70, then 100 °C) so the record table always matches the screen; the Workbook exercises reuse Marcus's table (20 °C rising to 88 °C over 5 minutes) and Zara's graph, including her one point that does not fit the pattern. Watch out for the two classic traps: reading the top instead of the bottom of the meniscus, and expecting the temperature to keep rising while the water boils — it stays at 100 °C." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn thí nghiệm 3D hoặc với các thẻ sắp xếp. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Trong thí nghiệm đun nước, các số đọc nhiệt kế là cố định (20, 45, 70, rồi 100 °C) để bảng ghi luôn khớp với màn hình; bài tập Workbook dùng lại bảng của Marcus (20 °C tăng tới 88 °C trong 5 phút) và đồ thị của Zara, kể cả một điểm không theo quy luật của bạn ấy. Lưu ý hai bẫy quen thuộc: đọc đỉnh thay vì đáy của mặt khum (meniscus), và nghĩ rằng nhiệt độ cứ tăng khi nước sôi — nó giữ nguyên ở 100 °C.">How it works: each step asks for one real action on the 3D lab bench or with the sorting cards. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. In the heating investigation the thermometer readings are fixed (20, 45, 70, then 100 °C) so the record table always matches the screen; the Workbook exercises reuse Marcus's table (20 °C rising to 88 °C over 5 minutes) and Zara's graph, including her one point that does not fit the pattern. Watch out for the two classic traps: reading the top instead of the bottom of the meniscus, and expecting the temperature to keep rising while the water boils — it stays at 100 °C.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn melt" id="ex1BinMelt"></button>
+        <button class="binbtn freeze" id="ex1BinFreeze"></button>
+        <button class="binbtn condense" id="ex1BinCondense"></button>
+        <button class="binbtn boil" id="ex1BinBoil"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-2-2 "Changes of state" (Science 7, Unit 2)
+   LB 2.2 "Changes of state" (pp. 29–34): Getting started asks learners to
+   draw the particle structure of a solid, a liquid and a gas; the core
+   covers melt / freeze / condense / boil, measuring volume (meniscus)
+   and temperature, and the heating-water investigation. WB 2.2 follows
+   Marcus's heating investigation and Zara's graph.
+   ===================================================================== */
+
+/* ================= lab bench things ================= */
+const THINGS={
+  solidTank: {kind:'particle', emoji:'🧊', name:{en:'Solid tank',vi:'Bể chất rắn (solid)'},        short:{en:'Solid',vi:'Chất rắn'},       ring:1.05, labelY:2.1, fx:-3.9, fz:-2.1, fr:5.6},
+  liquidTank:{kind:'particle', emoji:'💧', name:{en:'Liquid tank',vi:'Bể chất lỏng (liquid)'},     short:{en:'Liquid',vi:'Chất lỏng'},     ring:1.05, labelY:2.1, fx:-1.3, fz:-2.1, fr:5.6},
+  gasTank:   {kind:'particle', emoji:'🫧', name:{en:'Gas tank',vi:'Bể chất khí (gas)'},             short:{en:'Gas',vi:'Chất khí'},         ring:1.05, labelY:2.1, fx:1.3,  fz:-2.1, fr:5.6},
+  cylinder:  {kind:'tool',     emoji:'🧪', name:{en:'Measuring cylinder',vi:'Ống đong (measuring cylinder)'}, short:{en:'Cylinder',vi:'Ống đong'}, ring:0.55, labelY:2.0, fx:-2.7, fz:1.5, fr:4.6},
+  beaker:    {kind:'tool',     emoji:'🥛', name:{en:'Beaker of water',vi:'Cốc đong nước (beaker)'}, short:{en:'Beaker',vi:'Cốc đong'},     ring:0.7,  labelY:2.2, fx:2.1,  fz:0.3,  fr:5.4},
+  thermo:    {kind:'tool',     emoji:'🌡️', name:{en:'Thermometer',vi:'Nhiệt kế (thermometer)'},    short:{en:'Thermometer',vi:'Nhiệt kế'}, ring:0.5,  labelY:1.0, fx:2.1,  fz:0.3,  fr:4.8},
+  burner:    {kind:'tool',     emoji:'🔥', name:{en:'Bunsen burner',vi:'Đèn Bunsen (Bunsen burner)'}, short:{en:'Burner',vi:'Đèn Bunsen'}, ring:0.5,  labelY:1.3, fx:2.1,  fz:0.3,  fr:5.4},
+  steam:     {kind:'vapour',   emoji:'♨️', name:{en:'Steam',vi:'Hơi nước nóng (steam)'},            short:{en:'Steam',vi:'Hơi nước nóng'},  ring:0.8,  labelY:1.1, fx:1.8,  fz:0.3,  fr:5.6}
+};
+const FOCUSORDER=['solidTank','liquidTank','gasTank','cylinder','beaker','thermo','burner'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the lab bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to measure or record, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn đo hay ghi số, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My measurement record',vi:'Bảng ghi số đo của con'},
+  u2Brief:{en:'Your readings, recorded exactly as you take them.',vi:'Các số đo của con, ghi lại đúng như con đo được.'},
+  recVol:{en:'Volume (measuring cylinder)',vi:'Thể tích (volume) (ống đong)'},
+  recTemp:{en:'Temperature (thermometer)',vi:'Nhiệt độ (temperature) (nhiệt kế)'},
+  recHeat:{en:'Heating water — record table',vi:'Đun nước — bảng ghi'},
+  recMin:(m)=>({en:m+' min',vi:m+' phút'}),
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your lab checklist.',vi:'Danh sách kiểm tra phòng thí nghiệm của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundSolid:{en:'Particle model: solid',vi:'Mô hình hạt: chất rắn (solid)'},
+  foundLiquid:{en:'Particle model: liquid',vi:'Mô hình hạt: chất lỏng (liquid)'},
+  foundGas:{en:'Particle model: gas',vi:'Mô hình hạt: chất khí (gas)'},
+  foundSorted:{en:'Changes of state sorted',vi:'Đã sắp xếp các sự đổi trạng thái'},
+  foundVol:{en:'Volume read at the meniscus',vi:'Đã đọc thể tích ở mặt khum (meniscus)'},
+  foundTemp:{en:'Temperature read',vi:'Đã đọc nhiệt độ'},
+  foundReads:{en:'Heating readings recorded',vi:'Đã ghi các số đo khi đun'},
+  foundSteam:{en:'Steam explained',vi:'Đã giải thích hơi nước (steam)'},
+  binMelt:{en:'MELT 🫠',vi:'NÓNG CHẢY (MELT) 🫠'},
+  binFreeze:{en:'FREEZE 🧊',vi:'ĐÔNG ĐẶC (FREEZE) 🧊'},
+  binCondense:{en:'CONDENSE 💧',vi:'NGƯNG TỤ (CONDENSE) 💧'},
+  binBoil:{en:'BOIL ♨️',vi:'SÔI (BOIL) ♨️'},
+  tapCyl:{en:'👆 Tap the measuring cylinder on the bench to look closely at the meniscus!',vi:'👆 Chạm vào ống đong (measuring cylinder) trên bàn để nhìn kỹ mặt khum (meniscus)!'},
+  tapThermo:{en:'👆 Tap the thermometer in the beaker to read its scale!',vi:'👆 Chạm vào nhiệt kế (thermometer) trong cốc để đọc thang đo!'},
+  volQ:{en:'What is the volume? Read the BOTTOM of the meniscus.',vi:'Thể tích (volume) là bao nhiêu? Hãy đọc ĐÁY của mặt khum (meniscus).'},
+  tempQ:{en:'What temperature does the thermometer show?',vi:'Nhiệt kế (thermometer) chỉ bao nhiêu độ?'},
+  boilQ:{en:'The water is boiling at 100 °C. What happens to its temperature if you keep heating it?',vi:'Nước đang sôi ở 100 °C. Nếu cứ đun tiếp, nhiệt độ của nước sẽ thế nào?'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 2.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 2.2'},
+  exIntro:{en:'Workbook tasks for this lesson. They do not change your steps — do them any time!',vi:'Các bài tập kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Which change of state?',vi:'Bài tập 1 · Focus — Sự đổi trạng thái (change of state) nào?'},
+  ex1Inst:{en:'Tap a card, then tap MELT, FREEZE, CONDENSE or BOIL — the change of state that is happening.',vi:'Chạm vào một thẻ, rồi chạm NÓNG CHẢY (MELT), ĐÔNG ĐẶC (FREEZE), NGƯNG TỤ (CONDENSE) hoặc SÔI (BOIL) — sự đổi trạng thái (change of state) đang xảy ra.'},
+  ex2T:{en:'Exercise 2 · Practice — Marcus and Zara: the heating graphs',vi:'Bài tập 2 · Practice — Marcus và Zara: đồ thị đun nước'},
+  ex2Inst:{en:"Marcus heated water and recorded: 0 min – 20 °C · 1 min – 34 °C · 2 min – 47 °C · 3 min – 61 °C · 4 min – 74 °C · 5 min – 88 °C. Zara plotted her own results: her points rise in a smooth curve, except ONE point at 4 minutes, which jumps to 95 °C while the points near it are about 60 °C. Choose the correct ending for each sentence.",vi:"Marcus đun nước và ghi lại: 0 phút – 20 °C · 1 phút – 34 °C · 2 phút – 47 °C · 3 phút – 61 °C · 4 phút – 74 °C · 5 phút – 88 °C. Zara vẽ đồ thị kết quả của mình: các điểm tăng theo một đường cong trơn, trừ MỘT điểm ở phút 4 nhảy lên 95 °C trong khi các điểm gần nó khoảng 60 °C. Hãy chọn phần kết đúng cho mỗi câu."},
+  ex3T:{en:'Exercise 3 · Challenge — Explain it',vi:'Bài tập 3 · Challenge — Giải thích'},
+  ex3Inst:{en:'Choose the correct ending for each sentence. Think like a scientist!',vi:'Hãy chọn phần kết đúng cho mỗi câu. Hãy suy nghĩ như một nhà khoa học!'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'particle',vi:'hạt'},
+  {en:'change of state',vi:'sự đổi trạng thái'},
+  {en:'melt',vi:'nóng chảy'},
+  {en:'melting point',vi:'điểm nóng chảy'},
+  {en:'freeze',vi:'đông đặc'},
+  {en:'boil',vi:'sôi'},
+  {en:'boiling point',vi:'điểm sôi'},
+  {en:'evaporation',vi:'sự bay hơi'},
+  {en:'condense',vi:'ngưng tụ'},
+  {en:'condensation',vi:'sự ngưng tụ'},
+  {en:'steam',vi:'hơi nước nóng'},
+  {en:'water vapour',vi:'hơi nước'},
+  {en:'measuring cylinder',vi:'ống đong'},
+  {en:'meniscus',vi:'mặt khum'},
+  {en:'thermometer',vi:'nhiệt kế'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Particle models',vi:'Mô hình hạt'}, word:{en:'particle',vi:'hạt'},
+  q:{en:'How are the particles arranged in a solid, a liquid and a gas?',vi:'Các hạt (particles) sắp xếp thế nào trong chất rắn, chất lỏng và chất khí?'},
+  act:{en:'Tap all three tanks on the bench: the solid tank, the liquid tank and the gas tank. Look at the particles inside each one.',vi:'Chạm vào cả ba bể trên bàn: bể chất rắn (solid), bể chất lỏng (liquid) và bể chất khí (gas). Hãy quan sát các hạt (particles) bên trong mỗi bể.'},
+  see:{en:'Each tank you tap bounces and shows its name, and its particles are lit up.',vi:'Mỗi bể con chạm sẽ nảy lên, hiện tên, và các hạt của nó sáng lên.'},
+  concl:[
+    {en:'In a solid, the particles are packed tightly in a fixed pattern. They can only vibrate — they stay in place.',vi:'Trong chất rắn (solid), các hạt (particles) xếp khít nhau theo một hình mẫu cố định. Chúng chỉ rung (vibrate) được — chúng ở yên một chỗ.'},
+    {en:'In a liquid, the particles touch each other but can slide past one another, so a liquid can flow and change shape.',vi:'Trong chất lỏng (liquid), các hạt chạm vào nhau nhưng trượt qua nhau được, nên chất lỏng chảy được và đổi hình dạng được.'},
+    {en:'In a gas, the particles are far apart and move freely in every direction, spreading out to fill the space.',vi:'Trong chất khí (gas), các hạt ở rất xa nhau và di chuyển tự do mọi hướng, lan ra đầy không gian.'}]},
+ {tag:{en:'Name the change',vi:'Gọi tên sự thay đổi'}, word:{en:'change of state',vi:'sự đổi trạng thái'},
+  q:{en:'Which change of state is happening in each picture?',vi:'Trong mỗi hình đang xảy ra sự đổi trạng thái (change of state) nào?'},
+  act:{en:'Tap a card, then tap MELT, FREEZE, CONDENSE or BOIL. Sort at least 6 of the 8 cards correctly.',vi:'Chạm vào một thẻ, rồi chạm NÓNG CHẢY (MELT), ĐÔNG ĐẶC (FREEZE), NGƯNG TỤ (CONDENSE) hoặc SÔI (BOIL). Hãy xếp đúng ít nhất 6 trong 8 thẻ.'},
+  see:{en:'Right cards turn green and stay in place.',vi:'Thẻ đúng sẽ chuyển màu xanh lá và ở yên.'},
+  concl:[
+    {en:'Melt: a solid changes to a liquid. Freeze: a liquid changes to a solid.',vi:'Nóng chảy (melt): chất rắn đổi thành chất lỏng. Đông đặc (freeze): chất lỏng đổi thành chất rắn.'},
+    {en:'Boil: a liquid changes to a gas (steam). Condense: a gas changes back to a liquid.',vi:'Sôi (boil): chất lỏng đổi thành chất khí (hơi nước nóng — steam). Ngưng tụ (condense): chất khí đổi ngược lại thành chất lỏng.'},
+    {en:'The temperature at which a solid melts is its melting point; water boils at its boiling point, 100 °C.',vi:'Nhiệt độ mà chất rắn nóng chảy là điểm nóng chảy (melting point) của nó; nước sôi ở điểm sôi (boiling point), 100 °C.'}]},
+ {tag:{en:'Measure the volume',vi:'Đo thể tích'}, word:{en:'meniscus',vi:'mặt khum'},
+  q:{en:'How much water is in the measuring cylinder?',vi:'Trong ống đong (measuring cylinder) có bao nhiêu nước?'},
+  act:{en:'Tap the measuring cylinder on the bench. Then choose the correct volume — read the BOTTOM of the meniscus, with your eye level with it.',vi:'Chạm vào ống đong (measuring cylinder) trên bàn. Rồi chọn thể tích đúng — hãy đọc ĐÁY của mặt khum (meniscus), và để mắt ngang tầm với nó.'},
+  see:{en:'The top of the water curves — that curve is the meniscus. Its bottom lines up with a number on the scale.',vi:'Mặt trên của nước bị cong — đường cong đó là mặt khum (meniscus). Đáy của nó thẳng hàng với một số trên thang đo.'},
+  concl:[
+    {en:'The curved surface on top of a liquid in a measuring cylinder is called the meniscus.',vi:'Mặt cong phía trên của chất lỏng trong ống đong được gọi là mặt khum (meniscus).'},
+    {en:'You read the volume from the bottom of the meniscus, with your eye level with it. Here the volume is 42 cm³.',vi:'Ta đọc thể tích (volume) từ đáy của mặt khum (meniscus), với mắt ngang tầm với nó. Ở đây thể tích là 42 cm³.'}]},
+ {tag:{en:'Measure the temperature',vi:'Đo nhiệt độ'}, word:{en:'thermometer',vi:'nhiệt kế'},
+  q:{en:'What temperature does the thermometer show?',vi:'Nhiệt kế (thermometer) chỉ bao nhiêu độ?'},
+  act:{en:'Tap the thermometer in the beaker. Then choose the temperature it shows — read the scale at the top of the liquid inside it, eye level.',vi:'Chạm vào nhiệt kế (thermometer) trong cốc. Rồi chọn nhiệt độ nó chỉ — hãy đọc thang đo ở đỉnh cột chất lỏng bên trong nó, mắt ngang tầm.'},
+  see:{en:'The liquid inside the thermometer rises when it is warmer. Its top lines up with a number.',vi:'Chất lỏng bên trong nhiệt kế dâng lên khi ấm hơn. Đỉnh của nó thẳng hàng với một số.'},
+  concl:[
+    {en:'A thermometer measures temperature. The liquid inside it expands and rises as it gets hotter.',vi:'Nhiệt kế (thermometer) đo nhiệt độ (temperature). Chất lỏng bên trong nó giãn ra và dâng lên khi nóng hơn.'},
+    {en:'You read the temperature at the top of the liquid, with your eye level with it. Here it is 64 °C.',vi:'Ta đọc nhiệt độ ở đỉnh cột chất lỏng, với mắt ngang tầm với nó. Ở đây là 64 °C.'}]},
+ {tag:{en:'Heat the water',vi:'Đun nước'}, word:{en:'boiling point',vi:'điểm sôi'},
+  q:{en:'What happens to the temperature of water as you heat it?',vi:'Nhiệt độ của nước thay đổi thế nào khi ta đun nó?'},
+  act:{en:'Safety spectacles on! The burner is lit under the beaker. Tap the thermometer 4 times — once each minute — to record the temperature, until the water boils.',vi:'Đeo kính bảo hộ vào! Đèn đã thắp dưới cốc. Hãy chạm vào nhiệt kế (thermometer) 4 lần — mỗi phút một lần — để ghi nhiệt độ, cho tới khi nước sôi.'},
+  see:{en:'Each tap adds a row to your record table: 20 °C, 45 °C, 70 °C — and then the water boils.',vi:'Mỗi lần chạm thêm một hàng vào bảng ghi của con: 20 °C, 45 °C, 70 °C — rồi nước sôi.'},
+  concl:[
+    {en:'When we heated the water, the temperature increased. The longer we heated it, the hotter it became.',vi:'Khi ta đun nước, nhiệt độ tăng lên. Đun càng lâu, nước càng nóng.'},
+    {en:'The increase was not the same every minute: +25 °C, +25 °C, then +30 °C up to 100 °C.',vi:'Mức tăng không giống nhau mỗi phút: +25 °C, +25 °C, rồi +30 °C lên tới 100 °C.'},
+    {en:'The thermometer bulb stays in the water, off the bottom of the beaker, so it measures the water — not the hot beaker.',vi:'Bầu của nhiệt kế ở trong nước, không chạm đáy cốc, nên nó đo nước — không phải cái cốc nóng.'}]},
+ {tag:{en:'Steam and boiling',vi:'Hơi nước và sự sôi'}, word:{en:'steam',vi:'hơi nước nóng'},
+  q:{en:'The water is boiling. What is the steam above it — and what happens to the temperature now?',vi:'Nước đang sôi. Hơi nước nóng (steam) phía trên nó là gì — và nhiệt độ bây giờ thế nào?'},
+  act:{en:'Tap the steam above the beaker. Then answer the big question below.',vi:'Chạm vào hơi nước nóng (steam) phía trên cốc. Rồi trả lời câu hỏi lớn bên dưới.'},
+  see:{en:'The steam puffs up — and where it touches something cold, it turns back into drops of liquid water.',vi:'Hơi nước phồng lên — và ở nơi nó chạm vào vật lạnh, nó đổi ngược lại thành những giọt nước lỏng.'},
+  concl:[
+    {en:'At 100 °C water boils: it all changes rapidly to steam. 100 °C is the boiling point of water.',vi:'Ở 100 °C nước sôi (boil): tất cả đổi nhanh thành hơi nước nóng (steam). 100 °C là điểm sôi (boiling point) của nước.'},
+    {en:'While water is boiling, its temperature stays at 100 °C — it does not keep rising.',vi:'Khi nước đang sôi, nhiệt độ của nó giữ nguyên ở 100 °C — nó không tăng nữa.'},
+    {en:'Steam or water vapour that touches something cold condenses and changes back to liquid water.',vi:'Hơi nước nóng (steam) hoặc hơi nước (water vapour) chạm vào vật lạnh sẽ ngưng tụ (condense) và đổi ngược lại thành nước lỏng.'},
+    {en:'I can name the three states of matter, and use the correct terms for how water changes between them.',vi:'Con gọi tên được ba trạng thái của vật chất, và dùng đúng thuật ngữ cho cách nước đổi giữa chúng.'},
+    {en:'I can use a thermometer and a measuring cylinder accurately, and carry out an investigation safely.',vi:'Con dùng chính xác được nhiệt kế (thermometer) và ống đong (measuring cylinder), và thực hiện một thí nghiệm an toàn.'}]}
+];
+const CARDS2=[
+ {id:'cs_ice',emoji:'🧊',en:'Ice → water',vi:'Nước đá → nước',ans:'melt'},
+ {id:'cs_butter',emoji:'🧈',en:'Solid butter → liquid butter',vi:'Bơ rắn → bơ lỏng',ans:'melt'},
+ {id:'cs_waterice',emoji:'❄️',en:'Water → ice in the freezer',vi:'Nước → nước đá trong tủ đông',ans:'freeze'},
+ {id:'cs_choc',emoji:'🍫',en:'Liquid chocolate → solid chocolate',vi:'Sô cô la lỏng → sô cô la rắn',ans:'freeze'},
+ {id:'cs_kettle',emoji:'♨️',en:'Water → steam in a kettle',vi:'Nước → hơi nước nóng trong ấm',ans:'boil'},
+ {id:'cs_pan',emoji:'🫧',en:'Water bubbling hard in a pan → steam',vi:'Nước sủi mạnh trong nồi → hơi nước nóng',ans:'boil'},
+ {id:'cs_dew',emoji:'🌿',en:'Water vapour → dew drops on grass',vi:'Hơi nước → giọt sương trên cỏ',ans:'condense'},
+ {id:'cs_mirror',emoji:'🪞',en:'Steam → drops on a cold mirror',vi:'Hơi nước nóng → giọt nước trên gương lạnh',ans:'condense'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const HEAT=[20,45,70,100];
+const QUIZ=[
+ {q:{en:'When ice is warmed and turns into liquid water, the change is called…',vi:'Khi nước đá được làm ấm và đổi thành nước lỏng, sự thay đổi đó gọi là…'},
+  o:[{en:'freezing',vi:'đông đặc (freezing)'},{en:'melting',vi:'nóng chảy (melting)'},{en:'condensing',vi:'ngưng tụ (condensing)'}],a:1,
+  e:{en:'Melting is the change from a solid to a liquid. The temperature at which a solid melts is its melting point.',vi:'Nóng chảy (melting) là sự đổi từ chất rắn sang chất lỏng. Nhiệt độ mà chất rắn nóng chảy là điểm nóng chảy (melting point) của nó.'}},
+ {q:{en:'How do you read the volume of water in a measuring cylinder?',vi:'Ta đọc thể tích (volume) của nước trong ống đong (measuring cylinder) thế nào?'},
+  o:[{en:'From the top of the meniscus, looking down from above',vi:'Từ đỉnh của mặt khum (meniscus), nhìn xuống từ trên cao'},{en:'From the side, without looking at the scale',vi:'Từ bên cạnh, không nhìn thang đo'},{en:'From the bottom of the meniscus, with your eye level with it',vi:'Từ đáy của mặt khum (meniscus), với mắt ngang tầm với nó'}],a:2,
+  e:{en:'The liquid surface curves — that is the meniscus. You read the volume from the bottom of the meniscus, eye level.',vi:'Mặt chất lỏng bị cong — đó là mặt khum (meniscus). Ta đọc thể tích từ đáy của mặt khum, mắt ngang tầm.'}},
+ {q:{en:'Water is boiling at 100 °C and you keep heating it. What happens to its temperature?',vi:'Nước đang sôi ở 100 °C và ta cứ đun tiếp. Nhiệt độ của nó sẽ thế nào?'},
+  o:[{en:'It stays at 100 °C',vi:'Nó giữ nguyên ở 100 °C'},{en:'It rises to 120 °C',vi:'Nó tăng lên 120 °C'},{en:'It falls back to 20 °C',vi:'Nó giảm xuống 20 °C'}],a:0,
+  e:{en:'While water boils, its temperature stays at the boiling point, 100 °C, even if you keep heating.',vi:'Khi nước sôi, nhiệt độ của nó giữ nguyên ở điểm sôi (boiling point), 100 °C, dù ta cứ đun tiếp.'}},
+ {q:{en:'Steam from a shower touches a cold mirror and turns into drops of water. This change is called…',vi:'Hơi nước nóng (steam) từ vòi sen chạm vào gương lạnh và đổi thành giọt nước. Sự thay đổi đó gọi là…'},
+  o:[{en:'evaporation',vi:'bay hơi (evaporation)'},{en:'condensation',vi:'ngưng tụ (condensation)'},{en:'melting',vi:'nóng chảy (melting)'}],a:1,
+  e:{en:'When a gas such as steam or water vapour touches something cold, it condenses and changes back to a liquid.',vi:'Khi một chất khí như hơi nước nóng (steam) hoặc hơi nước (water vapour) chạm vào vật lạnh, nó ngưng tụ (condenses) và đổi ngược lại thành chất lỏng.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'ex_ice',emoji:'🧊',en:'An ice cube left in a warm room',vi:'Một viên nước đá để trong phòng ấm',ans:'melt'},
+ {id:'ex_butter',emoji:'🧈',en:'Butter in a warm frying pan',vi:'Bơ trong chảo ấm',ans:'melt'},
+ {id:'ex_tray',emoji:'❄️',en:'A tray of water in the freezer',vi:'Một khay nước trong tủ đông',ans:'freeze'},
+ {id:'ex_wax',emoji:'🕯️',en:'Liquid wax cooling and setting hard',vi:'Sáp lỏng nguội đi và đông cứng lại',ans:'freeze'},
+ {id:'ex_kettle',emoji:'♨️',en:'A kettle of water at 100 °C',vi:'Một ấm nước ở 100 °C',ans:'boil'},
+ {id:'ex_pan',emoji:'🫧',en:'A pan of water bubbling hard',vi:'Một nồi nước sủi mạnh',ans:'boil'},
+ {id:'ex_dew',emoji:'🌿',en:'Dew forming on grass overnight',vi:'Sương hình thành trên cỏ qua đêm',ans:'condense'},
+ {id:'ex_mirror',emoji:'🪞',en:'Drops forming on a cold mirror',vi:'Giọt nước hình thành trên gương lạnh',ans:'condense'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
+const EX2=[
+ {pre:{en:"At 0 minutes, Marcus's water was",vi:'Ở phút 0, nước của Marcus ở'},a:0,
+  opts:[{en:'20 °C',vi:'20 °C'},{en:'34 °C',vi:'34 °C'}],
+  e:{en:"Marcus's table starts at 20 °C, before the heating begins.",vi:'Bảng của Marcus bắt đầu ở 20 °C, trước khi bắt đầu đun.'}},
+ {pre:{en:'After 5 minutes, the temperature was',vi:'Sau 5 phút, nhiệt độ là'},a:1,
+  opts:[{en:'74 °C',vi:'74 °C'},{en:'88 °C',vi:'88 °C'}],
+  e:{en:'The temperature rose every minute: 20, 34, 47, 61, 74 — and 88 °C after 5 minutes.',vi:'Nhiệt độ tăng mỗi phút: 20, 34, 47, 61, 74 — và 88 °C sau 5 phút.'}},
+ {pre:{en:"The point on Zara's graph that does NOT fit the pattern is",vi:'Điểm trên đồ thị của Zara KHÔNG theo quy luật là'},a:1,
+  opts:[{en:'2 minutes, 45 °C',vi:'2 phút, 45 °C'},{en:'4 minutes, 95 °C',vi:'4 phút, 95 °C'}],
+  e:{en:"Zara's points near 4 minutes are about 60 °C, so the point at 95 °C stands out — it does not fit the smooth curve.",vi:'Các điểm của Zara gần phút 4 khoảng 60 °C, nên điểm 95 °C nổi bật hẳn — nó không theo đường cong trơn.'}},
+ {pre:{en:'Zara should deal with that point by',vi:'Zara nên xử lý điểm đó bằng cách'},a:0,
+  opts:[{en:'repeating that measurement to check it',vi:'đo lại lần đo đó để kiểm tra'},{en:'crossing out every point on the graph',vi:'gạch bỏ mọi điểm trên đồ thị'}],
+  e:{en:'A result that does not fit the pattern should be checked — measure it again, do not just trust it.',vi:'Một kết quả không theo quy luật cần được kiểm tra — hãy đo lại, đừng vội tin nó.'}},
+ {pre:{en:"For Zara's curved pattern, the line of best fit is",vi:'Với quy luật cong của Zara, đường phù hợp nhất (line of best fit) là'},a:1,
+  opts:[{en:'a straight line forced through every point',vi:'một đường thẳng ép qua mọi điểm'},{en:'a smooth curve with about as many points above it as below it',vi:'một đường cong trơn với số điểm ở trên và ở dưới xấp xỉ bằng nhau'}],
+  e:{en:"Zara's points follow a curve, so the line of best fit is a smooth curve, with roughly the same number of points above and below it.",vi:'Các điểm của Zara theo một đường cong, nên đường phù hợp nhất (line of best fit) là một đường cong trơn, với số điểm ở trên và ở dưới xấp xỉ bằng nhau.'}}
+];
+const EX3=[
+ {pre:{en:'While water is boiling, its temperature',vi:'Khi nước đang sôi, nhiệt độ của nó'},a:1,
+  opts:[{en:'keeps rising',vi:'cứ tăng lên'},{en:'stays the same',vi:'giữ nguyên'}],
+  e:{en:'Once water reaches its boiling point, 100 °C, the temperature stays there while it boils.',vi:'Khi nước đạt điểm sôi (boiling point), 100 °C, nhiệt độ giữ nguyên ở đó trong lúc sôi.'}},
+ {pre:{en:'After a long heating, there is less liquid in the beaker because some of it has',vi:'Sau khi đun lâu, trong cốc còn ít chất lỏng hơn vì một phần của nó đã'},a:0,
+  opts:[{en:'evaporated',vi:'bay hơi (evaporated)'},{en:'condensed',vi:'ngưng tụ (condensed)'}],
+  e:{en:'Heating makes water evaporate faster, so the volume of liquid falls.',vi:'Đun nóng làm nước bay hơi (evaporate) nhanh hơn, nên thể tích chất lỏng giảm.'}},
+ {pre:{en:'The thermometer bulb is held off the bottom of the beaker so that it measures',vi:'Bầu nhiệt kế được giữ không chạm đáy cốc để nó đo'},a:0,
+  opts:[{en:'the temperature of the water',vi:'nhiệt độ của nước'},{en:'the temperature of the beaker bottom',vi:'nhiệt độ của đáy cốc'}],
+  e:{en:'If the bulb rested on the beaker, it would measure the hot beaker, not the water.',vi:'Nếu bầu chạm vào cốc, nó sẽ đo cái cốc nóng, không phải nước.'}},
+ {pre:{en:'You read the volume of a liquid from',vi:'Ta đọc thể tích của chất lỏng từ'},a:1,
+  opts:[{en:'the top of the meniscus',vi:'đỉnh của mặt khum (meniscus)'},{en:'the bottom of the meniscus',vi:'đáy của mặt khum (meniscus)'}],
+  e:{en:'The volume is always read from the bottom of the meniscus.',vi:'Thể tích luôn được đọc từ đáy của mặt khum (meniscus).'}},
+ {pre:{en:'When you read a measuring cylinder or a thermometer, your eye must be',vi:'Khi đọc ống đong hoặc nhiệt kế, mắt của ta phải'},a:0,
+  opts:[{en:'level with the reading',vi:'ngang tầm với số đọc'},{en:'well above the reading',vi:'cao hơn hẳn số đọc'}],
+  e:{en:'Eye level with the meniscus or the top of the liquid gives an accurate reading.',vi:'Mắt ngang tầm với mặt khum (meniscus) hoặc đỉnh cột chất lỏng cho số đọc chính xác.'}}
+];
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 8 + 5 + 5 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+let EX2_ORD=EX2.map(s=>fyIdx(s.opts.length));
+let EX3_ORD=EX3.map(s=>fyIdx(s.opts.length));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-2-2';
+const SUMKEY='camb:sum:sci7-2-2';
+const BOT_CODE='sci7-2.2';
+let FOUND={solid:false,liquid:false,gas:false,vol:false,temp:false,reads:false,steam:false};
+let SORTED=new Set();
+let READN=0;
+function newTrack(){return {
+  fSolid:false, fLiquid:false, fGas:false,
+  s2correct:new Set(), s2sel:null,
+  s3tap:false, s3vol:false,
+  s4tap:false, s4temp:false,
+  s5reads:0,
+  s6steam:false, s6ans:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.fSolid&&T.fLiquid&&T.fGas;
+  if(i===1) return T.s2correct.size>=6;
+  if(i===2) return T.s3tap&&T.s3vol;
+  if(i===3) return T.s4tap&&T.s4temp;
+  if(i===4) return T.s5reads>=4;
+  if(i===5) return T.s6steam&&T.s6ans;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Particle models seen: solid '+(T.fSolid?'✓':'…')+' · liquid '+(T.fLiquid?'✓':'…')+' · gas '+(T.fGas?'✓':'…')+'. Tap the three tanks!',
+             'Đã xem mô hình hạt: chất rắn (solid) '+(T.fSolid?'✓':'…')+' · chất lỏng (liquid) '+(T.fLiquid?'✓':'…')+' · chất khí (gas) '+(T.fGas?'✓':'…')+'. Hãy chạm vào ba bể!');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap MELT, FREEZE, CONDENSE or BOIL.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm NÓNG CHẢY (MELT), ĐÔNG ĐẶC (FREEZE), NGƯNG TỤ (CONDENSE) hoặc SÔI (BOIL).');
+    return B('Cards right: '+T.s2correct.size+' of 8. You need 6 or more.','Số thẻ đúng: '+T.s2correct.size+' / 8. Con cần đúng từ 6 thẻ trở lên.');
+  }
+  if(i===2){
+    if(!T.s3tap) return B('Tap the measuring cylinder on the bench first.','Hãy chạm vào ống đong (measuring cylinder) trên bàn trước.');
+    if(!T.s3vol) return B('The meniscus is in front of you. Choose the volume at the BOTTOM of the meniscus.','Mặt khum (meniscus) ở ngay trước mặt con. Hãy chọn thể tích ở ĐÁY của mặt khum.');
+    return B('You read the volume at the bottom of the meniscus: 42 cm³.','Con đã đọc thể tích ở đáy mặt khum (meniscus): 42 cm³.');
+  }
+  if(i===3){
+    if(!T.s4tap) return B('Tap the thermometer in the beaker first.','Hãy chạm vào nhiệt kế (thermometer) trong cốc trước.');
+    if(!T.s4temp) return B('Read the scale at the top of the liquid inside the thermometer, then choose.','Hãy đọc thang đo ở đỉnh cột chất lỏng bên trong nhiệt kế, rồi chọn.');
+    return B('You read the thermometer: 64 °C.','Con đã đọc nhiệt kế: 64 °C.');
+  }
+  if(i===4){
+    if(T.s5reads===0) return B('No readings yet. Tap the thermometer to record minute 0: 20 °C.','Chưa có số đo nào. Hãy chạm vào nhiệt kế để ghi phút 0: 20 °C.');
+    if(T.s5reads<4) return B('Readings recorded: '+T.s5reads+' of 4. Latest: '+HEAT[T.s5reads-1]+' °C. Tap the thermometer again!','Đã ghi: '+T.s5reads+' / 4 số đo. Số mới nhất: '+HEAT[T.s5reads-1]+' °C. Hãy chạm vào nhiệt kế nữa!');
+    return B('All 4 readings recorded — the water reached 100 °C and boiled.','Đã ghi đủ 4 số đo — nước đạt 100 °C và sôi.');
+  }
+  if(i===5){
+    if(!T.s6steam) return B('Tap the steam above the beaker.','Hãy chạm vào hơi nước nóng (steam) phía trên cốc.');
+    if(!T.s6ans) return B('Now answer: what happens to the temperature while the water boils?','Giờ trả lời: nhiệt độ thế nào trong khi nước sôi?');
+    return B('You explained the steam and the boiling temperature.','Con đã giải thích hơi nước và nhiệt độ sôi.');
+  }
+  return B('','');
+}
+function optChoice(id,label,fn){
+  const b=document.createElement('button'); b.className='optbtn'; b.id=id; b.innerHTML=label;
+  b.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } fn(b); };
+  return b;
+}
+function wrongChoice(b){
+  addMistake(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),500); refreshEvidence();
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'Solid',vi:'Chất rắn (solid)'},got:T.fSolid},
+      {emoji:'💧',label:{en:'Liquid',vi:'Chất lỏng (liquid)'},got:T.fLiquid},
+      {emoji:'🫧',label:{en:'Gas',vi:'Chất khí (gas)'},got:T.fGas}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'melt',label:STR.binMelt,cls:'melt'},{key:'freeze',label:STR.binFreeze,cls:'freeze'},{key:'condense',label:STR.binCondense,cls:'condense'},{key:'boil',label:STR.binBoil,cls:'boil'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===2){
+    if(!T.s3tap){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapCyl)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s3vol){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.volQ);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='optrow';
+      row.appendChild(optChoice('vol_40','40 cm³',wrongChoice));
+      row.appendChild(optChoice('vol_42','42 cm³',()=>{ T.s3vol=true; FOUND.vol=true; saveProg(); renderStepExtra(); renderMirrors(); refreshEvidence(); }));
+      row.appendChild(optChoice('vol_44','44 cm³',wrongChoice));
+      box.appendChild(row);
+    }
+  }else if(curStep===3){
+    if(!T.s4tap){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapThermo)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s4temp){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.tempQ);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='optrow';
+      row.appendChild(optChoice('therm_58','58 °C',wrongChoice));
+      row.appendChild(optChoice('therm_64','64 °C',()=>{ T.s4temp=true; FOUND.temp=true; saveProg(); renderStepExtra(); renderMirrors(); refreshEvidence(); }));
+      row.appendChild(optChoice('therm_70','70 °C',wrongChoice));
+      box.appendChild(row);
+    }
+  }else if(curStep===4){
+    statPills(box,HEAT.map((t,ix)=>({emoji:ix===3?'♨️':'🌡️',label:{en:ix+' min · '+t+' °C',vi:ix+' phút · '+t+' °C'},got:T.s5reads>ix})));
+  }else if(curStep===5){
+    if(T.s6steam&&!T.s6ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.boilQ);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='optrow';
+      row.appendChild(optChoice('boil_rises',biInl({en:'It keeps rising',vi:'Nó cứ tăng lên'}),wrongChoice));
+      row.appendChild(optChoice('boil_stays',biInl({en:'It stays at 100 °C',vi:'Nó giữ nguyên ở 100 °C'}),()=>{ T.s6ans=true; saveProg(); renderStepExtra(); refreshEvidence(); }));
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('solidTank'); bounceThing('solidTank'); setTimeout(()=>{ focusVisual('liquidTank'); bounceThing('liquidTank'); },800); setTimeout(()=>{ focusVisual('gasTank'); bounceThing('gasTank'); },1600); }
+  else if(i===1){ demoSort(CARDS2,T.s2correct); }
+  else if(i===2){ focusThing('cylinder'); }
+  else if(i===3){ focusThing('thermo'); }
+  else if(i===4){ focusThing('thermo'); }
+  else if(i===5){ focusThing('steam'); bounceThing('steam'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderMeasure(){
+  let h='<div class="grprow"><span>'+biInl(STR.recVol)+'</span><b>'+(FOUND.vol||doneSteps.has(2)?'42 cm³':'—')+'</b></div>';
+  h+='<div class="grprow"><span>'+biInl(STR.recTemp)+'</span><b>'+(FOUND.temp||doneSteps.has(3)?'64 °C':'—')+'</b></div>';
+  h+='<div style="font-weight:700;margin:8px 0 2px;font-size:15.5px">'+biInl(STR.recHeat)+'</div>';
+  HEAT.forEach((t,ix)=>{
+    const got=READN>ix||doneSteps.has(4);
+    h+='<div class="grprow"><span>'+biInl(STR.recMin(ix))+'</span><b>'+(got?t+' °C':'—')+'</b></div>';
+  });
+  $('grpRows').innerHTML=h;
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.solid||doneSteps.has(0),label:STR.foundSolid},
+    {got:FOUND.liquid||doneSteps.has(0),label:STR.foundLiquid},
+    {got:FOUND.gas||doneSteps.has(0),label:STR.foundGas},
+    {got:SORTED.size>=6||doneSteps.has(1),label:STR.foundSorted},
+    {got:FOUND.vol||doneSteps.has(2),label:STR.foundVol},
+    {got:FOUND.temp||doneSteps.has(3),label:STR.foundTemp},
+    {got:FOUND.reads||doneSteps.has(4),label:STR.foundReads},
+    {got:FOUND.steam||doneSteps.has(5),label:STR.foundSteam}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+/* ================= 3D lab bench ================= */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null, flameMesh=null, steamG=null;
+let hitProxies=[];
+let gasParts=[], liqParts=[], steamParts=[];
+let lastRW=0, lastRH=0;
+const ORB={r:9.6, th:0.1, ph:1.08, tx:0, ty:0.6, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildTank(kind,x){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.9,0.1,1.5),stdMat(0x44586e,0.95)));
+  base.position.y=0.05; g.add(base);
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(1.7,1.6,1.3),
+    new THREE.MeshBasicMaterial({color:0xbfe6ff,transparent:true,opacity:0.16,depthWrite:false}));
+  glass.position.y=0.95; g.add(glass);
+  const col= kind==='solid'?0xe07b24 : kind==='liquid'?0x3d8bfd : 0xb388ff;
+  const mat=stdMat(col,0.55);
+  const add=(px,py,pz,r)=>{ const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(r||0.15,12,10),mat)); s.position.set(px,py,pz); g.add(s); return s; };
+  if(kind==='solid'){
+    for(let ix=0;ix<3;ix++) for(let iy=0;iy<2;iy++) for(let iz=0;iz<2;iz++)
+      add(-0.45+ix*0.45, 0.42+iy*0.42, -0.24+iz*0.48);
+  }else if(kind==='liquid'){
+    const pos=[[-0.5,0.35,-0.25],[-0.15,0.33,0.2],[0.25,0.35,-0.2],[0.55,0.33,0.25],[-0.35,0.36,0.35],[0.05,0.34,-0.4],[0.45,0.62,0.0],[-0.2,0.63,-0.1],[0.15,0.6,0.3],[-0.55,0.6,0.05]];
+    pos.forEach(p=>{ const s=add(p[0],p[1],p[2]); liqParts.push({m:s,y:p[1],ph:Math.random()*6}); });
+    const surf=new THREE.Mesh(new THREE.BoxGeometry(1.55,0.06,1.15),new THREE.MeshBasicMaterial({color:0x7fc4ef,transparent:true,opacity:0.5}));
+    surf.position.y=0.82; g.add(surf);
+  }else{
+    const pos=[[-0.6,1.35,-0.4],[0.5,1.45,0.3],[-0.2,0.6,0.45],[0.65,0.5,-0.35],[0.0,1.1,-0.1],[-0.55,0.95,0.35],[0.35,0.95,-0.45],[0.1,1.5,0.0]];
+    pos.forEach(p=>{ const s=add(p[0],p[1],p[2],0.13); gasParts.push({m:s,bx:p[0],by:p[1],bz:p[2],ph:Math.random()*6}); });
+  }
+  g.position.set(x,0,-2.1); g.userData.baseY=0;
+  return g;
+}
+function buildCylinder(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.08,20),stdMat(0x8d99a6,0.8)));
+  base.position.y=0.04; g.add(base);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.32,1.5,20,1,true),
+    new THREE.MeshBasicMaterial({color:0xbfe6ff,transparent:true,opacity:0.22,side:THREE.DoubleSide,depthWrite:false}));
+  glass.position.y=0.85; g.add(glass);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.29,0.29,1.06,20),stdMat(0x3fa7d6,0.35));
+  water.position.y=0.61; g.add(water);
+  const men=new THREE.Mesh(new THREE.TorusGeometry(0.29,0.022,8,28),new THREE.MeshBasicMaterial({color:0xeaf7ff}));
+  men.rotation.x=Math.PI/2; men.position.y=1.14; g.add(men);
+  for(let k=0;k<5;k++){
+    const tick=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.025,0.02),stdMat(0x22384f,0.6));
+    tick.position.set(0.3,0.35+k*0.27,0.22); g.add(tick);
+  }
+  g.position.set(-2.7,0,1.5); g.userData.baseY=0;
+  return g;
+}
+function buildBeaker(){
+  const g=new THREE.Group();
+  /* tripod */
+  [[-0.42,-0.42],[0.42,-0.42],[0,0.5]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.9,8),stdMat(0x44586e,0.7));
+    leg.position.set(p[0],0.45,p[1]); g.add(leg);
+  });
+  const ring=shadowed(new THREE.Mesh(new THREE.TorusGeometry(0.5,0.045,10,32),stdMat(0x44586e,0.7)));
+  ring.rotation.x=Math.PI/2; ring.position.y=0.9; g.add(ring);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.48,0.95,24,1,true),
+    new THREE.MeshBasicMaterial({color:0xbfe6ff,transparent:true,opacity:0.2,side:THREE.DoubleSide,depthWrite:false}));
+  glass.position.y=1.38; g.add(glass);
+  const bot=new THREE.Mesh(new THREE.CircleGeometry(0.48,24),new THREE.MeshBasicMaterial({color:0xbfe6ff,transparent:true,opacity:0.3,side:THREE.DoubleSide}));
+  bot.rotation.x=-Math.PI/2; bot.position.y=0.92; g.add(bot);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.45,0.5,24),stdMat(0x3fa7d6,0.35));
+  water.position.y=1.18; g.add(water);
+  g.position.set(2.1,0,0.3); g.userData.baseY=0;
+  return g;
+}
+function buildBurner(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.08,18),stdMat(0x8d99a6,0.7)));
+  base.position.y=0.04; g.add(base);
+  const barrel=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.09,0.5,12),stdMat(0xb7791f,0.6)));
+  barrel.position.y=0.32; g.add(barrel);
+  flameMesh=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.42,12),
+    new THREE.MeshBasicMaterial({color:0x3d8bfd,transparent:true,opacity:0.85}));
+  flameMesh.position.y=0.75; flameMesh.visible=false; g.add(flameMesh);
+  g.position.set(2.1,0,0.3); g.userData.baseY=0;
+  return g;
+}
+function buildThermo(){
+  const g=new THREE.Group();
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.15,10),
+    new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.75}));
+  g.add(tube);
+  const colm=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.72,8),new THREE.MeshBasicMaterial({color:0xd23c2a}));
+  colm.position.y=-0.12; g.add(colm);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.085,10,8),new THREE.MeshBasicMaterial({color:0xd23c2a}));
+  bulb.position.y=-0.58; g.add(bulb);
+  g.position.set(2.5,2.0,0.3); g.rotation.z=-0.28; g.userData.baseY=2.0;
+  return g;
+}
+function buildSteam(){
+  const g=new THREE.Group();
+  const mat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.8});
+  [[0,0,0,0.3],[0.35,0.3,0.1,0.24],[-0.3,0.35,-0.05,0.22],[0.1,0.65,0,0.26],[-0.15,0.9,0.08,0.2]].forEach(p=>{
+    const s=new THREE.Mesh(new THREE.SphereGeometry(p[3],12,10),mat);
+    s.position.set(p[0],p[1],p[2]); g.add(s); steamParts.push({m:s,y:p[1],ph:Math.random()*6});
+  });
+  g.position.set(1.5,2.5,0.3); g.userData.baseY=2.5; g.visible=false;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xd6ecf7);
+  scene3.fog=new THREE.Fog(0xd6ecf7,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* bench top + back board */
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13,0.25,7.5),stdMat(0xc9a876,1));
+  bench.position.set(0,-0.13,-0.4); bench.receiveShadow=true; scene3.add(bench);
+  const board=new THREE.Mesh(new THREE.BoxGeometry(13,5.5,0.15),stdMat(0xeef4f8,1));
+  board.position.set(0,2.6,-4.1); scene3.add(board);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xb9c9d8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.27; floor.receiveShadow=true; scene3.add(floor);
+  /* safety spectacles resting on the bench (decoration) */
+  const spec=new THREE.Group();
+  const lensM=new THREE.MeshBasicMaterial({color:0x9fd4ef,transparent:true,opacity:0.6});
+  [-0.22,0.22].forEach(dx=>{ const l=new THREE.Mesh(new THREE.BoxGeometry(0.36,0.26,0.04),lensM); l.position.x=dx; spec.add(l); });
+  spec.position.set(-0.6,0.05,2.3); spec.rotation.y=0.5; scene3.add(spec);
+  /* the things */
+  reg('solidTank',buildTank('solid',-3.9));
+  reg('liquidTank',buildTank('liquid',-1.3));
+  reg('gasTank',buildTank('gas',1.3));
+  reg('cylinder',buildCylinder());
+  reg('beaker',buildBeaker());
+  reg('burner',buildBurner());
+  reg('thermo',buildThermo());
+  steamG=buildSteam(); reg('steam',steamG);
+  /* generous invisible hit proxies */
+  { const p=sphProxy(1.05); p.position.set(0,0.9,0); addProxy('solidTank',p,G.solidTank); }
+  { const p=sphProxy(1.05); p.position.set(0,0.9,0); addProxy('liquidTank',p,G.liquidTank); }
+  { const p=sphProxy(1.05); p.position.set(0,0.9,0); addProxy('gasTank',p,G.gasTank); }
+  { const p=sphProxy(0.72); p.position.set(0,0.85,0); addProxy('cylinder',p,G.cylinder); }
+  { const p=sphProxy(0.62); p.position.set(0,1.35,0); addProxy('beaker',p,G.beaker); }
+  { const p=sphProxy(0.5); p.position.set(0,0.35,0); addProxy('burner',p,G.burner); }
+  { const p=sphProxy(0.52); addProxy('thermo',p,G.thermo); }
+  { const p=sphProxy(0.78); addProxy('steam',p,G.steam); }
+  /* highlight ring */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a thing */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    if(id==='steam'||id==='thermo'){ ringMesh.visible=false; }
+    else{
+      const p=thingPos(id);
+      ringMesh.position.set(p.x,0.045,p.z);
+      const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+      ringMesh.visible=true;
+    }
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['solidTank','liquidTank','gasTank'],
+  [],
+  ['cylinder'],
+  ['thermo'],
+  ['thermo'],
+  ['steam']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  if(id!=='thermo') bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='solidTank'){ T.fSolid=true; FOUND.solid=true; }
+    else if(id==='liquidTank'){ T.fLiquid=true; FOUND.liquid=true; }
+    else if(id==='gasTank'){ T.fGas=true; FOUND.gas=true; }
+    if(STEP_TARGETS[0].indexOf(id)>=0){ saveProg(); renderFound(); renderStepExtra(); }
+  }else if(curStep===2){
+    if(id==='cylinder'){ T.s3tap=true; saveProg(); renderStepExtra(); }
+  }else if(curStep===3){
+    if(id==='thermo'){ T.s4tap=true; saveProg(); renderStepExtra(); }
+  }else if(curStep===4){
+    if(id==='thermo'&&T.s5reads<4){
+      T.s5reads++; READN=Math.max(READN,T.s5reads);
+      if(T.s5reads>=4) FOUND.reads=true;
+      saveProg(); renderStepExtra(); renderMirrors();
+    }
+  }else if(curStep===5){
+    if(id==='steam'){ T.s6steam=true; FOUND.steam=true; saveProg(); renderStepExtra(); renderFound(); }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  if(flameMesh) flameMesh.visible=(i>=4);
+  if(steamG) steamG.visible=(i===5)||(i===4&&T.s5reads>=4);
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  gasParts.forEach(p=>{
+    p.m.position.x=p.bx+Math.sin(t*1.3+p.ph)*0.07;
+    p.m.position.y=p.by+Math.cos(t*1.7+p.ph)*0.07;
+    p.m.position.z=p.bz+Math.sin(t*1.1+p.ph*2)*0.07;
+  });
+  liqParts.forEach(p=>{ p.m.position.y=p.y+Math.sin(t*1.4+p.ph)*0.015; });
+  if(flameMesh&&flameMesh.visible){ const s=1+Math.sin(t*22)*0.12; flameMesh.scale.set(s,s,s); }
+  if(steamG){
+    steamG.visible=(curStep===5)||(curStep===4&&T.s5reads>=4);
+    if(steamG.visible) steamParts.forEach(p=>{ p.m.position.y=p.y+Math.sin(t*1.6+p.ph)*0.08; });
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderWordRows(listEl,rows,ansObj,doneSet,ordArr){
+  listEl.innerHTML='';
+  rows.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (ordArr[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(ansObj[si]===oi) cls+=' chosen';
+      if(exRevealed&&oi===s3.a) cls+=' rightmark';
+      else if(exRevealed&&ansObj[si]===oi) cls+=' wrongsel';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+  listEl.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      ansObj[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — sort the change of state */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinMelt').innerHTML=bi(STR.binMelt);
+  $('ex1BinFreeze').innerHTML=bi(STR.binFreeze);
+  $('ex1BinCondense').innerHTML=bi(STR.binCondense);
+  $('ex1BinBoil').innerHTML=bi(STR.binBoil);
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const ans=EX1ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex1sel===it.id?' sel':'')+(exRevealed? (EX1DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='melt'?'🫠':ans==='freeze'?'🧊':ans==='condense'?'💧':'♨️')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex1sel=it.id; renderExercises(); };
+    g1.appendChild(d);
+  });
+  /* Ex 2 · Practice — Marcus and Zara */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderWordRows($('ex2List'),EX2,EX2ANS,EX2DONE,EX2_ORD);
+  /* Ex 3 · Challenge — explain it */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  renderWordRows($('ex3List'),EX3,EX3ANS,EX3DONE,EX3_ORD);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+$('ex1BinMelt').onclick=()=>ex1Place('melt');
+$('ex1BinFreeze').onclick=()=>ex1Place('freeze');
+$('ex1BinCondense').onclick=()=>ex1Place('condense');
+$('ex1BinBoil').onclick=()=>ex1Place('boil');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((s3,si)=>si).filter(si=>EX2ANS[si]===EX2[si].a));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].a));
+  ex1sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,2);
+  EX2_ORD=EX2.map(s=>fyIdx(s.opts.length));
+  EX3_ORD=EX3.map(s=>fyIdx(s.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderMeasure(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.solid=false; FOUND.liquid=false; FOUND.gas=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.vol=false; }
+  if(step===3){ FOUND.temp=false; }
+  if(step===4){ FOUND.reads=false; }
+  if(step===5){ FOUND.steam=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], readn:READN, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(typeof s.readn==='number') READN=s.readn;
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&['melt','freeze','condense','boil'].indexOf(s.exAns.a1[id])>=0) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&Number.isInteger(s.exAns.a2[k])) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&Number.isInteger(s.exAns.a3[k])) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((s3,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s3.a; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.a; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fSolid=!!FOUND.solid; t.fLiquid=!!FOUND.liquid; t.fGas=!!FOUND.gas; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); }
+  else if(i===2){ t.s3tap=true; t.s3vol=true; }
+  else if(i===3){ t.s4tap=true; t.s4temp=true; }
+  else if(i===4){ t.s5reads=4; }
+  else if(i===5){ t.s6steam=true; t.s6ans=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-2-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

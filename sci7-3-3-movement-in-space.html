@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.3 Movement in space — Chuyển động trong không gian · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#0b1e3a,#274b73)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.space{background:#7a4fd0}
+.binbtn.earthb{background:#0d9d58}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="3.3 Movement in space" data-vi="3.3 Chuyển động trong không gian (Movement in space)">3.3 Movement in space</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What keeps the planets moving around the Sun?" data-vi="Điều gì giữ các hành tinh chuyển động quanh Mặt Trời?">What keeps the planets moving around the Sun?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Sun's gravity" data-vi="Lực hấp dẫn của Mặt Trời (gravity)">Sun's gravity</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Circular orbits" data-vi="Quỹ đạo tròn (circular orbits)">Circular orbits</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Different speeds" data-vi="Tốc độ khác nhau (speed)">Different speeds</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Vacuum!" data-vi="Chân không (vacuum)!">Vacuum!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the planets in space!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các hành tinh trong không gian!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 3 Forces and energy · Section 3.3. The space scene in this lesson is a simulation — never look directly at the real Sun." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 3 · Lực và năng lượng (Forces and energy) · Mục 3.3. Khung cảnh không gian trong bài học này là mô phỏng — không bao giờ nhìn trực tiếp vào Mặt Trời thật.">Cambridge Lower Secondary Science 7 · Unit 3 Forces and energy · Section 3.3. The space scene in this lesson is a simulation — never look directly at the real Sun.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 3 Forces and energy, section 3.3 “Movement in space”, pages 85–90; Workbook 7 (ISBN 9781108742818), section 3.3, pages 53–55. All wording in this lesson is rewritten in our own words; no text is copied from the book. Two speeds printed only inside book photographs (the Juno probe's Jupiter speed and Voyager 1's speed) could not be read reliably from the section text, so this lesson does not quote them; every other book value it uses (planet speeds 48–5 km/s, Mercury ≈170 000 km/h, Earth ≈100 000 km/h, Neptune 30× Earth's distance and about 17× Earth's mass, the Sun's gravity 27× Earth's) is reproduced exactly." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 3 Lực và năng lượng (Forces and energy), mục 3.3 “Chuyển động trong không gian (Movement in space)”, trang 85–90; Sách bài tập 7 (ISBN 9781108742818), mục 3.3, trang 53–55. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 3 Forces and energy, section 3.3, pages 85–90; Workbook 7 (ISBN 9781108742818), pages 53–55. All wording is rewritten in our own words.</p>
+    <p class="i18n" data-en="Objectives: learn about what keeps the planets in orbit around the Sun; understand why planets move at different speeds; discover why objects moving in space do not slow down as they do on Earth. Key words: air resistance, circular, speed, vacuum." data-vi="Mục tiêu: tìm hiểu điều gì giữ các hành tinh trên quỹ đạo (orbit) quanh Mặt Trời; hiểu vì sao các hành tinh chuyển động với tốc độ (speed) khác nhau; khám phá vì sao các vật chuyển động trong không gian không chậm lại như trên Trái Đất. Từ khóa: sức cản không khí (air resistance), tròn (circular), tốc độ (speed), chân không (vacuum).">Objectives: learn about what keeps the planets in orbit around the Sun; understand why planets move at different speeds; discover why objects moving in space do not slow down as they do on Earth. Key words: air resistance, circular, speed, vacuum.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D space scene, with sorting cards or choice questions — tapping the eight planets in order from the Sun and then the Moon, showing which way the Sun's gravity pulls a planet, comparing the orbital speeds of Mercury, Earth and Neptune from the book's table (48, 30 and 5 km/s), sorting space and Earth statements about air resistance and vacuum, answering spacecraft questions from the Workbook, and classifying the predictions, observations and conclusions that led scientists to Neptune. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên khung cảnh không gian 3D, với các thẻ phân loại hoặc câu hỏi lựa chọn — chạm vào tám hành tinh theo thứ tự từ Mặt Trời rồi chạm vào Mặt Trăng (Moon), chỉ ra hướng lực hấp dẫn (gravity) của Mặt Trời kéo một hành tinh, so sánh tốc độ quỹ đạo của Sao Thủy (Mercury), Trái Đất (Earth) và Sao Hải Vương (Neptune) từ bảng của sách (48, 30 và 5 km/s), phân loại các nhận định về không gian và Trái Đất liên quan tới sức cản không khí (air resistance) và chân không (vacuum), trả lời các câu hỏi về tàu vũ trụ trong sách bài tập, và phân loại các dự đoán (predictions), quan sát (observations) và kết luận (conclusions) đã dẫn các nhà khoa học tới Sao Hải Vương (Neptune). Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D space scene, with sorting cards or choice questions. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-3-3 "Movement in space"
+   (Science 7, Unit 3 · Forces and energy)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= space things ================= */
+const THINGS={
+  sun:     {kind:'star', emoji:'☀️', name:{en:'The Sun',vi:'Mặt Trời (Sun)'}, short:{en:'Sun',vi:'Mặt Trời'}, labelY:1.75, fx:0, fz:0, fr:6.5},
+  mercury: {kind:'planet', emoji:'🪐', name:{en:'Mercury — closest to the Sun',vi:'Sao Thủy (Mercury) — gần Mặt Trời nhất'}, short:{en:'Mercury',vi:'Sao Thủy'}, labelY:0.85, fx:1.5, fz:-0.55, fr:4.6},
+  venus:   {kind:'planet', emoji:'🟠', name:{en:'Venus',vi:'Sao Kim (Venus)'}, short:{en:'Venus',vi:'Sao Kim'}, labelY:0.9, fx:0.36, fz:-2.07, fr:4.6},
+  earth:   {kind:'planet', emoji:'🌍', name:{en:'Earth',vi:'Trái Đất (Earth)'}, short:{en:'Earth',vi:'Trái Đất'}, labelY:0.95, fx:-1.9, fz:-1.6, fr:4.6},
+  moon:    {kind:'moon', emoji:'🌙', name:{en:'The Moon — orbits Earth',vi:'Mặt Trăng (Moon) — quay quanh Trái Đất'}, short:{en:'Moon',vi:'Mặt Trăng'}, labelY:1.55, fx:-1.35, fz:-1.95, fr:4.2},
+  mars:    {kind:'planet', emoji:'🔴', name:{en:'Mars',vi:'Sao Hỏa (Mars)'}, short:{en:'Mars',vi:'Sao Hỏa'}, labelY:0.9, fx:-2.95, fz:0.52, fr:4.6},
+  jupiter: {kind:'planet', emoji:'🟤', name:{en:'Jupiter — the largest planet',vi:'Sao Mộc (Jupiter) — hành tinh lớn nhất'}, short:{en:'Jupiter',vi:'Sao Mộc'}, labelY:1.2, fx:-1.8, fz:3.1, fr:5.2},
+  saturn:  {kind:'planet', emoji:'🪐', name:{en:'Saturn — it has rings',vi:'Sao Thổ (Saturn) — có vành đai'}, short:{en:'Saturn',vi:'Sao Thổ'}, labelY:1.15, fx:2.0, fz:3.46, fr:5.2},
+  uranus:  {kind:'planet', emoji:'🔵', name:{en:'Uranus',vi:'Sao Thiên Vương (Uranus)'}, short:{en:'Uranus',vi:'Sao Thiên Vương'}, labelY:0.9, fx:4.14, fz:1.5, fr:4.6},
+  neptune: {kind:'planet', emoji:'🔷', name:{en:'Neptune — furthest from the Sun',vi:'Sao Hải Vương (Neptune) — xa Mặt Trời nhất'}, short:{en:'Neptune',vi:'Sao Hải Vương'}, labelY:0.95, fx:2.58, fz:-3.68, fr:5.0},
+  probe:   {kind:'craft', emoji:'🛰️', name:{en:'Space probe (Voyager / Juno type)',vi:'Tàu thăm dò không gian (probe) (kiểu Voyager / Juno)'}, short:{en:'Space probe',vi:'Tàu thăm dò'}, labelY:0.95, fx:4.35, fz:-1.85, fr:4.6}
+};
+const FOCUSORDER=['sun','mercury','venus','earth','moon','mars','jupiter','saturn','uranus','neptune','probe'];
+const PORBIT=['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune'];
+const PSPEED={mercury:48,venus:35,earth:30,mars:24,jupiter:13,saturn:10,uranus:7,neptune:5};
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the space scene',vi:'Trong khung cảnh không gian'},
+  u1Brief:{en:'Tap a name to LOOK at a body. Looking is not doing — to study a body, tap it in the scene!',vi:'Chạm vào một tên để NGẮM một thiên thể. Ngắm chưa phải là làm — muốn nghiên cứu, hãy chạm vào chính thiên thể đó trong khung cảnh!'},
+  u2T:{en:'My space record',vi:'Bản ghi không gian của con'},
+  u2Brief:{en:'What you have found out about orbits, gravity and movement in space.',vi:'Những điều con đã tìm hiểu về quỹ đạo (orbit), lực hấp dẫn (gravity) và chuyển động trong không gian.'},
+  rowOrder:{en:'Planets tapped in order from the Sun',vi:'Hành tinh đã chạm theo thứ tự từ Mặt Trời'},
+  rowDir:{en:'Gravity direction shown',vi:'Đã chỉ ra hướng của lực hấp dẫn (gravity)'},
+  rowSpeed:{en:'Planet speeds compared',vi:'Đã so sánh tốc độ các hành tinh'},
+  rowSort:{en:'Space / Earth cards sorted',vi:'Đã phân loại thẻ Không gian / Trái Đất'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundOrder:{en:'I named the planets in order and found the Moon',vi:'Con đã kể tên các hành tinh theo thứ tự và tìm thấy Mặt Trăng (Moon)'},
+  foundDir:{en:'I showed which way gravity pulls a planet',vi:'Con đã chỉ ra hướng lực hấp dẫn (gravity) kéo một hành tinh'},
+  foundSpeed:{en:'I compared planet speeds',vi:'Con đã so sánh tốc độ (speed) các hành tinh'},
+  foundVac:{en:'I sorted vacuum and air-resistance ideas',vi:'Con đã phân loại các ý về chân không (vacuum) và sức cản không khí (air resistance)'},
+  foundProbe:{en:'I explained how spacecraft move in space',vi:'Con đã giải thích cách tàu vũ trụ chuyển động trong không gian'},
+  foundNep:{en:'I traced how Neptune was discovered',vi:'Con đã lần theo cách Sao Hải Vương (Neptune) được khám phá'},
+  binSpace:{en:'IN SPACE 🌌',vi:'TRONG KHÔNG GIAN 🌌 (IN SPACE)'},
+  binEarth:{en:'ON EARTH 🌍',vi:'TRÊN TRÁI ĐẤT 🌍 (ON EARTH)'},
+  tapEarth:{en:'👆 Tap Earth in the space scene!',vi:'👆 Chạm vào Trái Đất (Earth) trong khung cảnh không gian!'},
+  qDir:{en:'The force of the Sun’s gravity pulls a planet…',vi:'Lực hấp dẫn (gravity) của Mặt Trời kéo một hành tinh…'},
+  chTowards:{en:'Towards the Sun',vi:'Về phía Mặt Trời (towards the Sun)'},
+  chAway:{en:'Away from the Sun',vi:'Ra xa Mặt Trời (away from the Sun)'},
+  chAlong:{en:'Along its orbit, forwards',vi:'Dọc theo quỹ đạo của nó, về phía trước (along its orbit)'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 3.3A · Focus — Travelling through space',vi:'Bài tập 3.3A · Focus — Du hành trong không gian'},
+  ex1Inst:{en:'Tap the correct ending or word for each sentence.',vi:'Chạm vào phần kết hoặc từ đúng cho mỗi câu.'},
+  ex2T:{en:'Exercise 3.3B · Practice — Are there forces in space?',vi:'Bài tập 3.3B · Practice — Có lực trong không gian không?'},
+  ex2Inst:{en:'Tap the correct ending for each sentence about forces in space.',vi:'Chạm vào phần kết đúng cho mỗi câu về các lực trong không gian.'},
+  ex3T:{en:'Exercise 3.3C · Challenge — Speeding up, slowing down, changing direction',vi:'Bài tập 3.3C · Challenge — Tăng tốc, giảm tốc và đổi hướng'},
+  ex3Inst:{en:'Tap the correct ending for each challenge sentence.',vi:'Chạm vào phần kết đúng cho mỗi câu thử thách.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'air resistance',vi:'sức cản không khí'},
+  {en:'circular',vi:'tròn, hình tròn'},
+  {en:'speed',vi:'tốc độ'},
+  {en:'vacuum',vi:'chân không'},
+  {en:'gravity',vi:'lực hấp dẫn'},
+  {en:'orbit',vi:'quỹ đạo'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started',vi:'Khởi động'}, word:{en:'orbit',vi:'quỹ đạo (orbit)'},
+  q:{en:'Can you name the planets in order, starting with the one closest to the Sun?',vi:'Con kể tên được các hành tinh theo thứ tự, bắt đầu từ hành tinh gần Mặt Trời nhất không?'},
+  act:{en:'Tap the planets in order: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. Then tap the Moon.',vi:'Chạm vào các hành tinh theo thứ tự: Sao Thủy (Mercury), Sao Kim (Venus), Trái Đất (Earth), Sao Hỏa (Mars), Sao Mộc (Jupiter), Sao Thổ (Saturn), Sao Thiên Vương (Uranus), Sao Hải Vương (Neptune). Sau đó chạm vào Mặt Trăng (Moon).'},
+  see:{en:'Each planet you tap in the right order bounces and its name shows. The Moon is different — it orbits Earth, not the Sun directly.',vi:'Mỗi hành tinh con chạm đúng thứ tự sẽ nảy lên và hiện tên. Mặt Trăng khác biệt — nó quay quanh Trái Đất, không trực tiếp quanh Mặt Trời.'},
+  concl:[
+    {en:'The planets in order from the Sun are: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune.',vi:'Các hành tinh theo thứ tự từ Mặt Trời là: Sao Thủy (Mercury), Sao Kim (Venus), Trái Đất (Earth), Sao Hỏa (Mars), Sao Mộc (Jupiter), Sao Thổ (Saturn), Sao Thiên Vương (Uranus) và Sao Hải Vương (Neptune).'},
+    {en:'The Moon is the object that orbits Earth — it does not orbit the Sun on its own.',vi:'Mặt Trăng (Moon) là thiên thể quay quanh Trái Đất (Earth) — nó không tự quay quanh Mặt Trời.'},
+    {en:'Comets and asteroids orbit the Sun too, further out in the same system.',vi:'Sao chổi (comets) và tiểu hành tinh (asteroids) cũng quay quanh Mặt Trời, ở xa hơn trong cùng hệ.'}]},
+ {tag:{en:'Which way does gravity pull?',vi:'Lực hấp dẫn kéo về hướng nào?'}, word:{en:'gravity',vi:'lực hấp dẫn (gravity)'},
+  q:{en:'The Sun has the largest mass in the Solar System. Which way does its gravity pull a planet?',vi:'Mặt Trời có khối lượng lớn nhất trong Hệ Mặt Trời. Lực hấp dẫn (gravity) của nó kéo một hành tinh về hướng nào?'},
+  act:{en:'Tap Earth in the space scene. Then answer: which way does the force of the Sun’s gravity pull it?',vi:'Chạm vào Trái Đất (Earth) trong khung cảnh. Sau đó trả lời: lực hấp dẫn (gravity) của Mặt Trời kéo nó về hướng nào?'},
+  see:{en:'An arrow idea appears only after you tap Earth — think of the arrow pointing from the planet to the body pulling it.',vi:'Ý tưởng mũi tên chỉ xuất hiện sau khi con chạm vào Trái Đất — hãy nghĩ tới mũi tên chỉ từ hành tinh tới thiên thể đang kéo nó.'},
+  concl:[
+    {en:'The Sun is the object with the largest mass in the Solar System, and its gravity is about 27 times stronger than Earth’s gravity.',vi:'Mặt Trời là thiên thể có khối lượng lớn nhất trong Hệ Mặt Trời, và lực hấp dẫn (gravity) của nó mạnh hơn của Trái Đất khoảng 27 lần.'},
+    {en:'The force of gravity from the Sun always acts on a planet towards the Sun. It gets weaker as the distance from the Sun increases.',vi:'Lực hấp dẫn (gravity) từ Mặt Trời luôn tác dụng lên một hành tinh về phía Mặt Trời (towards the Sun). Nó yếu dần khi khoảng cách tới Mặt Trời tăng lên.'},
+    {en:'Even so, it is strong enough to hold Neptune in orbit — Neptune is 30 times further from the Sun than Earth and has about 17 times Earth’s mass.',vi:'Dù vậy, nó vẫn đủ mạnh để giữ Sao Hải Vương (Neptune) trên quỹ đạo (orbit) — Sao Hải Vương ở xa Mặt Trời gấp 30 lần Trái Đất và có khối lượng khoảng 17 lần Trái Đất.'}]},
+ {tag:{en:'Planet speeds',vi:'Tốc độ các hành tinh'}, word:{en:'speed',vi:'tốc độ (speed)'},
+  q:{en:'Do all the planets travel around the Sun at the same speed?',vi:'Có phải mọi hành tinh đều chuyển động quanh Mặt Trời với cùng tốc độ (speed)?'},
+  act:{en:'Tap Mercury, Earth and Neptune in the scene to read their orbital speeds from the book’s table.',vi:'Chạm vào Sao Thủy (Mercury), Trái Đất (Earth) và Sao Hải Vương (Neptune) trong khung cảnh để đọc tốc độ quỹ đạo của chúng từ bảng của sách.'},
+  see:{en:'Mercury travels at 48 km/s, Earth at 30 km/s and Neptune at only 5 km/s.',vi:'Sao Thủy chuyển động với tốc độ 48 km/s, Trái Đất 30 km/s và Sao Hải Vương chỉ 5 km/s.'},
+  concl:[
+    {en:'The orbits of the planets are almost circular, and to keep anything moving in a circle there must be a force making it turn.',vi:'Quỹ đạo (orbit) của các hành tinh gần như tròn (circular), và để giữ bất cứ vật gì chuyển động theo vòng tròn thì phải có một lực làm nó đổi hướng.'},
+    {en:'Mercury, the closest planet, feels the strongest pull from the Sun’s gravity, so it orbits with the highest speed of all the planets — about 170 000 km/h. Earth travels at about 100 000 km/h.',vi:'Sao Thủy (Mercury), hành tinh gần nhất, chịu lực kéo mạnh nhất từ lực hấp dẫn (gravity) của Mặt Trời, nên nó quay với tốc độ (speed) cao nhất trong các hành tinh — khoảng 170 000 km/h. Trái Đất chuyển động khoảng 100 000 km/h.'},
+    {en:'As the distance from the Sun increases, the speed of orbit of the planets decreases. If the Sun’s gravity did not pull a planet towards the Sun, the planet would travel off in a straight line into space.',vi:'Khi khoảng cách tới Mặt Trời tăng lên, tốc độ quỹ đạo của các hành tinh giảm đi. Nếu lực hấp dẫn của Mặt Trời không kéo một hành tinh về phía Mặt Trời, hành tinh đó sẽ bay đi theo đường thẳng vào không gian.'}]},
+ {tag:{en:'Space or Earth?',vi:'Không gian hay Trái Đất?'}, word:{en:'vacuum',vi:'chân không (vacuum)'},
+  q:{en:'Why do moving objects slow down on Earth, but not in space?',vi:'Vì sao các vật chuyển động chậm lại trên Trái Đất, nhưng không chậm lại trong không gian?'},
+  act:{en:'Tap a card, then tap IN SPACE or ON EARTH.',vi:'Chạm vào một thẻ, rồi chạm TRONG KHÔNG GIAN (IN SPACE) hoặc TRÊN TRÁI ĐẤT (ON EARTH).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Air resistance is a force caused by a moving object pushing against the particles in the air. It acts in the opposite direction to the movement, and it is greater the faster the object moves.',vi:'Sức cản không khí (air resistance) là một lực gây ra khi một vật chuyển động đẩy vào các hạt trong không khí. Nó tác dụng ngược hướng chuyển động, và vật chuyển động càng nhanh thì nó càng lớn.'},
+    {en:'A landing aeroplane can change the shape of its wing to make extra air resistance and slow down faster.',vi:'Một máy bay đang hạ cánh có thể thay đổi hình dạng cánh để tạo thêm sức cản không khí (air resistance) và chậm lại nhanh hơn.'},
+    {en:'In space there is no air and there are very, very few particles. A space with no particles in it is a vacuum, so there is no air resistance to slow planets or spacecraft down — the only force acting on the planets is gravity.',vi:'Trong không gian không có không khí và có rất, rất ít hạt. Một khoảng không gian không có hạt nào được gọi là chân không (vacuum), nên không có sức cản không khí làm các hành tinh hay tàu vũ trụ chậm lại — lực duy nhất tác dụng lên các hành tinh là lực hấp dẫn (gravity).'}]},
+ {tag:{en:'Spacecraft in space',vi:'Tàu vũ trụ trong không gian'}, word:{en:'air resistance',vi:'sức cản không khí (air resistance)'},
+  q:{en:'How do spacecraft keep moving, slow down and change direction in space?',vi:'Tàu vũ trụ tiếp tục chuyển động, chậm lại và đổi hướng trong không gian như thế nào?'},
+  act:{en:'Answer the three spacecraft questions: constant speed, Saturn’s rings, and passing Jupiter.',vi:'Trả lời ba câu hỏi về tàu vũ trụ: tốc độ không đổi, vành đai của Sao Thổ (Saturn), và bay ngang qua Sao Mộc (Jupiter).'},
+  see:{en:'Right answers move the questions on. Three right answers complete the set.',vi:'Đáp án đúng đưa câu hỏi đi tiếp. Ba đáp án đúng là hoàn thành bộ câu hỏi.'},
+  concl:[
+    {en:'Spacecraft launched in the 1970s are now far outside the Solar System. They have no engines running, yet they keep a constant speed because there is no air resistance in the vacuum of space.',vi:'Các tàu vũ trụ phóng trong thập niên 1970 nay đã ở rất xa ngoài Hệ Mặt Trời. Chúng không có động cơ đang chạy, nhưng vẫn giữ tốc độ (speed) không đổi vì trong chân không (vacuum) của không gian không có sức cản không khí (air resistance).'},
+    {en:'The pieces of rock in Saturn’s rings stay in orbit because Saturn’s gravity pulls each piece towards Saturn.',vi:'Các mảnh đá trong vành đai của Sao Thổ (Saturn) ở trên quỹ đạo vì lực hấp dẫn (gravity) của Sao Thổ kéo mỗi mảnh về phía Sao Thổ.'},
+    {en:'A spacecraft passing a planet is pulled towards that planet, so its path bends. Gravity can change a moving object’s direction without any engine.',vi:'Một tàu vũ trụ bay ngang qua một hành tinh bị kéo về phía hành tinh đó, nên đường đi của nó cong lại. Lực hấp dẫn (gravity) có thể đổi hướng một vật đang chuyển động mà không cần động cơ nào.'}]},
+ {tag:{en:'Discovering Neptune',vi:'Khám phá Sao Hải Vương'}, word:{en:'speed',vi:'tốc độ (speed)'},
+  q:{en:'How did scientists find a planet they had never seen?',vi:'Các nhà khoa học đã tìm ra một hành tinh mà họ chưa từng nhìn thấy bằng cách nào?'},
+  act:{en:'Answer the three discovery questions: predictions, observations and conclusions about Uranus and Neptune.',vi:'Trả lời ba câu hỏi khám phá: dự đoán (predictions), quan sát (observations) và kết luận (conclusions) về Sao Thiên Vương (Uranus) và Sao Hải Vương (Neptune).'},
+  see:{en:'Right answers move the story on. Three right answers complete the discovery.',vi:'Đáp án đúng đưa câu chuyện đi tiếp. Ba đáp án đúng là hoàn thành khám phá.'},
+  concl:[
+    {en:'Calculations that say where a planet will be at different times are predictions. What scientists actually see and record about a planet’s position are observations.',vi:'Các phép tính nói trước một hành tinh sẽ ở đâu vào các thời điểm khác nhau là dự đoán (predictions). Những gì các nhà khoa học thực sự nhìn thấy và ghi lại về vị trí của một hành tinh là quan sát (observations).'},
+    {en:'Uranus kept moving further from the Sun than the predictions said. Scientists concluded that another source of gravity was pulling it, predicted where another planet should be, and in 1846 found Neptune very close to that place.',vi:'Sao Thiên Vương (Uranus) liên tục di chuyển xa Mặt Trời hơn so với dự đoán. Các nhà khoa học kết luận rằng một nguồn lực hấp dẫn (gravity) khác đang kéo nó, dự đoán hành tinh khác đó phải ở đâu, và năm 1846 họ tìm thấy Sao Hải Vương (Neptune) rất gần vị trí đó.'},
+    {en:'I can name the force that keeps the planets in orbit around the Sun.',vi:'Con kể tên được lực giữ các hành tinh trên quỹ đạo (orbit) quanh Mặt Trời.'},
+    {en:'I can describe the direction that this force acts on a planet.',vi:'Con mô tả được hướng mà lực này tác dụng lên một hành tinh.'},
+    {en:'I can understand why planets closer to the Sun move faster.',vi:'Con hiểu được vì sao các hành tinh gần Mặt Trời hơn chuyển động nhanh hơn.'}]}
+];
+const SORTV=[
+ {id:'v_noair',emoji:'🌌',en:'No particles at all — a vacuum',vi:'Không có hạt nào cả — một chân không (vacuum)',ans:'space'},
+ {id:'v_plane',emoji:'🛬',en:'A landing plane makes extra air resistance to slow down',vi:'Một máy bay hạ cánh tạo thêm sức cản không khí (air resistance) để chậm lại',ans:'earthb'},
+ {id:'v_probe',emoji:'🛰️',en:'A probe keeps its speed with no engine pushing it',vi:'Một tàu thăm dò giữ nguyên tốc độ (speed) mà không có động cơ đẩy',ans:'space'},
+ {id:'v_pushair',emoji:'💨',en:'A moving object must push against the particles in the air',vi:'Một vật đang chuyển động phải đẩy vào các hạt trong không khí',ans:'earthb'},
+ {id:'v_planetvac',emoji:'🪐',en:'Planets move with no air resistance to slow them',vi:'Các hành tinh chuyển động mà không có sức cản không khí làm chúng chậm lại',ans:'space'},
+ {id:'v_faster',emoji:'🏎️',en:'The faster an object moves, the greater the air resistance on it',vi:'Vật chuyển động càng nhanh, sức cản không khí (air resistance) lên nó càng lớn',ans:'earthb'}
+];
+const SORTV_ORDER=mixOrder(SORTV,c=>c.ans,2);
+const GAME5=[
+ {q:{en:'Spacecraft launched between 1972 and 1977 are now far outside the Solar System. They have no engines running, yet they keep a constant speed. Why?',vi:'Các tàu vũ trụ phóng từ năm 1972 tới 1977 nay đã ở rất xa ngoài Hệ Mặt Trời. Chúng không có động cơ đang chạy, nhưng vẫn giữ tốc độ không đổi. Vì sao?'},
+  opts:[{en:'They have no mass',vi:'Chúng không có khối lượng (mass)'},{en:'There is no air resistance',vi:'Không có sức cản không khí (air resistance)'},{en:'They have no weight pressing on the ground',vi:'Chúng không có trọng lượng đè xuống mặt đất'}],a:1},
+ {q:{en:'Saturn’s rings are millions of separate pieces of rock in orbit around Saturn. Which way does the force that keeps one piece in orbit act?',vi:'Vành đai của Sao Thổ (Saturn) gồm hàng triệu mảnh đá riêng lẻ quay quanh Sao Thổ. Lực giữ một mảnh đá trên quỹ đạo tác dụng theo hướng nào?'},
+  opts:[{en:'Towards Saturn',vi:'Về phía Sao Thổ (towards Saturn)'},{en:'Away from Saturn',vi:'Ra xa Sao Thổ (away from Saturn)'},{en:'Only forwards, along the ring',vi:'Chỉ về phía trước, dọc theo vành đai'}],a:0},
+ {q:{en:'Voyager 2 had no engines as it passed close to Jupiter. What happened to its path?',vi:'Voyager 2 không có động cơ khi nó bay gần Sao Mộc (Jupiter). Đường đi của nó đã xảy ra điều gì?'},
+  opts:[{en:'It stopped in space',vi:'Nó dừng lại trong không gian'},{en:'It carried on in an exactly straight line, unaffected',vi:'Nó đi tiếp theo đường thẳng tuyệt đối, không bị ảnh hưởng'},{en:'Its path bent towards Jupiter, pulled by Jupiter’s gravity',vi:'Đường đi của nó cong về phía Sao Mộc, bị lực hấp dẫn (gravity) của Sao Mộc kéo'}],a:2}
+];
+const GAME6=[
+ {q:{en:'In 1821, Alexis Bouvard worked out where Uranus would be at different times. Which one word best describes these calculations?',vi:'Năm 1821, Alexis Bouvard tính ra Sao Thiên Vương (Uranus) sẽ ở đâu vào các thời điểm khác nhau. Một từ nào mô tả đúng nhất các phép tính này?'},
+  opts:[{en:'Observations',vi:'Quan sát (observations)'},{en:'Predictions',vi:'Dự đoán (predictions)'},{en:'Measurements',vi:'Phép đo (measurements)'}],a:1},
+ {q:{en:'Uranus was actually seen to move further away from the Sun at regular times, and these results were recorded. Which word best describes these results?',vi:'Sao Thiên Vương thực sự được nhìn thấy di chuyển xa Mặt Trời hơn vào những thời điểm đều đặn, và các kết quả này được ghi lại. Từ nào mô tả đúng nhất các kết quả này?'},
+  opts:[{en:'Observations',vi:'Quan sát (observations)'},{en:'Predictions',vi:'Dự đoán (predictions)'},{en:'Conclusions',vi:'Kết luận (conclusions)'}],a:0},
+ {q:{en:'Scientists thought that another source of gravity was pulling Uranus further from the Sun. Which word best describes this statement?',vi:'Các nhà khoa học cho rằng một nguồn lực hấp dẫn (gravity) khác đang kéo Sao Thiên Vương ra xa Mặt Trời hơn. Từ nào mô tả đúng nhất nhận định này?'},
+  opts:[{en:'An observation',vi:'Một quan sát (observation)'},{en:'A measurement',vi:'Một phép đo (measurement)'},{en:'A conclusion',vi:'Một kết luận (conclusion)'}],a:2}
+];
+const QUIZ=[
+ {q:{en:'What keeps the planets in orbit around the Sun?',vi:'Điều gì giữ các hành tinh trên quỹ đạo (orbit) quanh Mặt Trời?'},
+  o:[{en:'Air resistance',vi:'Sức cản không khí (air resistance)'},{en:'The Sun’s gravity',vi:'Lực hấp dẫn (gravity) của Mặt Trời'},{en:'Friction with space',vi:'Ma sát với không gian'}],a:1,
+  e:{en:'The Sun has the largest mass in the Solar System. Its gravity holds all the planets in their orbits.',vi:'Mặt Trời có khối lượng lớn nhất trong Hệ Mặt Trời. Lực hấp dẫn (gravity) của nó giữ mọi hành tinh trên quỹ đạo của chúng.'}},
+ {q:{en:'Which way does the force of gravity from the Sun pull a planet?',vi:'Lực hấp dẫn (gravity) từ Mặt Trời kéo một hành tinh về hướng nào?'},
+  o:[{en:'Away from the Sun',vi:'Ra xa Mặt Trời'},{en:'Forwards, along its orbit',vi:'Về phía trước, dọc theo quỹ đạo (orbit) của nó'},{en:'Towards the Sun',vi:'Về phía Mặt Trời (towards the Sun)'}],a:2,
+  e:{en:'The force of gravity from the Sun always acts on a planet towards the Sun. Without it, the planet would travel off in a straight line.',vi:'Lực hấp dẫn từ Mặt Trời luôn tác dụng lên một hành tinh về phía Mặt Trời. Nếu không có nó, hành tinh sẽ bay đi theo đường thẳng.'}},
+ {q:{en:'Which planet orbits the Sun fastest, and why?',vi:'Hành tinh nào quay quanh Mặt Trời nhanh nhất, và vì sao?'},
+  o:[{en:'Mercury — it is closest, so the Sun’s pull on it is strongest',vi:'Sao Thủy (Mercury) — nó gần nhất, nên lực kéo của Mặt Trời lên nó mạnh nhất'},{en:'Neptune — it has the longest orbit',vi:'Sao Hải Vương (Neptune) — nó có quỹ đạo dài nhất'},{en:'Earth — it is the heaviest planet',vi:'Trái Đất (Earth) — nó là hành tinh nặng nhất'}],a:0,
+  e:{en:'Mercury is the closest planet to the Sun, so it feels the strongest pull and orbits at 48 km/s — about 170 000 km/h. Neptune, the furthest, manages only 5 km/s.',vi:'Sao Thủy là hành tinh gần Mặt Trời nhất, nên nó chịu lực kéo mạnh nhất và quay với tốc độ 48 km/s — khoảng 170 000 km/h. Sao Hải Vương, xa nhất, chỉ đạt 5 km/s.'}},
+ {q:{en:'Why can a space probe keep a constant speed far outside the Solar System, with no engine running?',vi:'Vì sao một tàu thăm dò có thể giữ tốc độ không đổi ở rất xa ngoài Hệ Mặt Trời, khi không có động cơ nào đang chạy?'},
+  o:[{en:'It has no mass in space',vi:'Nó không có khối lượng trong không gian'},{en:'Space is a vacuum, so there is no air resistance to slow it down',vi:'Không gian là chân không (vacuum), nên không có sức cản không khí (air resistance) làm nó chậm lại'},{en:'The Sun pushes it from behind',vi:'Mặt Trời đẩy nó từ phía sau'}],a:1,
+  e:{en:'In space there are almost no particles — it is a vacuum — so no air resistance acts on the probe. On Earth, air resistance would slow it down.',vi:'Trong không gian hầu như không có hạt nào — đó là chân không (vacuum) — nên không có sức cản không khí tác dụng lên tàu thăm dò. Trên Trái Đất, sức cản không khí sẽ làm nó chậm lại.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'The force of the Sun’s gravity pulls a planet',vi:'Lực hấp dẫn (gravity) của Mặt Trời kéo một hành tinh'},correct:0,
+  opts:[{en:'towards the Sun',vi:'về phía Mặt Trời (towards the Sun)'},{en:'away from the Sun',vi:'ra xa Mặt Trời'}],
+  e:{en:'Gravity from the Sun always acts on a planet towards the Sun — draw the arrow pointing at the Sun.',vi:'Lực hấp dẫn từ Mặt Trời luôn tác dụng lên một hành tinh về phía Mặt Trời — hãy vẽ mũi tên chỉ vào Mặt Trời.'}},
+ {pre:{en:'A space that contains no particles is called a',vi:'Một khoảng không gian không chứa hạt nào được gọi là'},correct:1,
+  opts:[{en:'liquid',vi:'chất lỏng (liquid)'},{en:'vacuum',vi:'chân không (vacuum)'}],
+  e:{en:'The space between the Moon and Earth contains no particles, so it is a vacuum — not a gas, solid or liquid.',vi:'Khoảng không gian giữa Mặt Trăng và Trái Đất không chứa hạt nào, nên nó là chân không (vacuum) — không phải khí, rắn hay lỏng.'}},
+ {pre:{en:'The force that slows a spacecraft in the air around Earth, but does not act on it in space, is',vi:'Lực làm một tàu vũ trụ chậm lại trong không khí quanh Trái Đất, nhưng không tác dụng lên nó trong không gian, là'},correct:0,
+  opts:[{en:'air resistance',vi:'sức cản không khí (air resistance)'},{en:'gravity',vi:'lực hấp dẫn (gravity)'}],
+  e:{en:'Air resistance needs air particles to push against. Gravity still acts in space — air resistance does not.',vi:'Sức cản không khí cần các hạt không khí để đẩy vào. Lực hấp dẫn vẫn tác dụng trong không gian — sức cản không khí thì không.'}},
+ {pre:{en:'The object that orbits Earth, and not the Sun on its own, is',vi:'Thiên thể quay quanh Trái Đất, chứ không tự quay quanh Mặt Trời, là'},correct:1,
+  opts:[{en:'Mars',vi:'Sao Hỏa (Mars)'},{en:'the Moon',vi:'Mặt Trăng (Moon)'}],
+  e:{en:'The Moon orbits Earth. Mars orbits the Sun.',vi:'Mặt Trăng quay quanh Trái Đất. Sao Hỏa quay quanh Mặt Trời.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'Spacecraft far outside the Solar System keep a constant speed because',vi:'Các tàu vũ trụ ở rất xa ngoài Hệ Mặt Trời giữ tốc độ không đổi vì'},correct:0,
+  opts:[{en:'there is no air resistance',vi:'không có sức cản không khí (air resistance)'},{en:'they have no mass',vi:'chúng không có khối lượng'}],
+  e:{en:'They still have mass and energy. In a vacuum there is no air resistance to slow them down, so no engine is needed.',vi:'Chúng vẫn có khối lượng và năng lượng. Trong chân không không có sức cản không khí làm chúng chậm lại, nên không cần động cơ.'}},
+ {pre:{en:'A piece of rock in Saturn’s rings is kept in orbit by a force acting',vi:'Một mảnh đá trong vành đai của Sao Thổ (Saturn) được giữ trên quỹ đạo bởi một lực tác dụng'},correct:1,
+  opts:[{en:'away from Saturn',vi:'ra xa Sao Thổ'},{en:'towards Saturn',vi:'về phía Sao Thổ (towards Saturn)'}],
+  e:{en:'Saturn’s gravity pulls each piece of rock towards Saturn, just as the Sun’s gravity pulls planets towards the Sun.',vi:'Lực hấp dẫn của Sao Thổ kéo mỗi mảnh đá về phía Sao Thổ, giống như lực hấp dẫn của Mặt Trời kéo các hành tinh về phía Mặt Trời.'}},
+ {pre:{en:'The only force acting on Earth as it orbits the Sun is',vi:'Lực duy nhất tác dụng lên Trái Đất khi nó quay quanh Mặt Trời là'},correct:0,
+  opts:[{en:'gravity only',vi:'chỉ lực hấp dẫn (gravity)'},{en:'gravity and air resistance',vi:'lực hấp dẫn và sức cản không khí'}],
+  e:{en:'Earth moves in a vacuum, so there is no air resistance and no friction — gravity only.',vi:'Trái Đất chuyển động trong chân không, nên không có sức cản không khí và không có ma sát — chỉ có lực hấp dẫn.'}},
+ {pre:{en:'Comets and asteroids are kept in orbit around the Sun by',vi:'Sao chổi và tiểu hành tinh được giữ trên quỹ đạo quanh Mặt Trời bởi'},correct:1,
+  opts:[{en:'air resistance',vi:'sức cản không khí (air resistance)'},{en:'the Sun’s gravity',vi:'lực hấp dẫn (gravity) của Mặt Trời'}],
+  e:{en:'The Sun’s gravity holds every orbiting object in the Solar System, not just the planets.',vi:'Lực hấp dẫn của Mặt Trời giữ mọi thiên thể đang quay trong Hệ Mặt Trời, không chỉ các hành tinh.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'Very powerful engines are needed to launch a spacecraft from Earth into space because it must overcome',vi:'Cần động cơ rất mạnh để phóng một tàu vũ trụ từ Trái Đất vào không gian vì nó phải thắng'},correct:0,
+  opts:[{en:'Earth’s gravity (and air resistance)',vi:'lực hấp dẫn (gravity) của Trái Đất (và sức cản không khí)'},{en:'the vacuum of space',vi:'chân không (vacuum) của không gian'}],
+  e:{en:'Earth’s gravity pulls the spacecraft back, and air resistance acts against it as it climbs through the air.',vi:'Lực hấp dẫn của Trái Đất kéo tàu vũ trụ trở lại, và sức cản không khí tác dụng ngược lại khi nó bay lên qua không khí.'}},
+ {pre:{en:'When the Space Shuttle returned to Earth, most of the force that slowed it down came from',vi:'Khi tàu con thoi (Space Shuttle) trở về Trái Đất, phần lớn lực làm nó chậm lại đến từ'},correct:1,
+  opts:[{en:'its engines running backwards',vi:'động cơ của nó chạy ngược'},{en:'air resistance in the atmosphere',vi:'sức cản không khí (air resistance) trong khí quyển'}],
+  e:{en:'Coming back through the air, the Shuttle used air resistance — dragging against the air — to lose most of its speed, not its engines.',vi:'Khi trở về qua không khí, tàu con thoi dùng sức cản không khí — cọ xát với không khí — để mất phần lớn tốc độ, chứ không dùng động cơ.'}},
+ {pre:{en:'As Voyager 2 passed close to Jupiter with no engines, its path',vi:'Khi Voyager 2 bay gần Sao Mộc (Jupiter) mà không có động cơ, đường đi của nó'},correct:0,
+  opts:[{en:'bent towards Jupiter',vi:'cong về phía Sao Mộc'},{en:'stayed exactly straight',vi:'giữ thẳng tuyệt đối'}],
+  e:{en:'Jupiter’s gravity pulled Voyager 2 towards it, bending the path — the arrow continues curving around Jupiter.',vi:'Lực hấp dẫn của Sao Mộc kéo Voyager 2 về phía nó, làm đường đi cong lại — mũi tên tiếp tục cong quanh Sao Mộc.'}},
+ {pre:{en:'During its orbit, when a planet moves closer to the Sun, its speed',vi:'Trong quỹ đạo của nó, khi một hành tinh di chuyển lại gần Mặt Trời hơn, tốc độ (speed) của nó'},correct:1,
+  opts:[{en:'decreases',vi:'giảm đi'},{en:'increases',vi:'tăng lên'}],
+  e:{en:'The Sun’s gravity is stronger closer in, so a planet speeds up as its distance from the Sun gets smaller, and slows as it moves further away.',vi:'Lực hấp dẫn của Mặt Trời mạnh hơn ở gần hơn, nên một hành tinh tăng tốc khi khoảng cách tới Mặt Trời nhỏ đi, và chậm lại khi nó di chuyển ra xa hơn.'}},
+ {pre:{en:'Planet speeds are shown in a bar graph rather than a line graph because',vi:'Tốc độ các hành tinh được trình bày bằng biểu đồ cột thay vì biểu đồ đường vì'},correct:0,
+  opts:[{en:'each planet is a separate category — the speeds do not join up continuously',vi:'mỗi hành tinh là một nhóm riêng biệt — các tốc độ không nối tiếp liên tục với nhau'},{en:'bar graphs can show bigger numbers',vi:'biểu đồ cột trình bày được số lớn hơn'}],
+  e:{en:'Planets are separate, named categories, so separate bars fit. A line graph is for one quantity changing continuously.',vi:'Các hành tinh là những nhóm riêng biệt có tên, nên các cột riêng biệt là phù hợp. Biểu đồ đường dùng cho một đại lượng thay đổi liên tục.'}},
+ {pre:{en:'An advantage of showing the planet speeds in a graph rather than a table is that',vi:'Một ưu điểm của việc trình bày tốc độ các hành tinh bằng biểu đồ thay vì bảng là'},correct:1,
+  opts:[{en:'a graph uses exact numbers only',vi:'biểu đồ chỉ dùng số chính xác'},{en:'the pattern — speeds falling with distance — shows at a glance',vi:'quy luật — tốc độ giảm dần theo khoảng cách — hiện rõ ngay khi nhìn'}],
+  e:{en:'A graph makes the trend easy to see: the bars get shorter as the planets get further from the Sun.',vi:'Biểu đồ làm xu hướng dễ thấy: các cột ngắn dần khi các hành tinh ở xa Mặt Trời hơn.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 4 + 6 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-3-3';
+const SUMKEY='camb:sum:sci7-3-3';
+const BOT_CODE='sci7-3.3';
+let FOUND={order:false,dir:false,speed:false,vac:false,probe:false,nep:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1idx:0, s1moon:false,
+  s2pos:false, s2ans:false, s2wrong:false,
+  s3:new Set(),
+  s4correct:new Set(), s4sel:null,
+  s5idx:0, s5correct:0, s5wrong:false,
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1idx>=8&&T.s1moon;
+  if(i===1) return T.s2pos&&T.s2ans;
+  if(i===2) return T.s3.size>=3;
+  if(i===3) return T.s4correct.size>=5;
+  if(i===4) return T.s5correct>=3;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1idx<8) return B('Planets in order: '+T.s1idx+' of 8. Next: '+(THINGS[PORBIT[T.s1idx]].short.en)+'.',
+             'Hành tinh theo thứ tự: '+T.s1idx+' / 8. Tiếp theo: '+(THINGS[PORBIT[T.s1idx]].short.vi)+'.');
+    if(!T.s1moon) return B('All 8 planets in order! Now tap the Moon — the body that orbits Earth.','Đủ 8 hành tinh theo thứ tự! Giờ hãy chạm vào Mặt Trăng (Moon) — thiên thể quay quanh Trái Đất.');
+    return B('All 8 planets in order, and the Moon found.','Đủ 8 hành tinh theo thứ tự, và đã tìm thấy Mặt Trăng.');
+  }
+  if(i===1){
+    if(!T.s2pos) return B('Tap Earth in the space scene.','Hãy chạm vào Trái Đất (Earth) trong khung cảnh.');
+    if(T.s2wrong&&!T.s2ans) return B('Think again! A planet is pulled towards the body whose gravity holds it.','Nghĩ lại nào! Một hành tinh bị kéo về phía thiên thể có lực hấp dẫn (gravity) đang giữ nó.');
+    if(!T.s2ans) return B('You tapped Earth. Now answer: which way does the Sun’s gravity pull it?','Con đã chạm vào Trái Đất. Giờ trả lời: lực hấp dẫn của Mặt Trời kéo nó về hướng nào?');
+    return B('The Sun’s gravity pulls Earth towards the Sun.','Lực hấp dẫn của Mặt Trời kéo Trái Đất về phía Mặt Trời.');
+  }
+  if(i===2){
+    return B('Speeds read: '+T.s3.size+' of 3 (Mercury 48 km/s · Earth 30 km/s · Neptune 5 km/s).',
+             'Tốc độ đã đọc: '+T.s3.size+' / 3 (Sao Thủy 48 km/s · Trái Đất 30 km/s · Sao Hải Vương 5 km/s).');
+  }
+  if(i===3){
+    const c=T.s4sel? SORTV.find(x=>x.id===T.s4sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap IN SPACE or ON EARTH.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm TRONG KHÔNG GIAN (IN SPACE) hoặc TRÊN TRÁI ĐẤT (ON EARTH).');
+    return B('Cards right: '+T.s4correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s4correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===4){
+    if(T.s5idx>=GAME5.length) return B('All 3 spacecraft questions answered right.','Đã trả lời đúng cả 3 câu hỏi về tàu vũ trụ.');
+    return B('Spacecraft question '+(T.s5idx+1)+' of 3 · Right answers: '+T.s5correct+(T.s5wrong? ' · Think again — what is missing in space?' : ''),
+             'Câu hỏi tàu vũ trụ '+(T.s5idx+1)+' / 3 · Đáp án đúng: '+T.s5correct+(T.s5wrong? ' · Nghĩ lại nào — trong không gian thiếu điều gì?' : ''));
+  }
+  if(i===5){
+    if(T.s6idx>=GAME6.length) return B('Discovery complete! Predictions, observations and a conclusion found Neptune.','Hoàn thành khám phá! Dự đoán (predictions), quan sát (observations) và một kết luận (conclusion) đã tìm ra Sao Hải Vương.');
+    return B('Discovery question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think: worked out before = prediction; seen and recorded = observation; explained = conclusion.' : ''),
+             'Câu hỏi khám phá '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Hãy nghĩ: tính ra từ trước = dự đoán; nhìn thấy và ghi lại = quan sát; giải thích được = kết luận.' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function gameExtra(box,game,idxKey,corKey,wrongKey,foundKey){
+  if(T[idxKey]<game.length){
+    const gq=game[T[idxKey]];
+    const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+    box.appendChild(q);
+    const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+    gq.opts.forEach((o,oi)=>{
+      row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+        if(stepLocked()){ flashReadBtn(); return; }
+        if(oi===gq.a){ T[corKey]++; T[idxKey]++; T[wrongKey]=false; if(T[corKey]>=3&&foundKey) FOUND[foundKey]=true; saveProg(); renderMirrors(); }
+        else { T[wrongKey]=true; addMistake(); }
+        renderStepExtra(); refreshEvidence();
+      }));
+    });
+    box.appendChild(row);
+  }
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    const pills=PORBIT.map(id=>({emoji:THINGS[id].emoji,label:THINGS[id].short,got:PORBIT.indexOf(id)<T.s1idx}));
+    pills.push({emoji:'🌙',label:THINGS.moon.short,got:T.s1moon});
+    statPills(box,pills);
+  }else if(curStep===1){
+    if(!T.s2pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapEarth)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s2ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qDir);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chAway,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chTowards,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2ans=true; FOUND.dir=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chAlong,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🪐',label:{en:'Mercury — 48 km/s',vi:'Sao Thủy — 48 km/s'},got:T.s3.has('mercury')},
+      {emoji:'🌍',label:{en:'Earth — 30 km/s',vi:'Trái Đất — 30 km/s'},got:T.s3.has('earth')},
+      {emoji:'🔷',label:{en:'Neptune — 5 km/s',vi:'Sao Hải Vương — 5 km/s'},got:T.s3.has('neptune')}
+    ]);
+  }else if(curStep===3){
+    buildSort(box,SORTV_ORDER,
+      [{key:'space',label:STR.binSpace,cls:'space'},{key:'earthb',label:STR.binEarth,cls:'earthb'}],
+      T.s4correct,()=>T.s4sel,v=>{T.s4sel=v;},null,onSortPlaced);
+  }else if(curStep===4){
+    gameExtra(box,GAME5,'s5idx','s5correct','s5wrong','probe');
+  }else if(curStep===5){
+    gameExtra(box,GAME6,'s6idx','s6correct','s6wrong','nep');
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusThing('mercury'); bounceThing('mercury'); }
+  else if(i===1){ focusThing('earth'); bounceThing('earth'); }
+  else if(i===2){ focusVisual('mercury'); bounceThing('mercury'); setTimeout(()=>{ focusVisual('neptune'); bounceThing('neptune'); },900); }
+  else if(i===3){ demoSort(SORTV,T.s4correct); }
+  else if(i===4){ focusThing('probe'); bounceThing('probe'); }
+  else if(i===5){ focusThing('neptune'); bounceThing('neptune'); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowOrder,(doneSteps.has(0)?8:T.s1idx),8)+
+    row(STR.rowDir,(FOUND.dir||doneSteps.has(1))?1:0,1)+
+    row(STR.rowSpeed,(doneSteps.has(2)?3:T.s3.size),3)+
+    row(STR.rowSort,SORTV.filter(c=>SORTED.has(c.id)).length,6);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.order||doneSteps.has(0),label:STR.foundOrder},
+    {got:FOUND.dir||doneSteps.has(1),label:STR.foundDir},
+    {got:FOUND.speed||doneSteps.has(2),label:STR.foundSpeed},
+    {got:FOUND.vac||doneSteps.has(3),label:STR.foundVac},
+    {got:FOUND.probe||doneSteps.has(4),label:STR.foundProbe},
+    {got:FOUND.nep||doneSteps.has(5),label:STR.foundNep}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:11.5, th:0.0, ph:1.02, tx:0, ty:0.3, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildPlanet(id,color,radius,ringColor){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(radius,20,14),stdMat(color,0.55)));
+  body.position.y=0.55; g.add(body);
+  if(ringColor){
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(radius*1.7,0.045,8,36),stdMat(ringColor,0.6));
+    ring.rotation.x=Math.PI/2.25; ring.position.y=0.55; g.add(ring);
+  }
+  const t=THINGS[id];
+  g.position.set(t.fx,0,t.fz); g.userData.baseY=0;
+  return g;
+}
+function buildSun(){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.SphereGeometry(0.95,24,18),new THREE.MeshBasicMaterial({color:0xffc93c}));
+  body.position.y=0.55; g.add(body);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(1.12,24,18),new THREE.MeshBasicMaterial({color:0xffdf7e,transparent:true,opacity:0.35}));
+  glow.position.y=0.55; g.add(glow);
+  g.position.set(0,0,0); g.userData.baseY=0;
+  return g;
+}
+function buildMoon(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,14,10),stdMat(0xd8dde3,0.7)));
+  body.position.y=1.0; g.add(body);
+  const t=THINGS.moon;
+  g.position.set(t.fx,0,t.fz); g.userData.baseY=0;
+  return g;
+}
+function buildProbe(){
+  const g=new THREE.Group();
+  const bus=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.34,0.34),stdMat(0xd9a441,0.5)));
+  bus.position.y=0.6; g.add(bus);
+  [-0.55,0.55].forEach(dx=>{
+    const panel=new THREE.Mesh(new THREE.BoxGeometry(0.62,0.03,0.3),stdMat(0x2b4d8f,0.4));
+    panel.position.set(dx,0.6,0); g.add(panel);
+  });
+  const dish=new THREE.Mesh(new THREE.SphereGeometry(0.24,14,8,0,Math.PI*2,0,Math.PI/2),stdMat(0xe8edf2,0.35));
+  dish.rotation.x=-Math.PI/2.6; dish.position.set(0,0.86,0); g.add(dish);
+  const t=THINGS.probe;
+  g.position.set(t.fx,0,t.fz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px;color:#fff">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0x0b1e3a);
+  scene3.fog=new THREE.Fog(0x0b1e3a,20,36);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x5b7186,0.9));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.85);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x12283f,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  for(let k=0;k<70;k++){
+    const a=Math.sin(k*127.1)*43758.5453, fr=a-Math.floor(a);
+    const a2=Math.sin(k*311.7)*12543.123, fr2=a2-Math.floor(a2);
+    const star=new THREE.Mesh(new THREE.SphereGeometry(0.035,6,5),new THREE.MeshBasicMaterial({color:0xffffff}));
+    star.position.set((fr-0.5)*26,2.2+fr2*5,(fr2-0.5)*22-2);
+    scene3.add(star);
+  }
+  PORBIT.forEach(id=>{
+    const t=THINGS[id], r=Math.hypot(t.fx,t.fz);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(r,0.014,6,72),new THREE.MeshBasicMaterial({color:0x8fb6d8,transparent:true,opacity:0.55}));
+    ring.rotation.x=Math.PI/2; ring.position.y=0.18; scene3.add(ring);
+  });
+  reg('sun',buildSun());
+  reg('mercury',buildPlanet('mercury',0xb8a89a,0.22));
+  reg('venus',buildPlanet('venus',0xe8a54b,0.34));
+  reg('earth',buildPlanet('earth',0x2e7fd9,0.36));
+  reg('moon',buildMoon());
+  reg('mars',buildPlanet('mars',0xd9552c,0.28));
+  reg('jupiter',buildPlanet('jupiter',0xd9a066,0.62));
+  reg('saturn',buildPlanet('saturn',0xe3cf8f,0.5,0xcbb26a));
+  reg('uranus',buildPlanet('uranus',0x7fd4d9,0.4));
+  reg('neptune',buildPlanet('neptune',0x3b5bdb,0.4));
+  reg('probe',buildProbe());
+  { const p=sphProxy(0.8); p.position.set(0,0.55,0); addProxy('sun',p,G.sun); }
+  { const p=sphProxy(0.5); p.position.set(0,0.55,0); addProxy('mercury',p,G.mercury); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('venus',p,G.venus); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('earth',p,G.earth); }
+  { const p=sphProxy(0.45); p.position.set(0,1.0,0); addProxy('moon',p,G.moon); }
+  { const p=sphProxy(0.5); p.position.set(0,0.55,0); addProxy('mars',p,G.mars); }
+  { const p=sphProxy(0.78); p.position.set(0,0.55,0); addProxy('jupiter',p,G.jupiter); }
+  { const p=sphProxy(0.8); p.position.set(0,0.55,0); addProxy('saturn',p,G.saturn); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('uranus',p,G.uranus); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('neptune',p,G.neptune); }
+  { const p=sphProxy(0.62); p.position.set(0,0.6,0); addProxy('probe',p,G.probe); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(15,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','moon'],
+  ['earth'],
+  ['mercury','earth','neptune'],
+  [],
+  [],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='moon'){
+      if(T.s1idx>=8){ T.s1moon=true; FOUND.order=true; }
+      else addMistake();
+      saveProg(); renderMirrors(); renderStepExtra();
+    }else if(PORBIT.indexOf(id)>=0){
+      if(id===PORBIT[T.s1idx]){ T.s1idx++; if(T.s1idx>=8&&T.s1moon) FOUND.order=true; }
+      else addMistake();
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1&&id==='earth'){
+    T.s2pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='mercury'||id==='earth'||id==='neptune'){
+      T.s3.add(id);
+      if(T.s3.size>=3) FOUND.speed=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the space scene is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.earth) G.earth.rotation.y=t*0.5;
+  if(G.mars) G.mars.rotation.y=t*0.4;
+  if(G.jupiter) G.jupiter.rotation.y=t*0.3;
+  if(G.probe) G.probe.position.y=Math.sin(t*1.1)*0.05;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){
+  SORTED.add(c.id);
+  if(curStep===3) FOUND.vac=true;
+  saveProg(); renderMirrors();
+}
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.order=false; }
+  if(step===1){ FOUND.dir=false; }
+  if(step===2){ FOUND.speed=false; }
+  if(step===3){ SORTV.forEach(c=>SORTED.delete(c.id)); FOUND.vac=false; }
+  if(step===4){ FOUND.probe=false; }
+  if(step===5){ FOUND.nep=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1idx=8; t.s1moon=true; }
+  else if(i===1){ t.s2pos=true; t.s2ans=true; }
+  else if(i===2){ ['mercury','earth','neptune'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ SORTV.forEach(c=>{ if(SORTED.has(c.id)) t.s4correct.add(c.id); }); }
+  else if(i===4){ t.s5idx=GAME5.length; t.s5correct=GAME5.length; }
+  else if(i===5){ t.s6idx=GAME6.length; t.s6correct=GAME6.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-3-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

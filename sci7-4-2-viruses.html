@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>4.2 Viruses — Virus · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+.binbtn.useful{background:#0d9d58}
+.binbtn.wasted{background:#b03a3a}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="4.2 Viruses" data-vi="4.2 Virus (Viruses)">4.2 Viruses</span>
+    <span class="eqchip i18n" data-en="Unit 4 · Grouping and identifying organisms" data-vi="Bài 4 · Phân nhóm và nhận biết sinh vật (Grouping and identifying organisms)">Unit 4 · Grouping and identifying organisms</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Are viruses alive?" data-vi="Virus có sống không?">Are viruses alive?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Very, very small" data-vi="Rất, rất nhỏ">Very, very small</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Protein coat + RNA" data-vi="Vỏ protein (protein) + RNA">Protein coat + RNA</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Replicates only in a cell" data-vi="Chỉ nhân lên (replicate) trong tế bào">Replicates only in a cell</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Living or non-living?" data-vi="Sống hay không sống?">Living or non-living?</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 4 Grouping and identifying organisms · Section 4.2. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 4 · Phân nhóm và nhận biết sinh vật (Grouping and identifying organisms) · Mục 4.2. Bàn thí nghiệm trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 4 Grouping and identifying organisms · Section 4.2. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 4 Grouping and identifying organisms, section 4.2, pages 124–127; Workbook 7 (ISBN 9781108742818), pages 75–76. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 4 · Phân nhóm và nhận biết sinh vật (Grouping and identifying organisms), mục 4.2, trang 124–127; Sách bài tập 7 (ISBN 9781108742818), trang 75–76. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 4 Grouping and identifying organisms, section 4.2, pages 124–127; Workbook 7 (ISBN 9781108742818), pages 75–76. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn about the structure of a virus; discuss whether viruses are non-living or living. Key words: electron microscope, influenza, protein, replicate, RNA, virus." data-vi="Mục tiêu: tìm hiểu cấu tạo của virus (virus); thảo luận xem virus là vật không sống hay vật sống. Từ khóa: electron microscope (kính hiển vi điện tử), influenza (bệnh cúm), protein (protein), replicate (nhân lên), RNA (RNA), virus (virus).">Objectives: learn about the structure of a virus; discuss whether viruses are non-living or living. Key words: electron microscope, influenza, protein, replicate, RNA, virus.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — comparing a school microscope, an electron microscope and a living cell to grasp how small a virus is (the book photograph magnifies viruses 100 000 times); opening a virus to find RNA threads inside its protein coat; collecting the book's model materials (modelling clay = protein coat, torn paper = RNA threads, push pins = pegs); following replication inside a living cell; meeting H3N2 influenza, SARS-CoV-2 (Covid-19, 2019) and plant viruses; and finally testing a virus against the seven characteristics of living things (the Getting started list). The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The Workbook Challenge's open internet research is adapted in the exercises as guided source-choice questions (1892 discovery), because the lesson itself has no web access." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D — so sánh kính hiển vi ở trường, kính hiển vi điện tử và một tế bào sống để hiểu virus nhỏ đến mức nào (ảnh trong sách phóng to virus 100 000 lần); mở một virus để tìm các sợi RNA bên trong lớp vỏ protein của nó; thu thập các vật liệu mô hình của sách (đất nặn = vỏ protein, giấy xé = sợi RNA, ghim đẩy = các chiếc chốt); theo dõi sự nhân lên bên trong một tế bào sống; gặp cúm H3N2 (influenza), SARS-CoV-2 (Covid-19, 2019) và virus ở cây; và cuối cùng đối chiếu virus với bảy đặc trưng của vật sống (danh sách phần Khởi động). Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Phần nghiên cứu internet mở của Workbook Challenge được chuyển thành các câu hỏi lựa chọn nguồn có hướng dẫn trong bài tập (phát hiện năm 1892), vì bản thân bài học không có truy cập web.">How it works: each step asks for one real action on the 3D bench — comparing a school microscope, an electron microscope and a living cell to grasp how small a virus is (the book photograph magnifies viruses 100 000 times); opening a virus to find RNA threads inside its protein coat; collecting the book's model materials (modelling clay = protein coat, torn paper = RNA threads, push pins = pegs); following replication inside a living cell; meeting H3N2 influenza, SARS-CoV-2 (Covid-19, 2019) and plant viruses; and finally testing a virus against the seven characteristics of living things (the Getting started list). The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The Workbook Challenge's open internet research is adapted in the exercises as guided source-choice questions (1892 discovery), because the lesson itself has no web access.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-4-2 "Viruses"
+   (Science 7, Unit 4 · Grouping and identifying organisms)
+   Loaded between camb-engine.js and camb-bridge.js.
+   Book section 4.2 covers the size and structure of a virus (protein
+   coat, pegs, RNA threads), making a model of a virus, how viruses
+   replicate inside a living cell, H3N2 influenza, SARS-CoV-2, and
+   the discussion: are viruses living or non-living?
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  smicro: {kind:'scope', emoji:'🔬', name:{en:'School microscope',vi:'Kính hiển vi ở trường (school microscope)'}, short:{en:'School microscope',vi:'Kính hiển vi trường học'}, labelY:1.6, fx:-4.4, fz:-1.8, fr:5.2},
+  emicro: {kind:'scope', emoji:'🖥️', name:{en:'Electron microscope',vi:'Kính hiển vi điện tử (electron microscope)'}, short:{en:'Electron microscope',vi:'Kính hiển vi điện tử'}, labelY:1.7, fx:-2.6, fz:-1.8, fr:5.2},
+  cell:   {kind:'cell', emoji:'🦠', name:{en:'A living cell',vi:'Một tế bào sống (living cell)'}, short:{en:'Living cell',vi:'Tế bào sống'}, labelY:1.6, fx:-0.5, fz:-1.8, fr:5.2},
+  virus:  {kind:'virus', emoji:'🦠', name:{en:'A virus',vi:'Một virus (virus)'}, short:{en:'Virus',vi:'Virus'}, labelY:1.5, fx:1.4, fz:-1.8, fr:5.2},
+  sars:   {kind:'virus', emoji:'🔴', name:{en:'SARS-CoV-2 virus',vi:'Virus SARS-CoV-2'}, short:{en:'SARS-CoV-2',vi:'SARS-CoV-2'}, labelY:1.5, fx:3.3, fz:-1.8, fr:5.2},
+  clay:   {kind:'model', emoji:'🟤', name:{en:'Modelling clay',vi:'Đất nặn (modelling clay)'}, short:{en:'Clay',vi:'Đất nặn'}, labelY:1.2, fx:-4.3, fz:1.7, fr:5.2},
+  paper:  {kind:'model', emoji:'📄', name:{en:'Torn paper pieces',vi:'Mảnh giấy xé nhỏ (torn paper)'}, short:{en:'Paper pieces',vi:'Mảnh giấy'}, labelY:1.2, fx:-2.4, fz:1.7, fr:5.2},
+  pins:   {kind:'model', emoji:'📌', name:{en:'Push pins',vi:'Ghim đẩy (push pins)'}, short:{en:'Push pins',vi:'Ghim đẩy'}, labelY:1.3, fx:-0.5, fz:1.7, fr:5.2},
+  leaf:   {kind:'plant', emoji:'🍃', name:{en:'A plant leaf',vi:'Một chiếc lá cây (plant leaf)'}, short:{en:'Plant leaf',vi:'Lá cây'}, labelY:1.3, fx:1.6, fz:1.7, fr:5.2}
+};
+const FOCUSORDER=['smicro','emicro','cell','virus','sars','clay','paper','pins','leaf'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to study a thing, tap it on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn nghiên cứu một vật, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My virus record',vi:'Bản ghi về virus của con'},
+  u2Brief:{en:'What you have found out about how small a virus is, its model parts, the viruses you met, and the living-or-not check.',vi:'Những điều con đã tìm hiểu về độ nhỏ của virus (virus), các phần của mô hình, những virus đã gặp, và phần kiểm tra sống hay không sống.'},
+  rowSize:{en:'Size hunt — things explored',vi:'Khám phá độ nhỏ — vật đã chạm'},
+  rowModel:{en:'Model parts collected',vi:'Phần mô hình đã thu thập'},
+  rowEx:{en:'Example viruses and hosts met',vi:'Virus ví dụ và vật chủ đã gặp'},
+  rowGame:{en:'Living-or-not check answers right',vi:'Đáp án đúng phần sống hay không'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundSize:{en:'I found out how small a virus is',vi:'Con đã tìm hiểu virus nhỏ đến mức nào'},
+  foundStruct:{en:'I described the structure of a virus',vi:'Con đã mô tả cấu tạo của virus (virus)'},
+  foundModel:{en:'I built a model of a virus',vi:'Con đã làm một mô hình virus'},
+  foundRep:{en:'I explained how viruses replicate',vi:'Con đã giải thích cách virus nhân lên (replicate)'},
+  foundEx:{en:'I met flu, Covid-19 and plant viruses',vi:'Con đã gặp virus cúm (influenza), Covid-19 và virus ở cây'},
+  foundAlive:{en:'I gave reasons: living or non-living?',vi:'Con đã nêu lý do: sống hay không sống?'},
+  tapVirus:{en:'👆 Tap the virus on the bench!',vi:'👆 Chạm vào virus (virus) trên bàn!'},
+  tapCell:{en:'👆 Tap the virus on the bench to watch what it does to a living cell!',vi:'👆 Chạm vào virus (virus) trên bàn để xem nó làm gì với một tế bào sống!'},
+  qInside:{en:'What is inside the protein coat of a virus?',vi:'Bên trong lớp vỏ protein (protein) của virus có gì?'},
+  chNuc:{en:'A nucleus and cytoplasm',vi:'Một nhân và chất tế bào (cytoplasm)'},
+  chRNA:{en:'RNA threads with coded instructions',vi:'Các sợi RNA (RNA) mang chỉ dẫn đã mã hóa'},
+  chChl:{en:'Chloroplasts for making food',vi:'Lục lạp để làm thức ăn'},
+  qForce:{en:'A virus is inside a living cell. The virus forces the cell to…',vi:'Một virus đã ở trong một tế bào sống. Virus buộc tế bào phải…'},
+  chFood:{en:'start making its own food',vi:'bắt đầu tự làm thức ăn'},
+  chCopy:{en:'copy the RNA instructions and make many new viruses',vi:'sao chép các chỉ dẫn RNA (RNA) và tạo ra nhiều virus mới'},
+  chMove:{en:'move away from the virus',vi:'di chuyển ra xa virus'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 4.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 4.2'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — All about viruses (Workbook 4.2)',vi:'Bài tập 1 · Focus — Tất cả về virus (Workbook 4.2)'},
+  ex1Inst:{en:'Complete each sentence about viruses. Tap the correct word — the Focus word list is: big, cells, move, protein, replicate, small.',vi:'Hoàn thành mỗi câu về virus. Hãy chạm vào từ đúng — danh sách từ phần Focus là: big (to), cells (tế bào), move (di chuyển), protein (protein), replicate (nhân lên), small (nhỏ).'},
+  ex2T:{en:'Exercise 2 · Practice — Are viruses living organisms? (Workbook 4.2)',vi:'Bài tập 2 · Practice — Virus có phải là sinh vật sống không? (Workbook 4.2)'},
+  ex2Inst:{en:'Scientist A says viruses are living organisms. Scientist B does not agree. Tap the fact that supports the scientist named in each sentence.',vi:'Nhà khoa học A nói virus là sinh vật sống. Nhà khoa học B không đồng ý. Hãy chạm vào sự kiện ủng hộ nhà khoa học được nêu trong mỗi câu.'},
+  ex3T:{en:'Exercise 3 · Challenge — Researching a discovery (Workbook 4.2)',vi:'Bài tập 3 · Challenge — Nghiên cứu một phát hiện (Workbook 4.2)'},
+  ex3Inst:{en:'The Workbook asks you to research how viruses were first discovered in 1892, and to choose your websites carefully. Tap the best choice for each research step.',vi:'Sách bài tập yêu cầu con nghiên cứu virus được phát hiện lần đầu vào năm 1892 như thế nào, và chọn trang web cẩn thận. Hãy chạm vào lựa chọn tốt nhất cho mỗi bước nghiên cứu.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'virus',vi:'virus'},
+  {en:'electron microscope',vi:'kính hiển vi điện tử'},
+  {en:'protein',vi:'protein (chất đạm)'},
+  {en:'RNA',vi:'RNA'},
+  {en:'replicate',vi:'nhân lên, sao chép chính mình'},
+  {en:'influenza',vi:'bệnh cúm'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started',vi:'Khởi động'}, word:{en:'virus',vi:'virus (virus)'},
+  q:{en:'How small is a virus — and how can we ever see one?',vi:'Một virus nhỏ đến mức nào — và làm sao ta có thể nhìn thấy nó?'},
+  act:{en:'Tap the school microscope, the electron microscope and a living cell on the bench.',vi:'Chạm vào kính hiển vi ở trường, kính hiển vi điện tử (electron microscope) và một tế bào sống trên bàn.'},
+  see:{en:'Each thing you tap bounces and shows its name. The school microscope is not powerful enough for a virus — but the electron microscope can show one.',vi:'Mỗi vật con chạm sẽ nảy lên và hiện tên. Kính hiển vi ở trường không đủ mạnh để thấy virus — nhưng kính hiển vi điện tử thì thấy được.'},
+  concl:[
+    {en:'A virus is very, very small — much smaller than one of your cells.',vi:'Một virus rất, rất nhỏ — nhỏ hơn nhiều so với một tế bào của con.'},
+    {en:'You cannot see a virus with the kind of microscope you use in school. You need an electron microscope. In the book photograph, the viruses look 100 000 times bigger than they really are.',vi:'Con không thể thấy virus bằng loại kính hiển vi dùng ở trường. Con cần kính hiển vi điện tử (electron microscope). Trong ảnh của sách, các virus trông to gấp 100 000 lần so với thực tế.'},
+    {en:'Getting started check: respiration is one of the seven characteristics of living things. The other six are movement, sensitivity, growth, reproduction, excretion and nutrition (feeding). Keep them in mind — you will test viruses against them in the last step.',vi:'Kiểm tra Khởi động: hô hấp (respiration) là một trong bảy đặc trưng của vật sống. Sáu đặc trưng còn lại là di chuyển (movement), cảm ứng (sensitivity), sinh trưởng (growth), sinh sản (reproduction), bài tiết (excretion) và dinh dưỡng (nutrition). Hãy nhớ chúng — con sẽ kiểm tra virus theo các đặc trưng này ở bước cuối.'}]},
+ {tag:{en:'Structure of a virus',vi:'Cấu tạo của virus'}, word:{en:'protein',vi:'protein (protein)'},
+  q:{en:'What is a virus made of?',vi:'Một virus được cấu tạo từ những gì?'},
+  act:{en:'Tap the virus on the bench. Then answer: what is inside its protein coat?',vi:'Chạm vào virus trên bàn. Sau đó trả lời: bên trong lớp vỏ protein (protein) của nó có gì?'},
+  see:{en:'The virus has an outer coat made of protein, with little pegs on the outside. Inside there is no cell at all.',vi:'Virus có một lớp vỏ ngoài làm bằng protein (protein), với những chiếc chốt nhỏ ở bên ngoài. Bên trong hoàn toàn không có tế bào.'},
+  concl:[
+    {en:'Viruses are not made of cells. A virus has no cell membrane and no cytoplasm.',vi:'Virus không được cấu tạo từ tế bào (cells). Một virus không có màng tế bào (cell membrane) và không có chất tế bào (cytoplasm).'},
+    {en:'The outer layer is a coat made of protein, and there are little pegs on the outside of the coat.',vi:'Lớp ngoài là một lớp vỏ làm bằng protein (protein), và có những chiếc chốt nhỏ ở bên ngoài lớp vỏ.'},
+    {en:'Inside the coat are threads of RNA. The RNA carries a set of coded instructions for making more viruses.',vi:'Bên trong lớp vỏ là các sợi RNA (RNA). RNA mang một bộ chỉ dẫn đã mã hóa để tạo ra thêm virus.'}]},
+ {tag:{en:'Make a model',vi:'Làm mô hình'}, word:{en:'RNA',vi:'RNA (RNA)'},
+  q:{en:'Can you build a model of a virus, like the book’s “Think like a scientist” activity?',vi:'Con làm được một mô hình virus, như hoạt động “Think like a scientist” trong sách không?'},
+  act:{en:'Collect the three model materials on the bench: tap the modelling clay, the torn paper pieces and the push pins.',vi:'Thu thập ba vật liệu làm mô hình trên bàn: chạm vào đất nặn (modelling clay), các mảnh giấy xé nhỏ và ghim đẩy (push pins).'},
+  see:{en:'Each material you collect stands for one part of a real virus: clay for the coat, paper for the inside threads, pins for the pegs.',vi:'Mỗi vật liệu con thu thập tượng trưng cho một phần của virus thật: đất nặn cho lớp vỏ, giấy cho các sợi bên trong, ghim cho các chiếc chốt.'},
+  concl:[
+    {en:'In the book model, the modelling clay makes the outer coat of protein.',vi:'Trong mô hình của sách, đất nặn (modelling clay) làm lớp vỏ protein (protein) ở ngoài.'},
+    {en:'The little torn pieces of paper, put inside the coat, are the threads of RNA.',vi:'Những mảnh giấy nhỏ xé ra, đặt bên trong lớp vỏ, là các sợi RNA (RNA).'},
+    {en:'The push pins, stuck into the outside of the coat, are the little pegs on a real virus.',vi:'Những chiếc ghim đẩy (push pins), cắm vào bên ngoài lớp vỏ, là những chiếc chốt nhỏ trên một virus thật.'}]},
+ {tag:{en:'How viruses replicate',vi:'Virus nhân lên thế nào'}, word:{en:'replicate',vi:'nhân lên (replicate)'},
+  q:{en:'A virus cannot do anything on its own. So how does it make copies of itself?',vi:'Một virus không thể tự làm bất cứ điều gì. Vậy nó tạo ra các bản sao của chính mình bằng cách nào?'},
+  act:{en:'Tap the virus on the bench. Then answer: a virus is inside a living cell — what does it force the cell to do?',vi:'Chạm vào virus trên bàn. Sau đó trả lời: một virus đã ở trong một tế bào sống — nó buộc tế bào phải làm gì?'},
+  see:{en:'The little pegs on the coat help the virus stick onto a cell and get inside it. Only then can anything happen.',vi:'Những chiếc chốt nhỏ trên lớp vỏ giúp virus bám vào một tế bào và chui vào trong nó. Chỉ khi đó mọi chuyện mới xảy ra.'},
+  concl:[
+    {en:'On its own, a virus does nothing: it does not respire, feed, excrete or grow, it is not sensitive, and it cannot move.',vi:'Khi ở một mình, virus không làm gì cả: nó không hô hấp (respire), không ăn, không bài tiết (excrete) và không sinh trưởng (grow), nó không cảm ứng (sensitive), và không thể di chuyển (move).'},
+    {en:'Inside a living cell, the virus bursts open and forces the cell to copy the instructions on its RNA and make many new viruses. This is called replication — and it kills the cell.',vi:'Bên trong một tế bào sống, virus vỡ ra và buộc tế bào sao chép các chỉ dẫn trên RNA (RNA) của nó và tạo ra nhiều virus mới. Điều này gọi là sự nhân lên (replication) — và nó giết chết tế bào.'},
+    {en:'Then the new viruses burst out of the dying cell, ready to infect more cells.',vi:'Sau đó các virus mới bung ra khỏi tế bào đang chết, sẵn sàng lây nhiễm (infect) thêm nhiều tế bào khác.'}]},
+ {tag:{en:'Flu, Covid-19 and plants',vi:'Cúm, Covid-19 và cây cối'}, word:{en:'influenza',vi:'bệnh cúm (influenza)'},
+  q:{en:'Which cells does a virus infect? Does every virus infect the same kind of cell?',vi:'Một virus lây nhiễm vào những tế bào nào? Có phải mọi virus đều lây nhiễm cùng một loại tế bào không?'},
+  act:{en:'Tap the virus (H3N2 influenza), the SARS-CoV-2 virus and the plant leaf on the bench.',vi:'Chạm vào virus (cúm H3N2 — influenza), virus SARS-CoV-2 và chiếc lá cây trên bàn.'},
+  see:{en:'Each thing you tap bounces and shows its name: a flu virus, the Covid-19 virus, and a leaf whose plant cells some viruses infect.',vi:'Mỗi vật con chạm sẽ nảy lên và hiện tên: một virus cúm, virus gây Covid-19, và một chiếc lá mà tế bào cây của nó bị một số virus lây nhiễm.'},
+  concl:[
+    {en:'H3N2 viruses cause a dangerous kind of influenza (flu). They can invade cells of birds, humans and other mammals, entering your body up your nose when you breathe in. In 1968–1969 they killed approximately one million people.',vi:'Virus H3N2 gây ra một loại cúm (influenza) nguy hiểm. Chúng có thể xâm nhập tế bào của chim, người và các động vật có vú khác, vào cơ thể con qua mũi khi con hít thở. Trong năm 1968–1969 chúng đã giết khoảng một triệu người.'},
+    {en:'SARS-CoV-2 appeared in 2019. The illness it causes is Covid-19 (coronavirus disease 2019). The red bits on its outside are spike proteins, which help it attach to cells and get inside.',vi:'SARS-CoV-2 xuất hiện năm 2019. Bệnh nó gây ra là Covid-19 (coronavirus disease 2019 — bệnh coronavirus 2019). Những phần màu đỏ bên ngoài nó là protein gai (spike proteins), giúp nó bám vào tế bào và chui vào trong.'},
+    {en:'There are thousands of different kinds of virus. Each kind has a particular kind of cell that it infects — and some viruses infect plant cells.',vi:'Có hàng nghìn loại virus khác nhau. Mỗi loại có một loại tế bào riêng mà nó lây nhiễm — và một số virus lây nhiễm tế bào cây.'}]},
+ {tag:{en:'Are viruses alive?',vi:'Virus có sống không?'}, word:{en:'replicate',vi:'nhân lên (replicate)'},
+  q:{en:'Some scientists say viruses are living. Others say they are not. What does the evidence say?',vi:'Một số nhà khoa học nói virus là vật sống. Một số khác nói không phải. Bằng chứng cho thấy điều gì?'},
+  act:{en:'Answer the three check questions, testing a virus against the characteristics of living things.',vi:'Trả lời ba câu hỏi kiểm tra, đối chiếu virus với các đặc trưng của vật sống.'},
+  see:{en:'Right answers move the check on. Three right answers finish it!',vi:'Đáp án đúng đưa phần kiểm tra đi tiếp. Ba đáp án đúng là hoàn thành!'},
+  concl:[
+    {en:'I can describe what a virus is and how it replicates.',vi:'Con có thể mô tả virus là gì và cách nó nhân lên (replicate).'},
+    {en:'I can give reasons for classifying viruses as living or non-living.',vi:'Con có thể nêu lý do để phân loại virus là vật sống hay không sống.'},
+    {en:'For living: a virus carries RNA instructions and can replicate — but only inside a living cell. Against living: it is not made of cells, and on its own it does not respire, feed, excrete, grow, sense or move.',vi:'Ủng hộ “sống”: virus mang các chỉ dẫn RNA (RNA) và có thể nhân lên (replicate) — nhưng chỉ khi ở trong một tế bào sống. Chống lại “sống”: nó không được cấu tạo từ tế bào, và khi ở một mình nó không hô hấp, không ăn, không bài tiết, không sinh trưởng, không cảm ứng và không di chuyển.'}]}
+];
+const GAME=[
+ {q:{en:'On its own — outside a cell — a virus can…',vi:'Khi ở một mình — bên ngoài tế bào — một virus có thể…'},
+  opts:[{en:'respire and feed',vi:'hô hấp và ăn'},{en:'do nothing at all',vi:'không làm được gì cả'},{en:'grow and move',vi:'sinh trưởng và di chuyển'}],a:1},
+ {q:{en:'Which characteristic of living things can a virus show — but only inside a living cell?',vi:'Đặc trưng nào của vật sống mà virus có thể thể hiện — nhưng chỉ khi ở trong một tế bào sống?'},
+  opts:[{en:'Reproduction — it replicates',vi:'Sinh sản — nó nhân lên (replicates)'},{en:'Respiration',vi:'Hô hấp (respiration)'},{en:'Sensitivity — it senses light',vi:'Cảm ứng — nó cảm nhận ánh sáng'}],a:0},
+ {q:{en:'Which fact is a reason to classify a virus as NON-living?',vi:'Sự kiện nào là lý do để phân loại virus là vật KHÔNG sống?'},
+  opts:[{en:'It carries RNA instructions',vi:'Nó mang các chỉ dẫn RNA (RNA)'},{en:'It can replicate inside a cell',vi:'Nó có thể nhân lên trong một tế bào'},{en:'It is not made of cells',vi:'Nó không được cấu tạo từ tế bào (cells)'}],a:2}
+];
+const QUIZ=[
+ {q:{en:'What is a virus made of?',vi:'Một virus được cấu tạo từ những gì?'},
+  o:[{en:'One single cell',vi:'Một tế bào duy nhất'},{en:'A protein coat with RNA threads inside',vi:'Một lớp vỏ protein (protein) với các sợi RNA (RNA) bên trong'},{en:'Many cells joined together',vi:'Nhiều tế bào nối với nhau'},{en:'A nucleus and cytoplasm only',vi:'Chỉ một nhân và chất tế bào'}],a:1,
+  e:{en:'A virus is not made of cells at all. It has an outer coat of protein, little pegs on the coat, and threads of RNA inside carrying coded instructions.',vi:'Virus hoàn toàn không được cấu tạo từ tế bào. Nó có lớp vỏ protein (protein) ở ngoài, những chiếc chốt nhỏ trên lớp vỏ, và các sợi RNA (RNA) bên trong mang chỉ dẫn đã mã hóa.'}},
+ {q:{en:'Why do you need an electron microscope to see a virus?',vi:'Vì sao con cần kính hiển vi điện tử (electron microscope) để thấy một virus?'},
+  o:[{en:'A virus only comes out at night',vi:'Virus chỉ xuất hiện vào ban đêm'},{en:'A virus is alive only under that microscope',vi:'Virus chỉ sống dưới kính hiển vi đó'},{en:'A virus is far too small for a school microscope',vi:'Virus quá nhỏ so với kính hiển vi ở trường'}],a:2,
+  e:{en:'A virus is much smaller than one of your cells. A school microscope cannot show it; an electron microscope photograph can make it look 100 000 times bigger than it really is.',vi:'Virus nhỏ hơn nhiều so với một tế bào của con. Kính hiển vi ở trường không thể hiện nó; một ảnh chụp bằng kính hiển vi điện tử có thể làm nó trông to gấp 100 000 lần thực tế.'}},
+ {q:{en:'How does a virus replicate?',vi:'Một virus nhân lên (replicate) bằng cách nào?'},
+  o:[{en:'It gets inside a living cell, which is forced to copy its RNA and make many new viruses',vi:'Nó chui vào một tế bào sống, tế bào này bị buộc phải sao chép RNA (RNA) của nó và tạo ra nhiều virus mới'},{en:'It feeds and grows bigger, then splits in two',vi:'Nó ăn và lớn lên, rồi tách làm hai'},{en:'It respires to make energy for dividing',vi:'Nó hô hấp để tạo năng lượng cho việc phân chia'}],a:0,
+  e:{en:'A virus can do nothing on its own. Inside a living cell it bursts open, the cell copies the RNA instructions and builds new viruses, the cell dies, and the new viruses burst out. That is replication.',vi:'Virus không thể tự làm gì khi ở một mình. Bên trong một tế bào sống nó vỡ ra, tế bào sao chép các chỉ dẫn RNA và tạo ra virus mới, tế bào chết đi, và các virus mới bung ra. Đó là sự nhân lên (replication).'}},
+ {q:{en:'Which statement gives the best evidence-based answer to “Are viruses living?”',vi:'Câu nào đưa ra câu trả lời dựa trên bằng chứng tốt nhất cho câu hỏi “Virus có sống không?”'},
+  o:[{en:'Yes — because they can move and feed',vi:'Có — vì chúng có thể di chuyển và ăn'},{en:'Many scientists say no: they are not made of cells, and they show only one characteristic of living things — replication — and only inside a living cell',vi:'Nhiều nhà khoa học nói không: chúng không được cấu tạo từ tế bào và chỉ thể hiện một đặc trưng của sự sống — nhân lên (replication) — khi ở trong một tế bào sống'},{en:'Yes — because they are made of many cells',vi:'Có — vì chúng được cấu tạo từ nhiều tế bào'}],a:1,
+  e:{en:'Viruses do not respire, feed, excrete, grow, sense or move on their own, and they are not made of cells. Their one life-like feature is replication, and that happens only inside a living cell — so scientists disagree, and many classify them as non-living.',vi:'Virus không tự hô hấp, ăn, bài tiết, sinh trưởng, cảm ứng hay di chuyển, và chúng không được cấu tạo từ tế bào. Đặc điểm giống sự sống duy nhất của chúng là nhân lên (replication), và điều đó chỉ xảy ra trong một tế bào sống — nên các nhà khoa học còn tranh luận, và nhiều người phân loại chúng là vật không sống.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'Viruses are very',vi:'Virus rất'},correct:0,
+  opts:[{en:'small',vi:'nhỏ (small)'},{en:'big',vi:'to (big)'}],
+  e:{en:'Focus word list: a virus is very SMALL — much smaller than a cell.',vi:'Danh sách từ Focus: virus rất NHỎ (small) — nhỏ hơn một tế bào rất nhiều.'}},
+ {pre:{en:'Viruses are not made of',vi:'Virus không được cấu tạo từ'},correct:1,
+  opts:[{en:'protein',vi:'protein (protein)'},{en:'cells',vi:'tế bào (cells)'}],
+  e:{en:'Viruses are not made of CELLS. (Their outer coat is made of protein — but a virus has no cell membrane and no cytoplasm.)',vi:'Virus không được cấu tạo từ TẾ BÀO (cells). (Lớp vỏ ngoài của chúng làm bằng protein — nhưng virus không có màng tế bào và không có chất tế bào.)'}},
+ {pre:{en:'Viruses can only … when they are inside a living cell:',vi:'Virus chỉ có thể … khi chúng ở bên trong một tế bào sống:'},correct:0,
+  opts:[{en:'replicate',vi:'nhân lên (replicate)'},{en:'move',vi:'di chuyển (move)'}],
+  e:{en:'Viruses can only REPLICATE — make copies of themselves — when they are inside a living cell. On their own, they cannot even move.',vi:'Virus chỉ có thể NHÂN LÊN (replicate) — tạo bản sao của chính mình — khi ở bên trong một tế bào sống. Khi ở một mình, chúng thậm chí không thể di chuyển.'}},
+ {pre:{en:'The outer coat of a virus is made of',vi:'Lớp vỏ ngoài của virus làm bằng'},correct:1,
+  opts:[{en:'cells',vi:'tế bào (cells)'},{en:'protein',vi:'protein (protein)'}],
+  e:{en:'The blue-green outer layer in the book photograph is a coat made of PROTEIN, with little pegs on the outside.',vi:'Lớp ngoài màu xanh trong ảnh của sách là một lớp vỏ làm bằng PROTEIN (protein), với những chiếc chốt nhỏ ở bên ngoài.'}},
+ {pre:{en:'Inside the coat, the threads that carry coded instructions are made of',vi:'Bên trong lớp vỏ, các sợi mang chỉ dẫn đã mã hóa làm bằng'},correct:0,
+  opts:[{en:'RNA',vi:'RNA (RNA)'},{en:'protein',vi:'protein (protein)'}],
+  e:{en:'The orange part inside contains RNA — little threads with a set of coded instructions for making more viruses.',vi:'Phần bên trong chứa RNA (RNA) — những sợi nhỏ mang một bộ chỉ dẫn đã mã hóa để tạo ra thêm virus.'}},
+ {pre:{en:'To see a virus, scientists must use',vi:'Để nhìn thấy một virus, các nhà khoa học phải dùng'},correct:1,
+  opts:[{en:'a school microscope',vi:'kính hiển vi ở trường'},{en:'an electron microscope',vi:'kính hiển vi điện tử (electron microscope)'}],
+  e:{en:'A virus is too small for the kind of microscope used in school. Scientists use an ELECTRON MICROSCOPE.',vi:'Virus quá nhỏ so với loại kính hiển vi dùng ở trường. Các nhà khoa học dùng KÍNH HIỂN VI ĐIỆN TỬ (electron microscope).'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'One fact that supports Scientist A (viruses ARE living) is that viruses can',vi:'Một sự kiện ủng hộ Nhà khoa học A (virus LÀ vật sống) là virus có thể'},correct:0,
+  opts:[{en:'replicate — make copies of themselves',vi:'nhân lên (replicate) — tạo bản sao của chính mình'},{en:'do nothing at all outside a cell',vi:'không làm được gì cả ở ngoài tế bào'}],
+  e:{en:'Practice 2a asks for ONE piece of information supporting A. Replication is the life-like characteristic: living things reproduce, and a virus replicates (inside a cell).',vi:'Phần Practice 2a yêu cầu MỘT thông tin ủng hộ A. Sự nhân lên là đặc trưng giống sự sống: vật sống sinh sản, và virus nhân lên (replicate) (bên trong một tế bào).'}},
+ {pre:{en:'One fact that supports Scientist B (viruses are NOT living) is that viruses are not made of',vi:'Một sự kiện ủng hộ Nhà khoa học B (virus KHÔNG phải vật sống) là virus không được cấu tạo từ'},correct:1,
+  opts:[{en:'protein',vi:'protein (protein)'},{en:'cells',vi:'tế bào (cells)'}],
+  e:{en:'Practice 2b asks for TWO pieces of information supporting B. First: every living organism is made of cells — a virus is not made of cells at all.',vi:'Phần Practice 2b yêu cầu HAI thông tin ủng hộ B. Thứ nhất: mọi sinh vật sống đều cấu tạo từ tế bào — virus hoàn toàn không cấu tạo từ tế bào (cells).'}},
+ {pre:{en:'A second fact that supports Scientist B is that viruses do not',vi:'Một sự kiện thứ hai ủng hộ Nhà khoa học B là virus không'},correct:0,
+  opts:[{en:'respire, feed, excrete or grow',vi:'hô hấp, ăn, bài tiết hay sinh trưởng'},{en:'carry coded instructions',vi:'mang chỉ dẫn đã mã hóa'}],
+  e:{en:'Second fact for B: on their own, viruses do not respire, feed, excrete or grow — and they are not sensitive and cannot move.',vi:'Sự kiện thứ hai cho B: khi ở một mình, virus không hô hấp (respire), không ăn, không bài tiết (excrete) và không sinh trưởng (grow) — và chúng không cảm ứng, không thể di chuyển.'}},
+ {pre:{en:'A virus can only replicate when it is',vi:'Một virus chỉ có thể nhân lên (replicate) khi nó ở'},correct:1,
+  opts:[{en:'sitting on a bench on its own',vi:'nằm một mình trên bàn'},{en:'inside a living cell',vi:'bên trong một tế bào sống'}],
+  e:{en:'Replication needs a living cell: the virus gets inside, bursts open, and the cell is forced to copy its RNA instructions. This dependence supports B — and the replication itself is A’s best point.',vi:'Sự nhân lên cần một tế bào sống: virus chui vào trong, vỡ ra, và tế bào bị buộc phải sao chép các chỉ dẫn RNA của nó. Sự phụ thuộc này ủng hộ B — còn chính sự nhân lên là luận điểm mạnh nhất của A.'}},
+ {pre:{en:'Scientist B can also point out that a virus, on its own, cannot',vi:'Nhà khoa học B cũng có thể chỉ ra rằng một virus, khi ở một mình, không thể'},correct:0,
+  opts:[{en:'move or sense anything',vi:'di chuyển hay cảm nhận bất cứ điều gì'},{en:'be photographed at all',vi:'được chụp ảnh chút nào'}],
+  e:{en:'Movement and sensitivity are characteristics of living things. A virus is not sensitive and cannot move — one more reason for B’s view.',vi:'Di chuyển (movement) và cảm ứng (sensitivity) là đặc trưng của vật sống. Virus không cảm ứng và không thể di chuyển — thêm một lý do cho quan điểm của B.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'The Workbook Challenge says viruses were first discovered in the year',vi:'Phần Challenge của sách bài tập nói virus được phát hiện lần đầu vào năm'},correct:0,
+  opts:[{en:'1892',vi:'1892'},{en:'2019',vi:'2019'}],
+  e:{en:'Viruses were first discovered in 1892. (2019 is the year SARS-CoV-2 appeared — a much newer virus.)',vi:'Virus được phát hiện lần đầu vào năm 1892. (2019 là năm SARS-CoV-2 xuất hiện — một virus mới hơn rất nhiều.)'}},
+ {pre:{en:'For your research, the best website to choose first is',vi:'Cho việc nghiên cứu của con, trang web tốt nhất để chọn đầu tiên là'},correct:1,
+  opts:[{en:'an unnamed social-media post with no author',vi:'một bài đăng mạng xã hội không tên, không có tác giả'},{en:'a science museum or university site that names its author',vi:'trang của bảo tàng khoa học hoặc trường đại học có ghi tên tác giả'}],
+  e:{en:'The Challenge asks which websites you used and why. A museum, university or science-institute site with a named author can be checked and trusted far more than an anonymous post.',vi:'Phần Challenge hỏi con đã dùng trang web nào và vì sao. Trang của bảo tàng, trường đại học hay viện khoa học có ghi tên tác giả có thể kiểm chứng và tin cậy hơn nhiều so với một bài đăng ẩn danh.'}},
+ {pre:{en:'A good reason to trust a website is that it',vi:'Một lý do tốt để tin một trang web là nó'},correct:0,
+  opts:[{en:'shows who wrote it and when, and other trusted sites agree with it',vi:'cho biết ai viết và viết khi nào, và các trang đáng tin khác cũng đồng ý với nó'},{en:'has the brightest pictures and the funniest comments',vi:'có hình ảnh rực rỡ nhất và bình luận buồn cười nhất'}],
+  e:{en:'Explain your choice like the Workbook asks: a named author, a date, and agreement with other reliable sources are evidence the information can be trusted. Pictures and jokes are not evidence.',vi:'Hãy giải thích lựa chọn như sách bài tập yêu cầu: tác giả có tên, có ngày tháng, và các nguồn đáng tin khác đồng ý với nó là bằng chứng thông tin đáng tin. Hình ảnh và lời đùa không phải là bằng chứng.'}},
+ {pre:{en:'A fact your research should explain is how scientists in 1892 could detect something they could not',vi:'Một sự kiện nghiên cứu của con nên giải thích là làm sao các nhà khoa học năm 1892 có thể phát hiện một thứ mà họ không thể'},correct:1,
+  opts:[{en:'touch with their hands',vi:'sờ bằng tay'},{en:'see — viruses are too small for ordinary microscopes',vi:'nhìn thấy — virus quá nhỏ so với kính hiển vi thường'}],
+  e:{en:'That is the puzzle of the 1892 discovery: a virus is far too small to see with an ordinary microscope (the electron microscope came much later), so the first evidence had to be indirect — its effects on living cells.',vi:'Đó là câu đố của phát hiện năm 1892: virus quá nhỏ để thấy bằng kính hiển vi thường (kính hiển vi điện tử ra đời muộn hơn nhiều), nên bằng chứng đầu tiên phải là gián tiếp — tác động của nó lên các tế bào sống.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 5 + 4 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-4-2';
+const SUMKEY='camb:sum:sci7-4-2';
+const BOT_CODE='sci7-4.2';
+let FOUND={size:false,struct:false,model:false,rep:false,ex:false,alive:false};
+function newTrack(){return {
+  s1:new Set(),
+  s2pos:false, s2ans:false, s2wrong:false,
+  s3:new Set(),
+  s4pos:false, s4ans:false, s4wrong:false,
+  s5:new Set(),
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=3;
+  if(i===1) return T.s2pos&&T.s2ans;
+  if(i===2) return T.s3.size>=3;
+  if(i===3) return T.s4pos&&T.s4ans;
+  if(i===4) return T.s5.size>=3;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Things explored: '+T.s1.size+' of 3 (school microscope · electron microscope · living cell). Tap them on the bench!',
+             'Vật đã khám phá: '+T.s1.size+' / 3 (kính hiển vi ở trường · kính hiển vi điện tử · tế bào sống). Hãy chạm vào chúng trên bàn!');
+  }
+  if(i===1){
+    if(!T.s2pos) return B('Tap the virus on the bench.','Hãy chạm vào virus trên bàn.');
+    if(T.s2wrong&&!T.s2ans) return B('Think again! A virus has no cell parts at all — no nucleus, no cytoplasm, no chloroplasts. Look inside the coat.','Nghĩ lại nào! Virus hoàn toàn không có bộ phận tế bào — không nhân, không chất tế bào, không lục lạp. Hãy nhìn vào bên trong lớp vỏ.');
+    if(!T.s2ans) return B('You tapped the virus. Now answer: what is inside its protein coat?','Con đã chạm vào virus. Giờ trả lời: bên trong lớp vỏ protein của nó có gì?');
+    return B('Inside the protein coat are RNA threads carrying coded instructions for making more viruses.','Bên trong lớp vỏ protein là các sợi RNA mang chỉ dẫn đã mã hóa để tạo ra thêm virus.');
+  }
+  if(i===2){
+    return B('Model materials collected: '+T.s3.size+' of 3 (clay = protein coat · paper = RNA threads · pins = pegs).',
+             'Vật liệu mô hình đã thu thập: '+T.s3.size+' / 3 (đất nặn = vỏ protein · giấy = sợi RNA · ghim = các chiếc chốt).');
+  }
+  if(i===3){
+    if(!T.s4pos) return B('Tap the virus on the bench.','Hãy chạm vào virus trên bàn.');
+    if(T.s4wrong&&!T.s4ans) return B('Think again! The virus does not feed or flee — it takes over the cell’s copying machinery.','Nghĩ lại nào! Virus không ăn và không chạy trốn — nó chiếm lấy bộ máy sao chép của tế bào.');
+    if(!T.s4ans) return B('You tapped the virus. Now answer: what does it force the living cell to do?','Con đã chạm vào virus. Giờ trả lời: nó buộc tế bào sống phải làm gì?');
+    return B('The cell is forced to copy the RNA instructions and make many new viruses — replication. The cell dies.','Tế bào bị buộc phải sao chép các chỉ dẫn RNA và tạo ra nhiều virus mới — sự nhân lên (replication). Tế bào chết đi.');
+  }
+  if(i===4){
+    return B('Examples met: '+T.s5.size+' of 3 (H3N2 influenza virus · SARS-CoV-2 · plant leaf). Tap them on the bench!',
+             'Ví dụ đã gặp: '+T.s5.size+' / 3 (virus cúm H3N2 · SARS-CoV-2 · lá cây). Hãy chạm vào chúng trên bàn!');
+  }
+  if(i===5){
+    if(T.s6idx>=GAME.length) return B('Check finished! You answered all 3 questions right.','Đã xong phần kiểm tra! Con đã trả lời đúng cả 3 câu.');
+    return B('Check question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — a virus does nothing on its own; it is not made of cells!' : ''),
+             'Câu hỏi kiểm tra '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — virus không tự làm gì cả; nó không cấu tạo từ tế bào!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔬',label:{en:'School microscope — too weak',vi:'Kính hiển vi trường — quá yếu'},got:T.s1.has('smicro')},
+      {emoji:'🖥️',label:{en:'Electron microscope — can see a virus',vi:'Kính hiển vi điện tử — thấy được virus'},got:T.s1.has('emicro')},
+      {emoji:'🫧',label:{en:'Living cell — much bigger',vi:'Tế bào sống — to hơn nhiều'},got:T.s1.has('cell')}
+    ]);
+  }else if(curStep===1){
+    if(!T.s2pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapVirus)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s2ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qInside);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chNuc,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chRNA,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2ans=true; FOUND.struct=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chChl,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s2wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🟤',label:{en:'Clay — the protein coat',vi:'Đất nặn — lớp vỏ protein'},got:T.s3.has('clay')},
+      {emoji:'📄',label:{en:'Paper — the RNA threads',vi:'Giấy — các sợi RNA'},got:T.s3.has('paper')},
+      {emoji:'📌',label:{en:'Pins — the pegs',vi:'Ghim — các chiếc chốt'},got:T.s3.has('pins')}
+    ]);
+  }else if(curStep===3){
+    if(!T.s4pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapCell)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s4ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qForce);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chFood,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chCopy,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4ans=true; FOUND.rep=true; saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chMove,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s4wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🦠',label:{en:'H3N2 — influenza (flu)',vi:'H3N2 — cúm (influenza)'},got:T.s5.has('virus')},
+      {emoji:'🔴',label:{en:'SARS-CoV-2 — Covid-19',vi:'SARS-CoV-2 — Covid-19'},got:T.s5.has('sars')},
+      {emoji:'🍃',label:{en:'Plant leaf — plant cells',vi:'Lá cây — tế bào cây'},got:T.s5.has('leaf')}
+    ]);
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.alive=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('smicro'); bounceThing('smicro'); setTimeout(()=>{ focusVisual('emicro'); bounceThing('emicro'); },900); }
+  else if(i===1){ focusThing('virus'); bounceThing('virus'); }
+  else if(i===2){ focusVisual('clay'); bounceThing('clay'); setTimeout(()=>{ focusVisual('pins'); bounceThing('pins'); },900); }
+  else if(i===3){ focusThing('virus'); bounceThing('virus'); setTimeout(()=>{ focusVisual('cell'); bounceThing('cell'); },900); }
+  else if(i===4){ focusVisual('sars'); bounceThing('sars'); setTimeout(()=>{ focusVisual('leaf'); bounceThing('leaf'); },900); }
+  else if(i===5){ focusThing('virus'); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowSize,(doneSteps.has(0)?3:T.s1.size),3)+
+    row(STR.rowModel,(doneSteps.has(2)?3:T.s3.size),3)+
+    row(STR.rowEx,(doneSteps.has(4)?3:T.s5.size),3)+
+    row(STR.rowGame,(doneSteps.has(5)?3:T.s6correct),3);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.size||doneSteps.has(0),label:STR.foundSize},
+    {got:FOUND.struct||doneSteps.has(1),label:STR.foundStruct},
+    {got:FOUND.model||doneSteps.has(2),label:STR.foundModel},
+    {got:FOUND.rep||doneSteps.has(3),label:STR.foundRep},
+    {got:FOUND.ex||doneSteps.has(4),label:STR.foundEx},
+    {got:FOUND.alive||doneSteps.has(5),label:STR.foundAlive}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildSMicro(px,pz){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.7,0.09,0.5),stdMat(0x22303e,0.6)));
+  base.position.y=0.05; g.add(base);
+  const stage=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.05,0.4),stdMat(0x44586e,0.5));
+  stage.position.y=0.32; g.add(stage);
+  const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.62,8),stdMat(0x44586e,0.5));
+  arm.position.set(-0.24,0.42,0); g.add(arm);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.085,0.62,10),stdMat(0x9aa7b4,0.35));
+  tube.position.set(0.02,0.68,0); tube.rotation.z=0.5; g.add(tube);
+  const eye=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.14,8),stdMat(0x22303e,0.5));
+  eye.position.set(0.18,0.94,0); eye.rotation.z=0.5; g.add(eye);
+  const lens=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.06,0.16,8),stdMat(0xd7dde5,0.3));
+  lens.position.set(-0.12,0.44,0); lens.rotation.z=0.5; g.add(lens);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildEMicro(px,pz){
+  const g=new THREE.Group();
+  const column=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,1.15,0.55),stdMat(0x8a939e,0.6)));
+  column.position.set(-0.28,0.58,0); g.add(column);
+  const head=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.34,0.45),stdMat(0x5b7186,0.5));
+  head.position.set(-0.28,1.28,0); g.add(head);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.09,0.6),stdMat(0x5b7186,0.5));
+  base.position.set(-0.2,0.05,0); g.add(base);
+  const desk=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.06,0.55),stdMat(0x9aa7b4,0.5));
+  desk.position.set(0.48,0.42,0); g.add(desk);
+  const legL=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.42,0.5),stdMat(0x5b7186,0.5));
+  legL.position.set(0.14,0.21,0); g.add(legL);
+  const legR=legL.clone(); legR.position.x=0.82; g.add(legR);
+  const screen=new THREE.Mesh(new THREE.BoxGeometry(0.72,0.52,0.05),stdMat(0x22303e,0.4));
+  screen.position.set(0.48,0.82,0); screen.rotation.x=-0.08; g.add(screen);
+  const face=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.42),new THREE.MeshBasicMaterial({color:0x14324f}));
+  face.position.set(0.48,0.82,0.03); g.add(face);
+  [[-0.14,0.06],[0.08,-0.05],[0.18,0.1],[-0.02,-0.12]].forEach(p=>{
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,8),new THREE.MeshBasicMaterial({color:0x63d68a}));
+    dot.position.set(0.48+p[0],0.82+p[1],0.045); g.add(dot);
+    const peg=new THREE.Mesh(new THREE.SphereGeometry(0.016,6,6),new THREE.MeshBasicMaterial({color:0x63d68a}));
+    peg.position.set(0.48+p[0]+0.05,0.82+p[1]+0.04,0.045); g.add(peg);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildCell(px,pz){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.SphereGeometry(0.62,20,16),new THREE.MeshStandardMaterial({color:0xf2b8c6,roughness:0.35,transparent:true,opacity:0.75}));
+  body.position.y=0.66; body.scale.y=0.88; g.add(body);
+  const nucleus=new THREE.Mesh(new THREE.SphereGeometry(0.26,14,12),stdMat(0x7a4fd0,0.5));
+  nucleus.position.set(0.08,0.7,0.08); g.add(nucleus);
+  [[-0.3,0.5,0.25],[0.3,0.85,-0.2],[-0.15,0.9,0.3],[0.25,0.45,0.3]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(0.09,8,8),stdMat(0xe07b24,0.6));
+    blob.position.set(p[0],p[1],p[2]); g.add(blob);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0; g.userData.body=body;
+  return g;
+}
+function buildVirusBall(px,pz,coatColor,pegColor,r){
+  const g=new THREE.Group();
+  const coat=shadowed(new THREE.Mesh(new THREE.SphereGeometry(r,18,14),stdMat(coatColor,0.55)));
+  coat.position.y=r+0.12; g.add(coat);
+  for(let k=0;k<14;k++){
+    const th=(k/14)*Math.PI*2, ph2=0.5+((k*37)%10)/10*2.0;
+    const dx=Math.sin(ph2)*Math.cos(th), dy=Math.cos(ph2), dz=Math.sin(ph2)*Math.sin(th);
+    const peg=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,r*0.34,6),stdMat(pegColor,0.5));
+    peg.position.set(dx*(r+0.05),r+0.12+dy*(r+0.05),dz*(r+0.05));
+    peg.lookAt(new THREE.Vector3(dx*3,r+0.12+dy*3,dz*3)); peg.rotateX(Math.PI/2);
+    g.add(peg);
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),stdMat(pegColor,0.5));
+    tip.position.set(dx*(r*1.22),r+0.12+dy*(r*1.22),dz*(r*1.22)); g.add(tip);
+  }
+  const thread=new THREE.Mesh(new THREE.TorusGeometry(r*0.42,0.028,8,24),new THREE.MeshBasicMaterial({color:0xf2762e}));
+  thread.position.y=r+0.12; thread.rotation.x=1.1; g.add(thread);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildClay(px,pz){
+  const g=new THREE.Group();
+  [[-0.3,0x8a5a2b],[0.05,0xb0653a],[0.36,0x6b4423]].forEach((p,ix)=>{
+    const blob=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.24-ix*0.03,12,10),stdMat(p[1],0.9)));
+    blob.position.set(p[0],0.16,ix===1?0.12:-0.05); blob.scale.y=0.72; g.add(blob);
+  });
+  const flat=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.32,0.07,14),stdMat(0xd9c08a,0.9));
+  flat.position.set(0,0.035,0); g.add(flat);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildPaper(px,pz){
+  const g=new THREE.Group();
+  [[-0.32,0.1,0.4],[0,0.12,-0.3],[0.3,0.09,0.75],[-0.1,0.14,1.2],[0.22,0.11,0.1]].forEach(p=>{
+    const piece=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.02,0.26),stdMat(0xffffff,0.95)));
+    piece.position.set(p[0],p[1],0); piece.rotation.y=p[2]; g.add(piece);
+  });
+  [[-0.2,0.3],[0.15,-0.25]].forEach(p=>{
+    const curl=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.018,6,14),new THREE.MeshBasicMaterial({color:0xf2762e}));
+    curl.position.set(p[0],0.16,p[1]); curl.rotation.x=1.2; g.add(curl);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildPins(px,pz){
+  const g=new THREE.Group();
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.24,0.22,14),stdMat(0xd7dde5,0.4)));
+  pot.position.y=0.11; g.add(pot);
+  [[-0.16,0.1,0xd23c2a],[0.05,-0.08,0x0b76d1],[0.18,0.14,0xffc93c],[-0.02,0.2,0x0d9d58],[0.12,0.02,0x7a4fd0]].forEach(p=>{
+    const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.34,6),stdMat(0x9aa7b4,0.3));
+    shaft.position.set(p[0],0.36,p[1]); shaft.rotation.z=(p[0])*0.7; g.add(shaft);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(0.065,10,8),stdMat(p[2],0.45));
+    head.position.set(p[0]-p[0]*0.12,0.55,p[1]); g.add(head);
+  });
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function buildLeaf(px,pz){
+  const g=new THREE.Group();
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.04,0.7,8),stdMat(0x5b8a3c,0.7));
+  stem.position.set(-0.42,0.1,0); stem.rotation.z=1.25; g.add(stem);
+  const leafM=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.55,16,12),stdMat(0x3fa34d,0.65)));
+  leafM.position.set(0.08,0.32,0); leafM.scale.set(1.25,0.16,0.62); leafM.rotation.y=-0.35; g.add(leafM);
+  const vein=new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,0.95,6),stdMat(0x2c6e31,0.7));
+  vein.position.set(0.08,0.36,0); vein.rotation.z=Math.PI/2; vein.rotation.y=0.35; g.add(vein);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdceefb);
+  scene3.fog=new THREE.Fog(0xdceefb,18,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db8cf,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc8d6e2,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.4,0.5,5.8),stdMat(0xd9c08a,0.9)));
+  bench.position.y=-0.27; bench.receiveShadow=true; scene3.add(bench);
+  reg('smicro',buildSMicro(-4.4,-1.8));
+  reg('emicro',buildEMicro(-2.6,-1.8));
+  reg('cell',buildCell(-0.5,-1.8));
+  reg('virus',buildVirusBall(1.4,-1.8,0x3f9db8,0x2b6cb0,0.42));
+  reg('sars',buildVirusBall(3.3,-1.8,0x9aa7b4,0xd23c2a,0.42));
+  reg('clay',buildClay(-4.3,1.7));
+  reg('paper',buildPaper(-2.4,1.7));
+  reg('pins',buildPins(-0.5,1.7));
+  reg('leaf',buildLeaf(1.6,1.7));
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('smicro',p,G.smicro); }
+  { const p=sphProxy(0.85); p.position.set(0,0.65,0); addProxy('emicro',p,G.emicro); }
+  { const p=sphProxy(0.78); p.position.set(0,0.62,0); addProxy('cell',p,G.cell); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('virus',p,G.virus); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('sars',p,G.sars); }
+  { const p=sphProxy(0.58); p.position.set(0,0.25,0); addProxy('clay',p,G.clay); }
+  { const p=sphProxy(0.58); p.position.set(0,0.2,0); addProxy('paper',p,G.paper); }
+  { const p=sphProxy(0.58); p.position.set(0,0.35,0); addProxy('pins',p,G.pins); }
+  { const p=sphProxy(0.66); p.position.set(0,0.3,0); addProxy('leaf',p,G.leaf); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const gg=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*gg; ORB.tz=sz+(t.fz-sz)*gg; ORB.r=sr+(t.fr-sr)*gg;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['smicro','emicro','cell'],
+  ['virus'],
+  ['clay','paper','pins'],
+  ['virus'],
+  ['virus','sars','leaf'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='smicro'||id==='emicro'||id==='cell'){
+      T.s1.add(id);
+      if(T.s1.size>=3) FOUND.size=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1&&id==='virus'){
+    T.s2pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='clay'||id==='paper'||id==='pins'){
+      T.s3.add(id);
+      if(T.s3.size>=3) FOUND.model=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===3&&id==='virus'){
+    T.s4pos=true; saveProg(); renderMirrors(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='virus'||id==='sars'||id==='leaf'){
+      T.s5.add(id);
+      if(T.s5.size>=3) FOUND.ex=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){ /* the bench is the same at every step start */ }
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(G.virus) G.virus.rotation.y=t*0.35;
+  if(G.sars) G.sars.rotation.y=-t*0.3;
+  if(G.leaf) G.leaf.rotation.z=Math.sin(t*1.4)*0.04;
+  if(G.cell&&G.cell.userData.body){ const s=1+Math.sin(t*1.8)*0.02; G.cell.userData.body.scale.set(s,0.88*s,s); }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    const ordKey=listId==='ex1List'?EX1_ORD:(listId==='ex2List'?EX2_ORD:EX3_ORD);
+    (ordKey[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.size=false; }
+  if(step===1){ FOUND.struct=false; }
+  if(step===2){ FOUND.model=false; }
+  if(step===3){ FOUND.rep=false; }
+  if(step===4){ FOUND.ex=false; }
+  if(step===5){ FOUND.alive=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ ['smicro','emicro','cell'].forEach(id=>t.s1.add(id)); }
+  else if(i===1){ t.s2pos=true; t.s2ans=true; }
+  else if(i===2){ ['clay','paper','pins'].forEach(id=>t.s3.add(id)); }
+  else if(i===3){ t.s4pos=true; t.s4ans=true; }
+  else if(i===4){ ['virus','sars','leaf'].forEach(id=>t.s5.add(id)); }
+  else if(i===5){ t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-4-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

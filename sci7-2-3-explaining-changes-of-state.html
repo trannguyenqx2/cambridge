@@ -1,0 +1,1420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>2.3 Explaining changes of state — Giải thích sự chuyển trạng thái · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+.binbtn.push{background:#0b76d1}
+.binbtn.solid{background:#0b76d1}
+.binbtn.liquid{background:#00a3c8}
+.binbtn.gas{background:#7a4fd0}
+.binbtn.sl{background:#0b76d1}
+.binbtn.ls{background:#0d9d58}
+.binbtn.lg{background:#b7791f}
+.binbtn.gl{background:#7a4fd0}
+.binbtn.sm{font-size:15.5px;padding:10px 6px}
+.binbtn.rev{background:#0d9d58}
+.binbtn.irr{background:#b03a3a}
+.binbtn.pull{background:#7a4fd0}
+.binbtn.gravity{background:#c2410c}
+.binbtn.normal{background:#0d9d58}
+.binbtn.applied{background:#b7791f}
+.diagrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.diagrow .dlbl{font-weight:800;font-size:16.5px;min-width:118px}
+.diagbtn{font-size:18px;font-weight:800;padding:10px 16px;border-radius:12px}
+.diagbtn.sel{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.choicerow{font-size:17.5px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.choicerow:last-child{border-bottom:none}
+.choiceq{font-weight:700;margin-bottom:5px}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="2.3 Explaining changes of state" data-vi="2.3 Giải thích sự chuyển trạng thái (Explaining changes of state)">2.3 Explaining changes of state</span>
+    <span class="eqchip i18n" data-en="Unit 2 · Materials and their structure" data-vi="Bài 2 · Vật liệu và cấu trúc của chúng (Materials and their structure)">Unit 2 · Materials and their structure</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do particles behave when matter changes state?" data-vi="Các hạt (particles) hành xử thế nào khi vật chất đổi trạng thái?">How do particles behave when matter changes state?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Model the particles" data-vi="Mô hình các hạt (particles)">Model the particles</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Heat gives particles energy" data-vi="Nhiệt cho các hạt năng lượng (energy)">Heat gives particles energy</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Particles move more" data-vi="Các hạt chuyển động nhiều hơn">Particles move more</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Cooling slows them down" data-vi="Làm lạnh làm chúng chậm lại">Cooling slows them down</span>
+    <span class="chainnode i18n" data-en="Solute + solvent = solution" data-vi="Chất tan (solute) + dung môi (solvent) = dung dịch (solution)">Solute + solvent = solution</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Stirring speeds dissolving" data-vi="Khuấy làm hòa tan nhanh hơn">Stirring speeds dissolving</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Hot water dissolves faster" data-vi="Nước nóng hòa tan nhanh hơn">Hot water dissolves faster</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things in the particle lab!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trong phòng thí nghiệm hạt!">🖱 Drag to look around · Scroll to zoom · Tap things in the changes lab!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.3. The particle lab in this lesson is a simulation." data-vi="Khoa học Cambridge trung học cơ sở · Bài 2 Vật liệu và cấu trúc của chúng (Materials and their structure) · Mục 2.3. Phòng thí nghiệm hạt trong bài học này là mô phỏng.">Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.3. The changes lab in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, 2021; ISBN 9781108742788), Unit 2 Materials and their structure, section 2.3, pages 35–39; Workbook 7 (ISBN 9781108742818), pages 26–29. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, 2021; ISBN 9781108742788), Bài 2 Vật liệu và cấu trúc của chúng (Materials and their structure), mục 2.3, trang 35–39; Sách bài tập (Workbook) 7 (ISBN 9781108742818), trang 26–29. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, 2021; ISBN 9781108742788), Unit 2 Materials and their structure, section 2.3, pages 35–39; Workbook 7 (ISBN 9781108742818), pages 26–29. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: use the particle theory to explain what happens when matter changes between states; use a model to illustrate the particle theory. Key words: attractive force, expand, heat energy, transferred." data-vi="Mục tiêu: dùng thuyết hạt (particle theory) để giải thích điều gì xảy ra khi vật chất chuyển giữa các trạng thái; dùng một mô hình (model) để minh họa thuyết hạt. Từ khóa: lực hút (attractive force), giãn nở (expand), năng lượng nhiệt (heat energy), được truyền (transferred).">Objectives: use the particle theory to explain what happens when matter changes between states; use a model to illustrate the particle theory. Key words: attractive force, expand, heat energy, transferred.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action in a particle-model lab — exploring the solid, liquid and gas models, sorting particle properties by state, heating a solid gently (it expands) and then strongly (it melts), heating a liquid until particles escape as a gas, condensing a gas on a cold mirror, and freezing a liquid back into a solid, before judging what the class particle model shows well and where it is limited. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trong phòng thí nghiệm mô hình hạt — khám phá các mô hình rắn (solid), lỏng (liquid) và khí (gas), phân loại tính chất của hạt theo trạng thái, đun nóng một chất rắn nhẹ (nó giãn nở (expand)) rồi đun mạnh (nó tan chảy), đun một chất lỏng cho tới khi các hạt thoát ra thành khí, ngưng tụ (condensing) một chất khí trên gương lạnh, và đông đặc một chất lỏng lại thành chất rắn, rồi đánh giá mô hình hạt của lớp thể hiện tốt điều gì và còn hạn chế ở đâu. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action in a particle-model lab — exploring the solid, liquid and gas models, sorting particle properties by state, heating a solid gently (it expands) and then strongly (it melts), heating a liquid until particles escape as a gas, condensing a gas on a cold mirror, and freezing a liquid back into a solid, before judging what the class particle model shows well and where it is limited. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn sm sl" id="ex1BinSL"></button>
+        <button class="binbtn sm ls" id="ex1BinLS"></button>
+        <button class="binbtn sm lg" id="ex1BinLG"></button>
+        <button class="binbtn sm gl" id="ex1BinGL"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-2-3 "Explaining changes of state"
+   (Science 7, Unit 2 — book section 2.3 "Explaining changes of state")
+   Loaded between camb-engine.js and camb-bridge.js.
+   Book order: Getting started (name the changes; which state?) →
+   heating a solid (vibrate more, expand) → melting (forces can no
+   longer hold the fixed pattern) → boiling (particles escape weak
+   forces as a gas) → condensing on a cold surface (energy transferred
+   to the surface) → freezing (particles slow, settle in a fixed
+   pattern) → Think like a scientist: modelling changes of state with
+   people as particles, and judging the model.
+   ===================================================================== */
+
+/* ================= particle lab things ================= */
+const THINGS={
+  solid:  {emoji:'🧊', name:{en:'Solid model — particles in regular rows',vi:'Mô hình chất rắn (solid) — các hạt xếp thành hàng đều'}, short:{en:'Solid model',vi:'Mô hình rắn'}, ring:0.72, labelY:1.15, fx:-3.4, fz:-1.3, fr:5.0},
+  heater: {emoji:'🔥', name:{en:'Heater',vi:'Bếp đun (heater)'}, short:{en:'Heater',vi:'Bếp đun'}, ring:0.55, labelY:0.95, fx:-3.4, fz:1.9, fr:4.8},
+  liquid: {emoji:'🥛', name:{en:'Liquid model — beaker of liquid',vi:'Mô hình chất lỏng (liquid) — cốc chất lỏng'}, short:{en:'Liquid model',vi:'Mô hình lỏng'}, ring:0.66, labelY:1.5, fx:-1.15, fz:-1.5, fr:5.0},
+  gasjar: {emoji:'💨', name:{en:'Gas model — jar of gas',vi:'Mô hình chất khí (gas) — lọ khí'}, short:{en:'Gas model',vi:'Mô hình khí'}, ring:0.62, labelY:1.5, fx:1.15, fz:-1.6, fr:5.0},
+  mirror: {emoji:'🪞', name:{en:'Cold mirror',vi:'Gương lạnh (cold mirror)'}, short:{en:'Cold mirror',vi:'Gương lạnh'}, ring:0.7, labelY:1.9, fx:3.4, fz:-1.5, fr:5.2},
+  freezer:{emoji:'❄️', name:{en:'Freezer',vi:'Ngăn đông (freezer)'}, short:{en:'Freezer',vi:'Ngăn đông'}, ring:0.95, labelY:2.3, fx:3.4, fz:1.9, fr:5.6},
+  thermo: {emoji:'🌡️', name:{en:'Thermometer',vi:'Nhiệt kế (thermometer)'}, short:{en:'Thermometer',vi:'Nhiệt kế'}, ring:0.45, labelY:1.2, fx:0.1, fz:2.0, fr:4.6},
+  plant:  {emoji:'🪴', name:{en:'Plant pot',vi:'Chậu cây (plant)'}, short:{en:'Plant',vi:'Cây'}, ring:0.5, labelY:1.1, fx:-1.3, fz:2.1, fr:5.0}
+};
+const FOCUSORDER=['solid','heater','liquid','gasjar','mirror','freezer','thermo','plant'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the particle lab',vi:'Trong phòng thí nghiệm hạt'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to model a change, tap the thing itself in the lab!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn mô hình hóa một biến đổi, hãy chạm vào chính vật đó trong phòng thí nghiệm!'},
+  u2T:{en:'My groups',vi:'Nhóm của con'},
+  u2Brief:{en:'How many particle cards have you sorted into each state?',vi:'Con đã xếp bao nhiêu thẻ hạt vào mỗi trạng thái?'},
+  grpSolid:{en:'🧊 Solid',vi:'🧊 Rắn (solid)'},
+  grpLiquid:{en:'💧 Liquid',vi:'💧 Lỏng (liquid)'},
+  grpGas:{en:'💨 Gas',vi:'💨 Khí (gas)'},
+  u3T:{en:'Changes I modelled',vi:'Những biến đổi con đã mô hình hóa'},
+  u3Brief:{en:'Your modelling checklist.',vi:'Danh sách mô hình hóa của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundModel:{en:'Explored the solid, liquid and gas models',vi:'Đã khám phá các mô hình rắn (solid), lỏng (liquid) và khí (gas)'},
+  foundMelt:{en:'Heated a solid — it expanded, then melted',vi:'Đã đun một chất rắn — nó giãn nở (expand), rồi tan chảy'},
+  foundBoil:{en:'Boiled a liquid — particles escaped as a gas',vi:'Đã đun sôi một chất lỏng — các hạt thoát ra thành khí'},
+  foundCondense:{en:'Condensed a gas on a cold surface',vi:'Đã ngưng tụ (condensing) một chất khí trên bề mặt lạnh'},
+  foundFreeze:{en:'Froze a liquid back into a solid',vi:'Đã đông đặc một chất lỏng lại thành chất rắn'},
+  binSolid:{en:'SOLID 🧊',vi:'RẮN (SOLID) 🧊'},
+  binLiquid:{en:'LIQUID 💧',vi:'LỎNG (LIQUID) 💧'},
+  binGas:{en:'GAS 💨',vi:'KHÍ (GAS) 💨'},
+  binSL:{en:'SOLID → LIQUID',vi:'RẮN → LỎNG'},
+  binLS:{en:'LIQUID → SOLID',vi:'LỎNG → RẮN'},
+  binLG:{en:'LIQUID → GAS',vi:'LỎNG → KHÍ'},
+  binGL:{en:'GAS → LIQUID',vi:'KHÍ → LỎNG'},
+  modGoodLbl:{en:'The class model is a GOOD model because the learners…',vi:'Mô hình của lớp là một mô hình TỐT vì các bạn học viên…'},
+  modLimitLbl:{en:'The model is LIMITED because the learners…',vi:'Mô hình còn HẠN CHẾ vì các bạn học viên…'},
+  goodShowBtn:{en:'👣 Show how the particles move and spread',vi:'👣 Thể hiện được cách các hạt chuyển động và lan ra'},
+  goodSameBtn:{en:'🔬 Are exactly the same size as real particles',vi:'🔬 Có đúng kích thước như các hạt thật'},
+  limitBiggerBtn:{en:'📏 Are much bigger than real particles, and can choose to stop moving',vi:'📏 Lớn hơn các hạt thật rất nhiều, và có thể tự chọn dừng chuyển động'},
+  limitExactBtn:{en:'🎯 Copy every single real particle exactly',vi:'🎯 Sao chép chính xác từng hạt thật'},
+  lookBeaker:{en:'Look at the liquid beaker 💧',vi:'Ngắm cốc chất lỏng 💧'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 2.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 2.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 2.3A · Focus — Name the change of state',vi:'Bài tập 2.3A · Focus — Gọi tên sự chuyển trạng thái'},
+  ex1Inst:{en:'The diagram shows the three states with arrows between them. Tap a process card, then tap the arrow it names.',vi:'Sơ đồ cho thấy ba trạng thái với các mũi tên ở giữa. Chạm vào một thẻ quá trình, rồi chạm vào mũi tên mà nó gọi tên.'},
+  ex2T:{en:'Exercise 2.3B · Practice — Particle theory and changes of state',vi:'Bài tập 2.3B · Practice — Thuyết hạt (particle theory) và chuyển trạng thái'},
+  ex2Inst:{en:'Answer each question using particle theory. Remember: explaining means saying not only what happens, but how and why.',vi:'Trả lời từng câu hỏi bằng thuyết hạt (particle theory). Hãy nhớ: giải thích nghĩa là nói không chỉ điều gì xảy ra, mà cả cách và lý do.'},
+  ex3T:{en:'Exercise 2.3C · Challenge — Explaining changes of state',vi:'Bài tập 2.3C · Challenge — Giải thích sự chuyển trạng thái'},
+  ex3Inst:{en:'Choose the full particle-theory explanation for each change. Use the correct scientific vocabulary.',vi:'Chọn lời giải thích đầy đủ theo thuyết hạt (particle theory) cho mỗi biến đổi. Hãy dùng từ vựng khoa học chính xác.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'attractive force',vi:'lực hút giữa các hạt'},
+  {en:'expand',vi:'giãn nở / nở ra'},
+  {en:'heat energy',vi:'năng lượng nhiệt'},
+  {en:'transferred',vi:'được truyền đi'},
+  {en:'particle theory',vi:'thuyết hạt'},
+  {en:'vibrate',vi:'rung động'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Meet the three models',vi:'Làm quen với ba mô hình'}, word:{en:'particle theory',vi:'thuyết hạt'},
+  q:{en:'What do the particles look like in a solid, a liquid and a gas?',vi:'Các hạt (particles) trông thế nào trong chất rắn (solid), chất lỏng (liquid) và chất khí (gas)?'},
+  act:{en:'Tap the solid model, the liquid model (the beaker) and the gas model (the jar) in the lab.',vi:'Chạm vào mô hình chất rắn, mô hình chất lỏng (cốc) và mô hình chất khí (lọ) trong phòng thí nghiệm.'},
+  see:{en:'Solid particles sit in regular rows. Liquid particles touch but are jumbled. Gas particles are far apart.',vi:'Các hạt rắn ngồi thành hàng đều. Các hạt lỏng chạm nhau nhưng lộn xộn. Các hạt khí ở cách xa nhau.'},
+  concl:[
+    {en:'In a solid, the particles are tightly packed in a fixed, regular pattern and can only vibrate in place.',vi:'Trong chất rắn (solid), các hạt xếp chặt theo một mẫu cố định, đều đặn và chỉ có thể rung (vibrate) tại chỗ.'},
+    {en:'In a liquid, the particles are in touch with each other but can slide past one another, so a liquid can flow.',vi:'Trong chất lỏng (liquid), các hạt chạm vào nhau nhưng có thể trượt qua nhau, nên chất lỏng chảy được.'},
+    {en:'In a gas, the particles are far apart, are not held by forces and move freely in every direction.',vi:'Trong chất khí (gas), các hạt ở cách xa nhau, không bị lực nào giữ và chuyển động tự do theo mọi hướng.'}]},
+ {tag:{en:'Which state is it?',vi:'Đó là trạng thái nào?'}, word:{en:'state of matter',vi:'trạng thái của vật chất'},
+  q:{en:'Can you tell the state from how the particles behave?',vi:'Con có nhận ra trạng thái từ cách các hạt hành xử không?'},
+  act:{en:'Tap a card, then tap SOLID, LIQUID or GAS.',vi:'Chạm vào một thẻ, rồi chạm vào RẮN (SOLID), LỎNG (LIQUID) hoặc KHÍ (GAS).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Regular rows and a fixed shape mean a solid; sliding particles that can be poured mean a liquid.',vi:'Hàng đều và hình dạng cố định nghĩa là chất rắn (solid); các hạt trượt qua nhau và rót được nghĩa là chất lỏng (liquid).'},
+    {en:'Particles spread out to fill the space, with lots of empty space between them, mean a gas — a gas can be compressed into a much smaller space.',vi:'Các hạt lan ra lấp đầy không gian, với nhiều khoảng trống ở giữa, nghĩa là chất khí (gas) — khí có thể bị nén (compressed) vào một thể tích nhỏ hơn nhiều.'}]},
+ {tag:{en:'Heat a solid: expand, then melt',vi:'Đun một chất rắn: giãn nở, rồi tan'}, word:{en:'expand · melt',vi:'giãn nở · tan chảy'},
+  q:{en:'What happens to the particles when a solid is heated — gently first, then strongly?',vi:'Điều gì xảy ra với các hạt khi một chất rắn được đun nóng — trước nhẹ, sau mạnh?'},
+  act:{en:'Tap the heater once to heat the solid gently. Tap it again to heat it strongly.',vi:'Chạm vào bếp đun một lần để đun chất rắn nhẹ. Chạm lần nữa để đun mạnh.'},
+  see:{en:'First the particles vibrate more and the solid expands. With strong heating, the pattern breaks and the particles slide — the solid has melted.',vi:'Đầu tiên các hạt rung (vibrate) nhiều hơn và chất rắn giãn nở (expand). Khi đun mạnh, mẫu xếp bị phá vỡ và các hạt trượt — chất rắn đã tan chảy.'},
+  concl:[
+    {en:'When a solid is heated, heat energy is transferred to its particles. They vibrate more and take up more space, so the solid expands.',vi:'Khi một chất rắn được đun nóng, năng lượng nhiệt (heat energy) được truyền (transferred) tới các hạt của nó. Chúng rung (vibrate) nhiều hơn và chiếm nhiều không gian hơn, nên chất rắn giãn nở (expand).'},
+    {en:'Heated strongly, the particles vibrate so much that the attractive forces between them can no longer hold them in a fixed pattern. They can slide past one another — the solid melts into a liquid.',vi:'Khi đun mạnh, các hạt rung mạnh tới mức lực hút (attractive force) giữa chúng không còn giữ được chúng theo mẫu cố định. Chúng có thể trượt qua nhau — chất rắn tan chảy thành chất lỏng.'}]},
+ {tag:{en:'Boil a liquid',vi:'Đun sôi một chất lỏng'}, word:{en:'boil · escape',vi:'sôi · thoát ra'},
+  q:{en:'What happens to the particles when a liquid is heated strongly?',vi:'Điều gì xảy ra với các hạt khi một chất lỏng được đun nóng mạnh?'},
+  act:{en:'Tap the liquid beaker to heat the liquid strongly. Then tap the gas jar to catch the particles that escape.',vi:'Chạm vào cốc chất lỏng để đun chất lỏng thật mạnh. Sau đó chạm vào lọ khí để hứng các hạt thoát ra.'},
+  see:{en:'The liquid particles move faster and faster. Some gain enough energy to break away and escape into the gas jar.',vi:'Các hạt lỏng chuyển động ngày càng nhanh. Một số nhận đủ năng lượng để thoát ra và bay vào lọ khí.'},
+  concl:[
+    {en:'Particles in a liquid are held together only weakly. As heat energy is transferred to them, they move more and more.',vi:'Các hạt trong chất lỏng (liquid) chỉ bị giữ với nhau một cách yếu ớt. Khi năng lượng nhiệt (heat energy) được truyền (transferred) tới chúng, chúng chuyển động ngày càng nhiều.'},
+    {en:'Some particles gain enough energy to break the weak attractive forces holding them. They move freely and escape as gas particles — the liquid boils.',vi:'Một số hạt nhận đủ năng lượng để phá vỡ lực hút (attractive force) yếu đang giữ chúng. Chúng chuyển động tự do và thoát ra thành các hạt khí — chất lỏng sôi.'}]},
+ {tag:{en:'Condense on a cold surface',vi:'Ngưng tụ trên bề mặt lạnh'}, word:{en:'condense',vi:'ngưng tụ'},
+  q:{en:'Why does steam turn back into liquid water on a cold bathroom mirror?',vi:'Vì sao hơi nước lại biến lại thành nước lỏng trên gương phòng tắm lạnh?'},
+  act:{en:'Tap the gas jar to let the gas particles travel. Then tap the cold mirror so they meet the cold surface.',vi:'Chạm vào lọ khí để các hạt khí di chuyển. Sau đó chạm vào gương lạnh để chúng gặp bề mặt lạnh.'},
+  see:{en:'At the cold surface the particles slow down, move closer together and form droplets of liquid on the mirror.',vi:'Tại bề mặt lạnh, các hạt chậm lại, di chuyển lại gần nhau và tạo thành các giọt lỏng (liquid) trên gương.'},
+  concl:[
+    {en:'Gas particles move freely and spread out — no forces hold them together.',vi:'Các hạt khí (gas) chuyển động tự do và lan ra — không có lực nào giữ chúng với nhau.'},
+    {en:'When gas particles reach a cold surface, some of their heat energy is transferred to the surface. The particles move less and get closer together, so they form a liquid — the gas condenses.',vi:'Khi các hạt khí chạm tới một bề mặt lạnh, một phần năng lượng nhiệt (heat energy) của chúng được truyền (transferred) sang bề mặt. Các hạt chuyển động ít hơn và lại gần nhau hơn, nên chúng tạo thành chất lỏng — khí ngưng tụ (condenses).'}]},
+ {tag:{en:'Freeze it — and judge the model',vi:'Đông đặc — và đánh giá mô hình'}, word:{en:'freeze · model',vi:'đông đặc · mô hình'},
+  q:{en:'How does a liquid become a solid — and how good is our class particle model?',vi:'Chất lỏng trở thành chất rắn thế nào — và mô hình hạt của lớp ta tốt tới đâu?'},
+  act:{en:'Tap the freezer to cool the liquid beaker right down. Then answer the two questions about the class model, where learners act as the particles.',vi:'Chạm vào ngăn đông (freezer) để làm lạnh cốc chất lỏng xuống thật thấp. Sau đó trả lời hai câu hỏi về mô hình của lớp, nơi học viên đóng vai các hạt.'},
+  see:{en:'The liquid particles slow down, stop sliding and settle into a fixed, regular pattern. Then you judge the model.',vi:'Các hạt lỏng chậm lại, ngừng trượt và lắng vào một mẫu cố định, đều đặn. Sau đó con đánh giá mô hình.'},
+  concl:[
+    {en:'As heat energy is transferred from the liquid particles to the surroundings, the particles move more and more slowly. In the end they have so little energy that they can only vibrate, arranged in a fixed pattern — a solid.',vi:'Khi năng lượng nhiệt (heat energy) được truyền (transferred) từ các hạt lỏng ra môi trường xung quanh, các hạt chuyển động ngày càng chậm. Cuối cùng chúng có ít năng lượng tới mức chỉ có thể rung (vibrate), xếp theo một mẫu cố định — một chất rắn (solid).'},
+    {en:'The class model is a good model because learners can show how particles vibrate, slide and spread out. It is limited because learners are much bigger than real particles and can choose to stop — real particles are far too small to see and never stop moving.',vi:'Mô hình của lớp là một mô hình tốt vì học viên thể hiện được cách các hạt rung, trượt và lan ra. Nó còn hạn chế vì học viên lớn hơn các hạt thật rất nhiều và có thể tự chọn dừng lại — các hạt thật nhỏ tới mức không nhìn thấy được và không bao giờ ngừng chuyển động.'},
+    {en:'I can describe how particles behave, depending on how much energy they have.',vi:'Con mô tả được các hạt hành xử thế nào, tùy vào lượng năng lượng chúng có.'},
+    {en:'I can explain that energy can be transferred to or from particles.',vi:'Con giải thích được rằng năng lượng có thể được truyền (transferred) tới các hạt hoặc từ các hạt.'},
+    {en:'I can describe the effects of the energy on the forces holding the particles together.',vi:'Con mô tả được tác động của năng lượng lên các lực giữ các hạt với nhau.'}]}
+];
+const CARDS2=[
+ {id:'p_rows',emoji:'🔲',en:'Particles arranged in regular rows',vi:'Các hạt xếp thành hàng đều đặn',ans:'solid'},
+ {id:'p_pour',emoji:'🫗',en:'Can be poured and takes the shape of its container',vi:'Rót được và mang hình dạng của vật chứa',ans:'liquid'},
+ {id:'p_spread',emoji:'🎈',en:'Particles spread out to fill all the space',vi:'Các hạt lan ra lấp đầy mọi không gian',ans:'gas'},
+ {id:'p_shape',emoji:'🧱',en:'Keeps its own fixed shape',vi:'Giữ hình dạng cố định của riêng nó',ans:'solid'},
+ {id:'p_slide',emoji:'🌊',en:'Particles stay in touch but slide past each other',vi:'Các hạt vẫn chạm nhau nhưng trượt qua nhau',ans:'liquid'},
+ {id:'p_squash',emoji:'🗜️',en:'Can be compressed into a much smaller space',vi:'Có thể bị nén vào một thể tích nhỏ hơn nhiều',ans:'gas'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'Why does a solid expand when it is heated?',vi:'Vì sao một chất rắn giãn nở (expand) khi được đun nóng?'},
+  o:[{en:'New particles are added to the solid',vi:'Các hạt mới được thêm vào chất rắn'},{en:'Its particles vibrate more and take up more space',vi:'Các hạt của nó rung (vibrate) nhiều hơn và chiếm nhiều không gian hơn'},{en:'Its particles stop moving completely',vi:'Các hạt của nó ngừng chuyển động hoàn toàn'}],a:1,
+  e:{en:'Heat energy is transferred to the particles, so they vibrate more. Vibrating particles need more room, so the solid gets bigger — it expands.',vi:'Năng lượng nhiệt (heat energy) được truyền (transferred) tới các hạt, nên chúng rung (vibrate) nhiều hơn. Các hạt đang rung cần nhiều chỗ hơn, nên chất rắn to ra — nó giãn nở (expand).'}},
+ {q:{en:'How does a liquid change into a gas when it is heated?',vi:'Một chất lỏng biến thành chất khí thế nào khi được đun nóng?'},
+  o:[{en:'Its particles slow down and settle into rows',vi:'Các hạt của nó chậm lại và lắng thành hàng'},{en:'Its particles join together into one big particle',vi:'Các hạt của nó hợp lại thành một hạt lớn'},{en:'Some particles gain enough energy to break the weak attractive forces and escape, moving freely',vi:'Một số hạt nhận đủ năng lượng để phá vỡ lực hút (attractive force) yếu và thoát ra, chuyển động tự do'}],a:2,
+  e:{en:'Liquid particles are held only weakly. With enough energy, some break free from the weak attractive forces and escape as gas particles.',vi:'Các hạt lỏng chỉ bị giữ một cách yếu ớt. Khi có đủ năng lượng, một số hạt thoát khỏi lực hút (attractive force) yếu và bay ra thành các hạt khí.'}},
+ {q:{en:'Why can solids and liquids not be compressed into a smaller volume?',vi:'Vì sao chất rắn và chất lỏng không thể bị nén (compressed) vào một thể tích nhỏ hơn?'},
+  o:[{en:'Their particles are already packed closely together, with almost no empty space between them',vi:'Các hạt của chúng đã xếp sát nhau, hầu như không có khoảng trống ở giữa'},{en:'Their particles are too heavy to move',vi:'Các hạt của chúng quá nặng nên không di chuyển được'},{en:'Their particles disappear when they are pushed',vi:'Các hạt của chúng biến mất khi bị đẩy'}],a:0,
+  e:{en:'In solids and liquids the particles already touch or nearly touch. There is no space to squeeze them into, so the volume cannot get smaller.',vi:'Trong chất rắn và chất lỏng, các hạt đã chạm nhau hoặc gần như chạm nhau. Không có khoảng trống để ép chúng vào, nên thể tích không thể nhỏ đi.'}},
+ {q:{en:'Steam in a bathroom hits a cold mirror. What happens to its particles?',vi:'Hơi nước trong phòng tắm chạm vào một chiếc gương lạnh. Điều gì xảy ra với các hạt của nó?'},
+  o:[{en:'They gain energy from the mirror and spread out more',vi:'Chúng nhận năng lượng từ gương và lan ra nhiều hơn'},{en:'They transfer energy to the cold surface, move less and get closer together, forming a liquid',vi:'Chúng truyền (transferred) năng lượng sang bề mặt lạnh, chuyển động ít hơn và lại gần nhau hơn, tạo thành chất lỏng'},{en:'They settle into regular rows at once and become a solid',vi:'Chúng lập tức lắng thành hàng đều và trở thành chất rắn'}],a:1,
+  e:{en:'At the cold surface, heat energy passes from the gas particles to the surface. Moving less, the particles come closer together and condense into liquid droplets.',vi:'Tại bề mặt lạnh, năng lượng nhiệt (heat energy) truyền từ các hạt khí sang bề mặt. Chuyển động ít hơn, các hạt lại gần nhau và ngưng tụ (condense) thành các giọt lỏng.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'t_melt',emoji:'🧊➡️💧',en:'Melting',vi:'Tan chảy (melting)',ans:'sl'},
+ {id:'t_freeze',emoji:'💧➡️🧊',en:'Freezing',vi:'Đông đặc (freezing)',ans:'ls'},
+ {id:'t_boil',emoji:'💧➡️💨',en:'Boiling',vi:'Sôi (boiling)',ans:'lg'},
+ {id:'t_cond',emoji:'💨➡️💧',en:'Condensing',vi:'Ngưng tụ (condensing)',ans:'gl'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'Diagram A shows particles in a liquid. If those particles lose enough energy, the liquid will become a…',vi:'Sơ đồ A cho thấy các hạt trong một chất lỏng. Nếu các hạt đó mất đủ năng lượng, chất lỏng sẽ trở thành một…'},
+  opts:[{en:'gas',vi:'chất khí (gas)'},{en:'solid',vi:'chất rắn (solid)'},{en:'bigger liquid',vi:'chất lỏng lớn hơn'}],a:1,
+  e:{en:'Losing energy, the particles move more and more slowly until they can only vibrate in a fixed pattern — the liquid freezes into a solid.',vi:'Khi mất năng lượng, các hạt chuyển động ngày càng chậm cho tới khi chỉ có thể rung (vibrate) theo một mẫu cố định — chất lỏng đông đặc thành chất rắn.'}},
+ {q:{en:'If the particles in the liquid gain enough energy instead, the liquid will become a…',vi:'Nếu thay vào đó các hạt trong chất lỏng nhận đủ năng lượng, chất lỏng sẽ trở thành một…'},
+  opts:[{en:'gas',vi:'chất khí (gas)'},{en:'solid',vi:'chất rắn (solid)'},{en:'colder liquid',vi:'chất lỏng lạnh hơn'}],a:0,
+  e:{en:'With enough energy, particles break the weak attractive forces holding them and escape, moving freely as a gas.',vi:'Khi có đủ năng lượng, các hạt phá vỡ lực hút (attractive force) yếu đang giữ chúng và thoát ra, chuyển động tự do như một chất khí.'}},
+ {q:{en:'For a solid to melt, its particles must ___ energy and vibrate ___.',vi:'Để một chất rắn tan chảy, các hạt của nó phải ___ năng lượng và rung ___ hơn.'},
+  opts:[{en:'lose · less',vi:'mất · ít'},{en:'gain · more',vi:'nhận · nhiều'},{en:'gain · less',vi:'nhận · ít'}],a:1,
+  e:{en:'Melting needs energy in: the particles gain energy and vibrate more, until they can escape the strong forces holding them in place and slide past each other.',vi:'Tan chảy cần năng lượng truyền vào: các hạt nhận năng lượng và rung (vibrate) nhiều hơn, cho tới khi chúng thoát khỏi các lực mạnh đang giữ chúng tại chỗ và trượt qua nhau.'}},
+ {q:{en:'When ice is heated and melts to form water, what happens to its particles?',vi:'Khi nước đá được đun nóng và tan thành nước, điều gì xảy ra với các hạt của nó?'},
+  opts:[{en:'They stop vibrating and stay in rows',vi:'Chúng ngừng rung và ở nguyên thành hàng'},{en:'They gain energy, vibrate so much that the forces can no longer hold the fixed pattern, and slide past each other',vi:'Chúng nhận năng lượng, rung mạnh tới mức các lực không còn giữ được mẫu cố định, và trượt qua nhau'},{en:'They spread far apart and become a gas at once',vi:'Chúng lập tức lan ra xa nhau và trở thành chất khí'}],a:1,
+  e:{en:'In melting, the particles stay in touch with each other — they just gain the freedom to move and slide, not only vibrate.',vi:'Khi tan chảy, các hạt vẫn chạm vào nhau — chúng chỉ có thêm tự do di chuyển và trượt, không chỉ rung (vibrate).'}},
+ {q:{en:'A heated iron bar no longer fits its holder. Why, in particle terms?',vi:'Một thanh sắt được đun nóng không còn vừa với giá đỡ của nó. Vì sao, theo cách nói về hạt?'},
+  opts:[{en:'Heating adds extra iron particles to the bar',vi:'Đun nóng thêm các hạt sắt mới vào thanh'},{en:'The particles vibrate more and take up more space, so the bar expands',vi:'Các hạt rung (vibrate) nhiều hơn và chiếm nhiều không gian hơn, nên thanh giãn nở (expand)'},{en:'The holder’s particles move closer together',vi:'Các hạt của giá đỡ di chuyển lại gần nhau hơn'}],a:1,
+  e:{en:'Heat energy transferred to the particles makes them vibrate more. Each particle takes up more space, so the whole bar gets bigger.',vi:'Năng lượng nhiệt (heat energy) truyền tới các hạt làm chúng rung nhiều hơn. Mỗi hạt chiếm nhiều không gian hơn, nên cả thanh to ra.'}},
+ {q:{en:'Which state of matter can be compressed, because its particles are far apart?',vi:'Trạng thái vật chất nào có thể bị nén (compressed), vì các hạt của nó ở cách xa nhau?'},
+  opts:[{en:'Solid',vi:'Rắn (solid)'},{en:'Liquid',vi:'Lỏng (liquid)'},{en:'Gas',vi:'Khí (gas)'}],a:2,
+  e:{en:'Gas particles have large empty spaces between them, so they can be pushed closer together into a smaller volume. Solids and liquids cannot — their particles already touch.',vi:'Các hạt khí có khoảng trống lớn ở giữa, nên chúng có thể bị đẩy lại gần nhau vào một thể tích nhỏ hơn. Rắn và lỏng thì không — các hạt của chúng đã chạm nhau rồi.'}}
+];
+let EX2_ORD=EX2.map(q=>fyIdx(q.opts.length));
+const EX3=[
+ {q:{en:'A solid is heated and changes into a liquid. Which is the full particle explanation?',vi:'Một chất rắn được đun nóng và biến thành chất lỏng. Đâu là lời giải thích đầy đủ theo hạt?'},
+  opts:[{en:'Heat energy is transferred to the particles; they vibrate more and more until the attractive forces cannot hold them in a fixed pattern, so they slide past each other while staying in touch',vi:'Năng lượng nhiệt (heat energy) được truyền (transferred) tới các hạt; chúng rung (vibrate) ngày càng nhiều cho tới khi lực hút (attractive force) không còn giữ được chúng theo mẫu cố định, nên chúng trượt qua nhau trong khi vẫn chạm nhau'},{en:'The particles melt and disappear into the liquid',vi:'Các hạt tan ra và biến mất vào chất lỏng'},{en:'The particles get bigger, so the solid has to melt',vi:'Các hạt to ra, nên chất rắn buộc phải tan'}],a:0,
+  e:{en:'Melting is about energy and forces: more energy, more vibration, until the fixed pattern breaks — but the particles stay in touch as a liquid.',vi:'Tan chảy là chuyện của năng lượng và lực: thêm năng lượng, rung nhiều hơn, cho tới khi mẫu cố định bị phá vỡ — nhưng các hạt vẫn chạm nhau như một chất lỏng.'}},
+ {q:{en:'A gas reaches a cold surface and changes into a liquid. Which is the full particle explanation?',vi:'Một chất khí chạm tới một bề mặt lạnh và biến thành chất lỏng. Đâu là lời giải thích đầy đủ theo hạt?'},
+  opts:[{en:'The cold surface pushes the particles into a liquid shape',vi:'Bề mặt lạnh đẩy các hạt thành hình dạng lỏng'},{en:'The particles transfer heat energy to the cold surface, move less and get closer together, forming a liquid',vi:'Các hạt truyền (transferred) năng lượng nhiệt (heat energy) sang bề mặt lạnh, chuyển động ít hơn và lại gần nhau hơn, tạo thành chất lỏng'},{en:'The particles freeze solid the moment they touch anything cold',vi:'Các hạt đông cứng ngay khi chạm vào bất cứ thứ gì lạnh'}],a:1,
+  e:{en:'Condensing is energy leaving the particles: they slow down and come together, but they can still slide — a liquid, not a solid.',vi:'Ngưng tụ (condensing) là năng lượng rời khỏi các hạt: chúng chậm lại và lại gần nhau, nhưng vẫn trượt được — một chất lỏng, không phải chất rắn.'}},
+ {q:{en:'A liquid is heated and changes into a gas. Which is the full particle explanation?',vi:'Một chất lỏng được đun nóng và biến thành chất khí. Đâu là lời giải thích đầy đủ theo hạt?'},
+  opts:[{en:'The particles sink to the bottom and vanish',vi:'Các hạt chìm xuống đáy và biến mất'},{en:'The particles split into smaller particles that float away',vi:'Các hạt tách thành các hạt nhỏ hơn rồi bay đi'},{en:'Heat energy is transferred to the particles; they move faster until some break the weak attractive forces and escape to move freely as a gas',vi:'Năng lượng nhiệt (heat energy) được truyền (transferred) tới các hạt; chúng chuyển động nhanh hơn cho tới khi một số hạt phá vỡ lực hút (attractive force) yếu và thoát ra, chuyển động tự do như một chất khí'}],a:2,
+  e:{en:'Only some particles need enough energy to escape the weak forces — those become the gas, moving freely and spreading out.',vi:'Chỉ một số hạt cần đủ năng lượng để thoát khỏi các lực yếu — những hạt đó trở thành khí, chuyển động tự do và lan ra.'}},
+ {q:{en:'Which set of scientific words should a good particle explanation include?',vi:'Tập hợp từ khoa học nào nên có trong một lời giải thích tốt theo hạt?'},
+  opts:[{en:'energy transferred · vibrate / move · attractive force',vi:'năng lượng được truyền (transferred) · rung (vibrate) / chuyển động · lực hút (attractive force)'},{en:'big · hot · wet',vi:'to · nóng · ướt'},{en:'disappear · magic · melt away',vi:'biến mất · phép thuật · tan biến'}],a:0,
+  e:{en:'The book’s key words for this section are attractive force, expand, heat energy and transferred — explanations link the energy, the particle movement and the forces together.',vi:'Các từ khóa của sách cho mục này là lực hút (attractive force), giãn nở (expand), năng lượng nhiệt (heat energy) và được truyền (transferred) — lời giải thích nối năng lượng, chuyển động của hạt và các lực với nhau.'}}
+];
+let EX3_ORD=EX3.map(q=>fyIdx(q.opts.length));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 6 + 4 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: current (unsubmitted) answers — content-owned */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-2-3';
+const SUMKEY='camb:sum:sci7-2-3';
+const BOT_CODE='sci7-2.3';
+let FOUND={model:false,expand:false,melt:false,boil:false,condense:false,freeze:false};
+let SORTED=new Set();
+let MODELSEL={good:'',limit:''};
+function newTrack(){return {
+  s1solid:false, s1liquid:false, s1gas:false,
+  s2correct:new Set(), s2sel:null,
+  s3heat:0,
+  s4heat:false, s4escape:false,
+  s5steam:false, s5cond:false,
+  s6freeze:false, s6good:'', s6limit:''
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1solid&&T.s1liquid&&T.s1gas;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.s3heat>=2;
+  if(i===3) return T.s4heat&&T.s4escape;
+  if(i===4) return T.s5steam&&T.s5cond;
+  if(i===5) return T.s6freeze&&T.s6good==='show'&&T.s6limit==='bigger';
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Solid model '+(T.s1solid?'✓':'…')+' · Liquid model '+(T.s1liquid?'✓':'…')+' · Gas model '+(T.s1gas?'✓':'…')+'. Tap all three models.',
+             'Mô hình rắn '+(T.s1solid?'✓':'…')+' · Mô hình lỏng '+(T.s1liquid?'✓':'…')+' · Mô hình khí '+(T.s1gas?'✓':'…')+'. Hãy chạm cả ba mô hình.');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap SOLID, LIQUID or GAS.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm RẮN (SOLID), LỎNG (LIQUID) hoặc KHÍ (GAS).');
+    return B('Cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2){
+    if(T.s3heat>=2) return B('Gentle heat ✓ — the solid expanded. Strong heat ✓ — the pattern broke and the solid melted into a liquid.','Đun nhẹ ✓ — chất rắn đã giãn nở (expand). Đun mạnh ✓ — mẫu xếp đã vỡ và chất rắn tan thành chất lỏng.');
+    if(T.s3heat===1) return B('Gentle heat ✓ — the particles vibrate more and the solid has expanded. Tap the heater again to heat it strongly.','Đun nhẹ ✓ — các hạt rung (vibrate) nhiều hơn và chất rắn đã giãn nở. Hãy chạm bếp đun lần nữa để đun mạnh.');
+    return B('Tap the heater to heat the solid gently.','Hãy chạm vào bếp đun để đun chất rắn nhẹ.');
+  }
+  if(i===3){
+    return B('Liquid heated strongly '+(T.s4heat?'✓':'…')+' · Escaped particles caught in the gas jar '+(T.s4escape?'✓':'…')+'.',
+             'Đã đun mạnh chất lỏng '+(T.s4heat?'✓':'…')+' · Đã hứng các hạt thoát ra trong lọ khí '+(T.s4escape?'✓':'…')+'.');
+  }
+  if(i===4){
+    return B('Gas particles travelling '+(T.s5steam?'✓':'…')+' · Condensed on the cold mirror '+(T.s5cond?'✓':'…')+'.',
+             'Các hạt khí đang di chuyển '+(T.s5steam?'✓':'…')+' · Đã ngưng tụ (condensing) trên gương lạnh '+(T.s5cond?'✓':'…')+'.');
+  }
+  if(i===5){
+    return B('Liquid frozen into a solid '+(T.s6freeze?'✓':'…')+' · Model is good because: '+(T.s6good? (T.s6good==='show'?'SHOWS PARTICLE MOVEMENT ✓':'WRONG CHOICE ✗') :'…')+' · Model is limited because: '+(T.s6limit? (T.s6limit==='bigger'?'LEARNERS ARE MUCH BIGGER ✓':'WRONG CHOICE ✗') :'…')+'.',
+             'Đã đông đặc chất lỏng thành chất rắn '+(T.s6freeze?'✓':'…')+' · Mô hình tốt vì: '+(T.s6good? (T.s6good==='show'?'THỂ HIỆN ĐƯỢC CHUYỂN ĐỘNG CỦA HẠT ✓':'CHỌN SAI ✗') :'…')+' · Mô hình hạn chế vì: '+(T.s6limit? (T.s6limit==='bigger'?'HỌC VIÊN LỚN HƠN NHIỀU ✓':'CHỌN SAI ✗') :'…')+'.');
+  }
+  return B('','');
+}
+function setModel(which,val){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(which==='good'){
+    T.s6good=val; MODELSEL.good=val;
+    if(val==='show') saveProg(); else addMistake();
+  }else{
+    T.s6limit=val; MODELSEL.limit=val;
+    if(val==='bigger') saveProg(); else addMistake();
+  }
+  renderStepExtra(); refreshEvidence();
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'Solid — regular rows',vi:'Rắn — hàng đều'},got:T.s1solid},
+      {emoji:'💧',label:{en:'Liquid — touching, jumbled',vi:'Lỏng — chạm nhau, lộn xộn'},got:T.s1liquid},
+      {emoji:'💨',label:{en:'Gas — far apart',vi:'Khí — cách xa nhau'},got:T.s1gas}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'solid',label:STR.binSolid,cls:'solid'},{key:'liquid',label:STR.binLiquid,cls:'liquid'},{key:'gas',label:STR.binGas,cls:'gas'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🌡️',label:{en:'Gentle heat — expands',vi:'Đun nhẹ — giãn nở'},got:T.s3heat>=1},
+      {emoji:'💧',label:{en:'Strong heat — melts',vi:'Đun mạnh — tan chảy'},got:T.s3heat>=2}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🔥',label:{en:'Heated strongly',vi:'Đã đun mạnh'},got:T.s4heat},
+      {emoji:'💨',label:{en:'Particles escaped as gas',vi:'Các hạt đã thoát ra thành khí'},got:T.s4escape}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookBeaker);
+    b.onclick=()=>focusThing('liquid');
+    box.appendChild(b);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'💨',label:{en:'Gas particles travelling',vi:'Các hạt khí đang di chuyển'},got:T.s5steam},
+      {emoji:'💧',label:{en:'Droplets on the cold mirror',vi:'Các giọt trên gương lạnh'},got:T.s5cond}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'❄️',label:{en:'Frozen — fixed pattern',vi:'Đã đông đặc — mẫu cố định'},got:T.s6freeze}
+    ]);
+    const mk=(lbl,cur,fn,opts)=>{
+      const row=document.createElement('div'); row.className='diagrow';
+      const l=document.createElement('span'); l.className='dlbl'; l.innerHTML=biInl(lbl); row.appendChild(l);
+      opts.forEach(([val,txt,sfx])=>{
+        const b=document.createElement('button'); b.className='diagbtn'+(cur===val?' sel':'');
+        b.id='model_'+fn+sfx;
+        b.innerHTML=biInl(txt);
+        b.onclick=()=>setModel(fn,val);
+        row.appendChild(b);
+      });
+      box.appendChild(row);
+    };
+    mk(STR.modGoodLbl,T.s6good,'good',[['show',STR.goodShowBtn,'Show'],['same',STR.goodSameBtn,'Same']]);
+    mk(STR.modLimitLbl,T.s6limit,'limit',[['bigger',STR.limitBiggerBtn,'Bigger'],['exact',STR.limitExactBtn,'Exact']]);
+  }
+}
+function demoHighlightCard(cards,correctSet){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+c.ans);
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('solid'); setTimeout(()=>focusVisual('liquid'),800); setTimeout(()=>focusVisual('gasjar'),1600); }
+  else if(i===1){ demoHighlightCard(CARDS2,T.s2correct); }
+  else if(i===2){ focusVisual('heater'); setTimeout(()=>focusVisual('solid'),900); }
+  else if(i===3){ focusVisual('liquid'); setTimeout(()=>focusVisual('gasjar'),900); }
+  else if(i===4){ focusVisual('gasjar'); setTimeout(()=>focusVisual('mirror'),900); }
+  else if(i===5){ focusVisual('freezer'); setTimeout(()=>focusVisual('liquid'),900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function grpCount(ans){ return CARDS2.filter(c=>c.ans===ans&&SORTED.has(c.id)).length; }
+function renderGroups(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.grpSolid)+'</span><b>'+grpCount('solid')+' / 2</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpLiquid)+'</span><b>'+grpCount('liquid')+' / 2</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpGas)+'</span><b>'+grpCount('gas')+' / 2</b></div>';
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.model||doneSteps.has(0),label:STR.foundModel},
+    {got:(FOUND.expand&&FOUND.melt)||doneSteps.has(2),label:STR.foundMelt},
+    {got:FOUND.boil||doneSteps.has(3),label:STR.foundBoil},
+    {got:FOUND.condense||doneSteps.has(4),label:STR.foundCondense},
+    {got:FOUND.freeze||doneSteps.has(5),label:STR.foundFreeze}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let solidGroup=null, solidDots=[], flameMesh=null, liquidDots=[], gasDots=[], dropletGroup=null;
+let meltAmt=0, expandAmt=0, freezeAmt=0, condAmt=0;
+let lastRW=0, lastRH=0;
+const ORB={r:9.4, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function det(k,a,b){ return Math.sin(k*a+b)*0.5+Math.cos(k*b+a)*0.5; } /* deterministic scatter in [-1,1] */
+function buildSolidModel(){
+  const g=new THREE.Group();
+  const tray=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.09,1.15),stdMat(0x8a97a5,0.6)));
+  tray.position.y=0.05; g.add(tray);
+  solidGroup=new THREE.Group(); g.add(solidGroup);
+  solidDots=[];
+  const mat=stdMat(0x2f7fd0,0.35);
+  for(let k=0;k<9;k++){
+    const gx=(k%3-1)*0.32, gz=((k/3|0)-1)*0.32;
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.115,12,10),mat);
+    d.position.set(gx,0.26,gz);
+    solidGroup.add(d);
+    solidDots.push({m:d, base:{x:gx,y:0.26,z:gz},
+      slide:{x:det(k,1.7,0.4)*0.38, y:0.2, z:det(k,2.3,1.1)*0.38}});
+  }
+  g.position.set(-3.4,0,-1.3); g.userData.baseY=0;
+  return g;
+}
+function buildHeater(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.4,0.1,20),stdMat(0x44586e,0.5)));
+  base.position.y=0.05; g.add(base);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,0.3,10),stdMat(0xb9c6d2,0.35));
+  tube.position.y=0.25; g.add(tube);
+  flameMesh=new THREE.Group();
+  const f1=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.42,10),new THREE.MeshBasicMaterial({color:0xff8c2e}));
+  f1.position.y=0.6; flameMesh.add(f1);
+  const f2=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.26,10),new THREE.MeshBasicMaterial({color:0xffd94d}));
+  f2.position.y=0.55; flameMesh.add(f2);
+  flameMesh.visible=false; g.add(flameMesh);
+  g.position.set(-3.4,0,1.9); g.userData.baseY=0;
+  return g;
+}
+function buildLiquid(){
+  const g=new THREE.Group();
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.4,1.0,24,1,true),
+    new THREE.MeshStandardMaterial({color:0xdceef7,roughness:0.15,metalness:0.05,transparent:true,opacity:0.4,side:THREE.DoubleSide})));
+  glass.position.y=0.52; g.add(glass);
+  const bottom=new THREE.Mesh(new THREE.CircleGeometry(0.4,24),stdMat(0xdceef7,0.4));
+  bottom.rotation.x=-Math.PI/2; bottom.position.y=0.03; g.add(bottom);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.37,0.72,24),stdMat(0x3fa7d6,0.3));
+  water.position.y=0.4; water.material.transparent=true; water.material.opacity=0.6; g.add(water);
+  liquidDots=[];
+  const mat=stdMat(0xeaf6ff,0.4);
+  for(let k=0;k<12;k++){
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),mat);
+    const bx=det(k,1.3,0.7)*0.26, by=0.14+(k%4)*0.15, bz=det(k,2.9,0.2)*0.26;
+    d.position.set(bx,by,bz); g.add(d);
+    liquidDots.push({m:d, base:{x:bx,y:by,z:bz},
+      grid:{x:((k%3)-1)*0.17, y:0.16+((k/6|0))*0.2, z:(((k/3|0)%2)?0.13:-0.13)}});
+  }
+  g.position.set(-1.15,0,-1.5); g.userData.baseY=0;
+  return g;
+}
+function buildGasJar(){
+  const g=new THREE.Group();
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.37,1.05,24,1,true),
+    new THREE.MeshStandardMaterial({color:0xe6f2fa,roughness:0.15,metalness:0.05,transparent:true,opacity:0.35,side:THREE.DoubleSide})));
+  glass.position.y=0.55; g.add(glass);
+  const bottom=new THREE.Mesh(new THREE.CircleGeometry(0.37,24),stdMat(0xdceef7,0.4));
+  bottom.rotation.x=-Math.PI/2; bottom.position.y=0.03; g.add(bottom);
+  const lid=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.05,24),stdMat(0x77879a,0.4));
+  lid.position.y=1.1; g.add(lid);
+  gasDots=[];
+  const mat=stdMat(0xb9a7e8,0.4);
+  for(let k=0;k<12;k++){
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6),mat);
+    const bx=det(k,2.1,1.3)*0.27, by=0.16+(k%5)*0.18, bz=det(k,1.1,2.0)*0.27;
+    d.position.set(bx,by,bz); g.add(d);
+    gasDots.push({m:d, base:{x:bx,y:by,z:bz}, ph:k*1.37});
+  }
+  g.position.set(1.15,0,-1.6); g.userData.baseY=0;
+  return g;
+}
+function buildMirror(){
+  const g=new THREE.Group();
+  const frame=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.05,1.55,0.07),stdMat(0x77879a,0.4)));
+  frame.position.y=1.05; g.add(frame);
+  const glassM=new THREE.Mesh(new THREE.BoxGeometry(0.9,1.4,0.03),stdMat(0xcfe8f5,0.15));
+  glassM.position.set(0,1.05,0.03); g.add(glassM);
+  dropletGroup=new THREE.Group();
+  const dmat=stdMat(0x2f9fd8,0.25);
+  for(let k=0;k<8;k++){
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),dmat);
+    d.position.set(det(k,1.9,0.5)*0.32, 0.55+(k%4)*0.3, 0.07);
+    d.scale.set(0.01,0.01,0.01);
+    dropletGroup.add(d);
+  }
+  g.add(dropletGroup);
+  [-0.4,0.4].forEach(x=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.35,0.07),stdMat(0x44586e,0.5));
+    leg.position.set(x,0.17,0); g.add(leg);
+  });
+  g.position.set(3.4,0,-1.5); g.userData.baseY=0;
+  return g;
+}
+function buildFreezer(){
+  const g=new THREE.Group();
+  const bodyF=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,1.9,0.85),stdMat(0xcfe0ea,0.45)));
+  bodyF.position.y=0.95; g.add(bodyF);
+  const door=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.02,0.8,0.05),stdMat(0xaecadb,0.4)));
+  door.position.set(0,1.42,0.44); g.add(door);
+  const handle=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.4,8),stdMat(0x77879a,0.4));
+  handle.position.set(0.42,1.42,0.5); g.add(handle);
+  const flake=new THREE.Mesh(new THREE.SphereGeometry(0.09,8,6),stdMat(0xffffff,0.3));
+  flake.scale.set(1,1,0.3); flake.position.set(-0.25,1.45,0.48); g.add(flake);
+  g.position.set(3.4,0,1.9); g.userData.baseY=0;
+  return g;
+}
+function buildThermo(){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,1.0,8),stdMat(0xeef4f8,0.4));
+  pole.position.y=0.6; g.add(pole);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.1,10,8),stdMat(0xd23c2a,0.4));
+  bulb.position.y=0.1; g.add(bulb);
+  const col=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.55,6),stdMat(0xd23c2a,0.4));
+  col.position.y=0.42; g.add(col);
+  g.position.set(0.1,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function buildPlant(){
+  const g=new THREE.Group();
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.17,0.34,14),stdMat(0xb5651d,0.9)));
+  pot.position.y=0.17; g.add(pot);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.03,0.4,8),stdMat(0x2e8b3a,0.9));
+  stem.position.y=0.52; g.add(stem);
+  [[0,0.78,0],[-0.16,0.66,0.06],[0.16,0.68,-0.05]].forEach(p=>{
+    const leaf=new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),stdMat(0x3f9e4d,0.9));
+    leaf.scale.set(1.3,0.45,0.8); leaf.position.set(p[0],p[1],p[2]); g.add(leaf);
+  });
+  g.position.set(-1.3,0,2.1); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,16,30);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8fbf7f,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xa8c6a2,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(11,0.03,5.8),stdMat(0xead9a8,1));
+  bench.position.set(0,0.005,0); bench.receiveShadow=true; scene3.add(bench);
+  reg('solid',buildSolidModel());
+  reg('heater',buildHeater());
+  reg('liquid',buildLiquid());
+  reg('gasjar',buildGasJar());
+  reg('mirror',buildMirror());
+  reg('freezer',buildFreezer());
+  reg('thermo',buildThermo());
+  reg('plant',buildPlant());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.72); p.position.set(0,0.35,0); addProxy('solid',p,G.solid); }
+  { const p=sphProxy(0.55); p.position.set(0,0.32,0); addProxy('heater',p,G.heater); }
+  { const p=sphProxy(0.64); p.position.set(0,0.55,0); addProxy('liquid',p,G.liquid); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('gasjar',p,G.gasjar); }
+  { const p=sphProxy(0.8); p.position.set(0,1.0,0); addProxy('mirror',p,G.mirror); }
+  { const p=sphProxy(0.95); p.position.set(0,1.0,0); addProxy('freezer',p,G.freezer); }
+  { const p=sphProxy(0.45); p.position.set(0,0.5,0); addProxy('thermo',p,G.thermo); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('plant',p,G.plant); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  if(id==='freezer'||id==='mirror') return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.18; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step. */
+const STEP_TARGETS=[
+  ['solid','liquid','gasjar'],
+  [],
+  ['heater'],
+  ['liquid','gasjar'],
+  ['gasjar','mirror'],
+  ['freezer']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(curStep===0){
+    if(id==='solid') T.s1solid=true;
+    else if(id==='liquid') T.s1liquid=true;
+    else if(id==='gasjar') T.s1gas=true;
+    if(T.s1solid&&T.s1liquid&&T.s1gas) FOUND.model=true;
+  }else if(curStep===2){
+    if(id==='heater'&&T.s3heat<2){
+      T.s3heat++;
+      if(T.s3heat>=1) FOUND.expand=true;
+      if(T.s3heat>=2) FOUND.melt=true;
+    }
+  }else if(curStep===3){
+    if(id==='liquid') T.s4heat=true;
+    else if(id==='gasjar') T.s4escape=true;
+    if(T.s4heat&&T.s4escape) FOUND.boil=true;
+  }else if(curStep===4){
+    if(id==='gasjar') T.s5steam=true;
+    else if(id==='mirror') T.s5cond=true;
+    if(T.s5steam&&T.s5cond) FOUND.condense=true;
+  }else if(curStep===5){
+    if(id==='freezer'){ T.s6freeze=true; FOUND.freeze=true; }
+  }
+  if(STEP_TARGETS[curStep].indexOf(id)>=0){ saveProg(); renderFound(); renderStepExtra(); }
+  else addMistake();
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic scene start: particle motion amounts are derived from
+     the current step's track every frame in renderSceneInner. */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* heating a solid: expands with gentle heat, melts with strong heat */
+  const expTarget=(curStep===2&&T.s3heat>=1)? 1:0;
+  expandAmt+=(expTarget-expandAmt)*0.06;
+  const meltTarget=(curStep===2&&T.s3heat>=2)? 1:0;
+  meltAmt+=(meltTarget-meltAmt)*0.05;
+  if(flameMesh){
+    flameMesh.visible=(curStep===2&&T.s3heat>0);
+    const fs=0.7+T.s3heat*0.35+Math.sin(t*11)*0.06;
+    flameMesh.scale.set(fs,fs,fs);
+  }
+  const vibAmp=0.006+expandAmt*0.02+meltAmt*0.01, vibSpd=2+expandAmt*5;
+  solidDots.forEach((d,k)=>{
+    const ex=1+expandAmt*0.09*(1-meltAmt);
+    const bx=d.base.x*ex, bz=d.base.z*ex;
+    d.m.position.set(
+      bx+(d.slide.x-bx)*meltAmt+Math.sin(t*vibSpd+k*1.7)*vibAmp,
+      d.base.y+(d.slide.y-d.base.y)*meltAmt+Math.cos(t*vibSpd*1.3+k)*vibAmp*0.6,
+      bz+(d.slide.z-bz)*meltAmt+Math.cos(t*vibSpd+k*2.1)*vibAmp);
+  });
+  /* liquid particles: gentle motion, faster when boiling; settle into a grid when frozen */
+  const frTarget=(curStep===5&&T.s6freeze)? 1:0;
+  freezeAmt+=(frTarget-freezeAmt)*0.05;
+  const boil=(curStep===3&&T.s4heat)? 1:0;
+  liquidDots.forEach((d,k)=>{
+    const amp=0.02+boil*0.05, spd=1.2+boil*3.5;
+    const mx=d.base.x+Math.sin(t*spd+k*1.9)*amp;
+    const my=d.base.y+Math.cos(t*spd*1.2+k)*amp*0.7;
+    const mz=d.base.z+Math.cos(t*spd+k*2.6)*amp;
+    d.m.position.set(mx+(d.grid.x-mx)*freezeAmt, my+(d.grid.y-my)*freezeAmt, mz+(d.grid.z-mz)*freezeAmt);
+  });
+  /* gas particles: always spread out and moving freely */
+  gasDots.forEach(d=>{
+    d.m.position.set(
+      d.base.x+Math.sin(t*1.6+d.ph)*0.07,
+      d.base.y+Math.cos(t*1.3+d.ph*1.7)*0.06,
+      d.base.z+Math.cos(t*1.8+d.ph)*0.07);
+  });
+  /* condensing: droplets grow on the cold mirror */
+  const condTarget=(curStep===4&&T.s5cond)? 1:0;
+  condAmt+=(condTarget-condAmt)*0.06;
+  if(dropletGroup) dropletGroup.children.forEach(d=>{ const s=Math.max(0.01,condAmt); d.scale.set(s,s,s); });
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderChoiceList(listEl,qs,ord,ans,doneSet,prefix){
+  listEl.innerHTML='';
+  qs.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='choicerow';
+    const qd=document.createElement('div'); qd.className='choiceq';
+    qd.innerHTML=esc(qi+1)+'. '+biInl(qq.q);
+    row.appendChild(qd);
+    (ord[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='wordopt';
+      if(ans[qi]===oi) cls+=' crossed';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      const b=document.createElement('button');
+      b.className=cls; b.id=prefix+'opt_'+qi+'_'+oi;
+      b.dataset.s=qi; b.dataset.o=oi;
+      b.innerHTML=biInl(o);
+      b.onclick=()=>{
+        if(exRevealed) return;
+        ans[qi]=oi; saveProg(); renderExercises();
+      };
+      row.appendChild(b);
+    });
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    listEl.appendChild(row);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 2.3A · Focus — name the change on the state diagram */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinSL').innerHTML=bi(STR.binSL);
+  $('ex1BinLS').innerHTML=bi(STR.binLS);
+  $('ex1BinLG').innerHTML=bi(STR.binLG);
+  $('ex1BinGL').innerHTML=bi(STR.binGL);
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const ans=EX1ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex1sel===it.id?' sel':'')+(exRevealed? (EX1DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+({sl:'🧊→💧',ls:'💧→🧊',lg:'💧→💨',gl:'💨→💧'})[ans]+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex1sel=it.id; renderExercises(); };
+    g1.appendChild(d);
+  });
+  /* Ex 2.3B · Practice — particle theory questions */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  renderChoiceList($('ex2List'),EX2,EX2_ORD,EX2ANS,EX2DONE,'ex2');
+  /* Ex 2.3C · Challenge — full explanations */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  renderChoiceList($('ex3List'),EX3,EX3_ORD,EX3ANS,EX3DONE,'ex3');
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+$('ex1BinSL').onclick=()=>ex1Place('sl');
+$('ex1BinLS').onclick=()=>ex1Place('ls');
+$('ex1BinLG').onclick=()=>ex1Place('lg');
+$('ex1BinGL').onclick=()=>ex1Place('gl');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.map((qq,qi)=>qi).filter(qi=>EX3ANS[qi]===EX3[qi].a));
+  ex1sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX2_ORD=EX2.map(q=>fyIdx(q.opts.length));
+  EX3_ORD=EX3.map(q=>fyIdx(q.opts.length));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.model=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.expand=false; FOUND.melt=false; }
+  if(step===3){ FOUND.boil=false; }
+  if(step===4){ FOUND.condense=false; }
+  if(step===5){ FOUND.freeze=false; MODELSEL={good:'',limit:''}; }
+}
+
+/* ================= MIGRATION — persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], model:MODELSEL, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted.filter(id=>CARDS2.some(c=>c.id===id)));
+  if(s.model&&typeof s.model==='object') MODELSEL={good:(s.model.good==='show'||s.model.good==='same')? s.model.good:'', limit:(s.model.limit==='bigger'||s.model.limit==='exact')? s.model.limit:''};
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&['sl','ls','lg','gl'].indexOf(s.exAns.a1[id])>=0) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&Number.isInteger(s.exAns.a2[k])) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX3.length&&Number.isInteger(s.exAns.a3[k])) EX3ANS[qi]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1solid=true; t.s1liquid=true; t.s1gas=true; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); if(t.s2correct.size<5) CARDS2.forEach(c=>t.s2correct.add(c.id)); }
+  else if(i===2){ t.s3heat=2; }
+  else if(i===3){ t.s4heat=true; t.s4escape=true; }
+  else if(i===4){ t.s5steam=true; t.s5cond=true; }
+  else if(i===5){ t.s6freeze=true; t.s6good='show'; t.s6limit='bigger'; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-2-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.4 Tides — Thủy triều · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.revolve{background:#7a4fd0}
+.binbtn.rotate{background:#0d9d58}
+.binbtn.cause{background:#0d9d58}
+.binbtn.notcause{background:#64748b}
+.binbtn.north{background:#e07b24}
+.binbtn.south{background:#0b76d1}
+.chbtn{flex:1;font-size:19px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;background:#0b76d1;line-height:1.25}
+.chbtn.alt{background:#e07b24}
+.chbtn.alt2{background:#7a4fd0}
+.binbtn.never{background:#44586e}
+.binbtn.metal{background:#d9930d}
+.binbtn.nonmetal{background:#0b76d1}
+.binbtn.ok{background:#0d9d58}
+.binbtn.bad{background:#64748b}
+.binbtn.boiling{background:#d23c2a}
+.binbtn.evap{background:#0b76d1}
+.binbtn.prop{background:#0d9d58}
+.binbtn.sample{background:#64748b}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="3.4 Tides" data-vi="3.4 Thủy triều (Tides)">3.4 Tides</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why does the sea rise and fall?" data-vi="Vì sao nước biển dâng lên và hạ xuống?">Why does the sea rise and fall?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Tide" data-vi="Thủy triều (tide)">Tide</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Tidal force" data-vi="Lực thủy triều (tidal force)">Tidal force</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Two high tides a day" data-vi="Hai lần triều cường mỗi ngày">Two high tides a day</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Higher tides!" data-vi="Triều cao hơn!">Higher tides!</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things in the Earth–Moon model!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trong mô hình Trái Đất – Mặt Trăng!">🖱 Drag to look around · Scroll to zoom · Tap things in the Earth–Moon model!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 3 Forces and energy · Section 3.4. The Earth–Moon model in this lesson is a simulation and is not to scale." data-vi="Khoa học Cambridge trung học cơ sở 7 · Bài 3 · Lực và năng lượng (Forces and energy) · Mục 3.4. Mô hình Trái Đất – Mặt Trăng trong bài học này là mô phỏng và không đúng tỉ lệ.">Cambridge Lower Secondary Science 7 · Unit 2 Materials and their structure · Section 2.5. The bench in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 3 Forces and energy, section 3.4, pages 91–98; Workbook 7 (ISBN 9781108742818), pages 56–59. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, ISBN 9781108742788), Bài 3 · Lực và năng lượng (Forces and energy), mục 3.4, trang 91–98; Sách bài tập 7 (ISBN 9781108742818), trang 56–59. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, ISBN 9781108742788), Unit 3 Forces and energy, section 3.4, pages 91–98; Workbook 7 (ISBN 9781108742818), pages 56–59. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: find out what tides are; learn about tidal forces and where they come from; discover how tidal forces affect the oceans and the land. Key words: coastal, depth, earthquake, earth tide, force of attraction, harbour, tidal force, tidal range, tide." data-vi="Mục tiêu: tìm hiểu thủy triều (tide) là gì; học về lực thủy triều (tidal force) và nguồn gốc của chúng; khám phá lực thủy triều ảnh hưởng tới đại dương và đất liền như thế nào. Từ khóa: coastal (ven biển), depth (độ sâu), earthquake (động đất), earth tide (thủy triều đất), force of attraction (lực hút), harbour (bến cảng), tidal force (lực thủy triều), tidal range (biên độ thủy triều), tide (thủy triều).">Objectives: find out what tides are; learn about tidal forces and where they come from; discover how tidal forces affect the oceans and the land. Key words: coastal, depth, earthquake, earth tide, force of attraction, harbour, tidal force, tidal range, tide.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D Earth–Moon model — comparing the same harbour at high and low tide, finding the Moon’s pull, placing the two ocean bulges in line with the Moon, spinning the Earth through a full day, lining up the Sun, Moon and Earth, and answering questions about the effects of tides. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done. The book’s own values are kept exactly: high tides are about 12 hours apart, high to low tide is 6 hours, the Bay of Fundy range is 16.3 m, and earth tide lifts the land by about 30 cm. The book’s paper-circle activity (thin crescents = set 1, thicker crescents = set 2) is modelled by the ocean bulges on the 3D Earth." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên mô hình 3D Trái Đất – Mặt Trăng — so sánh cùng một bến cảng (harbour) lúc triều cường và triều thấp, tìm lực kéo của Mặt Trăng, đặt hai chỗ phồng của đại dương thẳng hàng với Mặt Trăng, quay Trái Đất trọn một ngày, xếp Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng, và trả lời các câu hỏi về tác động của thủy triều. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. Nút ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm. Các giá trị của sách được giữ nguyên: triều cường cách nhau khoảng 12 giờ, từ triều cường tới triều thấp là 6 giờ, biên độ (tidal range) ở vịnh Fundy là 16,3 m, và thủy triều đất (earth tide) nâng đất lên khoảng 30 cm. Hoạt động cắt hình giấy của sách (vành mỏng = bộ 1, vành dày = bộ 2) được mô hình hóa bằng các chỗ phồng đại dương trên Trái Đất 3D.">How it works: each step asks for one real action on the 3D Earth–Moon model. The lesson checks the action itself, and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-3-4 "Tides" (Science 7, Unit 3 · Forces and energy)
+   Loaded between camb-engine.js and camb-bridge.js.
+   Mirrors LB 3.4: what tides are, tidal forces from the Moon (and Sun),
+   the two-bulge model activity, times of the tides, and effects of tides.
+   ===================================================================== */
+
+/* ================= model things ================= */
+const THINGS={
+  earth:     {kind:'planet', emoji:'🌍', name:{en:'Earth',vi:'Trái Đất (Earth)'}, short:{en:'Earth',vi:'Trái Đất'}, labelY:1.5, fx:0, fz:0, fr:6.4},
+  moon:      {kind:'moon', emoji:'🌙', name:{en:'The Moon',vi:'Mặt Trăng (Moon)'}, short:{en:'Moon',vi:'Mặt Trăng'}, labelY:0.85, fx:3.4, fz:-1.2, fr:5.4},
+  sun:       {kind:'sun', emoji:'☀️', name:{en:'The Sun',vi:'Mặt Trời (Sun)'}, short:{en:'Sun',vi:'Mặt Trời'}, labelY:1.5, fx:-4.4, fz:-1.6, fr:6.2},
+  bulgeNear: {kind:'bulge', emoji:'🌊', name:{en:'Ocean bulge facing the Moon',vi:'Chỗ phồng đại dương hướng về Mặt Trăng'}, short:{en:'Near bulge',vi:'Chỗ phồng gần'}, labelY:0.9, fx:1.5, fz:0, fr:5.6},
+  bulgeFar:  {kind:'bulge', emoji:'🌊', name:{en:'Ocean bulge on the far side',vi:'Chỗ phồng đại dương ở phía xa'}, short:{en:'Far bulge',vi:'Chỗ phồng xa'}, labelY:0.9, fx:-1.5, fz:0, fr:5.6},
+  harbourHigh:{kind:'harbour', emoji:'🚢', name:{en:'Harbour at high tide',vi:'Bến cảng lúc triều cường (high tide)'}, short:{en:'Harbour — high tide',vi:'Bến cảng — triều cường'}, labelY:1.15, fx:-2.7, fz:2.3, fr:5.6},
+  harbourLow: {kind:'harbour', emoji:'⚓', name:{en:'Harbour at low tide',vi:'Bến cảng lúc triều thấp (low tide)'}, short:{en:'Harbour — low tide',vi:'Bến cảng — triều thấp'}, labelY:1.15, fx:2.7, fz:2.3, fr:5.6}
+};
+const FOCUSORDER=['earth','moon','sun','bulgeNear','bulgeFar','harbourHigh','harbourLow'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the model',vi:'Trong mô hình'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to study a thing, tap it in the model! The model is not to scale.',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn nghiên cứu một vật, hãy chạm vào chính vật đó trong mô hình! Mô hình không đúng tỉ lệ.'},
+  u2T:{en:'My tide record',vi:'Bản ghi thủy triều của con'},
+  u2Brief:{en:'What you have found out about tides and tidal forces.',vi:'Những điều con đã tìm hiểu về thủy triều (tide) và lực thủy triều (tidal force).'},
+  rowHarbour:{en:'Harbours compared (high / low)',vi:'Đã so sánh bến cảng (cường / thấp)'},
+  rowPull:{en:'Moon’s pull found',vi:'Đã tìm lực kéo của Mặt Trăng'},
+  rowBulge:{en:'Ocean bulges placed',vi:'Đã đặt các chỗ phồng đại dương'},
+  rowSpin:{en:'Earth quarter-turns (6 h each)',vi:'Số lần quay 1/4 vòng của Trái Đất (mỗi lần 6 giờ)'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your scientist checklist.',vi:'Danh sách kiểm tra của nhà khoa học.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundHarbour:{en:'I compared high and low tide',vi:'Con đã so sánh triều cường và triều thấp'},
+  foundPull:{en:'I found the Moon’s tidal pull',vi:'Con đã tìm lực kéo thủy triều của Mặt Trăng'},
+  foundBulge:{en:'I placed both ocean bulges',vi:'Con đã đặt cả hai chỗ phồng đại dương'},
+  foundSpin:{en:'I spun the Earth for a full day',vi:'Con đã quay Trái Đất trọn một ngày'},
+  foundLine:{en:'I lined up the Sun, Moon and Earth',vi:'Con đã xếp Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng'},
+  foundEffects:{en:'I answered about the effects of tides',vi:'Con đã trả lời về tác động của thủy triều'},
+  tapSun:{en:'👆 Tap the Sun in the model to line it up with the Moon and Earth!',vi:'👆 Chạm vào Mặt Trời (Sun) trong mô hình để xếp nó thẳng hàng với Mặt Trăng và Trái Đất!'},
+  qRange:{en:'With the Sun, Moon and Earth in line, the ocean bulges are…',vi:'Khi Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng, các chỗ phồng đại dương…'},
+  chBigger:{en:'BIGGER — a larger tidal range',vi:'TO HƠN — biên độ thủy triều (tidal range) lớn hơn'},
+  chSame:{en:'the same as before',vi:'giống như trước'},
+  chSmaller:{en:'smaller — a smaller tidal range',vi:'nhỏ hơn — biên độ thủy triều nhỏ hơn'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — High and low tides',vi:'Bài tập 1 · Focus — Triều cường và triều thấp'},
+  ex1Inst:{en:'Tap the correct ending for each fact about tides and what causes them.',vi:'Chạm vào phần kết đúng cho mỗi sự kiện về thủy triều (tide) và nguyên nhân gây ra chúng.'},
+  ex2T:{en:'Exercise 2 · Practice — Times of the tides',vi:'Bài tập 2 · Practice — Thời gian của thủy triều'},
+  ex2Inst:{en:'It is high tide in a harbour at 05:00 and a boat goes out. The boat cannot use the harbour at low tide. Think about the times of the tides.',vi:'Lúc 05:00 là triều cường ở một bến cảng (harbour) và một con thuyền ra khơi. Thuyền không dùng được bến cảng lúc triều thấp. Hãy suy nghĩ về thời gian của thủy triều.'},
+  ex3T:{en:'Exercise 3 · Challenge — Forces and tides',vi:'Bài tập 3 · Challenge — Lực và thủy triều'},
+  ex3Inst:{en:'Position A is on the side of the Earth nearest the Moon, and the time at A is now 08:00. Think about the force causing the tides.',vi:'Vị trí A nằm ở phía Trái Đất gần Mặt Trăng nhất, và giờ ở A bây giờ là 08:00. Hãy suy nghĩ về lực gây ra thủy triều.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'coastal',vi:'ven biển'},
+  {en:'depth',vi:'độ sâu'},
+  {en:'earthquake',vi:'động đất'},
+  {en:'earth tide',vi:'thủy triều đất'},
+  {en:'force of attraction',vi:'lực hút'},
+  {en:'harbour',vi:'bến cảng'},
+  {en:'tidal force',vi:'lực thủy triều'},
+  {en:'tidal range',vi:'biên độ thủy triều'},
+  {en:'tide',vi:'thủy triều'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'High tide, low tide',vi:'Triều cường, triều thấp'}, word:{en:'tide',vi:'thủy triều (tide)'},
+  q:{en:'The same harbour can look very different six hours apart. What changes?',vi:'Cùng một bến cảng (harbour) sau sáu giờ trông rất khác. Điều gì thay đổi?'},
+  act:{en:'Tap the harbour at high tide (front left) and the harbour at low tide (front right) in the model.',vi:'Chạm vào bến cảng lúc triều cường (high tide) (phía trước bên trái) và bến cảng lúc triều thấp (low tide) (phía trước bên phải) trong mô hình.'},
+  see:{en:'At high tide the water is deep and the boat floats high. At low tide the water is shallow and the boat rests low. The two views were taken six hours apart.',vi:'Lúc triều cường nước sâu và thuyền nổi cao. Lúc triều thấp nước nông và thuyền nằm thấp. Hai cảnh này chụp cách nhau sáu giờ.'},
+  concl:[
+    {en:'A tide is a regular change in the depth of the ocean. Depth means the distance from the surface of the water down to the bottom.',vi:'Thủy triều (tide) là sự thay đổi đều đặn của độ sâu (depth) đại dương. Độ sâu là khoảng cách từ mặt nước xuống tới đáy.'},
+    {en:'The difference in depth between high tide and low tide is called the tidal range.',vi:'Hiệu độ sâu giữa triều cường và triều thấp được gọi là biên độ thủy triều (tidal range).'},
+    {en:'The largest tidal range in the world is 16.3 m, in the Bay of Fundy in Canada. Some of the smallest ranges, in the Caribbean and Mediterranean seas, are less than 1 m.',vi:'Biên độ thủy triều lớn nhất thế giới là 16,3 m, ở vịnh Fundy tại Canada. Một số biên độ nhỏ nhất, ở biển Caribe và Địa Trung Hải, nhỏ hơn 1 m.'}]},
+ {tag:{en:'The Moon’s pull',vi:'Lực kéo của Mặt Trăng'}, word:{en:'tidal force',vi:'lực thủy triều (tidal force)'},
+  q:{en:'Which object orbits the Earth — and what does its gravity do to the oceans?',vi:'Vật nào quay quanh Trái Đất — và lực hấp dẫn (gravity) của nó làm gì với các đại dương?'},
+  act:{en:'Tap the Moon, then tap the Earth in the model.',vi:'Chạm vào Mặt Trăng (Moon), rồi chạm vào Trái Đất (Earth) trong mô hình.'},
+  see:{en:'The Moon stays in orbit around the Earth because Earth’s gravity pulls it. The Moon’s own gravity pulls back on the Earth — and it pulls the ocean water most easily.',vi:'Mặt Trăng ở trong quỹ đạo quanh Trái Đất vì lực hấp dẫn của Trái Đất kéo nó. Lực hấp dẫn của chính Mặt Trăng cũng kéo ngược lại Trái Đất — và nó kéo nước đại dương dễ nhất.'},
+  concl:[
+    {en:'The Sun has the strongest gravity in the Solar System, and gravity is the force of attraction that keeps the Moon in orbit around the Earth.',vi:'Mặt Trời (Sun) có lực hấp dẫn (gravity) mạnh nhất trong Hệ Mặt Trời, và lực hấp dẫn — một lực hút (force of attraction) — giữ Mặt Trăng trong quỹ đạo quanh Trái Đất.'},
+    {en:'The Moon also has gravity. Its pull on the Earth’s oceans is called a tidal force.',vi:'Mặt Trăng cũng có lực hấp dẫn. Lực kéo của nó lên các đại dương của Trái Đất được gọi là lực thủy triều (tidal force).'},
+    {en:'Water can be pulled more easily than solid land, so the oceans respond most to the tidal force.',vi:'Nước bị kéo dễ hơn đất rắn, nên các đại dương phản ứng mạnh nhất với lực thủy triều.'}]},
+ {tag:{en:'Two ocean bulges',vi:'Hai chỗ phồng đại dương'}, word:{en:'tidal range',vi:'biên độ thủy triều (tidal range)'},
+  q:{en:'Where are the deepest parts of the oceans — the high tides — in the Earth–Moon model?',vi:'Trong mô hình Trái Đất – Mặt Trăng, những phần sâu nhất của đại dương — các triều cường — nằm ở đâu?'},
+  act:{en:'Tap both ocean bulges: the one facing the Moon and the one on the far side of the Earth.',vi:'Chạm vào cả hai chỗ phồng đại dương: chỗ hướng về Mặt Trăng và chỗ ở phía xa của Trái Đất.'},
+  see:{en:'Both bulges line up with the Moon, one on each side of the Earth. The places under the bulges have high tide; the places in between have low tide.',vi:'Cả hai chỗ phồng đều thẳng hàng với Mặt Trăng, mỗi phía Trái Đất một chỗ. Những nơi nằm dưới chỗ phồng có triều cường; những nơi ở giữa có triều thấp.'},
+  concl:[
+    {en:'The side of the Earth closer to the Moon has a high tide, because the Moon’s tidal force pulls the water there.',vi:'Phía Trái Đất gần Mặt Trăng hơn có triều cường, vì lực thủy triều (tidal force) của Mặt Trăng kéo nước ở đó.'},
+    {en:'The side furthest from the Moon also has a high tide. That is why there are two high tides every day.',vi:'Phía xa Mặt Trăng nhất cũng có triều cường. Đó là lý do mỗi ngày có hai lần triều cường.'},
+    {en:'In the book’s paper model, the deepest parts of the crescents sit in line with the Moon — the bulges in this 3D model show the same thing.',vi:'Trong mô hình giấy của sách, phần sâu nhất của các vành trăng nằm thẳng hàng với Mặt Trăng — các chỗ phồng trong mô hình 3D này cho thấy điều tương tự.'}]},
+ {tag:{en:'Times of the tides',vi:'Thời gian của thủy triều'}, word:{en:'earth tide',vi:'thủy triều đất (earth tide)'},
+  q:{en:'The Earth spins once in 24 hours. How many high tides does one coastal point pass through?',vi:'Trái Đất tự quay một vòng trong 24 giờ. Một điểm ven biển (coastal) đi qua bao nhiêu lần triều cường?'},
+  act:{en:'Tap the Earth four times. Each tap turns it by a quarter-turn — six hours — carrying the marked coastal point around.',vi:'Chạm vào Trái Đất bốn lần. Mỗi lần chạm quay Trái Đất một phần tư vòng — sáu giờ — đưa điểm ven biển đã đánh dấu đi vòng quanh.'},
+  see:{en:'The coastal point passes a bulge, then a low-tide place, then the other bulge, then low tide again: high, low, high, low in one full turn.',vi:'Điểm ven biển đi qua một chỗ phồng, rồi một nơi triều thấp, rồi chỗ phồng còn lại, rồi lại triều thấp: cường, thấp, cường, thấp trong một vòng quay trọn.'},
+  concl:[
+    {en:'High tides are about 12 hours apart, and low tides are also about 12 hours apart. The time from a high tide to the next low tide is six hours.',vi:'Các triều cường cách nhau khoảng 12 giờ, và các triều thấp cũng cách nhau khoảng 12 giờ. Thời gian từ một triều cường tới triều thấp tiếp theo là sáu giờ.'},
+    {en:'So one place gets two high tides and two low tides every 24 hours.',vi:'Vậy một nơi có hai lần triều cường và hai lần triều thấp mỗi 24 giờ.'},
+    {en:'Tides also lift and lower the land itself — this is called earth tide, and its range is only about 30 cm.',vi:'Thủy triều cũng nâng lên hạ xuống chính đất liền — hiện tượng này gọi là thủy triều đất (earth tide), và biên độ của nó chỉ khoảng 30 cm.'}]},
+ {tag:{en:'The Sun joins in',vi:'Mặt Trời tham gia'}, word:{en:'force of attraction',vi:'lực hút (force of attraction)'},
+  q:{en:'The Sun also pulls on the Earth. When does that make the tides highest?',vi:'Mặt Trời cũng kéo Trái Đất. Khi nào lực kéo đó làm thủy triều cao nhất?'},
+  act:{en:'Tap the Sun in the model to line up the Sun, Moon and Earth. Then answer the question about the bulges.',vi:'Chạm vào Mặt Trời trong mô hình để xếp Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng. Sau đó trả lời câu hỏi về các chỗ phồng.'},
+  see:{en:'In line, the pull of the Sun and the pull of the Moon work together, so the ocean bulges grow bigger — like the thicker crescents (set 2) in the book’s activity.',vi:'Khi thẳng hàng, lực kéo của Mặt Trời và lực kéo của Mặt Trăng cùng tác động, nên các chỗ phồng đại dương to hơn — giống các vành dày hơn (bộ 2) trong hoạt động của sách.'},
+  concl:[
+    {en:'The Sun also makes a tidal force on Earth, but it is weaker than the Moon’s because the Sun is much further away.',vi:'Mặt Trời cũng tạo lực thủy triều (tidal force) lên Trái Đất, nhưng yếu hơn của Mặt Trăng vì Mặt Trời ở xa hơn nhiều.'},
+    {en:'When the Sun, Moon and Earth are in line, their tidal forces add together and the tidal range is larger.',vi:'Khi Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng, các lực thủy triều của chúng cộng lại với nhau và biên độ thủy triều (tidal range) lớn hơn.'},
+    {en:'This line-up happens at new moon and at full moon, so the largest tidal ranges happen then — twice in each lunar month.',vi:'Sự thẳng hàng này xảy ra vào trăng non và trăng tròn, nên biên độ thủy triều lớn nhất xảy ra vào những lúc đó — hai lần trong mỗi tháng âm lịch.'}]},
+ {tag:{en:'Effects of tides',vi:'Tác động của thủy triều'}, word:{en:'harbour',vi:'bến cảng (harbour)'},
+  q:{en:'Tides change what people, boats and wildlife can do. Can you explain how?',vi:'Thủy triều thay đổi những gì con người, thuyền bè và sinh vật hoang dã có thể làm. Con giải thích được không?'},
+  act:{en:'Answer the three questions about harbours, coasts and food chains.',vi:'Trả lời ba câu hỏi về bến cảng (harbour), vùng ven biển (coastal) và chuỗi thức ăn.'},
+  see:{en:'Right answers move the game on. Three right answers finish the lesson!',vi:'Đáp án đúng đưa trò chơi đi tiếp. Ba đáp án đúng là hoàn thành bài học!'},
+  concl:[
+    {en:'I can understand what tides are.',vi:'Con hiểu được thủy triều (tide) là gì.'},
+    {en:'I can understand where tidal forces come from.',vi:'Con hiểu được lực thủy triều (tidal force) đến từ đâu.'},
+    {en:'I can explain the part played by the Moon in causing tides.',vi:'Con giải thích được vai trò của Mặt Trăng trong việc gây ra thủy triều.'},
+    {en:'I can explain the part played by the Sun in causing higher tides.',vi:'Con giải thích được vai trò của Mặt Trời trong việc gây ra triều cao hơn.'},
+    {en:'I can understand why there are two high tides and two low tides every day.',vi:'Con hiểu được vì sao mỗi ngày có hai lần triều cường và hai lần triều thấp.'}]}
+];
+const GAME=[
+ {q:{en:'Why can some harbours not be used at low tide?',vi:'Vì sao một số bến cảng (harbour) không dùng được lúc triều thấp?'},
+  opts:[{en:'The water is not deep enough for boats to move safely',vi:'Nước không đủ sâu (depth) để thuyền di chuyển an toàn'},{en:'The Moon blocks the harbour entrance',vi:'Mặt Trăng chắn lối vào bến cảng'},{en:'The water flows too fast at low tide',vi:'Nước chảy quá nhanh lúc triều thấp'}],a:0},
+ {q:{en:'When is flooding most likely in coastal areas?',vi:'Khi nào ngập lụt dễ xảy ra nhất ở các vùng ven biển (coastal)?'},
+  opts:[{en:'At low tide on a calm day',vi:'Lúc triều thấp vào ngày lặng gió'},{en:'At high tide when there are strong winds',vi:'Lúc triều cường khi có gió mạnh'},{en:'Only during an earth tide',vi:'Chỉ trong lúc thủy triều đất (earth tide)'}],a:1},
+ {q:{en:'How do tides affect food chains at the coast?',vi:'Thủy triều ảnh hưởng tới chuỗi thức ăn ở bờ biển như thế nào?'},
+  opts:[{en:'Birds can only eat shellfish at high tide',vi:'Chim chỉ ăn được động vật có vỏ lúc triều cường'},{en:'Earth tides stop all fish from moving',vi:'Thủy triều đất làm mọi loài cá ngừng di chuyển'},{en:'At low tide, birds can eat shellfish that are no longer covered by water',vi:'Lúc triều thấp, chim ăn được động vật có vỏ không còn bị nước che phủ'}],a:2}
+];
+const QUIZ=[
+ {q:{en:'What is the tidal range?',vi:'Biên độ thủy triều (tidal range) là gì?'},
+  o:[{en:'The distance from the Earth to the Moon',vi:'Khoảng cách từ Trái Đất tới Mặt Trăng'},{en:'The difference in water depth between high tide and low tide',vi:'Hiệu độ sâu (depth) của nước giữa triều cường và triều thấp'},{en:'The time between two high tides',vi:'Thời gian giữa hai lần triều cường'}],a:1,
+  e:{en:'The tidal range is the difference in depth between high and low tide. In the Bay of Fundy it reaches 16.3 m.',vi:'Biên độ thủy triều là hiệu độ sâu giữa triều cường và triều thấp. Ở vịnh Fundy nó đạt tới 16,3 m.'}},
+ {q:{en:'What causes the tides on Earth?',vi:'Điều gì gây ra thủy triều (tide) trên Trái Đất?'},
+  o:[{en:'Tidal forces from the Sun and the Moon',vi:'Lực thủy triều (tidal force) từ Mặt Trời và Mặt Trăng'},{en:'Air resistance from the wind',vi:'Lực cản không khí từ gió'},{en:'Gravity from the planets only',vi:'Lực hấp dẫn chỉ từ các hành tinh'}],a:0,
+  e:{en:'The gravity of the Moon — and, more weakly, the Sun — pulls on the oceans. That pull is called a tidal force.',vi:'Lực hấp dẫn của Mặt Trăng — và yếu hơn là của Mặt Trời — kéo các đại dương. Lực kéo đó gọi là lực thủy triều.'}},
+ {q:{en:'It is high tide at 05:00. At what time is the next high tide?',vi:'Lúc 05:00 là triều cường. Triều cường tiếp theo vào lúc nào?'},
+  o:[{en:'11:00 — six hours later',vi:'11:00 — sáu giờ sau'},{en:'17:00 the next day',vi:'17:00 ngày hôm sau'},{en:'17:00 — twelve hours later',vi:'17:00 — mười hai giờ sau'}],a:2,
+  e:{en:'High tides are about 12 hours apart, so 05:00 + 12 hours = 17:00. The next low tide comes after six hours, at 11:00.',vi:'Các triều cường cách nhau khoảng 12 giờ, nên 05:00 + 12 giờ = 17:00. Triều thấp tiếp theo đến sau sáu giờ, lúc 11:00.'}},
+ {q:{en:'Why are the largest tidal ranges seen at new moon and full moon?',vi:'Vì sao biên độ thủy triều lớn nhất xuất hiện vào trăng non và trăng tròn?'},
+  o:[{en:'The Moon is closest to the Earth then',vi:'Mặt Trăng lúc đó gần Trái Đất nhất'},{en:'The Sun, Moon and Earth are in line, so their tidal forces add together',vi:'Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng, nên các lực thủy triều của chúng cộng lại'},{en:'The Earth spins faster then',vi:'Trái Đất lúc đó quay nhanh hơn'}],a:1,
+  e:{en:'At new moon and full moon the three bodies line up. The Sun’s tidal force adds to the Moon’s, giving a larger tidal range.',vi:'Vào trăng non và trăng tròn, ba thiên thể thẳng hàng. Lực thủy triều của Mặt Trời cộng với của Mặt Trăng, cho biên độ thủy triều lớn hơn.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'High and low tides on Earth are caused by',vi:'Triều cường và triều thấp trên Trái Đất là do'},correct:0,
+  opts:[{en:'tidal forces from the Sun and Moon',vi:'lực thủy triều (tidal force) từ Mặt Trời và Mặt Trăng'},{en:'air resistance',vi:'lực cản không khí (air resistance)'}],
+  e:{en:'Tides are caused by tidal forces from the Sun and the Moon — not by air resistance or by the planets alone.',vi:'Thủy triều do lực thủy triều từ Mặt Trời và Mặt Trăng gây ra — không phải do lực cản không khí hay chỉ do các hành tinh.'}},
+ {pre:{en:'It is high tide in a harbour. The next high tide in the same harbour is in',vi:'Đang là triều cường ở một bến cảng. Triều cường tiếp theo ở cùng bến cảng đó là sau'},correct:1,
+  opts:[{en:'6 hours',vi:'6 giờ'},{en:'12 hours',vi:'12 giờ'}],
+  e:{en:'High tides are about 12 hours apart.',vi:'Các triều cường cách nhau khoảng 12 giờ.'}},
+ {pre:{en:'It is high tide in a harbour. The next low tide in the same harbour is in',vi:'Đang là triều cường ở một bến cảng. Triều thấp tiếp theo ở cùng bến cảng đó là sau'},correct:0,
+  opts:[{en:'6 hours',vi:'6 giờ'},{en:'24 hours',vi:'24 giờ'}],
+  e:{en:'The time from a high tide to the next low tide is six hours.',vi:'Thời gian từ một triều cường tới triều thấp tiếp theo là sáu giờ.'}},
+ {pre:{en:'The highest tides on Earth happen when the Earth, Moon and Sun are',vi:'Thủy triều cao nhất trên Trái Đất xảy ra khi Trái Đất, Mặt Trăng và Mặt Trời'},correct:1,
+  opts:[{en:'as far apart as possible',vi:'ở xa nhau nhất có thể'},{en:'in line with each other',vi:'thẳng hàng với nhau'}],
+  e:{en:'When the three bodies are in line — in either in-line position — their tidal forces add together and the tides are highest.',vi:'Khi ba thiên thể thẳng hàng — ở một trong hai vị trí thẳng hàng — các lực thủy triều của chúng cộng lại và thủy triều cao nhất.'}}
+];
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+const EX2=[
+ {pre:{en:'The boat cannot get back into the harbour at',vi:'Thuyền không trở vào bến cảng được lúc'},correct:0,
+  opts:[{en:'11:00 on the same day',vi:'11:00 cùng ngày'},{en:'17:00 on the same day',vi:'17:00 cùng ngày'}],
+  e:{en:'Low tide comes six hours after high tide: 05:00 + 6 hours = 11:00. At 17:00 it is high tide again.',vi:'Triều thấp đến sáu giờ sau triều cường: 05:00 + 6 giờ = 11:00. Lúc 17:00 lại là triều cường.'}},
+ {pre:{en:'The boat also cannot use the harbour at',vi:'Thuyền cũng không dùng được bến cảng lúc'},correct:1,
+  opts:[{en:'05:00 the next day',vi:'05:00 ngày hôm sau'},{en:'23:00 on the same day',vi:'23:00 cùng ngày'}],
+  e:{en:'Low tides are 12 hours apart: 11:00 + 12 hours = 23:00. At 05:00 the next day it is high tide.',vi:'Các triều thấp cách nhau 12 giờ: 11:00 + 12 giờ = 23:00. Lúc 05:00 ngày hôm sau là triều cường.'}},
+ {pre:{en:'Marcus measures the depth from one high tide to the next high tide. That time is',vi:'Marcus đo độ sâu từ một triều cường tới triều cường tiếp theo. Khoảng thời gian đó là'},correct:0,
+  opts:[{en:'12 hours',vi:'12 giờ'},{en:'6 hours',vi:'6 giờ'}],
+  e:{en:'One high tide to the next high tide spans about 12 hours.',vi:'Từ một triều cường tới triều cường tiếp theo kéo dài khoảng 12 giờ.'}},
+ {pre:{en:'A suitable time interval between Marcus’s depth measurements is',vi:'Khoảng thời gian phù hợp giữa các lần đo độ sâu của Marcus là'},correct:1,
+  opts:[{en:'once a day',vi:'một lần mỗi ngày'},{en:'every hour',vi:'mỗi giờ một lần'}],
+  e:{en:'Measuring every hour gives about twelve readings between the two high tides — enough to show the depth falling and rising. Once a day would miss the whole pattern.',vi:'Đo mỗi giờ cho khoảng mười hai số đo giữa hai triều cường — đủ để thấy độ sâu giảm rồi tăng. Một lần mỗi ngày sẽ bỏ lỡ toàn bộ quy luật.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'The force caused by gravity from the Moon that makes the tides is called a',vi:'Lực do lực hấp dẫn từ Mặt Trăng gây ra thủy triều được gọi là lực'},correct:0,
+  opts:[{en:'tidal',vi:'thủy triều (tidal)'},{en:'magnetic',vi:'từ tính (magnetic)'}],
+  e:{en:'This force is called a tidal force. Long ago some scientists guessed it was magnetic, but it is gravity.',vi:'Lực này gọi là lực thủy triều (tidal force). Ngày xưa một số nhà khoa học đoán nó là từ tính, nhưng nó là lực hấp dẫn.'}},
+ {pre:{en:'At position A, the tidal force arrow points',vi:'Tại vị trí A, mũi tên lực thủy triều hướng'},correct:1,
+  opts:[{en:'away from the Moon',vi:'ra xa Mặt Trăng'},{en:'towards the Moon',vi:'về phía Mặt Trăng'}],
+  e:{en:'The Moon’s gravity attracts the water at A, so the force at A acts towards the Moon.',vi:'Lực hấp dẫn của Mặt Trăng hút nước tại A, nên lực tại A hướng về phía Mặt Trăng.'}},
+ {pre:{en:'Position A, on the side of Earth nearest the Moon, has a',vi:'Vị trí A, ở phía Trái Đất gần Mặt Trăng nhất, có'},correct:0,
+  opts:[{en:'high tide',vi:'triều cường (high tide)'},{en:'low tide',vi:'triều thấp (low tide)'}],
+  e:{en:'The side of the Earth closer to the Moon sits under an ocean bulge, so it has a high tide.',vi:'Phía Trái Đất gần Mặt Trăng hơn nằm dưới một chỗ phồng đại dương, nên ở đó có triều cường.'}},
+ {pre:{en:'It is 08:00 at A. The next tide of the same type at A is at',vi:'Bây giờ ở A là 08:00. Triều cùng loại tiếp theo tại A là lúc'},correct:1,
+  opts:[{en:'14:00 — six hours later',vi:'14:00 — sáu giờ sau'},{en:'20:00 — twelve hours later',vi:'20:00 — mười hai giờ sau'}],
+  e:{en:'Tides of the same type are about 12 hours apart: 08:00 + 12 hours = 20:00. At 14:00 A has the opposite tide — a low tide.',vi:'Các triều cùng loại cách nhau khoảng 12 giờ: 08:00 + 12 giờ = 20:00. Lúc 14:00 A có triều ngược lại — một triều thấp.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 4 + 4 = 12 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-3-4';
+const SUMKEY='camb:sum:sci7-3-4';
+const BOT_CODE='sci7-3.4';
+let FOUND={harbour:false,pull:false,bulge:false,spin:false,line:false,effects:false};
+function newTrack(){return {
+  s1:new Set(),
+  s2:new Set(),
+  s3:new Set(),
+  s4turns:0,
+  s5pos:false, s5ans:false, s5wrong:false,
+  s6idx:0, s6correct:0, s6wrong:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1.size>=2;
+  if(i===1) return T.s2.size>=2;
+  if(i===2) return T.s3.size>=2;
+  if(i===3) return T.s4turns>=4;
+  if(i===4) return T.s5pos&&T.s5ans;
+  if(i===5) return T.s6correct>=3;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('Harbours compared: '+T.s1.size+' of 2 (high tide · low tide). Tap both harbours in the model!',
+             'Đã so sánh bến cảng: '+T.s1.size+' / 2 (triều cường · triều thấp). Hãy chạm vào cả hai bến cảng trong mô hình!');
+  }
+  if(i===1){
+    return B('Tapped: '+(T.s2.has('moon')?'the Moon ✓':'the Moon …')+' · '+(T.s2.has('earth')?'the Earth ✓':'the Earth …')+'.',
+             'Đã chạm: '+(T.s2.has('moon')?'Mặt Trăng ✓':'Mặt Trăng …')+' · '+(T.s2.has('earth')?'Trái Đất ✓':'Trái Đất …')+'.');
+  }
+  if(i===2){
+    return B('Ocean bulges placed: '+T.s3.size+' of 2 (facing the Moon · far side).',
+             'Đã đặt chỗ phồng đại dương: '+T.s3.size+' / 2 (hướng về Mặt Trăng · phía xa).');
+  }
+  if(i===3){
+    const seq=['high tide','low tide','high tide','low tide','high tide'];
+    const at=T.s4turns<=4? seq[T.s4turns] : 'high tide';
+    return B('Quarter-turns done: '+T.s4turns+' of 4 · Time passed: '+(T.s4turns*6)+' hours · The coastal point is now at '+at+'. Tap the Earth to turn it!',
+             'Đã quay: '+T.s4turns+' / 4 lần · Thời gian đã trôi: '+(T.s4turns*6)+' giờ · Điểm ven biển giờ đang ở '+(at==='high tide'?'triều cường':'triều thấp')+'. Hãy chạm vào Trái Đất để quay nó!');
+  }
+  if(i===4){
+    if(!T.s5pos) return B('Tap the Sun in the model to line up the Sun, Moon and Earth.','Hãy chạm vào Mặt Trời trong mô hình để xếp Mặt Trời, Mặt Trăng và Trái Đất thẳng hàng.');
+    if(T.s5wrong&&!T.s5ans) return B('Think again! In line, the pulls of the Sun and Moon work together — do the bulges grow or shrink?','Nghĩ lại nào! Khi thẳng hàng, lực kéo của Mặt Trời và Mặt Trăng cùng tác động — các chỗ phồng to lên hay nhỏ đi?');
+    if(!T.s5ans) return B('The three bodies are in line. Now answer: what happens to the ocean bulges?','Ba thiên thể đã thẳng hàng. Giờ trả lời: các chỗ phồng đại dương thế nào?');
+    return B('In line, the bulges are bigger and the tidal range is larger.','Khi thẳng hàng, các chỗ phồng to hơn và biên độ thủy triều lớn hơn.');
+  }
+  if(i===5){
+    if(T.s6idx>=GAME.length) return B('Finished! You answered all 3 questions right.','Hoàn thành! Con đã trả lời đúng cả 3 câu.');
+    return B('Question '+(T.s6idx+1)+' of 3 · Right answers: '+T.s6correct+(T.s6wrong? ' · Think again — think about the water depth and the time of the tide!' : ''),
+             'Câu hỏi '+(T.s6idx+1)+' / 3 · Đáp án đúng: '+T.s6correct+(T.s6wrong? ' · Nghĩ lại nào — hãy nghĩ về độ sâu của nước và thời điểm của thủy triều!' : ''));
+  }
+  return B('','');
+}
+function choiceBtn(label,cls,fn){
+  const b=document.createElement('button'); b.className='chbtn '+cls; b.innerHTML=bi(label);
+  b.onclick=fn; return b;
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🚢',label:{en:'Harbour — high tide',vi:'Bến cảng — triều cường'},got:T.s1.has('harbourHigh')},
+      {emoji:'⚓',label:{en:'Harbour — low tide',vi:'Bến cảng — triều thấp'},got:T.s1.has('harbourLow')}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🌙',label:{en:'The Moon',vi:'Mặt Trăng (Moon)'},got:T.s2.has('moon')},
+      {emoji:'🌍',label:{en:'The Earth',vi:'Trái Đất (Earth)'},got:T.s2.has('earth')}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🌊',label:{en:'Bulge facing the Moon',vi:'Chỗ phồng hướng về Mặt Trăng'},got:T.s3.has('bulgeNear')},
+      {emoji:'🌊',label:{en:'Bulge on the far side',vi:'Chỗ phồng ở phía xa'},got:T.s3.has('bulgeFar')}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🕐',label:{en:'Quarter-turns',vi:'Số lần quay 1/4 vòng'},got:T.s4turns>=4},
+      {emoji:'🌊',label:{en:'Hours passed: '+(T.s4turns*6)+' h',vi:'Số giờ đã trôi: '+(T.s4turns*6)+' giờ'},got:T.s4turns>=4}
+    ]);
+  }else if(curStep===4){
+    if(!T.s5pos){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapSun)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s5ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.qRange);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      row.appendChild(choiceBtn(STR.chSame,'',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      row.appendChild(choiceBtn(STR.chBigger,'alt',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5ans=true; renderStepExtra(); refreshEvidence(); }));
+      row.appendChild(choiceBtn(STR.chSmaller,'alt2',()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5wrong=true; addMistake(); refreshEvidence(); renderStepExtra(); }));
+      box.appendChild(row);
+    }
+  }else if(curStep===5){
+    if(T.s6idx<GAME.length){
+      const gq=GAME[T.s6idx];
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(gq.q);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow'; row.style.flexWrap='wrap';
+      gq.opts.forEach((o,oi)=>{
+        row.appendChild(choiceBtn(o,oi===1?'alt':(oi===2?'alt2':''),()=>{
+          if(stepLocked()){ flashReadBtn(); return; }
+          if(oi===gq.a){ T.s6correct++; T.s6idx++; T.s6wrong=false; if(T.s6correct>=3) FOUND.effects=true; saveProg(); renderMirrors(); }
+          else { T.s6wrong=true; addMistake(); }
+          renderStepExtra(); refreshEvidence();
+        }));
+      });
+      box.appendChild(row);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('harbourHigh'); bounceThing('harbourHigh'); setTimeout(()=>{ focusVisual('harbourLow'); bounceThing('harbourLow'); },900); }
+  else if(i===1){ focusVisual('moon'); bounceThing('moon'); setTimeout(()=>{ focusVisual('earth'); bounceThing('earth'); },900); }
+  else if(i===2){ focusVisual('bulgeNear'); bounceThing('bulgeNear'); setTimeout(()=>{ focusVisual('bulgeFar'); bounceThing('bulgeFar'); },900); }
+  else if(i===3){ focusThing('earth'); bounceThing('earth'); }
+  else if(i===4){ focusThing('sun'); bounceThing('sun'); }
+  else if(i===5){ focusThing('harbourLow'); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(lbl,n,d)=>'<div class="grprow"><span>'+biInl(lbl)+'</span><b>'+n+' / '+d+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.rowHarbour,(doneSteps.has(0)?2:T.s1.size),2)+
+    row(STR.rowPull,(doneSteps.has(1)?2:T.s2.size),2)+
+    row(STR.rowBulge,(doneSteps.has(2)?2:T.s3.size),2)+
+    row(STR.rowSpin,(doneSteps.has(3)?4:T.s4turns),4);
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.harbour||doneSteps.has(0),label:STR.foundHarbour},
+    {got:FOUND.pull||doneSteps.has(1),label:STR.foundPull},
+    {got:FOUND.bulge||doneSteps.has(2),label:STR.foundBulge},
+    {got:FOUND.spin||doneSteps.has(3),label:STR.foundSpin},
+    {got:FOUND.line||doneSteps.has(4),label:STR.foundLine},
+    {got:FOUND.effects||doneSteps.has(5),label:STR.foundEffects}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+let spinAng=0, spinTarget=0;
+const ORB={r:10.5, th:0.0, ph:1.02, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildEarth(){
+  const g=new THREE.Group();
+  const ocean=new THREE.Mesh(new THREE.SphereGeometry(0.92,24,18),stdMat(0x2f7fd0,0.35));
+  ocean.scale.set(1.45,1.0,1.0); g.add(ocean);
+  const core=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.8,24,18),stdMat(0x3f9e4d,0.7)));
+  g.add(core);
+  [[0.3,0.45,0.62,0.28],[-0.42,-0.3,0.6,0.24],[0.05,-0.55,-0.6,0.26]].forEach(p=>{
+    const c=new THREE.Mesh(new THREE.SphereGeometry(p[3],10,8),stdMat(0x57b84c,0.8));
+    c.position.set(p[0],p[1],p[2]); g.add(c);
+  });
+  const mark=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),new THREE.MeshBasicMaterial({color:0xffd94d}));
+  mark.position.set(0,0,0.82); g.add(mark);
+  g.userData.mark=mark;
+  g.position.set(0,0.35,0); g.userData.baseY=0.35;
+  return g;
+}
+function buildMoon(){
+  const g=new THREE.Group();
+  const m=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,18,14),stdMat(0xc9d2dc,0.6)));
+  g.add(m);
+  [[0.12,0.1,0.28,0.07],[-0.15,-0.08,0.27,0.055]].forEach(p=>{
+    const c=new THREE.Mesh(new THREE.SphereGeometry(p[3],8,6),stdMat(0x9aa7b4,0.7));
+    c.position.set(p[0],p[1],p[2]); g.add(c);
+  });
+  g.position.set(3.4,0.95,-1.2); g.userData.baseY=0.95;
+  return g;
+}
+function buildSun(){
+  const g=new THREE.Group();
+  const s=new THREE.Mesh(new THREE.SphereGeometry(0.78,20,16),new THREE.MeshBasicMaterial({color:0xffd94d}));
+  g.add(s);
+  const halo=new THREE.Mesh(new THREE.SphereGeometry(0.98,20,16),new THREE.MeshBasicMaterial({color:0xffe98a,transparent:true,opacity:0.35}));
+  g.add(halo);
+  g.position.set(-4.4,1.35,-1.6); g.userData.baseY=1.35;
+  return g;
+}
+function buildBulge(px,py,pz){
+  const g=new THREE.Group();
+  const b=new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10),new THREE.MeshStandardMaterial({color:0x3fa7d6,roughness:0.25,transparent:true,opacity:0.85}));
+  b.scale.set(1.25,0.8,0.8); g.add(b);
+  g.position.set(px,py,pz); g.userData.baseY=py;
+  return g;
+}
+function buildHarbour(px,pz,high){
+  const g=new THREE.Group();
+  const pier=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.16,0.55),stdMat(0x8a5a2b,0.9)));
+  pier.position.y=0.55; g.add(pier);
+  [-0.45,0.45].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.55,8),stdMat(0x6e4520,0.9));
+    post.position.set(dx,0.27,0); g.add(post);
+  });
+  const waterY=high? 0.42 : 0.1;
+  const water=new THREE.Mesh(new THREE.BoxGeometry(1.35,0.1,0.8),stdMat(0x3fa7d6,0.3));
+  water.position.y=waterY; g.add(water);
+  const hull=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.52,0.16,0.24),stdMat(0xd23c2a,0.55)));
+  hull.position.set(0.1,waterY+0.12,0); g.add(hull);
+  const cab=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.2,0.14,0.18),stdMat(0xffffff,0.5)));
+  cab.position.set(0.05,waterY+0.27,0); g.add(cab);
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.34,6),stdMat(0x44586e,0.6));
+  mast.position.set(0.26,waterY+0.3,0); g.add(mast);
+  g.position.set(px,0,pz); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0x101d33);
+  scene3.fog=new THREE.Fog(0x101d33,20,36);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x44586e,0.9));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-8; sunL.shadow.camera.right=8; sunL.shadow.camera.top=8; sunL.shadow.camera.bottom=-8;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.35); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x1d3350,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.55; floor.receiveShadow=true; scene3.add(floor);
+  const table=shadowed(new THREE.Mesh(new THREE.BoxGeometry(11.6,0.5,6.2),stdMat(0x2c4761,0.9)));
+  table.position.y=-0.27; table.receiveShadow=true; scene3.add(table);
+  for(let k=0;k<40;k++){
+    const st=new THREE.Mesh(new THREE.SphereGeometry(0.03,6,5),new THREE.MeshBasicMaterial({color:0xffffff}));
+    st.position.set(-9+((k*37)%180)/10, 3.5+((k*53)%30)/10, -6-((k*29)%30)/10);
+    scene3.add(st);
+  }
+  reg('earth',buildEarth());
+  reg('moon',buildMoon());
+  reg('sun',buildSun());
+  reg('bulgeNear',buildBulge(1.5,0.35,0));
+  reg('bulgeFar',buildBulge(-1.5,0.35,0));
+  reg('harbourHigh',buildHarbour(-2.7,2.3,true));
+  reg('harbourLow',buildHarbour(2.7,2.3,false));
+  { const p=sphProxy(1.05); p.position.set(0,0,0); addProxy('earth',p,G.earth); }
+  { const p=sphProxy(0.52); addProxy('moon',p,G.moon); }
+  { const p=sphProxy(1.0); addProxy('sun',p,G.sun); }
+  { const p=sphProxy(0.42); addProxy('bulgeNear',p,G.bulgeNear); }
+  { const p=sphProxy(0.42); addProxy('bulgeFar',p,G.bulgeFar); }
+  { const p=sphProxy(0.62); p.position.set(0,0.4,0); addProxy('harbourHigh',p,G.harbourHigh); }
+  { const p=sphProxy(0.62); p.position.set(0,0.4,0); addProxy('harbourLow',p,G.harbourLow); }
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.16; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['harbourHigh','harbourLow'],
+  ['moon','earth'],
+  ['bulgeNear','bulgeFar'],
+  ['earth'],
+  ['sun'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='harbourHigh'||id==='harbourLow'){
+      T.s1.add(id);
+      if(T.s1.size>=2) FOUND.harbour=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===1){
+    if(id==='moon'||id==='earth'){
+      T.s2.add(id);
+      if(T.s2.size>=2) FOUND.pull=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===2){
+    if(id==='bulgeNear'||id==='bulgeFar'){
+      T.s3.add(id);
+      if(T.s3.size>=2) FOUND.bulge=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===3){
+    if(id==='earth'){
+      if(T.s4turns<4){ T.s4turns++; spinTarget=spinAng+Math.PI/2; }
+      if(T.s4turns>=4) FOUND.spin=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }else if(curStep===4){
+    if(id==='sun'&&!T.s5pos){
+      T.s5pos=true; FOUND.line=true;
+      saveProg(); renderMirrors(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  if(i!==3){ /* spin is only driven inside step 4 (index 3) */ }
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(spinTarget>spinAng) spinAng=Math.min(spinTarget,spinAng+0.03);
+  if(G.earth) G.earth.rotation.y=spinAng;
+  if(G.moon) G.moon.position.y=0.95+Math.sin(t*0.9)*0.05;
+  if(G.bulgeNear) G.bulgeNear.position.x=1.5+Math.sin(t*1.4)*0.04;
+  if(G.bulgeFar) G.bulgeFar.position.x=-1.5-Math.sin(t*1.4)*0.04;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exWordBtn(ansObj,arr,si,oi,o){
+  let cls='wordopt';
+  if(ansObj[si]===oi) cls+=' crossed';
+  if(exRevealed&&oi===arr[si].correct) cls+=' rightmark';
+  return '<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+}
+function exSection(secId,tId,instId,listId,arr,ansObj,doneSet,ordArr){
+  $(secId).classList.toggle('done',exRevealed&&doneSet.size>=arr.length);
+  $(tId).innerHTML=exHead(STR[tId],exRevealed&&doneSet.size>=arr.length);
+  $(instId).innerHTML=bi(STR[instId]);
+  const list=$(listId); list.innerHTML='';
+  arr.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    (ordArr[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      html+=exWordBtn(ansObj,arr,si,oi,s1.opts[oi])+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(doneSet.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      ansObj[parseInt(b.dataset.s,10)]=parseInt(b.dataset.o,10); saveProg(); renderExercises();
+    };
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  exSection('exSec1','ex1T','ex1Inst','ex1List',EX1,EX1ANS,EX1DONE,EX1_ORD);
+  exSection('exSec2','ex2T','ex2Inst','ex2List',EX2,EX2ANS,EX2DONE,EX2_ORD);
+  exSection('exSec3','ex3T','ex3Inst','ex3List',EX3,EX3ANS,EX3DONE,EX3_ORD);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.map((s1,si)=>si).filter(si=>EX2ANS[si]===EX2[si].correct));
+  EX3DONE=new Set(EX3.map((s1,si)=>si).filter(si=>EX3ANS[si]===EX3[si].correct));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.harbour=false; }
+  if(step===1){ FOUND.pull=false; }
+  if(step===2){ FOUND.bulge=false; }
+  if(step===3){ FOUND.spin=false; spinTarget=spinAng; }
+  if(step===4){ FOUND.line=false; }
+  if(step===5){ FOUND.effects=false; }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    EX1ANS={}; EX2ANS={}; EX3ANS={};
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach((s1,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s1.correct; });
+    EX3.forEach((s1,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s1.correct; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1.add('harbourHigh'); t.s1.add('harbourLow'); }
+  else if(i===1){ t.s2.add('moon'); t.s2.add('earth'); }
+  else if(i===2){ t.s3.add('bulgeNear'); t.s3.add('bulgeFar'); }
+  else if(i===3){ t.s4turns=4; }
+  else if(i===4){ t.s5pos=true; t.s5ans=true; }
+  else if(i===5){ t.s6idx=GAME.length; t.s6correct=GAME.length; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-3-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

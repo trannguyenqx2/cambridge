@@ -1,0 +1,1369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>1.3 Specialised cells — Tế bào chuyên hóa · Cambridge Lower Secondary Science 7</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eef7ee,#eef2f8)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.rbc{background:#c0392b}
+.binbtn.notrbc{background:#64748b}
+.binbtn.root{background:#8a6d3b}
+.binbtn.palisade{background:#2e8b57}
+.binbtn.part{background:#c0392b}
+.binbtn.notpart{background:#64748b}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 7" data-vi="← Môn Khoa học 7">← Science 7</a>
+    <span class="ttl i18n" data-en="1.3 Specialised cells" data-vi="1.3 Tế bào chuyên hóa (Specialised cells)">1.3 Specialised cells</span>
+    <span class="eqchip i18n" data-en="Unit 1 · Cells" data-vi="Bài 1 · Tế bào (Cells)">Unit 1 · Cells</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How is each kind of cell built to do its own special job really well?" data-vi="Mỗi loại tế bào (cell) được cấu tạo thế nào để làm thật tốt công việc riêng của nó?">How is each kind of cell built to do its own special job really well?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Every cell has a job" data-vi="Mỗi tế bào có một nhiệm vụ (function)">Every cell has a job</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Its structure fits the job" data-vi="Cấu tạo (structure) phù hợp nhiệm vụ">Its structure fits the job</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Animal cells" data-vi="Tế bào động vật (animal cells)">Animal cells</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Plant cells" data-vi="Tế bào thực vật (plant cells)">Plant cells</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the cell models on the stage!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình tế bào trên sân khấu!">🖱 Drag to look around · Scroll to zoom · Tap the cell models on the stage!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 7 · Unit 1 Cells · Section 1.3. The cell models in this lesson are a simulation — real cells are far too small to see like this." data-vi="Khoa học Cambridge bậc Trung học cơ sở (Lower Secondary) 7 · Bài 1 Tế bào (Cells) · Mục 1.3. Các mô hình tế bào trong bài học này là mô phỏng — tế bào thật nhỏ hơn rất nhiều, không nhìn được như thế này.">Cambridge Lower Secondary Science 7 · Unit 1 Cells · Section 1.3. The cell models in this lesson are a simulation — real cells are far too small to see like this.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, 2021; ISBN 9781108742788), Unit 1 Cells, section 1.3 Specialised cells, pages 11–15; Workbook 7 (ISBN 9781108742818), pages 7–10. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 7 (bản 2, 2021; ISBN 9781108742788), Bài 1 Tế bào (Cells), mục 1.3 Tế bào chuyên hóa (Specialised cells), trang 11–15; Sách bài tập 7 (Workbook, ISBN 9781108742818), trang 7–10. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 7 (2nd edition, 2021; ISBN 9781108742788), Unit 1 Cells, section 1.3 Specialised cells, pages 11–15; Workbook 7 (ISBN 9781108742818), pages 7–10. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn about some specialised animal and plant cells; explain how the structure of these specialised cells helps them to carry out their functions. Key words: absorb, adapted, axon, capillary, cilia, ciliated cell, dendrite, function, haemoglobin, mucus, neurone, palisade cell, pigment, red blood cell, root hair cell, specialised." data-vi="Mục tiêu: tìm hiểu một số tế bào động vật và thực vật chuyên hóa (specialised); giải thích được cấu tạo (structure) của các tế bào chuyên hóa này giúp chúng thực hiện chức năng (function) của mình thế nào. Từ khóa: absorb (hấp thụ), adapted (thích nghi), axon (sợi trục), capillary (mao mạch), cilia (lông rung), ciliated cell (tế bào có lông rung), dendrite (sợi nhánh), function (chức năng), haemoglobin (huyết sắc tố), mucus (chất nhầy), neurone (tế bào thần kinh), palisade cell (tế bào mô giậu), pigment (sắc tố), red blood cell (hồng cầu), root hair cell (tế bào lông hút), specialised (chuyên hóa).">Objectives: learn about some specialised animal and plant cells; explain how the structure of these specialised cells helps them to carry out their functions. Key words: absorb, adapted, axon, capillary, cilia, ciliated cell, dendrite, function, haemoglobin, mucus, neurone, palisade cell, pigment, red blood cell, root hair cell, specialised.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the cell models on the 3D stage itself, or sorting cards into the book's summary-table columns. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the stage' panel only move the camera; meeting a model means tapping it on the stage. The examples follow the book's order: the Getting started cell parts, then the three specialised animal cells (red blood cell, neurone, ciliated cell) with the book's structure-and-function table activity, then the two specialised plant cells (root hair cell, palisade cell) with their own table activity, and the 'I can…' self-check at the end." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình tế bào ngay trên sân khấu 3D, hoặc xếp thẻ vào các cột của bảng tóm tắt trong sách. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên sân khấu' chỉ di chuyển camera; muốn 'gặp' một mô hình thì phải chạm vào chính nó trên sân khấu. Các ví dụ đi theo đúng thứ tự trong sách: phần khởi động về các bộ phận của tế bào, rồi ba tế bào động vật chuyên hóa (hồng cầu (red blood cell), tế bào thần kinh (neurone), tế bào có lông rung (ciliated cell)) với hoạt động lập bảng cấu tạo–chức năng của sách, rồi hai tế bào thực vật chuyên hóa (tế bào lông hút (root hair cell), tế bào mô giậu (palisade cell)) với hoạt động lập bảng riêng, và phần tự kiểm tra 'Con có thể…' (I can…) ở cuối.">How it works: each step asks for one real action — tapping the cell models on the 3D stage itself, or sorting cards into the book's summary-table columns. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the stage' panel only move the camera; meeting a model means tapping it on the stage. The examples follow the book's order: the Getting started cell parts, then the three specialised animal cells (red blood cell, neurone, ciliated cell) with the book's structure-and-function table activity, then the two specialised plant cells (root hair cell, palisade cell) with their own table activity, and the 'I can…' self-check at the end.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="exgrid" id="ex2Grid"></div>
+      <div class="exhint" id="ex2Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn rbc" id="ex3BinRbc"></button>
+        <button class="binbtn notrbc" id="ex3BinNeur"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci7-1-3 "Specialised cells"
+   (Science 7, Unit 1 · Cells)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= stage models ================= */
+const CELLS={
+  rbc:     {emoji:'🔴', name:{en:'Red blood cell',vi:'Hồng cầu (red blood cell)'},   short:{en:'Red blood cell',vi:'Hồng cầu'},       ring:0.9, labelY:1.3, fx:0,    fz:-0.6, fr:5.2},
+  neurone: {emoji:'⚡', name:{en:'Neurone',vi:'Tế bào thần kinh (neurone)'},        short:{en:'Neurone',vi:'Tế bào thần kinh'},      ring:1.0, labelY:1.5, fx:-2.3, fz:-1.1, fr:5.4},
+  ciliated:{emoji:'🌾', name:{en:'Ciliated cell',vi:'Tế bào có lông rung (ciliated cell)'}, short:{en:'Ciliated cell',vi:'Tế bào lông rung'}, ring:0.9, labelY:1.4, fx:2.3, fz:-1.1, fr:5.4},
+  axon:    {emoji:'➡️', name:{en:'Axon — the long strand',vi:'Sợi trục (axon) — sợi dài'}, short:{en:'Axon',vi:'Sợi trục'},            ring:1.0, labelY:1.1, fx:-3.7, fz:1.7,  fr:4.8},
+  dendrite:{emoji:'🌿', name:{en:'Dendrites — the short strands',vi:'Sợi nhánh (dendrites) — các sợi ngắn'}, short:{en:'Dendrites',vi:'Sợi nhánh'}, ring:0.9, labelY:1.3, fx:-1.3, fz:2.3, fr:4.8},
+  mucus:   {emoji:'🟢', name:{en:'Mucus — the sticky trap',vi:'Chất nhầy (mucus) — cái bẫy dính'}, short:{en:'Mucus',vi:'Chất nhầy'},       ring:0.9, labelY:1.2, fx:1.5,  fz:2.3,  fr:4.8},
+  roothair:{emoji:'🌱', name:{en:'Root hair cell',vi:'Tế bào lông hút (root hair cell)'}, short:{en:'Root hair cell',vi:'Tế bào lông hút'}, ring:0.9, labelY:1.4, fx:3.9, fz:1.8, fr:5.0},
+  palisade:{emoji:'🍃', name:{en:'Palisade cell',vi:'Tế bào mô giậu (palisade cell)'}, short:{en:'Palisade cell',vi:'Tế bào mô giậu'}, ring:0.9, labelY:1.5, fx:-4.6, fz:-2.4, fr:5.0},
+  leaf:    {emoji:'🌿', name:{en:'A whole leaf — not one cell',vi:'Một chiếc lá nguyên — không phải một tế bào'}, short:{en:'Leaf',vi:'Lá'}, ring:0.9, labelY:1.3, fx:4.7, fz:-2.6, fr:5.0}
+};
+const FOCUSORDER=['rbc','neurone','ciliated','axon','dendrite','mucus','roothair','palisade','leaf'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the stage',vi:'Trên sân khấu'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not meeting — to meet a model, tap it on the stage!',vi:'Chạm vào một tên để NGẮM mô hình. Ngắm chưa phải là gặp — muốn gặp, hãy chạm vào chính mô hình trên sân khấu!'},
+  u2T:{en:'My record',vi:'Bản ghi của con'},
+  u2Brief:{en:'How many cells have you met, and how many table cards have you sorted?',vi:'Con đã gặp bao nhiêu tế bào, và đã xếp được bao nhiêu thẻ bảng tóm tắt?'},
+  grpAnimal:{en:'🐾 Specialised animal cells met',vi:'🐾 Tế bào động vật chuyên hóa đã gặp'},
+  grpPlant:{en:'🌱 Specialised plant cells met',vi:'🌱 Tế bào thực vật chuyên hóa đã gặp'},
+  grpTable2:{en:'🔴 Red blood cell table cards',vi:'🔴 Thẻ bảng của hồng cầu (red blood cell)'},
+  grpTable6:{en:'📋 Plant cells table cards',vi:'📋 Thẻ bảng của tế bào thực vật'},
+  u3T:{en:'Models I met',vi:'Những mô hình con đã gặp'},
+  u3Brief:{en:'Your specialised-cells checklist.',vi:'Danh sách khám phá tế bào chuyên hóa của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundRbc:{en:'Red blood cell — carries oxygen',vi:'Hồng cầu (red blood cell) — mang khí ôxi'},
+  foundNeurone:{en:'Neurone — carries electrical signals',vi:'Tế bào thần kinh (neurone) — mang tín hiệu điện'},
+  foundCiliated:{en:'Ciliated cell — sweeps mucus',vi:'Tế bào có lông rung (ciliated cell) — quét chất nhầy'},
+  foundAxon:{en:'Axon — signals travel fast along it',vi:'Sợi trục (axon) — tín hiệu đi nhanh dọc theo nó'},
+  foundDendrite:{en:'Dendrites — collect signals from other cells',vi:'Sợi nhánh (dendrites) — thu tín hiệu từ các tế bào khác'},
+  foundMucus:{en:'Mucus — traps dust and bacteria',vi:'Chất nhầy (mucus) — giữ bụi và vi khuẩn'},
+  foundRoot:{en:'Root hair cell — absorbs water',vi:'Tế bào lông hút (root hair cell) — hấp thụ nước'},
+  foundPalisade:{en:'Palisade cell — makes food',vi:'Tế bào mô giậu (palisade cell) — tạo thức ăn'},
+  binRbc:{en:'RED BLOOD CELL 🔴',vi:'HỒNG CẦU 🔴 (red blood cell)'},
+  binNotRbc:{en:'NOT A RED BLOOD CELL',vi:'KHÔNG PHẢI HỒNG CẦU'},
+  binRoot:{en:'ROOT HAIR CELL 🌱',vi:'TẾ BÀO LÔNG HÚT 🌱 (root hair cell)'},
+  binPalisade:{en:'PALISADE CELL 🍃',vi:'TẾ BÀO MÔ GIẬU 🍃 (palisade cell)'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 1.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 1.3'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Complete the sentences',vi:'Bài tập 1 · Focus — Hoàn thành các câu'},
+  ex1Inst:{en:'The Workbook gives you a word list: capillaries, cytoplasm, food, haemoglobin, oxygen. In each sentence, tap the word that FITS.',vi:'Sách bài tập cho sẵn một danh sách từ: capillaries (mao mạch), cytoplasm (tế bào chất), food (thức ăn), haemoglobin (huyết sắc tố), oxygen (khí ôxi). Trong mỗi câu, hãy chạm vào từ PHÙ HỢP.'},
+  ex2T:{en:'Exercise 2 · Practice — True facts about specialised cells',vi:'Bài tập 2 · Practice — Những điều đúng về tế bào chuyên hóa'},
+  ex2Inst:{en:'Tap ALL the statements that are true. There are 7.',vi:'Chạm vào TẤT CẢ câu đúng. Có 7 câu đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Compare two cells',vi:'Bài tập 3 · Challenge — So sánh hai tế bào'},
+  ex3Inst:{en:'The Workbook asks you to compare two specialised cells in a table. Tap a card, then tap RED BLOOD CELL or NEURONE — the cell it describes.',vi:'Sách bài tập yêu cầu so sánh hai tế bào chuyên hóa trong một bảng. Chạm vào một thẻ, rồi chạm HỒNG CẦU (RED BLOOD CELL) hoặc TẾ BÀO THẦN KINH (NEURONE) — tế bào mà thẻ mô tả.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'specialised',vi:'chuyên hóa'},
+  {en:'function',vi:'chức năng'},
+  {en:'adapted',vi:'thích nghi'},
+  {en:'red blood cell',vi:'hồng cầu'},
+  {en:'haemoglobin',vi:'huyết sắc tố'},
+  {en:'capillary',vi:'mao mạch'},
+  {en:'neurone',vi:'tế bào thần kinh'},
+  {en:'axon',vi:'sợi trục'},
+  {en:'dendrite',vi:'sợi nhánh'},
+  {en:'ciliated cell',vi:'tế bào có lông rung'},
+  {en:'cilia',vi:'lông rung'},
+  {en:'mucus',vi:'chất nhầy'},
+  {en:'absorb',vi:'hấp thụ'},
+  {en:'root hair cell',vi:'tế bào lông hút'},
+  {en:'palisade cell',vi:'tế bào mô giậu'},
+  {en:'pigment',vi:'sắc tố'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Specialised animal cells',vi:'Tế bào động vật chuyên hóa'}, word:{en:'specialised',vi:'chuyên hóa'},
+  q:{en:'Not all the cells in your body are the same. What makes a cell specialised?',vi:'Các tế bào trong cơ thể con không giống nhau. Điều gì làm một tế bào trở nên chuyên hóa (specialised)?'},
+  act:{en:'Tap the three specialised animal cells on the stage: the red blood cell, the neurone and the ciliated cell.',vi:'Chạm vào ba tế bào động vật chuyên hóa trên sân khấu: hồng cầu (red blood cell), tế bào thần kinh (neurone) và tế bào có lông rung (ciliated cell).'},
+  see:{en:'Each cell you tap bounces, a ring shows under it, and you see its name. Compare their shapes — each shape already hints at its job.',vi:'Mỗi tế bào con chạm sẽ nảy lên, có một vòng tròn hiện dưới nó và con thấy tên của nó. Hãy so sánh hình dạng của chúng — mỗi hình dạng đã gợi ý về nhiệm vụ của nó.'},
+  concl:[
+    {en:'Every kind of cell has its own function — the job it does in the body. A specialised cell has a structure that helps it carry out its function really well: it is adapted for its job.',vi:'Mỗi loại tế bào có chức năng (function) riêng — công việc nó làm trong cơ thể. Một tế bào chuyên hóa (specialised cell) có cấu tạo (structure) giúp nó thực hiện chức năng thật tốt: nó thích nghi (adapted) với công việc của mình.'},
+    {en:'What they share: all three have a cell membrane around them and cytoplasm inside. Red blood cells, neurones and ciliated cells are animal cells — none of them has a cell wall or chloroplasts.',vi:'Điểm chung của chúng: cả ba đều có màng tế bào (cell membrane) bao quanh và tế bào chất (cytoplasm) bên trong. Hồng cầu, tế bào thần kinh và tế bào có lông rung đều là tế bào động vật — không tế bào nào có thành tế bào (cell wall) hay lục lạp (chloroplasts).'},
+    {en:'Getting started check: a cell membrane wraps the cell, a cell wall is the stiff outer layer of a plant cell, a nucleus controls the cell, and chloroplasts are where a plant makes food.',vi:'Kiểm tra khởi động: màng tế bào (cell membrane) bao quanh tế bào, thành tế bào (cell wall) là lớp ngoài cứng của tế bào thực vật, nhân (nucleus) điều khiển tế bào, và lục lạp (chloroplasts) là nơi cây tạo thức ăn.'}]},
+ {tag:{en:'The red blood cell table',vi:'Bảng về hồng cầu'}, word:{en:'haemoglobin',vi:'huyết sắc tố'},
+  q:{en:'Red blood cells carry oxygen. How is a red blood cell adapted for that job?',vi:'Hồng cầu (red blood cells) mang khí ôxi (oxygen). Hồng cầu thích nghi (adapted) với công việc đó thế nào?'},
+  act:{en:'Help build the book\u2019s table: tap a card, then tap RED BLOOD CELL if the card describes a red blood cell, or NOT A RED BLOOD CELL if it describes a different cell.',vi:'Hãy cùng lập bảng của sách: chạm vào một thẻ, rồi chạm HỒNG CẦU (RED BLOOD CELL) nếu thẻ mô tả hồng cầu, hoặc KHÔNG PHẢI HỒNG CẦU nếu thẻ mô tả một tế bào khác.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'A red blood cell\u2019s cytoplasm holds a red pigment called haemoglobin, and haemoglobin is what carries the oxygen around the body.',vi:'Tế bào chất (cytoplasm) của hồng cầu chứa một sắc tố (pigment) đỏ tên là haemoglobin (huyết sắc tố), và chính haemoglobin mang khí ôxi (oxygen) đi khắp cơ thể.'},
+    {en:'It has no nucleus, which leaves more room inside for haemoglobin.',vi:'Nó không có nhân (nucleus), nên bên trong còn nhiều chỗ hơn cho haemoglobin.'},
+    {en:'Red blood cells are smaller than most other cells, so they can squeeze through tiny blood capillaries and deliver oxygen to every part of the body.',vi:'Hồng cầu nhỏ hơn hầu hết các tế bào khác, nên chúng chui qua được các mao mạch (capillaries) rất nhỏ và đưa ôxi tới mọi nơi trong cơ thể.'}]},
+ {tag:{en:'Inside a neurone',vi:'Bên trong tế bào thần kinh'}, word:{en:'axon',vi:'sợi trục'},
+  q:{en:'Neurones carry electrical signals around the body. Which parts do the carrying?',vi:'Tế bào thần kinh (neurones) mang tín hiệu điện đi khắp cơ thể. Những bộ phận nào làm việc mang tín hiệu đó?'},
+  act:{en:'Find the neurone\u2019s two kinds of strand on the stage: tap the long axon model and the dendrites model.',vi:'Tìm hai loại sợi của tế bào thần kinh trên sân khấu: chạm vào mô hình sợi trục (axon) dài và mô hình các sợi nhánh (dendrites).'},
+  see:{en:'The axon is one very long strand of cytoplasm. The dendrites are many short strands branching near the cell body.',vi:'Sợi trục (axon) là một sợi tế bào chất rất dài. Các sợi nhánh (dendrites) là nhiều sợi ngắn phân nhánh gần thân tế bào.'},
+  concl:[
+    {en:'The axon is a very long strand of cytoplasm, so electrical signals can travel along it very quickly from one part of the body to another.',vi:'Sợi trục (axon) là một sợi tế bào chất (cytoplasm) rất dài, nên tín hiệu điện có thể đi dọc theo nó rất nhanh từ nơi này tới nơi khác trong cơ thể.'},
+    {en:'Dendrites are short strands of cytoplasm that collect electrical signals from other nearby nerve cells.',vi:'Sợi nhánh (dendrites) là các sợi tế bào chất ngắn, thu nhận tín hiệu điện từ các tế bào thần kinh khác ở gần.'},
+    {en:'Neurones let all the parts of the body communicate — for example, they carry signals from the brain to muscles to make the muscles move.',vi:'Tế bào thần kinh giúp mọi bộ phận của cơ thể liên lạc với nhau — ví dụ, chúng mang tín hiệu từ não (brain) tới cơ bắp (muscles) để làm cơ bắp cử động.'}]},
+ {tag:{en:'Ciliated cells and mucus',vi:'Tế bào lông rung và chất nhầy'}, word:{en:'cilia',vi:'lông rung'},
+  q:{en:'The tubes to your lungs are lined with ciliated cells. How do they keep your lungs clean?',vi:'Các ống dẫn tới phổi (lungs) của con được lót bằng tế bào có lông rung (ciliated cells). Chúng giữ phổi sạch thế nào?'},
+  act:{en:'Tap the ciliated cell model again — look at its hair-like edge this time — then tap the sticky mucus model.',vi:'Chạm lại vào mô hình tế bào có lông rung — lần này hãy nhìn mép giống tóc của nó — rồi chạm vào mô hình chất nhầy (mucus) dính.'},
+  see:{en:'Along one edge of the ciliated cell are tiny moving threads — the cilia. The mucus blob is sticky, and specks of dust are caught in it.',vi:'Dọc một mép của tế bào có lông rung là các sợi nhỏ biết cử động — lông rung (cilia). Khối chất nhầy thì dính, và các hạt bụi bị giữ trong đó.'},
+  concl:[
+    {en:'Ciliated cells have tiny threads called cilia along one edge, and the cilia can move.',vi:'Tế bào có lông rung có các sợi nhỏ tên là cilia (lông rung) dọc một mép, và các lông rung này cử động được.'},
+    {en:'Neighbouring cells make a sticky substance called mucus. When you breathe in, the mucus traps dust and bacteria in the air, stopping them from reaching your lungs.',vi:'Các tế bào bên cạnh tạo ra một chất dính tên là mucus (chất nhầy). Khi con hít vào, chất nhầy giữ lại bụi và vi khuẩn (bacteria) trong không khí, không cho chúng tới phổi.'},
+    {en:'The cilia sweep the mucus up to the back of your mouth, and you swallow it.',vi:'Lông rung quét chất nhầy lên phía sau miệng, và con nuốt nó xuống.'}]},
+ {tag:{en:'Specialised plant cells',vi:'Tế bào thực vật chuyên hóa'}, word:{en:'absorb',vi:'hấp thụ'},
+  q:{en:'Plants have specialised cells too. Which two does the book show?',vi:'Thực vật cũng có tế bào chuyên hóa. Sách giới thiệu hai loại nào?'},
+  act:{en:'Tap the two specialised plant cells on the stage: the root hair cell and the palisade cell.',vi:'Chạm vào hai tế bào thực vật chuyên hóa trên sân khấu: tế bào lông hút (root hair cell) và tế bào mô giậu (palisade cell).'},
+  see:{en:'The root hair cell grows on the outside of a root and has one long, thin extension. The palisade cell sits in a leaf and is packed with green chloroplasts.',vi:'Tế bào lông hút mọc ở mặt ngoài của rễ (root) và có một phần kéo dài mỏng. Tế bào mô giậu nằm trong lá (leaf) và chứa đầy lục lạp (chloroplasts) màu xanh.'},
+  concl:[
+    {en:'A root hair cell\u2019s function is to absorb water from the soil. Its long, thin extension lets water move easily from the soil into the cell, on its way to the large sap vacuole.',vi:'Chức năng (function) của tế bào lông hút là hấp thụ (absorb) nước từ đất (soil). Phần kéo dài dài và mỏng của nó giúp nước đi dễ dàng từ đất vào tế bào, trên đường tới không bào (vacuole) lớn chứa dịch tế bào.'},
+    {en:'A palisade cell\u2019s function is to make food by photosynthesis. It has lots of chloroplasts holding chlorophyll, which absorbs energy from sunlight to help the plant make food.',vi:'Chức năng của tế bào mô giậu là tạo thức ăn bằng quang hợp (photosynthesis). Nó có rất nhiều lục lạp (chloroplasts) chứa diệp lục (chlorophyll), chất hấp thụ năng lượng từ ánh sáng mặt trời để giúp cây tạo thức ăn.'},
+    {en:'Both are plant cells: each has a cell wall, a cell membrane, cytoplasm and a nucleus — and the root hair cell also has a large vacuole full of cell sap.',vi:'Cả hai đều là tế bào thực vật: mỗi tế bào có thành tế bào (cell wall), màng tế bào (cell membrane), tế bào chất (cytoplasm) và nhân (nucleus) — và tế bào lông hút còn có một không bào lớn đầy dịch tế bào (cell sap).'}]},
+ {tag:{en:'The plant cells table',vi:'Bảng về tế bào thực vật'}, word:{en:'palisade cell',vi:'tế bào mô giậu'},
+  q:{en:'Can you finish the plant-cell table — which structure belongs to which cell?',vi:'Con hoàn thành bảng về tế bào thực vật được không — cấu tạo nào thuộc về tế bào nào?'},
+  act:{en:'Tap a card, then tap ROOT HAIR CELL or PALISADE CELL — the cell the card describes.',vi:'Chạm vào một thẻ, rồi chạm TẾ BÀO LÔNG HÚT (ROOT HAIR CELL) hoặc TẾ BÀO MÔ GIẬU (PALISADE CELL) — tế bào mà thẻ mô tả.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can name three kinds of specialised animal cell, and two kinds of specialised plant cell.',vi:'Con nêu được ba loại tế bào động vật chuyên hóa, và hai loại tế bào thực vật chuyên hóa.'},
+    {en:'I can explain how the structure of each kind of specialised cell is related to its function.',vi:'Con giải thích được cấu tạo (structure) của mỗi loại tế bào chuyên hóa liên quan tới chức năng (function) của nó thế nào.'},
+    {en:'I can design and construct a table to summarise information.',vi:'Con thiết kế và lập được một bảng để tóm tắt thông tin.'},
+    {en:'One question from the book: root hair cells have no chloroplasts — they live underground in the dark soil, where there is no sunlight for making food, and their job is absorbing water instead.',vi:'Một câu hỏi trong sách: tế bào lông hút không có lục lạp (chloroplasts) — chúng sống dưới đất tối, nơi không có ánh sáng mặt trời để tạo thức ăn, và công việc của chúng là hấp thụ nước thay vào đó.'}]}
+];
+const CARDS2=[
+ {id:'r_haemo',emoji:'🩸',en:'Its cytoplasm contains haemoglobin',vi:'Tế bào chất của nó chứa haemoglobin (huyết sắc tố)',ans:'rbc'},
+ {id:'r_nonuc',emoji:'🚫',en:'It has no nucleus, leaving more room for haemoglobin',vi:'Nó không có nhân, nên còn nhiều chỗ cho haemoglobin',ans:'rbc'},
+ {id:'r_small',emoji:'🤏',en:'It is small, so it can squeeze through capillaries',vi:'Nó nhỏ, nên chui qua được mao mạch (capillaries)',ans:'rbc'},
+ {id:'r_axon',emoji:'⚡',en:'It has a very long axon for electrical signals',vi:'Nó có sợi trục (axon) rất dài cho tín hiệu điện',ans:'notrbc'},
+ {id:'r_cilia',emoji:'🌾',en:'It has cilia that sweep mucus along',vi:'Nó có lông rung (cilia) quét chất nhầy',ans:'notrbc'},
+ {id:'r_chloro',emoji:'🌿',en:'It is packed with chloroplasts for photosynthesis',vi:'Nó chứa đầy lục lạp (chloroplasts) cho quang hợp',ans:'notrbc'}
+];
+const CARDS2_ORDER=mixOrder(CARDS2,c=>c.ans,2);
+const CARDS6=[
+ {id:'p_hair',emoji:'🌱',en:'A long, thin extension reaches out into the soil',vi:'Một phần kéo dài dài và mỏng vươn ra trong đất',ans:'root'},
+ {id:'p_vacuole',emoji:'💧',en:'A large vacuole stores cell sap inside',vi:'Một không bào (vacuole) lớn trữ dịch tế bào bên trong',ans:'root'},
+ {id:'p_water',emoji:'🚰',en:'It takes in water from the soil',vi:'Nó lấy nước từ đất (soil)',ans:'root'},
+ {id:'p_chloro',emoji:'🟢',en:'It has lots of chloroplasts with chlorophyll',vi:'Nó có rất nhiều lục lạp (chloroplasts) chứa diệp lục',ans:'palisade'},
+ {id:'p_leaf',emoji:'🍃',en:'It is found inside a leaf',vi:'Nó nằm bên trong một chiếc lá (leaf)',ans:'palisade'},
+ {id:'p_food',emoji:'☀️',en:'It uses sunlight energy to make food',vi:'Nó dùng năng lượng ánh sáng mặt trời để tạo thức ăn',ans:'palisade'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What does it mean to say a cell is specialised?',vi:'Nói một tế bào là chuyên hóa (specialised) nghĩa là gì?'},
+  o:[{en:'It is the biggest cell in the body',vi:'Nó là tế bào to nhất trong cơ thể'},
+     {en:'It has a structure that helps it carry out its own particular function really well',vi:'Nó có cấu tạo (structure) giúp nó thực hiện chức năng (function) riêng của mình thật tốt'},
+     {en:'It can turn into any other kind of cell',vi:'Nó có thể biến thành bất kỳ loại tế bào nào khác'}],a:1,
+  e:{en:'A specialised cell is adapted for its job: its structure helps it carry out its function really well.',vi:'Một tế bào chuyên hóa (specialised) thì thích nghi (adapted) với công việc của nó: cấu tạo của nó giúp nó thực hiện chức năng (function) thật tốt.'}},
+ {q:{en:'Why does a red blood cell have no nucleus?',vi:'Vì sao hồng cầu (red blood cell) không có nhân (nucleus)?'},
+  o:[{en:'So it can move faster through the heart',vi:'Để nó đi nhanh hơn qua tim (heart)'},
+     {en:'So it can change shape like a jelly',vi:'Để nó thay đổi hình dạng như thạch'},
+     {en:'It leaves more space inside for haemoglobin, which carries oxygen',vi:'Nó để lại nhiều chỗ bên trong hơn cho haemoglobin (huyết sắc tố), chất mang khí ôxi (oxygen)'}],a:2,
+  e:{en:'With no nucleus, a red blood cell has more room for haemoglobin — the red pigment that carries oxygen around the body.',vi:'Không có nhân, hồng cầu có nhiều chỗ hơn cho haemoglobin — sắc tố (pigment) đỏ mang khí ôxi đi khắp cơ thể.'}},
+ {q:{en:'How do ciliated cells help to keep your lungs clean?',vi:'Tế bào có lông rung (ciliated cells) giúp giữ phổi (lungs) sạch thế nào?'},
+  o:[{en:'Their cilia sweep sticky mucus — with dust and bacteria trapped in it — up to the back of the mouth',vi:'Lông rung (cilia) của chúng quét chất nhầy (mucus) dính — với bụi và vi khuẩn bị giữ trong đó — lên phía sau miệng'},
+     {en:'They make oxygen for the lungs',vi:'Chúng tạo khí ôxi cho phổi'},
+     {en:'They grow over holes in the lung tubes',vi:'Chúng mọc phủ lên các lỗ trong ống dẫn tới phổi'}],a:0,
+  e:{en:'Mucus traps dust and bacteria from the air you breathe in, and the moving cilia sweep that mucus up to the back of the mouth, where you swallow it.',vi:'Chất nhầy (mucus) giữ lại bụi và vi khuẩn từ không khí con hít vào, và lông rung (cilia) chuyển động quét chất nhầy đó lên phía sau miệng, nơi con nuốt nó xuống.'}},
+ {q:{en:'Why do root hair cells NOT contain chloroplasts?',vi:'Vì sao tế bào lông hút (root hair cells) KHÔNG chứa lục lạp (chloroplasts)?'},
+  o:[{en:'Chloroplasts would block water from entering',vi:'Lục lạp sẽ chặn nước đi vào'},
+     {en:'They grow underground in dark soil, and their function is absorbing water, not making food',vi:'Chúng mọc dưới đất tối, và chức năng (function) của chúng là hấp thụ (absorb) nước, không phải tạo thức ăn'},
+     {en:'They are animal cells, not plant cells',vi:'Chúng là tế bào động vật, không phải tế bào thực vật'}],a:1,
+  e:{en:'Root hair cells are plant cells, but they live on roots underground where no sunlight reaches, so chloroplasts for photosynthesis would be no use — their long, thin extension is for absorbing water.',vi:'Tế bào lông hút là tế bào thực vật, nhưng chúng sống trên rễ dưới đất nơi ánh sáng mặt trời không tới được, nên lục lạp cho quang hợp (photosynthesis) không có ích — phần kéo dài dài và mỏng của chúng là để hấp thụ nước.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+/* Ex 1 · Focus — complete the sentences (Workbook Q1, word list:
+   capillaries · cytoplasm · food · haemoglobin · oxygen).
+   Rendered in the cross-out style: tap the word that FITS; `wrong` is the
+   index of the word that does NOT fit. */
+const EX1=[
+ {pre:{en:'Red blood cells contain a substance called',vi:'Hồng cầu chứa một chất tên là'},wrong:1,
+  opts:[{en:'haemoglobin',vi:'haemoglobin (huyết sắc tố)'},{en:'food',vi:'food (thức ăn)'}],
+  e:{en:'Haemoglobin is the red pigment in the cytoplasm of red blood cells, and it carries oxygen.',vi:'Haemoglobin (huyết sắc tố) là sắc tố đỏ trong tế bào chất (cytoplasm) của hồng cầu, và nó mang khí ôxi (oxygen).'}},
+ {pre:{en:'This substance helps the cells to carry',vi:'Chất này giúp các tế bào mang'},wrong:1,
+  opts:[{en:'oxygen',vi:'oxygen (khí ôxi)'},{en:'food',vi:'food (thức ăn)'}],
+  e:{en:'Red blood cells deliver oxygen to every part of the body.',vi:'Hồng cầu đưa khí ôxi (oxygen) tới mọi nơi trong cơ thể.'}},
+ {pre:{en:'Red blood cells are smaller than most cells, so they can squeeze through the tiny blood vessels called',vi:'Hồng cầu nhỏ hơn hầu hết các tế bào, nên chúng chui qua được các mạch máu rất nhỏ tên là'},wrong:0,
+  opts:[{en:'cytoplasm',vi:'cytoplasm (tế bào chất)'},{en:'capillaries',vi:'capillaries (mao mạch)'}],
+  e:{en:'The tiny blood vessels are capillaries. Cytoplasm is the jelly inside a cell, not a vessel.',vi:'Các mạch máu rất nhỏ là mao mạch (capillaries). Tế bào chất (cytoplasm) là chất keo bên trong tế bào, không phải mạch máu.'}}
+];
+/* Ex 2 · Practice — tap ALL the true statements (Workbook Q2 ideas:
+   plant cell or animal cell, its function, how it is adapted). */
+const EX2=[
+ {id:'t_hb',emoji:'🩸',en:'Haemoglobin carries oxygen around the body',vi:'Haemoglobin (huyết sắc tố) mang khí ôxi đi khắp cơ thể',ok:true},
+ {id:'t_wall',emoji:'🧱',en:'Animal cells have a cell wall',vi:'Tế bào động vật có thành tế bào (cell wall)',ok:false},
+ {id:'t_paliwall',emoji:'🍃',en:'A palisade cell has a cell wall, so it is a plant cell',vi:'Tế bào mô giậu (palisade cell) có thành tế bào, nên nó là tế bào thực vật',ok:true},
+ {id:'t_palifood',emoji:'☀️',en:'A palisade cell makes food by photosynthesis',vi:'Tế bào mô giậu tạo thức ăn bằng quang hợp (photosynthesis)',ok:true},
+ {id:'t_rootfood',emoji:'🌱',en:'A root hair cell makes food by photosynthesis',vi:'Tế bào lông hút tạo thức ăn bằng quang hợp',ok:false},
+ {id:'t_rootabs',emoji:'💧',en:'A root hair cell absorbs water from the soil',vi:'Tế bào lông hút hấp thụ (absorb) nước từ đất',ok:true},
+ {id:'t_axonfast',emoji:'⚡',en:'Signals travel quickly along a neurone\u2019s long axon',vi:'Tín hiệu đi nhanh dọc sợi trục (axon) dài của tế bào thần kinh',ok:true},
+ {id:'t_ciliasweep',emoji:'🌾',en:'Cilia sweep mucus up to the back of the mouth',vi:'Lông rung (cilia) quét chất nhầy (mucus) lên phía sau miệng',ok:true},
+ {id:'t_rbcnuc',emoji:'🔴',en:'A red blood cell has a big nucleus in the middle',vi:'Hồng cầu có một nhân (nucleus) lớn ở giữa',ok:false},
+ {id:'t_mucus',emoji:'🟢',en:'Mucus traps dust and bacteria in the air we breathe in',vi:'Chất nhầy (mucus) giữ bụi và vi khuẩn trong không khí ta hít vào',ok:true}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ok?'ok':'notok',3);
+/* Ex 3 · Challenge — compare two cells (Workbook Q3 table):
+   red blood cell vs neurone. */
+const EX3=[
+ {id:'c_oxygen',emoji:'🎈',en:'Transports oxygen around the body',vi:'Vận chuyển khí ôxi (oxygen) đi khắp cơ thể',ans:'rbc'},
+ {id:'c_small',emoji:'🤏',en:'Smaller than most other cells',vi:'Nhỏ hơn hầu hết các tế bào khác',ans:'rbc'},
+ {id:'c_nonuc',emoji:'🚫',en:'Has no nucleus',vi:'Không có nhân (nucleus)',ans:'rbc'},
+ {id:'c_signals',emoji:'⚡',en:'Carries electrical signals',vi:'Mang tín hiệu điện (electrical signals)',ans:'neurone'},
+ {id:'c_axon',emoji:'➡️',en:'Has a very long axon',vi:'Có sợi trục (axon) rất dài',ans:'neurone'},
+ {id:'c_dend',emoji:'🌿',en:'Dendrites collect signals from other nerve cells',vi:'Sợi nhánh (dendrites) thu tín hiệu từ các tế bào thần kinh khác',ans:'neurone'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.filter(x=>x.ok).length+EX3.length; /* 3 + 7 + 6 = 16 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex3sel=null;
+let EX1ANS={}, EX2SEL=new Set(), EX3ANS={};
+let EX1_ORD=EX1.map(()=>fyIdx(2));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci7-1-3';
+const SUMKEY='camb:sum:sci7-1-3';
+const BOT_CODE='sci7-1.3';
+let FOUND={rbc:false,neurone:false,ciliated:false,axon:false,dendrite:false,mucus:false,roothair:false,palisade:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fRbc:false, fNeurone:false, fCiliated:false, s1hint:null,
+  s2correct:new Set(), s2sel:null,
+  s3found:new Set(),
+  s4found:new Set(),
+  s5found:new Set(),
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.fRbc&&T.fNeurone&&T.fCiliated;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.s3found.size>=2;
+  if(i===3) return T.s4found.size>=2;
+  if(i===4) return T.s5found.size>=2;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=CELLS[T.s1hint];
+      return B('That is the '+t.name.en+'. That is not one of the three specialised animal cells. Look for the red blood cell, the neurone and the ciliated cell!',
+               'Đó là '+t.name.vi+'. Đó không phải một trong ba tế bào động vật chuyên hóa. Hãy tìm hồng cầu (red blood cell), tế bào thần kinh (neurone) và tế bào có lông rung (ciliated cell)!');
+    }
+    return B('Animal cells met: the red blood cell '+(T.fRbc?'✓':'…')+' · the neurone '+(T.fNeurone?'✓':'…')+' · the ciliated cell '+(T.fCiliated?'✓':'…')+'. Tap models on the stage!',
+             'Tế bào động vật đã gặp: hồng cầu (red blood cell) '+(T.fRbc?'✓':'…')+' · tế bào thần kinh (neurone) '+(T.fNeurone?'✓':'…')+' · tế bào có lông rung (ciliated cell) '+(T.fCiliated?'✓':'…')+'. Hãy chạm vào các mô hình trên sân khấu!');
+  }
+  if(i===1){
+    const c=T.s2sel? CARDS2.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap RED BLOOD CELL or NOT A RED BLOOD CELL.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm HỒNG CẦU (RED BLOOD CELL) hoặc KHÔNG PHẢI HỒNG CẦU.');
+    return B('Table cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ bảng đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2){
+    return B('Neurone parts found: '+T.s3found.size+' of 2 — the long axon and the dendrites.',
+             'Số bộ phận của tế bào thần kinh đã tìm: '+T.s3found.size+' / 2 — sợi trục (axon) dài và các sợi nhánh (dendrites).');
+  }
+  if(i===3){
+    return B('Clean-up team found: '+T.s4found.size+' of 2 — the ciliated cell and the mucus.',
+             'Đội dọn dẹp đã tìm: '+T.s4found.size+' / 2 — tế bào có lông rung (ciliated cell) và chất nhầy (mucus).');
+  }
+  if(i===4){
+    return B('Plant cells met: '+T.s5found.size+' of 2 — the root hair cell and the palisade cell.',
+             'Tế bào thực vật đã gặp: '+T.s5found.size+' / 2 — tế bào lông hút (root hair cell) và tế bào mô giậu (palisade cell).');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap ROOT HAIR CELL or PALISADE CELL.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm TẾ BÀO LÔNG HÚT (ROOT HAIR CELL) hoặc TẾ BÀO MÔ GIẬU (PALISADE CELL).');
+    return B('Table cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ bảng đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔴',label:{en:'Red blood cell',vi:'Hồng cầu (red blood cell)'},got:T.fRbc},
+      {emoji:'⚡',label:{en:'Neurone',vi:'Tế bào thần kinh (neurone)'},got:T.fNeurone},
+      {emoji:'🌾',label:{en:'Ciliated cell',vi:'Tế bào có lông rung (ciliated cell)'},got:T.fCiliated}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,CARDS2_ORDER,
+      [{key:'rbc',label:STR.binRbc,cls:'rbc'},{key:'notrbc',label:STR.binNotRbc,cls:'notrbc'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'➡️',label:{en:'Axon',vi:'Sợi trục (axon)'},got:T.s3found.has('axon')},
+      {emoji:'🌿',label:{en:'Dendrites',vi:'Sợi nhánh (dendrites)'},got:T.s3found.has('dendrite')}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🌾',label:{en:'Ciliated cell',vi:'Tế bào có lông rung (ciliated cell)'},got:T.s4found.has('ciliated')},
+      {emoji:'🟢',label:{en:'Mucus',vi:'Chất nhầy (mucus)'},got:T.s4found.has('mucus')}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🌱',label:{en:'Root hair cell',vi:'Tế bào lông hút (root hair cell)'},got:T.s5found.has('roothair')},
+      {emoji:'🍃',label:{en:'Palisade cell',vi:'Tế bào mô giậu (palisade cell)'},got:T.s5found.has('palisade')}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'root',label:STR.binRoot,cls:'root'},{key:'palisade',label:STR.binPalisade,cls:'palisade'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('rbc'); bounceThing('rbc'); setTimeout(()=>{ focusVisual('neurone'); bounceThing('neurone'); },900); }
+  else if(i===1){ demoSortMine(CARDS2,T.s2correct,{rbc:'rbc',notrbc:'notrbc'}); }
+  else if(i===2){ focusVisual('axon'); bounceThing('axon'); setTimeout(()=>{ focusVisual('dendrite'); bounceThing('dendrite'); },900); }
+  else if(i===3){ focusVisual('ciliated'); bounceThing('ciliated'); setTimeout(()=>{ focusVisual('mucus'); bounceThing('mucus'); },900); }
+  else if(i===4){ focusVisual('roothair'); bounceThing('roothair'); setTimeout(()=>{ focusVisual('palisade'); bounceThing('palisade'); },900); }
+  else if(i===5){ demoSortMine(CARDS6,T.s6correct,{root:'root',palisade:'palisade'}); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=CELLS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const animal=(FOUND.rbc?1:0)+(FOUND.neurone?1:0)+(FOUND.ciliated?1:0);
+  const plant=(FOUND.roothair?1:0)+(FOUND.palisade?1:0);
+  const t2=CARDS2.filter(c=>SORTED.has(c.id)).length;
+  const t6=CARDS6.filter(c=>SORTED.has(c.id)).length;
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.grpAnimal)+'</span><b>'+animal+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpPlant)+'</span><b>'+plant+' / 2</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpTable2)+'</span><b>'+t2+' / 6</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.grpTable6)+'</span><b>'+t6+' / 6</b></div>';
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.rbc||doneSteps.has(0),label:STR.foundRbc},
+    {got:FOUND.neurone||doneSteps.has(0),label:STR.foundNeurone},
+    {got:FOUND.ciliated||doneSteps.has(0),label:STR.foundCiliated},
+    {got:FOUND.axon||doneSteps.has(2),label:STR.foundAxon},
+    {got:FOUND.dendrite||doneSteps.has(2),label:STR.foundDendrite},
+    {got:FOUND.mucus||doneSteps.has(3),label:STR.foundMucus},
+    {got:FOUND.roothair||doneSteps.has(4),label:STR.foundRoot},
+    {got:FOUND.palisade||doneSteps.has(4),label:STR.foundPalisade}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+let ciliaMesh=null, signalDot=null, mucusMesh=null;
+const ORB={r:10.2, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; G[id]=group; scene3.add(group); return group; }
+function buildRbc(){
+  const g=new THREE.Group();
+  const ped=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.4,0.14,16),stdMat(0x8d99a6,0.9));
+  ped.position.y=0.07; g.add(ped);
+  const cell=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,11),stdMat(0xc0392b,0.6)));
+  cell.scale.set(1,0.45,1); cell.position.y=0.34; g.add(cell);
+  const dip=new THREE.Mesh(new THREE.SphereGeometry(0.16,11,8),stdMat(0xa93226,0.6));
+  dip.scale.set(1,0.3,1); dip.position.y=0.42; g.add(dip);
+  g.position.set(0,0,-0.6);
+  return g;
+}
+function buildNeurone(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.27,13,11),stdMat(0xf2b134,0.75)));
+  body.position.y=0.45; g.add(body);
+  const nuc=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),stdMat(0x7a4fd0,0.6));
+  nuc.position.y=0.45; g.add(nuc);
+  const strand=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.85,8),stdMat(0xe67e22,0.75));
+  strand.rotation.z=Math.PI/2.3; strand.position.set(0.42,0.28,0); g.add(strand);
+  [-0.2,-0.28].forEach((dz,i)=>{
+    const br=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.34,6),stdMat(0xe67e22,0.75));
+    br.rotation.z=-0.8; br.rotation.x=i? 0.5:-0.5; br.position.set(-0.24,0.6,dz*0.5); g.add(br);
+  });
+  g.position.set(-2.3,0,-1.1);
+  return g;
+}
+function buildCiliated(){
+  const g=new THREE.Group();
+  const cell=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.52,0.62,0.4),stdMat(0x7fb3d5,0.85)));
+  cell.position.y=0.38; g.add(cell);
+  const nuc=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),stdMat(0x2e4053,0.6));
+  nuc.position.set(0,0.3,0.14); g.add(nuc);
+  ciliaMesh=new THREE.Group();
+  for(let i=0;i<7;i++){
+    const hair=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.24,5),stdMat(0x1a5276,0.7));
+    hair.position.set(-0.21+i*0.07,0.8,0); hair.rotation.z=0.25;
+    ciliaMesh.add(hair);
+  }
+  g.add(ciliaMesh);
+  g.position.set(2.3,0,-1.1);
+  return g;
+}
+function buildAxon(){
+  const g=new THREE.Group();
+  const ped=new THREE.Mesh(new THREE.BoxGeometry(1.3,0.12,0.5),stdMat(0xccd6de,0.95));
+  ped.position.y=0.06; g.add(ped);
+  const tube=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,1.25,10),stdMat(0xe67e22,0.7)));
+  tube.rotation.z=Math.PI/2; tube.position.y=0.42; g.add(tube);
+  [-0.3,0.15].forEach(px=>{
+    const seg=new THREE.Mesh(new THREE.CylinderGeometry(0.095,0.095,0.2,10),stdMat(0xf5c66b,0.8));
+    seg.rotation.z=Math.PI/2; seg.position.set(px,0.42,0); g.add(seg);
+  });
+  signalDot=new THREE.Mesh(new THREE.SphereGeometry(0.055,9,8),stdMat(0xfff200,0.3));
+  signalDot.position.set(-0.55,0.42,0.1); g.add(signalDot);
+  const endBulb=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),stdMat(0xe67e22,0.7));
+  endBulb.position.set(0.68,0.42,0); g.add(endBulb);
+  g.position.set(-3.7,0,1.7);
+  return g;
+}
+function buildDendrite(){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.14,14),stdMat(0x8d99a6,0.9));
+  base.position.y=0.07; g.add(base);
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.5,8),stdMat(0xe67e22,0.75));
+  trunk.position.y=0.35; g.add(trunk);
+  [[-0.22,0.72,0.5],[0.2,0.78,-0.4],[0,0.88,0.15],[-0.08,0.8,0.55],[0.14,0.7,0.5]].forEach(p=>{
+    const br=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.04,0.42,6),stdMat(0xf39c12,0.75));
+    br.position.set(p[0],p[1],p[2]*0.3); br.rotation.z=p[0]*2.2; br.rotation.x=p[2]*0.5; g.add(br);
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,7),stdMat(0xf5c66b,0.6));
+    tip.position.set(p[0]*1.7,p[1]+0.18,p[2]*0.3); g.add(tip);
+  });
+  g.position.set(-1.3,0,2.3);
+  return g;
+}
+function buildMucus(){
+  const g=new THREE.Group();
+  mucusMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,13,10),stdMat(0x58a05c,0.45)));
+  mucusMesh.scale.set(1.25,0.5,1); mucusMesh.position.y=0.22; g.add(mucusMesh);
+  [[0.12,0.36,0.08],[-0.15,0.33,-0.06],[0.02,0.4,0.14],[-0.05,0.3,0.1]].forEach(p=>{
+    const speck=new THREE.Mesh(new THREE.SphereGeometry(0.035,7,6),stdMat(0x6e4a2f,0.7));
+    speck.position.set(p[0],p[1],p[2]); g.add(speck);
+  });
+  const drop=new THREE.Mesh(new THREE.SphereGeometry(0.12,10,8),stdMat(0x7cb342,0.45));
+  drop.scale.set(1,1.25,1); drop.position.set(0.3,0.34,-0.12); g.add(drop);
+  g.position.set(1.5,0,2.3);
+  return g;
+}
+function buildRootHair(){
+  const g=new THREE.Group();
+  const soil=new THREE.Mesh(new THREE.BoxGeometry(0.95,0.3,0.6),stdMat(0x7a5230,1));
+  soil.position.y=0.15; g.add(soil);
+  const root=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,0.55,9),stdMat(0xf5f2ea,0.9));
+  root.position.y=0.55; g.add(root);
+  const hair=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.012,0.62,6),stdMat(0xf5f2ea,0.9)));
+  hair.rotation.z=Math.PI/2.4; hair.position.set(0.26,0.42,0); g.add(hair);
+  const vac=new THREE.Mesh(new THREE.SphereGeometry(0.055,8,7),stdMat(0xaed6f1,0.5));
+  vac.position.set(0,0.62,0.08); g.add(vac);
+  [[-0.2,0.36,0.1],[0.15,0.3,-0.14]].forEach(p=>{
+    const h2=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.008,0.3,5),stdMat(0xf5f2ea,0.9));
+    h2.rotation.z=p[0]*3; h2.position.set(p[0],p[1],p[2]); g.add(h2);
+  });
+  g.position.set(3.9,0,1.8);
+  return g;
+}
+function buildPalisade(){
+  const g=new THREE.Group();
+  const leafSlab=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.14,0.6),stdMat(0x58a05c,0.95));
+  leafSlab.position.y=0.07; g.add(leafSlab);
+  const cell=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.78,11),stdMat(0xa9dfa0,0.55)));
+  cell.position.y=0.55; g.add(cell);
+  [[0,0.78,0.06],[0.05,0.5,-0.05],[-0.05,0.32,0.04],[0.02,0.66,-0.07],[-0.03,0.9,0]].forEach(p=>{
+    const chl=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,7),stdMat(0x1e8449,0.6));
+    chl.scale.set(1,1.4,1); chl.position.set(p[0],p[1],p[2]); g.add(chl);
+  });
+  g.position.set(-4.6,0,-2.4);
+  return g;
+}
+function buildLeaf(){
+  const g=new THREE.Group();
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,0.5,7),stdMat(0x2e8b57,0.9));
+  stem.position.y=0.25; stem.rotation.z=0.3; g.add(stem);
+  const blade=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,13,10),stdMat(0x43a047,0.85)));
+  blade.scale.set(1.35,0.18,0.8); blade.position.set(0.12,0.62,0); blade.rotation.z=0.25; g.add(blade);
+  const vein=new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,0.75,5),stdMat(0x2e8b57,0.9));
+  vein.rotation.z=Math.PI/2-0.25; vein.position.set(0.12,0.63,0); g.add(vein);
+  g.position.set(4.7,0,-2.6);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xf2f8ee);
+  scene3.fog=new THREE.Fog(0xf2f8ee,19,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xfff6dd,0xcbb59a,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xe6efdc,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const patch=new THREE.Mesh(new THREE.CircleGeometry(3.2,24),stdMat(0xdcefd2,1));
+  patch.rotation.x=-Math.PI/2; patch.position.set(0.4,-0.005,0.2); patch.receiveShadow=true; scene3.add(patch);
+  reg('rbc',buildRbc());
+  reg('neurone',buildNeurone());
+  reg('ciliated',buildCiliated());
+  reg('axon',buildAxon());
+  reg('dendrite',buildDendrite());
+  reg('mucus',buildMucus());
+  reg('roothair',buildRootHair());
+  reg('palisade',buildPalisade());
+  reg('leaf',buildLeaf());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.58); p.position.set(0,0.35,0); addProxy('rbc',p,G.rbc); }
+  { const p=sphProxy(0.62); p.position.set(0,0.45,0); addProxy('neurone',p,G.neurone); }
+  { const p=sphProxy(0.6); p.position.set(0,0.5,0); addProxy('ciliated',p,G.ciliated); }
+  { const p=sphProxy(0.6); p.position.set(0,0.4,0); addProxy('axon',p,G.axon); }
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('dendrite',p,G.dendrite); }
+  { const p=sphProxy(0.58); p.position.set(0,0.3,0); addProxy('mucus',p,G.mucus); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('roothair',p,G.roothair); }
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('palisade',p,G.palisade); }
+  { const p=sphProxy(0.58); p.position.set(0.1,0.6,0); addProxy('leaf',p,G.leaf); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function faunaPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=CELLS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=CELLS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=faunaPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=CELLS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step. */
+const STEP_TARGETS=[
+  ['rbc','neurone','ciliated'],
+  [],
+  ['axon','dendrite'],
+  ['ciliated','mucus'],
+  ['roothair','palisade'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!CELLS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='rbc'){ T.fRbc=true; FOUND.rbc=true; T.s1hint=null; }
+    else if(id==='neurone'){ T.fNeurone=true; FOUND.neurone=true; T.s1hint=null; }
+    else if(id==='ciliated'){ T.fCiliated=true; FOUND.ciliated=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='axon'){ T.s3found.add('axon'); FOUND.axon=true; }
+    else if(id==='dendrite'){ T.s3found.add('dendrite'); FOUND.dendrite=true; }
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='ciliated'){ T.s4found.add('ciliated'); }
+    else if(id==='mucus'){ T.s4found.add('mucus'); FOUND.mucus=true; }
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='roothair'){ T.s5found.add('roothair'); FOUND.roothair=true; }
+    else if(id==='palisade'){ T.s5found.add('palisade'); FOUND.palisade=true; }
+    saveProg(); renderFound(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(ciliaMesh){ ciliaMesh.rotation.z=Math.sin(t*3.2)*0.1; }
+  if(signalDot){ const fx=((t*0.55)%1.4)-0.2; signalDot.position.x=-0.6+fx*1.05; }
+  if(mucusMesh){ const s=1+Math.sin(t*1.8)*0.03; mucusMesh.scale.set(1.25*s,0.5,1*s); }
+  if(lastFocus&&CELLS[lastFocus]){
+    const p=faunaPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+CELLS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — complete the sentences: tap the word that fits */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  const list=$('ex1List'); list.innerHTML='';
+  EX1.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    (EX1_ORD[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s1.opts[oi];
+      let cls='wordopt';
+      if(EX1ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi!==s1.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX1DONE.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX1ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 2 · Practice — tap ALL the true statements */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=7);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=7);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2Hint').innerHTML='';
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const sel=EX2SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.ok) b.className='excard right';
+      else if(sel&&!it.ok) b.className='excard wrongsel';
+      else if(!sel&&it.ok) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX2SEL.has(it.id)) EX2SEL.delete(it.id); else EX2SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g2.appendChild(b);
+  });
+  /* Ex 3 · Challenge — compare two cells: tap a card, then its cell */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinRbc').innerHTML=bi(STR.binRbc);
+  $('ex3BinNeur').innerHTML=bi({en:'NEURONE ⚡',vi:'TẾ BÀO THẦN KINH ⚡ (neurone)'});
+  const g3=$('ex3Grid'); g3.innerHTML='';
+  EX3_ORDER.forEach(it=>{
+    const ans=EX3ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex3sel===it.id?' sel':'')+(exRevealed? (EX3DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='rbc'?'🔴':'⚡')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex3sel=it.id; renderExercises(); };
+    g3.appendChild(d);
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+EX2SEL.size+Object.keys(EX3ANS).length); }
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex3BinRbc').onclick=()=>ex3Place('rbc');
+$('ex3BinNeur').onclick=()=>ex3Place('neurone');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]!==undefined&&EX1ANS[si]!==EX1[si].wrong));
+  EX2DONE=new Set(EX2.filter(x=>x.ok&&EX2SEL.has(x.id)).map(x=>x.id));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2SEL=new Set(); EX3ANS={}; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX2_ORDER=mixOrder(EX2,c=>c.ok?'ok':'notok',3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.rbc=false; FOUND.neurone=false; FOUND.ciliated=false; }
+  if(step===1){ CARDS2.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.axon=false; FOUND.dendrite=false; }
+  if(step===3){ FOUND.mucus=false; }
+  if(step===4){ FOUND.roothair=false; FOUND.palisade=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,s2:[...EX2SEL],a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(Array.isArray(s.exAns.s2)) EX2SEL=new Set(s.exAns.s2.filter(id=>EX2.some(x=>x.id===id)));
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='rbc'||s.exAns.a3[id]==='neurone')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.opts.findIndex((o,oi)=>oi!==s1.wrong); });
+    EX2SEL=new Set(EX2DONE);
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fRbc=!!FOUND.rbc; t.fNeurone=!!FOUND.neurone; t.fCiliated=!!FOUND.ciliated; }
+  else if(i===1){ CARDS2.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); }
+  else if(i===2){
+    if(FOUND.axon) t.s3found.add('axon');
+    if(FOUND.dendrite) t.s3found.add('dendrite');
+  }
+  else if(i===3){
+    if(FOUND.ciliated) t.s4found.add('ciliated');
+    if(FOUND.mucus) t.s4found.add('mucus');
+  }
+  else if(i===4){
+    if(FOUND.roothair) t.s5found.add('roothair');
+    if(FOUND.palisade) t.s5found.add('palisade');
+  }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci7-1-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>
