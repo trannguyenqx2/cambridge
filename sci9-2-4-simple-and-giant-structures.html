@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>2.4 Simple and giant structures — Cấu trúc đơn giản và cấu trúc khổng lồ · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdf3d8,#eef2d8)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.high{background:#b03a3a}
+.binbtn.low{background:#0b76d1}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="2.4 Simple and giant structures" data-vi="2.4 Cấu trúc đơn giản và cấu trúc khổng lồ (Simple and giant structures)">2.4 Simple and giant structures</span>
+    <span class="eqchip i18n" data-en="Unit 2 · Properties of materials" data-vi="Bài 2 · Tính chất của vật liệu (Properties of materials)">Unit 2 · Properties of materials</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does the way particles are joined decide a substance’s properties?" data-vi="Cách các hạt liên kết với nhau quyết định tính chất của một chất như thế nào?">How does the way particles are joined decide a substance’s properties?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Ions attract" data-vi="Các ion (ions) hút nhau">Ions attract</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Giant structures form" data-vi="Cấu trúc khổng lồ (giant structures) hình thành">Giant structures form</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Structure decides properties" data-vi="Cấu trúc quyết định tính chất">Structure decides properties</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Test: melt it, conduct it" data-vi="Thử: nóng chảy, dẫn điện">Test: melt it, conduct it</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap the models on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 2 Properties of materials · Section 2.4. The bench in this lesson is a simulation — the circuit test uses models, never real mains electricity." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 2 Tính chất của vật liệu (Properties of materials) · Mục 2.4. Bàn trong bài học này là mô phỏng — phép thử mạch điện dùng mô hình, không bao giờ dùng điện lưới thật.">Cambridge Lower Secondary Science 9 · Unit 2 Properties of materials · Section 2.4. The bench in this lesson is a simulation — the circuit test uses models, never real mains electricity.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 2 Properties of materials, section 2.4 Simple and giant structures, pages 64–76; Workbook 9 (ISBN 9781108742894), pages 37–41. All wording in this lesson is rewritten in our own words; no text is copied from the book. The unit project (Building the Periodic Table) and the unit check-your-progress pages are classroom research and review tasks covering the whole unit, and are not part of this interactive lesson." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 2 Tính chất của vật liệu (Properties of materials), mục 2.4 Cấu trúc đơn giản và cấu trúc khổng lồ (Simple and giant structures), trang 64–76; Sách bài tập 9 (ISBN 9781108742894), trang 37–41. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Dự án của bài (Xây dựng Bảng tuần hoàn — Building the Periodic Table) và phần kiểm tra tiến bộ cuối bài là nhiệm vụ nghiên cứu và ôn tập trên lớp cho cả bài, không thuộc bài học tương tác này.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 2 Properties of materials, section 2.4 Simple and giant structures, pages 64–76; Workbook 9 (ISBN 9781108742894), pages 37–41. All wording in this lesson is rewritten in our own words; no text is copied from the book. The unit project (Building the Periodic Table) and the unit check-your-progress pages are classroom research and review tasks covering the whole unit, and are not part of this interactive lesson.</p>
+    <p class="i18n" data-en="Objectives (from the book): learn how giant structures are formed; compare the properties of ionic and covalent substances; explain how the structures of these substances relate to their properties. Key words: lattice, intermolecular forces, graphite, layers — plus electrostatic forces, ionic bond, covalent bond and macromolecule." data-vi="Mục tiêu (theo sách): tìm hiểu các cấu trúc khổng lồ (giant structures) hình thành như thế nào; so sánh tính chất của các chất ion (ionic) và cộng hóa trị (covalent); giải thích cấu trúc của các chất này liên quan tới tính chất của chúng ra sao. Từ khóa: lattice (mạng lưới), intermolecular forces (lực liên phân tử), graphite, layers (các lớp) — cùng electrostatic forces (lực tĩnh điện), ionic bond (liên kết ion), covalent bond (liên kết cộng hóa trị) và macromolecule (đại phân tử).">Objectives (from the book): learn how giant structures are formed; compare the properties of ionic and covalent substances; explain how the structures of these substances relate to their properties. Key words: lattice, intermolecular forces, graphite, layers — plus electrostatic forces, ionic bond, covalent bond and macromolecule.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; testing a structure means tapping the model on the bench. The steps follow the book's order: the sodium chloride lattice from the Getting started discussion, simple molecules (carbon dioxide and oxygen), the giant carbon structures diamond and graphite (Activity 2.4.1's model-building, done here with 3D models), the book's melting-point data table (sodium chloride 801 °C, magnesium chloride 714 °C, calcium oxide 2613 °C, methane −182 °C, ammonia −77 °C, chlorine −101 °C), and the Think like a scientist conductivity investigation — crystal first (no conduction), then solution (the bulb lights)." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn thí nghiệm' chỉ di chuyển camera; muốn kiểm tra một cấu trúc thì phải chạm vào chính mô hình trên bàn. Các bước đi theo đúng thứ tự trong sách: mạng lưới (lattice) sodium chloride từ phần thảo luận Khởi động, các phân tử đơn giản (carbon dioxide và oxygen), các cấu trúc carbon khổng lồ kim cương (diamond) và graphite (Hoạt động 2.4.1 dựng mô hình, ở đây thực hiện bằng mô hình 3D), bảng số liệu nhiệt độ nóng chảy của sách (sodium chloride 801 °C, magnesium chloride 714 °C, calcium oxide 2613 °C, methane −182 °C, ammonia −77 °C, chlorine −101 °C), và khảo sát dẫn điện kiểu Tư duy như nhà khoa học — tinh thể trước (không dẫn điện), rồi dung dịch (bóng đèn sáng).">How it works: each step asks for one real action — tapping the models on the 3D bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; testing a structure means tapping the model on the bench. The steps follow the book's order: the sodium chloride lattice from the Getting started discussion, simple molecules (carbon dioxide and oxygen), the giant carbon structures diamond and graphite (Activity 2.4.1's model-building, done here with 3D models), the book's melting-point data table (sodium chloride 801 °C, magnesium chloride 714 °C, calcium oxide 2613 °C, methane −182 °C, ammonia −77 °C, chlorine −101 °C), and the Think like a scientist conductivity investigation — crystal first (no conduction), then solution (the bulb lights).</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn ionic" id="ex1BinIonic"></button>
+        <button class="binbtn covalent" id="ex1BinCov"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn diamond" id="ex3BinDia"></button>
+        <button class="binbtn graphite" id="ex3BinGra"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-2-4 "Simple and giant structures"
+   (Science 9, Unit 2 · Properties of materials)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= bench models ================= */
+const LAB={
+  na:    {emoji:'🟣', name:{en:'Sodium ion, Na+',vi:'Ion sodium, Na+ (sodium ion)'},        short:{en:'Sodium ion Na+',vi:'Ion sodium Na+'},   ring:0.55, labelY:1.3,  fx:-3.6, fz:-1.3, fr:4.6},
+  cl:    {emoji:'🟢', name:{en:'Chloride ion, Cl−',vi:'Ion chloride, Cl− (chloride ion)'}, short:{en:'Chloride ion Cl−',vi:'Ion chloride Cl−'}, ring:0.6, labelY:1.35, fx:-2.4, fz:-1.3, fr:4.6},
+  co2:   {emoji:'💨', name:{en:'Carbon dioxide molecule',vi:'Phân tử carbon dioxide (molecule)'}, short:{en:'Carbon dioxide',vi:'Carbon dioxide'}, ring:0.6, labelY:1.25, fx:-0.9, fz:-1.3, fr:4.6},
+  oxygen:{emoji:'🫧', name:{en:'Oxygen molecule',vi:'Phân tử oxygen (oxygen molecule)'},    short:{en:'Oxygen molecule',vi:'Phân tử oxygen'},  ring:0.55, labelY:1.25, fx:0.4,  fz:-1.3, fr:4.4},
+  diamond:{emoji:'💎', name:{en:'Diamond',vi:'Kim cương (diamond)'},                        short:{en:'Diamond',vi:'Kim cương'},               ring:0.55, labelY:1.35, fx:1.7,  fz:-1.3, fr:4.6},
+  drill: {emoji:'🔩', name:{en:'Diamond drill bit',vi:'Mũi khoan kim cương (drill bit)'},   short:{en:'Drill bit',vi:'Mũi khoan'},             ring:0.5,  labelY:1.4,  fx:2.9,  fz:-1.3, fr:4.4},
+  graphite:{emoji:'⬛', name:{en:'Graphite layers',vi:'Các lớp graphite (layers)'},         short:{en:'Graphite',vi:'Graphite'},               ring:0.6,  labelY:1.2,  fx:-3.0, fz:1.7,  fr:4.6},
+  pencil:{emoji:'✏️', name:{en:'Pencil with a graphite lead',vi:'Bút chì với ruột graphite (pencil)'}, short:{en:'Pencil',vi:'Bút chì'},      ring:0.55, labelY:1.2,  fx:-1.7, fz:1.7,  fr:4.4},
+  crystal:{emoji:'🧂', name:{en:'Sodium chloride crystal in a circuit',vi:'Tinh thể sodium chloride (crystal) trong mạch điện'}, short:{en:'Salt crystal',vi:'Tinh thể muối'}, ring:0.55, labelY:1.3, fx:-0.3, fz:1.7, fr:4.6},
+  solution:{emoji:'🧪', name:{en:'Salt solution with carbon rods and a bulb',vi:'Dung dịch muối (solution) với que carbon và bóng đèn'}, short:{en:'Salt solution',vi:'Dung dịch muối'}, ring:0.6, labelY:1.45, fx:1.1, fz:1.7, fr:4.6}
+};
+const FOCUSORDER=['na','cl','co2','oxygen','diamond','drill','graphite','pencil','crystal','solution'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to test a structure, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn kiểm tra một cấu trúc, hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My structure record',vi:'Bảng ghi cấu trúc của con'},
+  u2Brief:{en:'What you have found out about each structure, in the order of the book.',vi:'Những gì con đã tìm ra về từng cấu trúc, theo đúng thứ tự trong sách.'},
+  recLattice:{en:'🧂 Sodium chloride: ions in a giant lattice',vi:'🧂 Sodium chloride: các ion (ions) trong một mạng lưới khổng lồ (lattice)'},
+  recSimple:{en:'💨 Simple molecules: strong bonds inside, weak forces between',vi:'💨 Phân tử đơn giản (simple molecules): liên kết mạnh bên trong, lực yếu ở giữa các phân tử'},
+  recDiamond:{en:'💎 Diamond: every carbon bonded to four others — very hard',vi:'💎 Kim cương (diamond): mỗi carbon liên kết với bốn nguyên tử khác — rất cứng'},
+  recGraphite:{en:'✏️ Graphite: layers that slide — soft',vi:'✏️ Graphite: các lớp (layers) trượt lên nhau — mềm'},
+  recCrystal:{en:'🔌 Salt crystal in a circuit: the bulb stayed dark',vi:'🔌 Tinh thể muối trong mạch điện: bóng đèn vẫn tối'},
+  recSolution:{en:'💡 Salt solution: the bulb lit — ions on the move conduct',vi:'💡 Dung dịch muối: bóng đèn sáng — các ion chuyển động dẫn điện'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for linking structure to properties.',vi:'Danh sách kiểm tra để nối cấu trúc với tính chất của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundLattice:{en:'Opposite charges attract in all directions — a lattice forms',vi:'Các điện tích trái dấu hút nhau theo mọi hướng — một mạng lưới (lattice) hình thành'},
+  foundSimple:{en:'Weak intermolecular forces between molecules',vi:'Lực liên phân tử (intermolecular forces) yếu giữa các phân tử'},
+  foundDiamond:{en:'Diamond: four strong covalent bonds per carbon atom',vi:'Kim cương (diamond): bốn liên kết cộng hóa trị (covalent bonds) mạnh cho mỗi nguyên tử carbon'},
+  foundGraphite:{en:'Graphite: three bonds per atom, layers that slide',vi:'Graphite: ba liên kết cho mỗi nguyên tử, các lớp (layers) trượt lên nhau'},
+  foundCrystal:{en:'A solid ionic crystal does not conduct — its ions cannot move',vi:'Tinh thể ion (ionic) rắn không dẫn điện — các ion của nó không chuyển động được'},
+  foundSolution:{en:'Molten or dissolved ions are free to move and carry charge',vi:'Các ion nóng chảy hoặc hòa tan được tự do chuyển động và mang điện tích'},
+  binIonic:{en:'IONIC 🧲',vi:'ION 🧲 (ionic)'},
+  binCov:{en:'COVALENT 🔗',vi:'CỘNG HÓA TRỊ 🔗 (covalent)'},
+  binDia:{en:'DIAMOND 💎',vi:'KIM CƯƠNG 💎 (diamond)'},
+  binGra:{en:'GRAPHITE ✏️',vi:'GRAPHITE ✏️'},
+  binHigh:{en:'HIGH MELTING POINT 🔥',vi:'NHIỆT ĐỘ NÓNG CHẢY CAO 🔥 (high melting point)'},
+  binLow:{en:'LOW MELTING POINT ❄️',vi:'NHIỆT ĐỘ NÓNG CHẢY THẤP ❄️ (low melting point)'},
+  lookCircuit:{en:'Look at the solution circuit 💡',vi:'Ngắm mạch điện với dung dịch 💡'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 2.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 2.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Ionic or covalent bonds?',vi:'Bài tập 1 · Focus — Liên kết ion (ionic) hay cộng hóa trị (covalent)?'},
+  ex1Inst:{en:'Look at each description from Workbook exercise 2.4A. Tap a card, then tap IONIC or COVALENT to say which kind of bonding it shows.',vi:'Đọc từng mô tả từ bài tập Workbook 2.4A. Chạm vào một thẻ, rồi chạm ION (IONIC) hoặc CỘNG HÓA TRỊ (COVALENT) để nói nó cho thấy loại liên kết nào.'},
+  ex2T:{en:'Exercise 2 · Practice — Properties from the data table',vi:'Bài tập 2 · Practice — Tính chất từ bảng số liệu'},
+  ex2Inst:{en:'Use the melting and boiling points from the book’s table (Workbook 2.4B). For each question, tap the ONE correct answer.',vi:'Dùng nhiệt độ nóng chảy và nhiệt độ sôi trong bảng của sách (Workbook 2.4B). Với mỗi câu hỏi, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Giant structures of carbon',vi:'Bài tập 3 · Challenge — Các cấu trúc khổng lồ của carbon'},
+  ex3Inst:{en:'Diamond and graphite are both giant structures made only of carbon (Workbook 2.4C). Tap a card, then tap DIAMOND or GRAPHITE.',vi:'Kim cương (diamond) và graphite đều là cấu trúc khổng lồ (giant structures) chỉ làm từ carbon (Workbook 2.4C). Chạm vào một thẻ, rồi chạm KIM CƯƠNG (DIAMOND) hoặc GRAPHITE.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'lattice',vi:'mạng lưới (tinh thể)'},
+  {en:'intermolecular forces',vi:'lực liên phân tử'},
+  {en:'graphite',vi:'graphite (than chì)'},
+  {en:'layers',vi:'các lớp'},
+  {en:'electrostatic forces',vi:'lực tĩnh điện'},
+  {en:'ionic bond',vi:'liên kết ion'},
+  {en:'covalent bond',vi:'liên kết cộng hóa trị'},
+  {en:'macromolecule',vi:'đại phân tử'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started: ions join',vi:'Khởi động: các ion kết hợp'}, word:{en:'lattice',vi:'mạng lưới (lattice)'},
+  q:{en:'How do sodium and chlorine join together to make sodium chloride?',vi:'Sodium và chlorine kết hợp với nhau như thế nào để tạo thành sodium chloride?'},
+  act:{en:'Tap the sodium ion (Na+) on the bench. Then tap the chloride ion (Cl−) beside it.',vi:'Chạm vào ion sodium (Na+) trên bàn. Sau đó chạm vào ion chloride (Cl−) bên cạnh nó.'},
+  see:{en:'The two ions pull towards each other — and towards every neighbour around them.',vi:'Hai ion hút về phía nhau — và hút mọi ion kề bên xung quanh chúng.'},
+  concl:[
+    {en:'A sodium ion (Na+) has a positive charge and a chloride ion (Cl−) a negative one, so they attract each other strongly.',vi:'Một ion sodium (Na+) mang điện tích dương và một ion chloride (Cl−) mang điện tích âm, nên chúng hút nhau mạnh.'},
+    {en:'These attractions are called electrostatic forces. They act in all directions and form ionic bonds.',vi:'Các lực hút này gọi là lực tĩnh điện (electrostatic forces). Chúng tác dụng theo mọi hướng và tạo thành liên kết ion (ionic bonds).'},
+    {en:'The ions repeat in a giant structure called a lattice: each Na+ is surrounded by six Cl− ions, so the crystals grow in a regular shape.',vi:'Các ion lặp lại thành một cấu trúc khổng lồ (giant structure) gọi là mạng lưới (lattice): mỗi Na+ được bao quanh bởi sáu ion Cl−, nên tinh thể lớn lên theo hình dạng đều đặn.'}]},
+ {tag:{en:'Simple molecules',vi:'Phân tử đơn giản'}, word:{en:'intermolecular forces',vi:'lực liên phân tử (intermolecular forces)'},
+  q:{en:'How is an oxygen or carbon dioxide molecule different from a lattice?',vi:'Một phân tử oxygen hay carbon dioxide khác với một mạng lưới (lattice) như thế nào?'},
+  act:{en:'Tap the carbon dioxide molecule. Then tap the oxygen molecule beside it.',vi:'Chạm vào phân tử carbon dioxide. Sau đó chạm vào phân tử oxygen bên cạnh nó.'},
+  see:{en:'Inside each molecule the atoms are locked tightly together — but the separate molecules themselves drift apart easily.',vi:'Bên trong mỗi phân tử, các nguyên tử khóa chặt với nhau — nhưng bản thân các phân tử riêng lẻ lại tách ra dễ dàng.'},
+  concl:[
+    {en:'Inside a molecule, atoms share electrons: these covalent bonds are very strong.',vi:'Bên trong một phân tử, các nguyên tử dùng chung electron: các liên kết cộng hóa trị (covalent bonds) này rất mạnh.'},
+    {en:'Between the molecules there are only weak intermolecular forces, so simple molecules are separate little units, not one giant structure.',vi:'Giữa các phân tử chỉ có lực liên phân tử (intermolecular forces) yếu, nên các phân tử đơn giản (simple molecules) là những đơn vị nhỏ riêng lẻ, không phải một cấu trúc khổng lồ.'},
+    {en:'That is why substances like oxygen, carbon dioxide and methane melt and boil so easily.',vi:'Đó là lý do các chất như oxygen, carbon dioxide và methane nóng chảy và sôi rất dễ dàng.'}]},
+ {tag:{en:'Giant covalent structures: diamond',vi:'Cấu trúc cộng hóa trị khổng lồ: kim cương'}, word:{en:'macromolecule',vi:'đại phân tử (macromolecule)'},
+  q:{en:'Diamond and pencil “lead” are both pure carbon. Why is diamond so hard?',vi:'Kim cương (diamond) và “chì” của bút chì đều là carbon nguyên chất. Vì sao kim cương lại cứng đến vậy?'},
+  act:{en:'Tap the diamond on the bench. Then tap the drill bit that uses tiny diamond pieces to cut and drill.',vi:'Chạm vào viên kim cương (diamond) trên bàn. Sau đó chạm vào mũi khoan (drill bit) dùng các mảnh kim cương nhỏ để cắt và khoan.'},
+  see:{en:'Every carbon atom in the diamond is locked to four neighbours in one rigid three-dimensional frame.',vi:'Mỗi nguyên tử carbon trong kim cương khóa chặt với bốn nguyên tử kề bên trong một khung ba chiều cứng chắc.'},
+  concl:[
+    {en:'In diamond, each carbon atom forms four strong covalent bonds, building one giant structure — a macromolecule.',vi:'Trong kim cương (diamond), mỗi nguyên tử carbon tạo bốn liên kết cộng hóa trị (covalent bonds) mạnh, xây thành một cấu trúc khổng lồ (giant structure) — một đại phân tử (macromolecule).'},
+    {en:'The rigid three-dimensional lattice makes diamond the hardest natural material, ideal for cutting and drilling tools.',vi:'Mạng lưới (lattice) ba chiều cứng chắc khiến kim cương là vật liệu tự nhiên cứng nhất, lý tưởng cho dụng cụ cắt và khoan.'},
+    {en:'Giant covalent substances like diamond (and sand, silicon dioxide) have very high melting points.',vi:'Các chất cộng hóa trị khổng lồ như kim cương (và cát, silicon dioxide) có nhiệt độ nóng chảy (melting point) rất cao.'}]},
+ {tag:{en:'Giant covalent structures: graphite',vi:'Cấu trúc cộng hóa trị khổng lồ: graphite'}, word:{en:'layers',vi:'các lớp (layers)'},
+  q:{en:'Graphite is giant carbon too — so why is it soft and slippery?',vi:'Graphite cũng là carbon khổng lồ — vậy vì sao nó lại mềm và trơn?'},
+  act:{en:'Tap the graphite block on the bench, and watch its top layer. Then tap the pencil whose “lead” is graphite.',vi:'Chạm vào khối graphite trên bàn, và quan sát lớp trên cùng của nó. Sau đó chạm vào cây bút chì có “ruột chì” bằng graphite.'},
+  see:{en:'The top layer of the graphite slides sideways — and a dark mark rubs off onto the paper.',vi:'Lớp trên cùng của graphite trượt sang ngang — và một vết đen bong ra dính lên giấy.'},
+  concl:[
+    {en:'In graphite, each carbon atom bonds with only three others, forming flat layers.',vi:'Trong graphite, mỗi nguyên tử carbon chỉ liên kết với ba nguyên tử khác, tạo thành các lớp (layers) phẳng.'},
+    {en:'The bonds inside a layer are strong covalent bonds, but the forces between the layers are weak, so the layers slide over each other easily.',vi:'Các liên kết trong một lớp là liên kết cộng hóa trị (covalent bonds) mạnh, nhưng lực giữa các lớp (layers) thì yếu, nên các lớp trượt lên nhau dễ dàng.'},
+    {en:'That sliding makes graphite soft: it rubs off as a pencil mark, and it can lubricate moving machine parts.',vi:'Sự trượt đó khiến graphite mềm: nó bong ra thành vết bút chì, và có thể bôi trơn các bộ phận máy chuyển động.'}]},
+ {tag:{en:'Think like a scientist: conducting electricity',vi:'Tư duy như nhà khoa học: dẫn điện'}, word:{en:'electrostatic forces',vi:'lực tĩnh điện (electrostatic forces)'},
+  q:{en:'A salt crystal sits in a circuit and the bulb stays dark. What happens with a salt solution?',vi:'Một tinh thể muối nằm trong mạch điện và bóng đèn vẫn tối. Điều gì xảy ra với một dung dịch muối?'},
+  act:{en:'Tap the sodium chloride crystal in the circuit. Then tap the beaker of salt solution with the carbon rods and the bulb.',vi:'Chạm vào tinh thể sodium chloride (crystal) trong mạch điện. Sau đó chạm vào cốc dung dịch muối (solution) với các que carbon và bóng đèn.'},
+  see:{en:'With the crystal, the bulb stays dark. With the solution, the bulb lights up!',vi:'Với tinh thể, bóng đèn vẫn tối. Với dung dịch, bóng đèn sáng lên!'},
+  concl:[
+    {en:'Ionic compounds conduct electricity when they are melted or dissolved in water, because their ions are free to move and carry the charge.',vi:'Các hợp chất ion (ionic compounds) dẫn điện (conduct electricity) khi nóng chảy hoặc hòa tan trong nước, vì các ion (ions) của chúng được tự do chuyển động và mang điện tích.'},
+    {en:'In a solid crystal the ions are locked in the lattice and cannot move, so the solid does not conduct.',vi:'Trong tinh thể rắn, các ion bị khóa trong mạng lưới (lattice) và không chuyển động được, nên chất rắn không dẫn điện.'},
+    {en:'Substances made of simple covalent molecules do not conduct electricity at all.',vi:'Các chất làm từ phân tử cộng hóa trị (covalent molecules) đơn giản không dẫn điện chút nào.'}]},
+ {tag:{en:'Melting points: read the data',vi:'Nhiệt độ nóng chảy: đọc số liệu'}, word:{en:'lattice',vi:'mạng lưới (lattice)'},
+  q:{en:'Can melting points tell us which structure a substance has?',vi:'Nhiệt độ nóng chảy (melting points) có cho ta biết một chất có cấu trúc nào không?'},
+  act:{en:'Tap a card, then tap HIGH MELTING POINT or LOW MELTING POINT. The temperatures on the cards are the book’s own data.',vi:'Chạm vào một thẻ, rồi chạm NHIỆT ĐỘ NÓNG CHẢY CAO (HIGH MELTING POINT) hoặc NHIỆT ĐỘ NÓNG CHẢY THẤP (LOW MELTING POINT). Nhiệt độ trên các thẻ là số liệu của chính sách.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can explain how giant structures are formed.',vi:'Con giải thích được các cấu trúc khổng lồ (giant structures) hình thành như thế nào.'},
+    {en:'I can compare the properties of ionic and covalent substances.',vi:'Con so sánh được tính chất của các chất ion (ionic) và cộng hóa trị (covalent).'},
+    {en:'I can explain how the structures of these substances relate to their properties.',vi:'Con giải thích được cấu trúc của các chất này liên quan tới tính chất của chúng như thế nào.'},
+    {en:'Ionic substances melt very high because strong electrostatic forces hold the lattice together; simple molecules melt low because only weak intermolecular forces must be overcome.',vi:'Các chất ion nóng chảy ở nhiệt độ rất cao vì lực tĩnh điện (electrostatic forces) mạnh giữ mạng lưới (lattice) với nhau; các phân tử đơn giản nóng chảy thấp vì chỉ cần thắng lực liên phân tử (intermolecular forces) yếu.'}]}
+];
+const CARDS6=[
+ {id:'s_salt',emoji:'🧂',en:'Sodium chloride — melts at 801 °C',vi:'Sodium chloride — nóng chảy ở 801 °C',ans:'high'},
+ {id:'s_ch4',emoji:'💨',en:'Methane — melts at −182 °C',vi:'Methane — nóng chảy ở −182 °C',ans:'low'},
+ {id:'s_cao',emoji:'🪨',en:'Calcium oxide — melts at 2613 °C',vi:'Calcium oxide — nóng chảy ở 2613 °C',ans:'high'},
+ {id:'s_nh3',emoji:'🫧',en:'Ammonia — melts at −77 °C',vi:'Ammonia — nóng chảy ở −77 °C',ans:'low'},
+ {id:'s_mgcl',emoji:'⚪',en:'Magnesium chloride — melts at 714 °C',vi:'Magnesium chloride — nóng chảy ở 714 °C',ans:'high'},
+ {id:'s_cl2',emoji:'🟢',en:'Chlorine — melts at −101 °C',vi:'Chlorine — nóng chảy ở −101 °C',ans:'low'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What holds the ions together in a sodium chloride lattice?',vi:'Điều gì giữ các ion (ions) lại với nhau trong mạng lưới (lattice) sodium chloride?'},
+  o:[{en:'Weak forces between separate molecules',vi:'Lực yếu giữa các phân tử riêng lẻ'},
+     {en:'Strong electrostatic forces between oppositely charged ions, acting in all directions',vi:'Lực tĩnh điện (electrostatic forces) mạnh giữa các ion mang điện tích trái dấu, tác dụng theo mọi hướng'},
+     {en:'Shared electrons between each pair of ions',vi:'Electron dùng chung giữa mỗi cặp ion'}],a:1,
+  e:{en:'Na+ and Cl− ions carry equal and opposite charges. They attract each other in all directions with strong electrostatic forces, and these attractions are the ionic bonds of the lattice.',vi:'Các ion Na+ và Cl− mang điện tích bằng nhau và trái dấu. Chúng hút nhau theo mọi hướng bằng lực tĩnh điện (electrostatic forces) mạnh, và các lực hút này là liên kết ion (ionic bonds) của mạng lưới (lattice).'}},
+ {q:{en:'Why is graphite soft, even though the bonds inside its layers are strong covalent bonds?',vi:'Vì sao graphite mềm, dù các liên kết bên trong các lớp (layers) của nó là liên kết cộng hóa trị (covalent bonds) mạnh?'},
+  o:[{en:'The forces between the layers are weak, so the layers slide over each other',vi:'Lực giữa các lớp (layers) yếu, nên các lớp trượt lên nhau'},
+     {en:'Graphite atoms have no bonds at all',vi:'Các nguyên tử graphite không có liên kết nào cả'},
+     {en:'Graphite melts at room temperature',vi:'Graphite nóng chảy ở nhiệt độ phòng'}],a:0,
+  e:{en:'Each carbon atom in graphite bonds to three others, making layers. The layers are only weakly held together, so they slide — that is why graphite is soft, marks paper and works as a lubricant.',vi:'Mỗi nguyên tử carbon trong graphite liên kết với ba nguyên tử khác, tạo thành các lớp (layers). Các lớp chỉ được giữ với nhau một cách yếu, nên chúng trượt — đó là lý do graphite mềm, để lại vết trên giấy và dùng làm chất bôi trơn.'}},
+ {q:{en:'A substance has a melting point of 3078 °C and a boiling point of 4300 °C. What does this suggest about it?',vi:'Một chất có nhiệt độ nóng chảy (melting point) 3078 °C và nhiệt độ sôi (boiling point) 4300 °C. Điều này gợi ý gì về nó?'},
+  o:[{en:'It is made of simple molecules',vi:'Nó được làm từ các phân tử đơn giản'},
+     {en:'It is a gas at room temperature',vi:'Nó là chất khí ở nhiệt độ phòng'},
+     {en:'It has a giant structure held together by very strong forces',vi:'Nó có cấu trúc khổng lồ (giant structure) được giữ bằng các lực rất mạnh'}],a:2,
+  e:{en:'Simple molecules melt at low temperatures because only weak intermolecular forces need to be broken. Temperatures this high mean a giant structure — a lattice of ions or a macromolecule — held by strong forces throughout.',vi:'Các phân tử đơn giản nóng chảy ở nhiệt độ thấp vì chỉ cần phá vỡ lực liên phân tử (intermolecular forces) yếu. Nhiệt độ cao như vậy nghĩa là một cấu trúc khổng lồ (giant structure) — mạng lưới (lattice) ion hoặc đại phân tử (macromolecule) — được giữ bằng các lực mạnh ở khắp nơi.'}},
+ {q:{en:'When can an ionic compound conduct electricity?',vi:'Khi nào một hợp chất ion (ionic compound) có thể dẫn điện (conduct electricity)?'},
+  o:[{en:'Only when it is a solid crystal',vi:'Chỉ khi nó là tinh thể rắn'},
+     {en:'When it is molten or dissolved in water, because its ions are free to move',vi:'Khi nóng chảy hoặc hòa tan trong nước, vì các ion (ions) của nó được tự do chuyển động'},
+     {en:'Never — ions cannot carry a charge',vi:'Không bao giờ — các ion không thể mang điện tích'}],a:1,
+  e:{en:'Ions carry electrical charge, but in a solid lattice they are locked in place. Melt or dissolve the compound and the ions can move to the electrodes, carrying the charge through the liquid.',vi:'Các ion mang điện tích, nhưng trong mạng lưới (lattice) rắn chúng bị khóa tại chỗ. Làm nóng chảy hoặc hòa tan hợp chất thì các ion có thể di chuyển tới các điện cực, mang điện tích qua chất lỏng.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'f_lattice',emoji:'🧊',en:'Substance A: ions arranged in a giant lattice',vi:'Chất A: các ion (ions) xếp thành một mạng lưới khổng lồ (lattice)',ans:'ionic'},
+ {id:'f_shared',emoji:'🔗',en:'Substance B: atoms joined by shared electrons',vi:'Chất B: các nguyên tử nối với nhau bằng electron dùng chung',ans:'covalent'},
+ {id:'f_dissolved',emoji:'⚡',en:'It conducts electricity when dissolved in water',vi:'Nó dẫn điện (conducts electricity) khi hòa tan trong nước',ans:'ionic'},
+ {id:'f_macro',emoji:'💎',en:'Diamond: a macromolecule of shared-electron bonds',vi:'Kim cương (diamond): một đại phân tử (macromolecule) của các liên kết electron dùng chung',ans:'covalent'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'Magnesium oxide melts at 2825 °C and boils at 3600 °C. Why are its melting and boiling points so high?',vi:'Magnesium oxide nóng chảy ở 2825 °C và sôi ở 3600 °C. Vì sao nhiệt độ nóng chảy và sôi của nó cao đến vậy?'},
+  opts:[{en:'Strong electrostatic forces hold its ions together in a giant lattice',vi:'Lực tĩnh điện (electrostatic forces) mạnh giữ các ion (ions) của nó trong một mạng lưới khổng lồ (lattice)'},
+        {en:'Its molecules are very heavy',vi:'Các phân tử của nó rất nặng'},
+        {en:'It contains a lot of water',vi:'Nó chứa rất nhiều nước (water)'}],a:0,
+  e:{en:'Magnesium oxide is ionic. A huge amount of energy is needed to break the strong electrostatic forces between the ions in its lattice.',vi:'Magnesium oxide là chất ion (ionic). Cần một lượng năng lượng khổng lồ để phá vỡ lực tĩnh điện (electrostatic forces) mạnh giữa các ion trong mạng lưới (lattice) của nó.'}},
+ {q:{en:'Substance X melts at −182 °C and boils at −161 °C. What state is it in at room temperature?',vi:'Chất X nóng chảy ở −182 °C và sôi ở −161 °C. Ở nhiệt độ phòng nó ở trạng thái nào?'},
+  opts:[{en:'Solid',vi:'Rắn (solid)'},{en:'Liquid',vi:'Lỏng (liquid)'},{en:'Gas',vi:'Khí (gas)'}],a:2,
+  e:{en:'Room temperature (about 20 °C) is far above its boiling point of −161 °C, so Substance X is a gas. (Its values match methane in the book’s table.)',vi:'Nhiệt độ phòng (khoảng 20 °C) cao hơn hẳn nhiệt độ sôi −161 °C của nó, nên chất X là chất khí (gas). (Số liệu của nó khớp với methane trong bảng của sách.)'}},
+ {q:{en:'Bromine melts at −7 °C and boils at 59 °C. What state is bromine in at room temperature?',vi:'Bromine nóng chảy ở −7 °C và sôi ở 59 °C. Ở nhiệt độ phòng bromine ở trạng thái nào?'},
+  opts:[{en:'Gas',vi:'Khí (gas)'},{en:'Liquid',vi:'Lỏng (liquid)'},{en:'Solid',vi:'Rắn (solid)'}],a:1,
+  e:{en:'Room temperature (about 20 °C) is between bromine’s melting point (−7 °C) and boiling point (59 °C), so bromine is a liquid.',vi:'Nhiệt độ phòng (khoảng 20 °C) nằm giữa nhiệt độ nóng chảy (−7 °C) và nhiệt độ sôi (59 °C) của bromine, nên bromine là chất lỏng (liquid).'}},
+ {q:{en:'Why does ammonia have low melting and boiling points (−77 °C and −34 °C)?',vi:'Vì sao ammonia có nhiệt độ nóng chảy và sôi thấp (−77 °C và −34 °C)?'},
+  opts:[{en:'Its ions are only weakly attracted',vi:'Các ion (ions) của nó chỉ hút nhau yếu'},
+        {en:'Only weak intermolecular forces hold its simple molecules together',vi:'Chỉ có lực liên phân tử (intermolecular forces) yếu giữ các phân tử đơn giản của nó với nhau'},
+        {en:'Its covalent bonds are weak',vi:'Các liên kết cộng hóa trị (covalent bonds) của nó yếu'}],a:1,
+  e:{en:'Ammonia is made of simple molecules. The covalent bonds inside each molecule are strong, but the intermolecular forces between molecules are weak, so little energy melts or boils it.',vi:'Ammonia được làm từ các phân tử đơn giản. Liên kết cộng hóa trị (covalent bonds) bên trong mỗi phân tử thì mạnh, nhưng lực liên phân tử (intermolecular forces) giữa các phân tử thì yếu, nên chỉ cần ít năng lượng để nó nóng chảy hay sôi.'}},
+ {q:{en:'Substance Y melts at 0 °C and boils at 100 °C. What is Substance Y most likely to be?',vi:'Chất Y nóng chảy ở 0 °C và sôi ở 100 °C. Chất Y nhiều khả năng nhất là gì?'},
+  opts:[{en:'Water',vi:'Nước (water)'},{en:'Sodium chloride',vi:'Sodium chloride'},{en:'Calcium oxide',vi:'Calcium oxide'}],a:0,
+  e:{en:'Melting at 0 °C and boiling at 100 °C are the well-known values for water — a simple-molecule substance, like Substance Y in the Workbook table.',vi:'Nóng chảy ở 0 °C và sôi ở 100 °C là các giá trị quen thuộc của nước (water) — một chất phân tử đơn giản, như chất Y trong bảng của Workbook.'}}
+];
+const EX3=[
+ {id:'c_four',emoji:'💎',en:'Each carbon atom forms four strong covalent bonds',vi:'Mỗi nguyên tử carbon tạo bốn liên kết cộng hóa trị (covalent bonds) mạnh',ans:'diamond'},
+ {id:'c_layers',emoji:'🥞',en:'Carbon atoms form layers that slide over each other',vi:'Các nguyên tử carbon tạo thành các lớp (layers) trượt lên nhau',ans:'graphite'},
+ {id:'c_hard',emoji:'🔩',en:'The hardest material on Earth — used in cutting and drilling tools',vi:'Vật liệu cứng nhất trên Trái Đất — dùng trong dụng cụ cắt và khoan',ans:'diamond'},
+ {id:'c_soft',emoji:'✏️',en:'Soft and slippery — used for pencil “lead” and for lubricants',vi:'Mềm và trơn — dùng làm “ruột chì” bút chì và chất bôi trơn',ans:'graphite'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 5 + 4 = 13 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-2-4';
+const SUMKEY='camb:sum:sci9-2-4';
+const BOT_CODE='sci9-2.4';
+let OBS={na:false,cl:false,co2:false,oxy:false,dia:false,drill:false,gra:false,pen:false,cry:false,sol:false};
+let SORTED=new Set();
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1na:false, s1cl:false, s1hint:null,
+  s2co2:false, s2oxy:false,
+  s3dia:false, s3drill:false,
+  s4gra:false, s4pen:false,
+  s5cry:false, s5sol:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1na&&T.s1cl;
+  if(i===1) return T.s2co2&&T.s2oxy;
+  if(i===2) return T.s3dia&&T.s3drill;
+  if(i===3) return T.s4gra&&T.s4pen;
+  if(i===4) return T.s5cry&&T.s5sol;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not a sodium or chloride ion. Look at the back-left of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải ion sodium hay chloride. Hãy nhìn phía sau-bên trái của bàn!');
+    }
+    return B('You did: the sodium ion Na+ '+(T.s1na?'✓':'…')+' · the chloride ion Cl− '+(T.s1cl?'✓':'…')+'. Tap the models on the bench!',
+             'Con đã làm: ion sodium Na+ '+(T.s1na?'✓':'…')+' · ion chloride Cl− '+(T.s1cl?'✓':'…')+'. Hãy chạm vào các mô hình trên bàn!');
+  }
+  if(i===1){
+    return B('Molecules tapped: carbon dioxide '+(T.s2co2?'✓':'…')+' · oxygen '+(T.s2oxy?'✓':'…')+'.',
+             'Các phân tử đã chạm: carbon dioxide '+(T.s2co2?'✓':'…')+' · oxygen '+(T.s2oxy?'✓':'…')+'.');
+  }
+  if(i===2){
+    return B('Diamond tapped '+(T.s3dia?'✓':'…')+' · diamond drill bit tapped '+(T.s3drill?'✓':'…')+'.',
+             'Đã chạm kim cương (diamond) '+(T.s3dia?'✓':'…')+' · đã chạm mũi khoan kim cương '+(T.s3drill?'✓':'…')+'.');
+  }
+  if(i===3){
+    return B('Graphite layers tapped '+(T.s4gra?'✓':'…')+' · pencil tapped '+(T.s4pen?'✓':'…')+'.',
+             'Đã chạm các lớp graphite (layers) '+(T.s4gra?'✓':'…')+' · đã chạm bút chì '+(T.s4pen?'✓':'…')+'.');
+  }
+  if(i===4){
+    return B('In the circuit: salt crystal tested '+(T.s5cry?'✓ (bulb stayed dark)':'…')+' · salt solution tested '+(T.s5sol?'✓ (bulb lit!)':'…')+'.',
+             'Trong mạch điện: đã thử tinh thể muối '+(T.s5cry?'✓ (bóng đèn vẫn tối)':'…')+' · đã thử dung dịch muối '+(T.s5sol?'✓ (bóng đèn sáng!)':'…')+'.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap HIGH MELTING POINT or LOW MELTING POINT.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm NHIỆT ĐỘ NÓNG CHẢY CAO (HIGH MELTING POINT) hoặc NHIỆT ĐỘ NÓNG CHẢY THẤP (LOW MELTING POINT).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🟣',label:{en:'The sodium ion Na+',vi:'Ion sodium Na+'},got:T.s1na},
+      {emoji:'🟢',label:{en:'The chloride ion Cl−',vi:'Ion chloride Cl−'},got:T.s1cl}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'💨',label:{en:'Carbon dioxide molecule',vi:'Phân tử carbon dioxide'},got:T.s2co2},
+      {emoji:'🫧',label:{en:'Oxygen molecule',vi:'Phân tử oxygen'},got:T.s2oxy},
+      {emoji:'🔗',label:{en:'Separate little molecules',vi:'Các phân tử nhỏ riêng lẻ'},got:T.s2co2&&T.s2oxy}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'💎',label:{en:'The diamond',vi:'Viên kim cương (diamond)'},got:T.s3dia},
+      {emoji:'🔩',label:{en:'The diamond drill bit',vi:'Mũi khoan kim cương'},got:T.s3drill},
+      {emoji:'4️⃣',label:{en:'Four bonds per carbon atom',vi:'Bốn liên kết cho mỗi nguyên tử carbon'},got:T.s3dia&&T.s3drill}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'⬛',label:{en:'The graphite layers',vi:'Các lớp graphite (layers)'},got:T.s4gra},
+      {emoji:'✏️',label:{en:'The graphite pencil',vi:'Bút chì graphite'},got:T.s4pen},
+      {emoji:'↔️',label:{en:'Layers slide over each other',vi:'Các lớp trượt lên nhau'},got:T.s4gra&&T.s4pen}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🧂',label:{en:'Crystal tested — bulb dark',vi:'Đã thử tinh thể — bóng đèn tối'},got:T.s5cry},
+      {emoji:'💡',label:{en:'Solution tested — bulb lit',vi:'Đã thử dung dịch — bóng đèn sáng'},got:T.s5sol}
+    ]);
+    if(!T.s5sol){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookCircuit);
+      b.onclick=()=>focusThing('solution');
+      box.appendChild(b);
+    }
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'high',label:STR.binHigh,cls:'high'},{key:'low',label:STR.binLow,cls:'low'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('na'); bounceThing('na'); setTimeout(()=>{ focusVisual('cl'); bounceThing('cl'); },900); }
+  else if(i===1){ focusVisual('co2'); bounceThing('co2'); setTimeout(()=>{ focusVisual('oxygen'); bounceThing('oxygen'); },900); }
+  else if(i===2){ focusVisual('diamond'); bounceThing('diamond'); setTimeout(()=>{ focusVisual('drill'); bounceThing('drill'); },900); }
+  else if(i===3){ focusVisual('graphite'); bounceThing('graphite'); setTimeout(()=>{ focusVisual('pencil'); bounceThing('pencil'); },900); }
+  else if(i===4){ focusVisual('crystal'); bounceThing('crystal'); setTimeout(()=>{ focusVisual('solution'); bounceThing('solution'); },900); }
+  else if(i===5){ demoSortMine(CARDS6,T.s6correct,{high:'high',low:'low'}); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recLattice,OBS.na&&OBS.cl)+
+    row(STR.recSimple,OBS.co2&&OBS.oxy)+
+    row(STR.recDiamond,OBS.dia)+
+    row(STR.recGraphite,OBS.gra&&OBS.pen)+
+    row(STR.recCrystal,OBS.cry)+
+    row(STR.recSolution,OBS.sol);
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.na&&OBS.cl)||doneSteps.has(0),label:STR.foundLattice},
+    {got:(OBS.co2&&OBS.oxy)||doneSteps.has(1),label:STR.foundSimple},
+    {got:OBS.dia||doneSteps.has(2),label:STR.foundDiamond},
+    {got:(OBS.gra&&OBS.pen)||doneSteps.has(3),label:STR.foundGraphite},
+    {got:OBS.cry||doneSteps.has(4),label:STR.foundCrystal},
+    {got:OBS.sol||doneSteps.has(4),label:STR.foundSolution}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let diaMesh=null, graphiteTop=null, bulbMesh=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; G[id]=group; scene3.add(group); return group; }
+function glassMat(hex,op){ return new THREE.MeshStandardMaterial({color:hex,roughness:0.25,metalness:0.05,transparent:true,opacity:op}); }
+function buildIon(id){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.07,16),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  if(id==='na'){
+    const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.26,16,14),stdMat(0x8e44ad,0.45)));
+    s.position.y=0.45; g.add(s);
+    const nb=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.15,10,8),stdMat(0x2ecc71,0.45)));
+    nb.position.set(0.42,0.28,0.1); g.add(nb);
+  }else{
+    const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,16,14),stdMat(0x2ecc71,0.45)));
+    s.position.y=0.5; g.add(s);
+    const nb=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,10,8),stdMat(0x8e44ad,0.45)));
+    nb.position.set(-0.48,0.3,-0.08); g.add(nb);
+  }
+  const p=LAB[id]; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function bondCyl(x1,x2,y){
+  const len=Math.abs(x2-x1);
+  const c=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,len,8),stdMat(0x5b7186,0.5));
+  c.rotation.z=Math.PI/2; c.position.set((x1+x2)/2,y,0);
+  return c;
+}
+function buildCO2(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.48,0.07,16),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  g.add(bondCyl(-0.36,0,0.55)); g.add(bondCyl(0,0.36,0.55));
+  const c=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19,14,12),stdMat(0x2e2a26,0.5)));
+  c.position.y=0.55; g.add(c);
+  [-0.38,0.38].forEach(x=>{
+    const o=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,12,10),stdMat(0xd33a2c,0.5)));
+    o.position.set(x,0.55,0); g.add(o);
+  });
+  g.position.set(-0.9,0,-1.3);
+  return g;
+}
+function buildOxygen(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.42,0.07,16),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  g.add(bondCyl(-0.17,0.17,0.5));
+  [-0.19,0.19].forEach(x=>{
+    const o=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.18,12,10),stdMat(0xd33a2c,0.5)));
+    o.position.set(x,0.5,0); g.add(o);
+  });
+  const far=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.14,10,8),stdMat(0xe88a7d,0.5)));
+  far.position.set(0.55,0.42,0.35); g.add(far);
+  g.position.set(0.4,0,-1.3);
+  return g;
+}
+function buildDiamond(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.38,0.3,16),stdMat(0x44586e,0.6)));
+  stand.position.y=0.15; g.add(stand);
+  diaMesh=shadowed(new THREE.Mesh(new THREE.OctahedronGeometry(0.34,0),new THREE.MeshStandardMaterial({color:0xbfe8f5,roughness:0.08,metalness:0.1,transparent:true,opacity:0.92})));
+  diaMesh.position.y=0.72; g.add(diaMesh);
+  g.position.set(1.7,0,-1.3);
+  return g;
+}
+function buildDrill(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.75,12),stdMat(0x8d99a6,0.35)));
+  body.position.y=0.62; g.add(body);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.3,12),stdMat(0x5b7186,0.4));
+  tip.rotation.x=Math.PI; tip.position.y=0.1; g.add(tip);
+  const gem=new THREE.Mesh(new THREE.OctahedronGeometry(0.07,0),stdMat(0xbfe8f5,0.2));
+  gem.position.y=0.02; g.add(gem);
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.08,0.5),stdMat(0x44586e,0.7)));
+  base.position.y=0.04; g.add(base);
+  g.position.set(2.9,0,-1.3);
+  return g;
+}
+function buildGraphite(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.48,0.07,6),stdMat(0x8d99a6,0.5)));
+  base.position.y=0.04; g.add(base);
+  [0.18,0.3].forEach(y=>{
+    const layer=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.36,0.09,6),stdMat(0x3c4147,0.6)));
+    layer.position.y=y; g.add(layer);
+  });
+  graphiteTop=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.36,0.09,6),stdMat(0x565d66,0.6)));
+  graphiteTop.position.y=0.42; g.add(graphiteTop);
+  g.position.set(-3.0,0,1.7);
+  return g;
+}
+function buildPencil(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.3,0.07,0.4),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  const bodyG=new THREE.Group(); bodyG.rotation.z=0.06; bodyG.position.y=0.3;
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.075,1.0,6),stdMat(0xf2b134,0.6));
+  body.rotation.z=Math.PI/2; bodyG.add(body);
+  const wood=new THREE.Mesh(new THREE.ConeGeometry(0.075,0.24,10),stdMat(0xe8d3ae,0.7));
+  wood.rotation.z=-Math.PI/2; wood.position.x=0.62; bodyG.add(wood);
+  const lead=new THREE.Mesh(new THREE.ConeGeometry(0.028,0.12,8),stdMat(0x2e2a26,0.6));
+  lead.rotation.z=-Math.PI/2; lead.position.x=0.76; bodyG.add(lead);
+  const eraser=new THREE.Mesh(new THREE.CylinderGeometry(0.078,0.078,0.12,10),stdMat(0xe88aa0,0.7));
+  eraser.rotation.z=Math.PI/2; eraser.position.x=-0.55; bodyG.add(eraser);
+  g.add(bodyG);
+  const paper=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.02,0.55),stdMat(0xffffff,0.9));
+  paper.position.set(0.35,0.1,0.42); paper.rotation.y=0.4; g.add(paper);
+  g.position.set(-1.7,0,1.7);
+  return g;
+}
+function buildCrystal(){
+  const g=new THREE.Group();
+  const plate=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.06,16),stdMat(0x8d99a6,0.5)));
+  plate.position.y=0.03; g.add(plate);
+  const cube=(x,y,z,s,ry)=>{
+    const c=shadowed(new THREE.Mesh(new THREE.BoxGeometry(s,s,s),stdMat(0xf4f7f9,0.35)));
+    c.position.set(x,y,z); c.rotation.y=ry; g.add(c);
+  };
+  cube(0,0.2,0,0.28,0.3); cube(0.24,0.16,0.12,0.2,0.8); cube(-0.22,0.15,-0.1,0.18,0.1); cube(0.05,0.42,-0.05,0.18,0.55);
+  [-0.55,0.55].forEach(x=>{
+    const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.5,8),stdMat(0x2e2a26,0.6));
+    rod.position.set(x,0.3,0); rod.rotation.z=x<0? 0.35 : -0.35; g.add(rod);
+  });
+  g.position.set(-0.3,0,1.7);
+  return g;
+}
+function buildSolution(){
+  const g=new THREE.Group();
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.28,0.68,16,1,true),glassMat(0xcfe8f5,0.35)));
+  glass.position.y=0.34; g.add(glass);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,0.04,16),glassMat(0xcfe8f5,0.5));
+  base.position.y=0.02; g.add(base);
+  const liq=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.25,0.46,14),stdMat(0x7fc4e8,0.35));
+  liq.position.y=0.26; g.add(liq);
+  [-0.16,0.16].forEach(x=>{
+    const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.028,0.95,8),stdMat(0x2e2a26,0.6));
+    rod.position.set(x,0.6,0); g.add(rod);
+  });
+  const wire=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.02,6,20,Math.PI),stdMat(0x2e2a26,0.6));
+  wire.position.set(0,1.05,0); g.add(wire);
+  bulbMesh=new THREE.Mesh(new THREE.SphereGeometry(0.13,12,10),new THREE.MeshStandardMaterial({color:0xcfd8de,roughness:0.3,metalness:0.05,transparent:true,opacity:0.85}));
+  bulbMesh.position.set(0,1.22,0); g.add(bulbMesh);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.08,10),stdMat(0x44586e,0.6));
+  cap.position.y=1.08; g.add(cap);
+  g.position.set(1.1,0,1.7);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdfe9f2);
+  scene3.fog=new THREE.Fog(0xdfe9f2,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db4c6,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the lab bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xb9c9d8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(9.6,0.18,5.4),stdMat(0x8a6a44,0.9)));
+  bench.position.set(-0.4,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-4.9,-2.3],[4.1,-2.3],[-4.9,2.7],[4.1,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(7.5,2.6,0.08),stdMat(0x2e5e4e,0.95));
+  board.position.set(-0.4,1.7,-3.4); scene3.add(board);
+  /* the models */
+  reg('na',buildIon('na'));
+  reg('cl',buildIon('cl'));
+  reg('co2',buildCO2());
+  reg('oxygen',buildOxygen());
+  reg('diamond',buildDiamond());
+  reg('drill',buildDrill());
+  reg('graphite',buildGraphite());
+  reg('pencil',buildPencil());
+  reg('crystal',buildCrystal());
+  reg('solution',buildSolution());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('na',p,G.na); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('cl',p,G.cl); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('co2',p,G.co2); }
+  { const p=sphProxy(0.52); p.position.set(0,0.48,0); addProxy('oxygen',p,G.oxygen); }
+  { const p=sphProxy(0.52); p.position.set(0,0.6,0); addProxy('diamond',p,G.diamond); }
+  { const p=sphProxy(0.5); p.position.set(0,0.55,0); addProxy('drill',p,G.drill); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('graphite',p,G.graphite); }
+  { const p=sphProxy(0.52); p.position.set(0,0.32,0); addProxy('pencil',p,G.pencil); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('crystal',p,G.crystal); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('solution',p,G.solution); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a model */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['na','cl'],              /* step 1: the sodium and chloride ions */
+  ['co2','oxygen'],         /* step 2: carbon dioxide + oxygen molecules */
+  ['diamond','drill'],      /* step 3: diamond + its drill bit */
+  ['graphite','pencil'],    /* step 4: graphite layers + pencil */
+  ['crystal','solution'],   /* step 5: crystal vs solution in the circuit */
+  []                        /* step 6: card sort — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='na'){ T.s1na=true; OBS.na=true; T.s1hint=null; }
+    else if(id==='cl'){ T.s1cl=true; OBS.cl=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='co2'){ T.s2co2=true; OBS.co2=true; }
+    else if(id==='oxygen'){ T.s2oxy=true; OBS.oxy=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='diamond'){ T.s3dia=true; OBS.dia=true; }
+    else if(id==='drill'){ T.s3drill=true; OBS.drill=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='graphite'){ T.s4gra=true; OBS.gra=true; }
+    else if(id==='pencil'){ T.s4pen=true; OBS.pen=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='crystal'){ T.s5cry=true; OBS.cry=true; }
+    else if(id==='solution'){ T.s5sol=true; OBS.sol=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* the diamond slowly turns and sparkles */
+  if(diaMesh) diaMesh.rotation.y=t*0.6;
+  /* the top graphite layer slides once the layers have been tapped */
+  if(graphiteTop) graphiteTop.position.x=(OBS.gra? 0.16+Math.sin(t*0.8)*0.05 : 0);
+  /* the bulb lights only when the SOLUTION is in the circuit */
+  if(bulbMesh) bulbMesh.material.color.setHex(OBS.sol? 0xffd94d : 0xcfd8de);
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='ionic'?'🧲':'🔗';
+  return ans==='diamond'?'💎':'✏️';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — ionic or covalent? (tap a card, then tap its group) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinIonic').innerHTML=bi(STR.binIonic);
+  $('ex1BinCov').innerHTML=bi(STR.binCov);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (one tap per question) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — diamond or graphite? */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinDia').innerHTML=bi(STR.binDia);
+  $('ex3BinGra').innerHTML=bi(STR.binGra);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinIonic').onclick=()=>ex1Place('ionic');
+$('ex1BinCov').onclick=()=>ex1Place('covalent');
+$('ex3BinDia').onclick=()=>ex3Place('diamond');
+$('ex3BinGra').onclick=()=>ex3Place('graphite');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.na=false; OBS.cl=false; }
+  if(step===1){ OBS.co2=false; OBS.oxy=false; }
+  if(step===2){ OBS.dia=false; OBS.drill=false; }
+  if(step===3){ OBS.gra=false; OBS.pen=false; }
+  if(step===4){ OBS.cry=false; OBS.sol=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='ionic'||s.exAns.a1[id]==='covalent')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='diamond'||s.exAns.a3[id]==='graphite')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS/SORTED). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1na=!!OBS.na; t.s1cl=!!OBS.cl; }
+  else if(i===1){ t.s2co2=!!OBS.co2; t.s2oxy=!!OBS.oxy; }
+  else if(i===2){ t.s3dia=!!OBS.dia; t.s3drill=!!OBS.drill; }
+  else if(i===3){ t.s4gra=!!OBS.gra; t.s4pen=!!OBS.pen; }
+  else if(i===4){ t.s5cry=!!OBS.cry; t.s5sol=!!OBS.sol; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-2-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

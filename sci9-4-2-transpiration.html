@@ -1,0 +1,1399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>4.2 Transpiration — Sự thoát hơi nước · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdf3d8,#eef2d8)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.high{background:#b03a3a}
+.binbtn.low{background:#0b76d1}
+.binbtn.trueb{background:#0d9d58}
+.binbtn.falseb{background:#b03a3a}
+.binbtn.faster{background:#b3541e}
+.binbtn.slower{background:#0b76d1}
+.binbtn.get{background:#0b76d1}
+.binbtn.reduce{background:#0d9d58}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="4.2 Transpiration" data-vi="4.2 Sự thoát hơi nước (Transpiration)">4.2 Transpiration</span>
+    <span class="eqchip i18n" data-en="Unit 4 · Maintaining life" data-vi="Bài 4 · Duy trì sự sống (Maintaining life)">Unit 4 · Maintaining life</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does water vapour escape from a leaf — and why does the plant need that water?" data-vi="Hơi nước (water vapour) thoát khỏi lá như thế nào — và vì sao cây cần lượng nước đó?">How does water vapour escape from a leaf — and why does the plant need that water?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Liquid becomes vapour" data-vi="Chất lỏng thành hơi (vapour)">Liquid becomes vapour</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Vapour leaves through stomata" data-vi="Hơi thoát qua khí khổng (stomata)">Vapour leaves through stomata</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="That loss is transpiration" data-vi="Sự mất đó là thoát hơi nước (transpiration)">That loss is transpiration</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Plants still need water" data-vi="Cây vẫn cần nước (water)">Plants still need water</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap the models on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 4 Maintaining life · Section 4.2. The bench in this lesson is a simulation — the plants, bags and leaves are models, and the masses shown are the lesson’s demonstration values." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 4 Duy trì sự sống (Maintaining life) · Mục 4.2. Bàn trong bài học này là mô phỏng — cây, túi và lá đều là mô hình, và các khối lượng hiển thị là số liệu trình diễn của bài học.">Cambridge Lower Secondary Science 9 · Unit 4 Maintaining life · Section 4.2. The bench in this lesson is a simulation — the plants, bags and leaves are models, and the masses shown are the lesson’s demonstration values.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 4 Maintaining life, section 4.2 Transpiration, pages 140–146; Workbook 9 (ISBN 9781108742894), pages 72–74. All wording in this lesson is rewritten in our own words; no text is copied from the book. The class discussion drawings in Getting started and the partner discussion about desert plants are done here with models and sorting cards." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 4 Duy trì sự sống (Maintaining life), mục 4.2 Sự thoát hơi nước (Transpiration), trang 140–146; Sách bài tập 9 (ISBN 9781108742894), trang 72–74. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Phần vẽ thảo luận ở Khởi động và phần thảo luận cặp đôi về cây sa mạc trong sách được thực hiện ở đây bằng mô hình và thẻ phân loại.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 4 Maintaining life, section 4.2 Transpiration, pages 140–146; Workbook 9 (ISBN 9781108742894), pages 72–74. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives (from the book): find out how water vapour is lost from plant leaves; summarise why plants need water. Key words: transpiration, wilted — plus stomata, xylem vessels, evaporate and air spaces." data-vi="Mục tiêu (theo sách): tìm hiểu hơi nước (water vapour) bị mất khỏi lá cây như thế nào; tóm tắt vì sao cây cần nước. Từ khóa: transpiration (sự thoát hơi nước), wilted (héo) — cùng stomata (khí khổng), xylem vessels (mạch gỗ), evaporate (bốc hơi) và air spaces (khoang khí).">Objectives (from the book): find out how water vapour is lost from plant leaves; summarise why plants need water. Key words: transpiration, wilted.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; doing a step means tapping the model on the bench itself. The steps follow the book's order: liquid water and water vapour particles (Getting started), the path of water out of a leaf, the two-bagged-plants investigation, the petroleum-jelly leaves investigation, desert-plant adaptations (Activity 4.2.1, as a sorting task), and finally why plants need water — support, transport of mineral salts, cooling and photosynthesis. The Workbook exercises use Sofia's own results exactly as printed: plant A at 4 °C falls 863 g → 807 g, plant B at 20 °C falls 893 g → 761 g with one anomalous result (861 g on day 5), and plant C at 30 °C falls 842 g → 618 g." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các bước đi theo đúng thứ tự trong sách: hạt nước lỏng và hơi nước (Khởi động), đường đi của nước ra khỏi lá, khảo sát hai chậu cây trùm túi, khảo sát lá bôi petroleum jelly, thích nghi của cây sa mạc (Hoạt động 4.2.1, dưới dạng phân loại thẻ), và cuối cùng là vì sao cây cần nước — nâng đỡ, vận chuyển muối khoáng (mineral salts), làm mát và quang hợp (photosynthesis). Bài tập Workbook dùng đúng số liệu của Sofia như trong sách: cây A ở 4 °C giảm 863 g → 807 g, cây B ở 20 °C giảm 893 g → 761 g với một kết quả bất thường (anomalous) (861 g vào ngày 5), và cây C ở 30 °C giảm 842 g → 618 g.">How it works: each step asks for one real action — tapping the models on the 3D bench itself, or sorting cards into groups.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn trueb" id="ex1BinTrue"></button>
+        <button class="binbtn falseb" id="ex1BinFalse"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn faster" id="ex3BinFast"></button>
+        <button class="binbtn slower" id="ex3BinSlow"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-4-2 "Transpiration"
+   (Science 9, Unit 4 · Maintaining life)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= bench models ================= */
+const LAB={
+  liquid: {emoji:'💧', name:{en:'Liquid water in a jar — particles close together',vi:'Nước lỏng (liquid water) trong lọ — các hạt ở gần nhau'}, short:{en:'Liquid water',vi:'Nước lỏng'}, ring:0.55, labelY:1.25, fx:-3.6, fz:-1.3, fr:4.6},
+  vapour: {emoji:'☁️', name:{en:'Water vapour — particles far apart',vi:'Hơi nước (water vapour) — các hạt ở xa nhau'}, short:{en:'Water vapour',vi:'Hơi nước'}, ring:0.6, labelY:1.35, fx:-2.3, fz:-1.3, fr:4.6},
+  xylem:  {emoji:'🌿', name:{en:'A leaf with its xylem vessel',vi:'Một chiếc lá với mạch gỗ (xylem vessel) của nó'}, short:{en:'Leaf and xylem',vi:'Lá và mạch gỗ'}, ring:0.6, labelY:1.3, fx:-0.9, fz:-1.3, fr:4.6},
+  stoma:  {emoji:'🔬', name:{en:'The underside of a leaf — a stoma',vi:'Mặt dưới của lá — một khí khổng (stoma)'}, short:{en:'Stoma',vi:'Khí khổng'}, ring:0.55, labelY:1.25, fx:0.4, fz:-1.3, fr:4.4},
+  covered:{emoji:'🪴', name:{en:'Plant A — bag over the whole plant and pot',vi:'Cây A — túi trùm cả cây và chậu'}, short:{en:'Plant A: fully bagged',vi:'Cây A: trùm kín'}, ring:0.6, labelY:1.5, fx:1.8, fz:-1.3, fr:4.6},
+  freeplant:{emoji:'🌱', name:{en:'Plant B — bag over the pot and soil only, leaves free',vi:'Cây B — túi chỉ trùm chậu và đất, lá tự do'}, short:{en:'Plant B: leaves free',vi:'Cây B: lá tự do'}, ring:0.6, labelY:1.45, fx:-3.4, fz:1.7, fr:4.6},
+  leafbare:{emoji:'🍃', name:{en:'Hanging leaf A — no petroleum jelly',vi:'Lá treo A — không bôi petroleum jelly'}, short:{en:'Leaf: no jelly',vi:'Lá: không jelly'}, ring:0.55, labelY:1.3, fx:-2.0, fz:1.7, fr:4.4},
+  leafjelly:{emoji:'✨', name:{en:'Hanging leaf G — jelly on both surfaces',vi:'Lá treo G — bôi jelly cả hai mặt'}, short:{en:'Leaf: jelly both sides',vi:'Lá: jelly hai mặt'}, ring:0.55, labelY:1.3, fx:-0.7, fz:1.7, fr:4.4},
+  firm:   {emoji:'🌷', name:{en:'A well-watered plant — firm and upright',vi:'Một cây được tưới đủ nước — cứng và đứng thẳng'}, short:{en:'Firm plant',vi:'Cây cứng cáp'}, ring:0.55, labelY:1.4, fx:0.7, fz:1.7, fr:4.4},
+  wilted: {emoji:'🥀', name:{en:'A plant with too little water — wilted',vi:'Một cây thiếu nước — đã héo (wilted)'}, short:{en:'Wilted plant',vi:'Cây héo'}, ring:0.55, labelY:1.2, fx:2.1, fz:1.7, fr:4.4}
+};
+const FOCUSORDER=['liquid','vapour','xylem','stoma','covered','freeplant','leafbare','leafjelly','firm','wilted'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to do a step, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My transpiration record',vi:'Bảng ghi thoát hơi nước của con'},
+  u2Brief:{en:'What you have found out, in the order of the book.',vi:'Những gì con đã tìm ra, theo đúng thứ tự trong sách.'},
+  recParticles:{en:'💧 Liquid particles sit close; vapour particles spread far apart',vi:'💧 Các hạt chất lỏng ở gần nhau; các hạt hơi (vapour) tỏa ra xa nhau'},
+  recLeaf:{en:'🌿 Water leaves a leaf: xylem → cells → air spaces → stomata',vi:'🌿 Nước rời khỏi lá: mạch gỗ (xylem) → tế bào → khoang khí (air spaces) → khí khổng (stomata)'},
+  recPot:{en:'🪴 Leaves left free lost mass much faster than the fully bagged plant',vi:'🪴 Cây để lá tự do mất khối lượng nhanh hơn hẳn cây trùm kín'},
+  recJelly:{en:'🍃 The leaf sealed with jelly on both sides kept its water best',vi:'🍃 Lá được bịt jelly cả hai mặt giữ nước tốt nhất'},
+  recDesert:{en:'🌵 Desert plants: get more water, lose less water',vi:'🌵 Cây sa mạc: lấy thêm nước, mất ít nước hơn'},
+  recNeed:{en:'🌷 Water gives support — without it, the plant wilts',vi:'🌷 Nước tạo sự nâng đỡ — thiếu nước, cây sẽ héo (wilt)'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for explaining transpiration.',vi:'Danh sách kiểm tra để giải thích sự thoát hơi nước (transpiration) của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundParticles:{en:'Evaporation: liquid water changes to a gas, water vapour',vi:'Bốc hơi (evaporation): nước lỏng biến thành khí, hơi nước (water vapour)'},
+  foundLeaf:{en:'Water evaporates from leaf cell walls into the air spaces',vi:'Nước bốc hơi từ thành tế bào lá vào các khoang khí (air spaces)'},
+  foundPot:{en:'Mass loss from an unbagged plant measures transpiration',vi:'Sự giảm khối lượng của cây không trùm lá đo được sự thoát hơi nước (transpiration)'},
+  foundJelly:{en:'Most stomata are on the underside of a leaf',vi:'Hầu hết khí khổng (stomata) nằm ở mặt dưới của lá'},
+  foundDesert:{en:'Adaptations can raise water uptake or cut water loss',vi:'Thích nghi (adaptations) có thể tăng hấp thu nước hoặc giảm mất nước'},
+  foundNeed:{en:'Firm, water-filled cells press on each other and hold a plant up',vi:'Các tế bào cứng, đầy nước ép lên nhau và giữ cây đứng vững'},
+  binTrue:{en:'TRUE ✓',vi:'ĐÚNG ✓ (true)'},
+  binFalse:{en:'FALSE ✗',vi:'SAI ✗ (false)'},
+  binFast:{en:'TRANSPIRATION FASTER ⬆',vi:'THOÁT HƠI NƯỚC NHANH HƠN ⬆ (faster)'},
+  binSlow:{en:'TRANSPIRATION SLOWER ⬇',vi:'THOÁT HƠI NƯỚC CHẬM HƠN ⬇ (slower)'},
+  binGet:{en:'GET MORE WATER 💧',vi:'LẤY THÊM NƯỚC 💧 (get more water)'},
+  binReduce:{en:'LOSE LESS WATER 🌵',vi:'MẤT ÍT NƯỚC HƠN 🌵 (lose less water)'},
+  lookFirm:{en:'Look at the firm plant 🌷',vi:'Ngắm cây cứng cáp 🌷'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 4.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 4.2'},
+  exIntro:{en:'Workbook games for this lesson, using Sofia’s temperature experiment. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này, dùng thí nghiệm nhiệt độ của Sofia. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Sofia’s set-up: true or false?',vi:'Bài tập 1 · Focus — Cách bố trí của Sofia: đúng hay sai?'},
+  ex1Inst:{en:'Sofia tested whether plants lose more water when the temperature increases. She covered each pot and soil with a plastic bag, and read the mass of each plant and pot every day for 8 days (Workbook 4.2 Focus). Tap a card, then tap TRUE or FALSE.',vi:'Sofia kiểm tra xem cây có mất nhiều nước hơn khi nhiệt độ tăng không. Bạn ấy trùm túi nhựa lên mỗi chậu và đất, và đọc khối lượng của mỗi cây và chậu mỗi ngày trong 8 ngày (Workbook 4.2 Focus). Chạm vào một thẻ, rồi chạm ĐÚNG (TRUE) hoặc SAI (FALSE).'},
+  ex2T:{en:'Exercise 2 · Practice — Reading Sofia’s results',vi:'Bài tập 2 · Practice — Đọc kết quả của Sofia'},
+  ex2Inst:{en:'Plant A was kept at 4 °C (863 g → 807 g), plant B at 20 °C (893 g → 761 g, with one odd result), and plant C at 30 °C (842 g → 618 g). For each question, tap the ONE correct answer.',vi:'Cây A được giữ ở 4 °C (863 g → 807 g), cây B ở 20 °C (893 g → 761 g, với một kết quả lạ), và cây C ở 30 °C (842 g → 618 g). Với mỗi câu hỏi, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — What speeds transpiration up or slows it down?',vi:'Bài tập 3 · Challenge — Điều gì làm thoát hơi nước nhanh lên hay chậm lại?'},
+  ex3Inst:{en:'Use everything you know about stomata, evaporation and temperature. Tap a card, then tap FASTER or SLOWER.',vi:'Dùng mọi điều con biết về khí khổng (stomata), bốc hơi (evaporation) và nhiệt độ. Chạm vào một thẻ, rồi chạm NHANH HƠN (FASTER) hoặc CHẬM HƠN (SLOWER).'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'transpiration',vi:'sự thoát hơi nước'},
+  {en:'wilted',vi:'héo, rũ xuống'},
+  {en:'stomata',vi:'khí khổng'},
+  {en:'stoma',vi:'một khí khổng'},
+  {en:'xylem vessels',vi:'mạch gỗ'},
+  {en:'evaporate',vi:'bốc hơi'},
+  {en:'water vapour',vi:'hơi nước'},
+  {en:'air spaces',vi:'khoang khí trong lá'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started: liquid and gas',vi:'Khởi động: chất lỏng và chất khí'}, word:{en:'water vapour',vi:'hơi nước (water vapour)'},
+  q:{en:'Water can be a liquid — and it can also be a gas. How are its particles arranged in each one?',vi:'Nước có thể là chất lỏng — và cũng có thể là chất khí. Các hạt của nó sắp xếp như thế nào trong mỗi trạng thái?'},
+  act:{en:'Tap the jar of liquid water on the bench. Then tap the jar of water vapour beside it.',vi:'Chạm vào lọ nước lỏng (liquid water) trên bàn. Sau đó chạm vào lọ hơi nước (water vapour) bên cạnh nó.'},
+  see:{en:'In the liquid the particles are close together and slide over each other. In the gas they are far apart and move freely in every direction.',vi:'Trong chất lỏng, các hạt ở gần nhau và trượt lên nhau. Trong chất khí, chúng ở xa nhau và chuyển động tự do theo mọi hướng.'},
+  concl:[
+    {en:'In liquid water the particles are close together and keep sliding past each other, so the liquid can flow.',vi:'Trong nước lỏng (liquid water), các hạt ở gần nhau và liên tục trượt qua nhau, nên chất lỏng có thể chảy.'},
+    {en:'In water vapour the particles are far apart and move freely — the water is now a gas.',vi:'Trong hơi nước (water vapour), các hạt ở xa nhau và chuyển động tự do — nước giờ là một chất khí (gas).'},
+    {en:'When liquid water changes to a gas, we say it evaporates.',vi:'Khi nước lỏng biến thành khí, ta nói nó bốc hơi (evaporates).'}]},
+ {tag:{en:'How water moves through a leaf',vi:'Nước di chuyển qua lá như thế nào'}, word:{en:'stomata',vi:'khí khổng (stomata)'},
+  q:{en:'Water travels up to a leaf. What happens to it when it gets there?',vi:'Nước di chuyển lên tới lá. Điều gì xảy ra với nó khi tới nơi?'},
+  act:{en:'Tap the leaf and its xylem vessel. Then tap the underside of the leaf, where the stoma is.',vi:'Chạm vào chiếc lá và mạch gỗ (xylem vessel) của nó. Sau đó chạm vào mặt dưới của lá, nơi có khí khổng (stoma).'},
+  see:{en:'Water leaves the xylem, crosses the leaf cells, turns to vapour — and the vapour slips out through the stoma.',vi:'Nước rời mạch gỗ, đi qua các tế bào lá, biến thành hơi — và hơi trượt ra ngoài qua khí khổng (stoma).'},
+  concl:[
+    {en:'Water arriving at a leaf moves out of the xylem vessels and into the leaf cells; cells with chloroplasts use a small part of it for photosynthesis.',vi:'Nước tới lá di chuyển ra khỏi mạch gỗ (xylem vessels) và vào các tế bào lá; các tế bào có lục lạp (chloroplasts) dùng một phần nhỏ cho quang hợp (photosynthesis).'},
+    {en:'Most of the water soaks into the cellulose cell walls and evaporates there — this is where liquid water changes to water vapour inside the leaf.',vi:'Phần lớn nước thấm vào thành tế bào cellulose và bốc hơi (evaporates) ở đó — đây là nơi nước lỏng biến thành hơi nước bên trong lá.'},
+    {en:'The vapour diffuses into the air spaces between the cells, then out through tiny holes on the underside of the leaf — the stomata.',vi:'Hơi khuếch tán (diffuses) vào các khoang khí (air spaces) giữa các tế bào, rồi ra ngoài qua các lỗ nhỏ ở mặt dưới của lá — các khí khổng (stomata).'},
+    {en:'The loss of water vapour from leaves is called transpiration.',vi:'Sự mất hơi nước (water vapour) khỏi lá được gọi là sự thoát hơi nước (transpiration).'}]},
+ {tag:{en:'Think like a scientist: two bagged plants',vi:'Tư duy như nhà khoa học: hai cây trùm túi'}, word:{en:'transpiration',vi:'sự thoát hơi nước (transpiration)'},
+  q:{en:'Two similar potted plants are weighed every day for a week. Which one loses mass faster?',vi:'Hai cây trồng chậu giống nhau được cân mỗi ngày trong một tuần. Cây nào mất khối lượng nhanh hơn?'},
+  act:{en:'Tap plant A, bagged over the whole plant and pot. Then tap plant B, whose bag covers only the pot and soil — its leaves are free.',vi:'Chạm vào cây A, được trùm túi kín cả cây và chậu. Sau đó chạm vào cây B, mà túi chỉ trùm chậu và đất — lá của nó tự do.'},
+  see:{en:'After a week, plant A (starting at 512 g) is 505 g — it lost 7 g. Plant B (starting at 508 g) is 462 g — it lost 46 g!',vi:'Sau một tuần, cây A (bắt đầu 512 g) còn 505 g — mất 7 g. Cây B (bắt đầu 508 g) còn 462 g — mất 46 g!'},
+  concl:[
+    {en:'The variable changed in this experiment is whether the leaves are covered or free; the plants, pot size and moist soil are kept the same.',vi:'Biến được thay đổi (variable) trong thí nghiệm này là lá bị trùm hay để tự do; cây, kích cỡ chậu và đất ẩm được giữ giống nhau.'},
+    {en:'Plant B, with its leaves free, lost mass much faster — its leaves kept losing water vapour to the air.',vi:'Cây B, với lá tự do, mất khối lượng nhanh hơn hẳn — lá của nó liên tục mất hơi nước (water vapour) vào không khí.'},
+    {en:'Plant A lost only a little: its bag trapped the vapour around the leaves, and bagging its pot also stopped water escaping from the soil.',vi:'Cây A chỉ mất ít: túi của nó giữ hơi lại quanh lá, và việc trùm chậu cũng ngăn nước thoát khỏi đất.'},
+    {en:'So the mass a plant loses when only its soil is covered measures the water it loses by transpiration.',vi:'Vậy khối lượng một cây mất đi khi chỉ đất của nó được trùm đo được lượng nước nó mất do thoát hơi nước (transpiration).'}]},
+ {tag:{en:'Think like a scientist: which side of a leaf?',vi:'Tư duy như nhà khoa học: mặt nào của lá?'}, word:{en:'stoma',vi:'một khí khổng (stoma)'},
+  q:{en:'Eight matching leaves are hung up to dry. Some are smeared with petroleum jelly. Which leaf keeps its water best?',vi:'Tám lá giống nhau được treo lên cho khô. Một số lá được bôi petroleum jelly. Lá nào giữ nước tốt nhất?'},
+  act:{en:'Tap leaf A, hanging with no jelly at all. Then tap leaf G, smeared with jelly on BOTH surfaces.',vi:'Chạm vào lá A, treo mà không bôi jelly chút nào. Sau đó chạm vào lá G, được bôi jelly cả HAI mặt.'},
+  see:{en:'After a day, leaf A has lost the most mass. Leaf G has lost the least — the jelly seals its surfaces.',vi:'Sau một ngày, lá A mất khối lượng nhiều nhất. Lá G mất ít nhất — jelly bịt kín các mặt của nó.'},
+  concl:[
+    {en:'Petroleum jelly blocks the stomata, so a smeared surface can hardly lose water vapour.',vi:'Petroleum jelly bịt các khí khổng (stomata), nên một mặt đã bôi hầu như không mất hơi nước (water vapour) được.'},
+    {en:'Leaves with jelly on the bottom surface only lose far less than leaves with jelly on the top only — so most water escapes from the underside.',vi:'Lá chỉ bôi jelly ở mặt dưới mất ít hơn hẳn lá chỉ bôi ở mặt trên — vậy phần lớn nước thoát ra từ mặt dưới.'},
+    {en:'That is because most stomata are on the underside of a leaf, not the top.',vi:'Đó là vì hầu hết khí khổng (stomata) nằm ở mặt dưới của lá, không phải mặt trên.'},
+    {en:'Using two leaves for each treatment, and taking a mean, makes the evidence stronger.',vi:'Dùng hai lá cho mỗi cách xử lý, và lấy giá trị trung bình (mean), làm bằng chứng vững hơn.'}]},
+ {tag:{en:'Activity 4.2.1: conserving water in the desert',vi:'Hoạt động 4.2.1: giữ nước ở sa mạc'}, word:{en:'transpiration',vi:'sự thoát hơi nước (transpiration)'},
+  q:{en:'Desert plants live where it is very hot and very dry. How do they manage their water?',vi:'Cây sa mạc sống ở nơi rất nóng và rất khô. Chúng quản lý nước của mình như thế nào?'},
+  act:{en:'Tap a card, then tap GET MORE WATER or LOSE LESS WATER. Sort each desert adaptation by what it does for the plant.',vi:'Chạm vào một thẻ, rồi chạm LẤY THÊM NƯỚC (GET MORE WATER) hoặc MẤT ÍT NƯỚC HƠN (LOSE LESS WATER). Phân loại từng thích nghi (adaptation) của cây sa mạc theo việc nó làm cho cây.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Desert plants are adapted in two directions at once: take up as much water as possible from the soil, and lose as little as possible by transpiration.',vi:'Cây sa mạc thích nghi (adapted) theo hai hướng cùng lúc: hấp thu càng nhiều nước từ đất càng tốt, và mất càng ít nước do thoát hơi nước (transpiration) càng tốt.'},
+    {en:'Deep or widespread roots gather water; spines instead of leaves, a thick waxy covering and few stomata all cut water loss.',vi:'Rễ sâu hoặc lan rộng thu thập nước; gai thay cho lá, lớp phủ sáp dày và ít khí khổng (stomata) đều làm giảm mất nước.'}]},
+ {tag:{en:'Why plants need water',vi:'Vì sao cây cần nước'}, word:{en:'wilted',vi:'héo (wilted)'},
+  q:{en:'Plants lose water all day by transpiration — so why do they need so much water in the first place?',vi:'Cây mất nước cả ngày do thoát hơi nước (transpiration) — vậy vì sao ngay từ đầu chúng cần nhiều nước đến thế?'},
+  act:{en:'Tap the well-watered plant standing firm and upright. Then tap the plant that has had no water for days.',vi:'Chạm vào cây được tưới đủ nước đang đứng cứng và thẳng. Sau đó chạm vào cây đã nhiều ngày không được tưới.'},
+  see:{en:'The watered plant stands tall. The dry plant has collapsed — it has wilted.',vi:'Cây được tưới đứng cao. Cây khô đã sụp xuống — nó đã héo (wilted).'},
+  concl:[
+    {en:'I know how water moves from xylem vessels to the outside of a leaf.',vi:'Con biết nước di chuyển từ mạch gỗ (xylem vessels) ra ngoài lá như thế nào.'},
+    {en:'I know where in a leaf liquid water changes to water vapour, and what transpiration is.',vi:'Con biết trong lá, nước lỏng biến thành hơi nước (water vapour) ở đâu, và sự thoát hơi nước (transpiration) là gì.'},
+    {en:'I can summarise why plants need water: for support, for transport, for cooling and for photosynthesis.',vi:'Con tóm tắt được vì sao cây cần nước: để nâng đỡ, để vận chuyển, để làm mát và để quang hợp (photosynthesis).'},
+    {en:'Water-filled cells (especially their vacuoles) are firm and press on each other, holding the plant up; cells short of water go soft and floppy, and the plant wilts. Moving water also carries dissolved mineral salts from the roots, evaporation from leaf cell walls cools the leaf, and water is a reactant in photosynthesis.',vi:'Các tế bào đầy nước (đặc biệt là không bào — vacuoles — của chúng) cứng và ép lên nhau, giữ cây đứng vững; tế bào thiếu nước trở nên mềm và rũ, và cây héo (wilts). Nước chuyển động cũng mang các muối khoáng (mineral salts) hòa tan từ rễ, sự bốc hơi từ thành tế bào lá làm mát lá, và nước là một chất phản ứng (reactant) trong quang hợp (photosynthesis).'}]}
+];
+const CARDS6=[
+ {id:'d_deep',emoji:'🌵',en:'Very long roots reach deep down to water underground',vi:'Rễ rất dài vươn sâu xuống nước ngầm dưới đất',ans:'get'},
+ {id:'d_waxy',emoji:'🕯️',en:'A thick, waxy covering on the stem slows evaporation',vi:'Một lớp phủ sáp dày trên thân làm chậm bốc hơi (evaporation)',ans:'reduce'},
+ {id:'d_spread',emoji:'🕸️',en:'A wide net of roots just below the surface catches rain fast',vi:'Một mạng rễ rộng ngay dưới bề mặt hứng mưa nhanh',ans:'get'},
+ {id:'d_spines',emoji:'📌',en:'Leaves shrunk to spines, so almost no surface loses water',vi:'Lá thu nhỏ thành gai, nên hầu như không có bề mặt nào mất nước',ans:'reduce'},
+ {id:'d_rain',emoji:'🌧️',en:'Roots grow quickly towards any patch of damp soil',vi:'Rễ mọc nhanh về phía bất kỳ mảng đất ẩm nào',ans:'get'},
+ {id:'d_few',emoji:'🚪',en:'Very few stomata, closed during the hottest part of the day',vi:'Rất ít khí khổng (stomata), đóng lại trong phần nóng nhất của ngày',ans:'reduce'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What is transpiration?',vi:'Sự thoát hơi nước (transpiration) là gì?'},
+  o:[{en:'Water moving up the xylem from the roots',vi:'Nước di chuyển lên mạch gỗ (xylem) từ rễ'},
+     {en:'The loss of water vapour from the leaves of a plant',vi:'Sự mất hơi nước (water vapour) khỏi lá của cây'},
+     {en:'A plant wilting on a hot day',vi:'Một cây héo vào ngày nóng'}],a:1,
+  e:{en:'Transpiration is the loss of water vapour from leaves. The vapour forms inside the leaf and diffuses out through the stomata.',vi:'Sự thoát hơi nước (transpiration) là sự mất hơi nước (water vapour) khỏi lá. Hơi hình thành bên trong lá và khuếch tán ra qua các khí khổng (stomata).'}},
+ {q:{en:'Inside a leaf, where does liquid water change into water vapour?',vi:'Bên trong một chiếc lá, nước lỏng biến thành hơi nước (water vapour) ở đâu?'},
+  o:[{en:'In the cellulose cell walls of the leaf cells, where it evaporates into the air spaces',vi:'Trong thành tế bào cellulose của các tế bào lá, nơi nó bốc hơi (evaporates) vào các khoang khí (air spaces)'},
+     {en:'Inside the xylem vessels',vi:'Bên trong các mạch gỗ (xylem vessels)'},
+     {en:'On the top surface of the leaf',vi:'Trên mặt trên của lá'}],a:0,
+  e:{en:'Water leaves the xylem and soaks into the cellulose cell walls of the leaf cells. There it evaporates, and the vapour diffuses into the air spaces and out through the stomata.',vi:'Nước rời mạch gỗ và thấm vào thành tế bào cellulose của các tế bào lá. Ở đó nó bốc hơi (evaporates), và hơi khuếch tán vào các khoang khí (air spaces) rồi ra qua các khí khổng (stomata).'}},
+ {q:{en:'In Sofia’s experiment, plant C at 30 °C fell from 842 g to 618 g in 7 days. What was its mean loss of mass per day?',vi:'Trong thí nghiệm của Sofia, cây C ở 30 °C giảm từ 842 g xuống 618 g trong 7 ngày. Khối lượng mất trung bình (mean) mỗi ngày của nó là bao nhiêu?'},
+  o:[{en:'8 g per day',vi:'8 g mỗi ngày'},
+     {en:'224 g per day',vi:'224 g mỗi ngày'},
+     {en:'32 g per day',vi:'32 g mỗi ngày'}],a:2,
+  e:{en:'Loss over 7 days = 842 − 618 = 224 g. Mean loss per day = 224 ÷ 7 = 32 g per day — much faster than plant A at 4 °C (8 g per day), supporting Sofia’s hypothesis.',vi:'Lượng mất trong 7 ngày = 842 − 618 = 224 g. Lượng mất trung bình (mean) mỗi ngày = 224 ÷ 7 = 32 g mỗi ngày — nhanh hơn hẳn cây A ở 4 °C (8 g mỗi ngày), ủng hộ giả thuyết (hypothesis) của Sofia.'}},
+ {q:{en:'Why does a plant wilt when it does not get enough water?',vi:'Vì sao một cây héo (wilt) khi không nhận đủ nước?'},
+  o:[{en:'Its xylem vessels collapse and snap',vi:'Các mạch gỗ (xylem vessels) của nó sụp và gãy'},
+     {en:'Its cells lose water, become soft and floppy, and no longer press on each other to hold the plant up',vi:'Các tế bào của nó mất nước, trở nên mềm và rũ, và không còn ép lên nhau để giữ cây đứng'},
+     {en:'Its stomata open too wide',vi:'Các khí khổng (stomata) của nó mở quá rộng'}],a:1,
+  e:{en:'A cell full of water is firm, and firm cells pressing on each other support the whole plant. Without enough water the cells go soft and floppy, so the plant collapses — it has wilted.',vi:'Một tế bào đầy nước thì cứng, và các tế bào cứng ép lên nhau nâng đỡ toàn bộ cây. Thiếu nước, các tế bào trở nên mềm và rũ, nên cây sụp xuống — nó đã héo (wilted).'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'f_bag',emoji:'🛍️',en:'Sofia covered each pot and soil with a plastic bag, so the mass lost could only come from the leaves',vi:'Sofia trùm túi nhựa lên mỗi chậu và đất, nên khối lượng mất đi chỉ có thể đến từ lá',ans:'true'},
+ {id:'f_temp',emoji:'🌡️',en:'The temperature was the variable Sofia changed — 4 °C, 20 °C and 30 °C',vi:'Nhiệt độ là biến (variable) Sofia thay đổi — 4 °C, 20 °C và 30 °C',ans:'true'},
+ {id:'f_cold',emoji:'🥶',en:'Plant A, kept coldest at 4 °C, lost mass the fastest',vi:'Cây A, được giữ lạnh nhất ở 4 °C, mất khối lượng nhanh nhất',ans:'false'},
+ {id:'f_keep',emoji:'📈',en:'When drawing her graph lines, Sofia should draw the line through the anomalous result just like the others',vi:'Khi vẽ các đường đồ thị, Sofia nên vẽ đường qua kết quả bất thường (anomalous) giống như các kết quả khác',ans:'false'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'Why did Sofia cover the pot and soil of each plant with a plastic bag?',vi:'Vì sao Sofia trùm túi nhựa lên chậu và đất của mỗi cây?'},
+  opts:[{en:'So that water could only be lost from the leaves, by transpiration',vi:'Để nước chỉ có thể mất đi từ lá, do thoát hơi nước (transpiration)'},
+        {en:'To keep the plants warm',vi:'Để giữ ấm cho cây'},
+        {en:'To stop insects eating the leaves',vi:'Để ngăn côn trùng ăn lá'}],a:0,
+  e:{en:'If the soil were uncovered, water would also evaporate from the soil and the mass loss would not measure transpiration from the leaves alone.',vi:'Nếu đất không được trùm, nước cũng sẽ bốc hơi từ đất và sự giảm khối lượng sẽ không đo riêng sự thoát hơi nước (transpiration) từ lá.'}},
+ {q:{en:'One of Sofia’s results was anomalous. Which one?',vi:'Một trong các kết quả của Sofia là bất thường (anomalous). Đó là kết quả nào?'},
+  opts:[{en:'Plant A on day 8: 807 g',vi:'Cây A ngày 8: 807 g'},
+        {en:'Plant B on day 5: 861 g',vi:'Cây B ngày 5: 861 g'},
+        {en:'Plant C on day 2: 810 g',vi:'Cây C ngày 2: 810 g'}],a:1,
+  e:{en:'Plant B’s masses fall steadily (893, 873, 856, 837…) — then jump UP to 861 g on day 5 before falling again. A plant in a bag cannot gain mass like that, so 861 g does not fit the pattern.',vi:'Khối lượng của cây B giảm đều (893, 873, 856, 837…) — rồi nhảy LÊN 861 g vào ngày 5 trước khi lại giảm. Một cây trong túi không thể tăng khối lượng như vậy, nên 861 g không khớp với quy luật.'}},
+ {q:{en:'What should Sofia do about the anomalous result when she draws her line graphs?',vi:'Sofia nên làm gì với kết quả bất thường (anomalous) khi vẽ đồ thị đường?'},
+  opts:[{en:'Draw the line through it anyway',vi:'Vẫn vẽ đường qua nó'},
+        {en:'Change it to the value she expected',vi:'Sửa nó thành giá trị bạn ấy mong đợi'},
+        {en:'Leave it out — do not use it when drawing the line for plant B',vi:'Bỏ nó ra — không dùng nó khi vẽ đường cho cây B'}],a:2,
+  e:{en:'An anomalous result is ignored when drawing the line of best fit; it is never rewritten to match expectations.',vi:'Một kết quả bất thường (anomalous) bị bỏ qua khi vẽ đường phù hợp nhất; nó không bao giờ bị viết lại cho khớp kỳ vọng.'}},
+ {q:{en:'What was the total loss of mass of plant A over the 7 days, and its mean loss per day?',vi:'Tổng khối lượng mất của cây A trong 7 ngày là bao nhiêu, và lượng mất trung bình (mean) mỗi ngày?'},
+  opts:[{en:'56 g in total — 8 g per day',vi:'Tổng 56 g — 8 g mỗi ngày'},
+        {en:'863 g in total — 56 g per day',vi:'Tổng 863 g — 56 g mỗi ngày'},
+        {en:'46 g in total — 7 g per day',vi:'Tổng 46 g — 7 g mỗi ngày'}],a:0,
+  e:{en:'Plant A: 863 − 807 = 56 g lost over 7 days, and 56 ÷ 7 = 8 g per day — exactly the calculation Sofia showed in the Workbook.',vi:'Cây A: 863 − 807 = 56 g mất trong 7 ngày, và 56 ÷ 7 = 8 g mỗi ngày — đúng phép tính Sofia đã trình bày trong Workbook.'}},
+ {q:{en:'Which conclusion do Sofia’s results support?',vi:'Kết luận nào được kết quả của Sofia ủng hộ?'},
+  opts:[{en:'Plants lose water fastest in the cold',vi:'Cây mất nước nhanh nhất khi lạnh'},
+        {en:'As the temperature increases, plants lose more water from their leaves',vi:'Khi nhiệt độ tăng, cây mất nhiều nước hơn từ lá của chúng'},
+        {en:'Temperature makes no difference to water loss',vi:'Nhiệt độ không ảnh hưởng gì tới sự mất nước'}],a:1,
+  e:{en:'Mean loss per day rose with temperature: about 8 g at 4 °C, about 19 g at 20 °C and 32 g at 30 °C. That matches Sofia’s hypothesis.',vi:'Lượng mất trung bình (mean) mỗi ngày tăng theo nhiệt độ: khoảng 8 g ở 4 °C, khoảng 19 g ở 20 °C và 32 g ở 30 °C. Điều đó khớp với giả thuyết (hypothesis) của Sofia.'}}
+];
+const EX3=[
+ {id:'t_hot',emoji:'☀️',en:'The temperature around the plant rises',vi:'Nhiệt độ quanh cây tăng lên',ans:'faster'},
+ {id:'t_seal',emoji:'🧴',en:'The undersides of the leaves are sealed with petroleum jelly',vi:'Mặt dưới của lá bị bịt bằng petroleum jelly',ans:'slower'},
+ {id:'t_humid',emoji:'🌫️',en:'The air around the leaves becomes much more humid',vi:'Không khí quanh lá trở nên ẩm hơn nhiều',ans:'slower'},
+ {id:'t_wind',emoji:'🌬️',en:'A warm, dry wind blows across the leaves',vi:'Một luồng gió ấm, khô thổi qua lá',ans:'faster'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 5 + 4 = 13 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-4-2';
+const SUMKEY='camb:sum:sci9-4-2';
+const BOT_CODE='sci9-4.2';
+let OBS={liq:false,gas:false,xyl:false,sto:false,cov:false,free:false,bare:false,jel:false,firm:false,wilt:false};
+let SORTED=new Set();
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1liq:false, s1gas:false, s1hint:null,
+  s2xyl:false, s2sto:false,
+  s3cov:false, s3free:false,
+  s4bare:false, s4jel:false,
+  s5correct:new Set(), s5sel:null,
+  s6firm:false, s6wilt:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1liq&&T.s1gas;
+  if(i===1) return T.s2xyl&&T.s2sto;
+  if(i===2) return T.s3cov&&T.s3free;
+  if(i===3) return T.s4bare&&T.s4jel;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6firm&&T.s6wilt;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not liquid water or water vapour. Look at the back-left of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải nước lỏng hay hơi nước. Hãy nhìn phía sau-bên trái của bàn!');
+    }
+    return B('You did: liquid water '+(T.s1liq?'✓':'…')+' · water vapour '+(T.s1gas?'✓':'…')+'. Tap the jars on the bench!',
+             'Con đã làm: nước lỏng (liquid water) '+(T.s1liq?'✓':'…')+' · hơi nước (water vapour) '+(T.s1gas?'✓':'…')+'. Hãy chạm vào các lọ trên bàn!');
+  }
+  if(i===1){
+    return B('Path so far: the xylem vessel '+(T.s2xyl?'✓':'…')+' · the stoma on the underside '+(T.s2sto?'✓':'…')+'.',
+             'Đường đi tới giờ: mạch gỗ (xylem vessel) '+(T.s2xyl?'✓':'…')+' · khí khổng (stoma) ở mặt dưới '+(T.s2sto?'✓':'…')+'.');
+  }
+  if(i===2){
+    return B('Plants weighed: A fully bagged '+(T.s3cov?'✓ (512 g → 505 g)':'…')+' · B leaves free '+(T.s3free?'✓ (508 g → 462 g)':'…')+'.',
+             'Các cây đã cân: A trùm kín '+(T.s3cov?'✓ (512 g → 505 g)':'…')+' · B lá tự do '+(T.s3free?'✓ (508 g → 462 g)':'…')+'.');
+  }
+  if(i===3){
+    return B('Leaves compared: A no jelly '+(T.s4bare?'✓ (lost the most)':'…')+' · G jelly on both sides '+(T.s4jel?'✓ (lost the least)':'…')+'.',
+             'Các lá đã so sánh: A không jelly '+(T.s4bare?'✓ (mất nhiều nhất)':'…')+' · G jelly cả hai mặt '+(T.s4jel?'✓ (mất ít nhất)':'…')+'.');
+  }
+  if(i===4){
+    const c=T.s5sel? CARDS6.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap GET MORE WATER or LOSE LESS WATER.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm LẤY THÊM NƯỚC (GET MORE WATER) hoặc MẤT ÍT NƯỚC HƠN (LOSE LESS WATER).');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5){
+    return B('Plants compared: well-watered and firm '+(T.s6firm?'✓':'…')+' · short of water and wilted '+(T.s6wilt?'✓':'…')+'.',
+             'Các cây đã so sánh: đủ nước và cứng cáp '+(T.s6firm?'✓':'…')+' · thiếu nước và héo (wilted) '+(T.s6wilt?'✓':'…')+'.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'💧',label:{en:'Liquid water — particles close',vi:'Nước lỏng — các hạt ở gần'},got:T.s1liq},
+      {emoji:'☁️',label:{en:'Water vapour — particles spread out',vi:'Hơi nước (water vapour) — các hạt tỏa xa'},got:T.s1gas}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🌿',label:{en:'Out of the xylem vessel',vi:'Ra khỏi mạch gỗ (xylem vessel)'},got:T.s2xyl},
+      {emoji:'🔬',label:{en:'Out through the stoma',vi:'Ra ngoài qua khí khổng (stoma)'},got:T.s2sto},
+      {emoji:'💨',label:{en:'Liquid → vapour inside the leaf',vi:'Lỏng → hơi bên trong lá'},got:T.s2xyl&&T.s2sto}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🪴',label:{en:'A fully bagged: 512 g → 505 g (lost 7 g)',vi:'A trùm kín: 512 g → 505 g (mất 7 g)'},got:T.s3cov},
+      {emoji:'🌱',label:{en:'B leaves free: 508 g → 462 g (lost 46 g)',vi:'B lá tự do: 508 g → 462 g (mất 46 g)'},got:T.s3free}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🍃',label:{en:'Leaf A, no jelly — lost the most mass',vi:'Lá A, không jelly — mất khối lượng nhiều nhất'},got:T.s4bare},
+      {emoji:'✨',label:{en:'Leaf G, jelly both sides — lost the least',vi:'Lá G, jelly cả hai mặt — mất ít nhất'},got:T.s4jel},
+      {emoji:'🔬',label:{en:'Most stomata are underneath',vi:'Hầu hết khí khổng (stomata) ở mặt dưới'},got:T.s4bare&&T.s4jel}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'get',label:STR.binGet,cls:'get'},{key:'reduce',label:STR.binReduce,cls:'reduce'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🌷',label:{en:'Well-watered — firm and upright',vi:'Đủ nước — cứng và đứng thẳng'},got:T.s6firm},
+      {emoji:'🥀',label:{en:'No water for days — wilted',vi:'Nhiều ngày không nước — héo (wilted)'},got:T.s6wilt}
+    ]);
+    if(!T.s6wilt){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookFirm);
+      b.onclick=()=>focusThing('firm');
+      box.appendChild(b);
+    }
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('liquid'); bounceThing('liquid'); setTimeout(()=>{ focusVisual('vapour'); bounceThing('vapour'); },900); }
+  else if(i===1){ focusVisual('xylem'); bounceThing('xylem'); setTimeout(()=>{ focusVisual('stoma'); bounceThing('stoma'); },900); }
+  else if(i===2){ focusVisual('covered'); bounceThing('covered'); setTimeout(()=>{ focusVisual('freeplant'); bounceThing('freeplant'); },900); }
+  else if(i===3){ focusVisual('leafbare'); bounceThing('leafbare'); setTimeout(()=>{ focusVisual('leafjelly'); bounceThing('leafjelly'); },900); }
+  else if(i===4){ demoSortMine(CARDS6,T.s5correct,{get:'get',reduce:'reduce'}); }
+  else if(i===5){ focusVisual('firm'); bounceThing('firm'); setTimeout(()=>{ focusVisual('wilted'); bounceThing('wilted'); },900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recParticles,OBS.liq&&OBS.gas)+
+    row(STR.recLeaf,OBS.xyl&&OBS.sto)+
+    row(STR.recPot,OBS.cov&&OBS.free)+
+    row(STR.recJelly,OBS.bare&&OBS.jel)+
+    row(STR.recDesert,SORTED.size>=5)+
+    row(STR.recNeed,OBS.firm&&OBS.wilt);
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.liq&&OBS.gas)||doneSteps.has(0),label:STR.foundParticles},
+    {got:(OBS.xyl&&OBS.sto)||doneSteps.has(1),label:STR.foundLeaf},
+    {got:(OBS.cov&&OBS.free)||doneSteps.has(2),label:STR.foundPot},
+    {got:(OBS.bare&&OBS.jel)||doneSteps.has(3),label:STR.foundJelly},
+    {got:SORTED.size>=5||doneSteps.has(4),label:STR.foundDesert},
+    {got:(OBS.firm&&OBS.wilt)||doneSteps.has(5),label:STR.foundNeed}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let vapourDots=[];
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; G[id]=group; scene3.add(group); return group; }
+function glassMat(hex,op){ return new THREE.MeshStandardMaterial({color:hex,roughness:0.25,metalness:0.05,transparent:true,opacity:op}); }
+function buildIon(id){
+  const g=new THREE.Group();
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.26,0.62,14,1,true),glassMat(0xcfe8f5,0.35)));
+  glass.position.y=0.38; g.add(glass);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,0.04,14),glassMat(0xcfe8f5,0.5));
+  base.position.y=0.09; g.add(base);
+  if(id==='liquid'){
+    const liq=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.23,0.34,14),stdMat(0x3d8bfd,0.35));
+    liq.position.y=0.26; g.add(liq);
+    [[-0.1,0.2,0.05],[0.08,0.24,-0.06],[0,0.34,0.08],[-0.06,0.4,-0.02],[0.11,0.38,0.03]].forEach(p=>{
+      const d=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),stdMat(0xbfe0ff,0.3));
+      d.position.set(p[0],p[1],p[2]); g.add(d);
+    });
+  }else{
+    [[-0.16,0.24,0.08],[0.15,0.34,-0.1],[0,0.52,0.12],[-0.1,0.62,-0.05],[0.14,0.66,0.04],[0.02,0.2,-0.14]].forEach(p=>{
+      const d=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,8),stdMat(0xdff2ff,0.25));
+      d.position.set(p[0],p[1],p[2]); vapourDots.push(d); g.add(d);
+    });
+  }
+  const p=LAB[id]; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function leafMesh(hex,sx,sy,sz){
+  const m=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10),stdMat(hex,0.55)));
+  m.scale.set(sx,sy,sz); return m;
+}
+function buildXylem(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.46,0.07,16),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  const leaf=leafMesh(0x3f9e4d,1.5,0.28,0.85); leaf.position.y=0.55; leaf.rotation.y=0.4; g.add(leaf);
+  const vein=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.85,8),stdMat(0xc0392b,0.4));
+  vein.rotation.z=Math.PI/2; vein.rotation.y=0.4; vein.position.y=0.56; g.add(vein);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,0.5,8),stdMat(0x2e7d32,0.5));
+  stem.position.set(-0.42,0.3,0.12); stem.rotation.z=0.5; g.add(stem);
+  g.position.set(-0.9,0,-1.3);
+  return g;
+}
+function buildStoma(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.46,0.07,16),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  const leaf=leafMesh(0x2e7d32,1.4,0.22,0.9); leaf.position.y=0.5; g.add(leaf);
+  [-0.14,0.14].forEach(x=>{
+    const guard=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),stdMat(0x66bb6a,0.45)));
+    guard.scale.set(0.7,0.5,1.4); guard.position.set(x,0.44,0); g.add(guard);
+  });
+  const pore=new THREE.Mesh(new THREE.CircleGeometry(0.07,12),new THREE.MeshBasicMaterial({color:0x14301a}));
+  pore.rotation.x=-Math.PI/2; pore.position.y=0.445; g.add(pore);
+  g.position.set(0.4,0,-1.3);
+  return g;
+}
+function plantInPot(g, droop){
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.19,0.34,14),stdMat(0xb5651d,0.6)));
+  pot.position.y=0.17; g.add(pot);
+  const soil=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.04,14),stdMat(0x4a3220,0.8));
+  soil.position.y=0.35; g.add(soil);
+  const dir=droop? 1 : 1;
+  [[-0.16,0.85,0,0.5],[0.05,1.0,0.08,-0.25],[0.2,0.8,-0.05,-0.7]].forEach((p,idx)=>{
+    const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.03,0.5,8),stdMat(0x2e7d32,0.5));
+    stem.position.set(p[0]*0.4,p[1]-0.22,p[2]); stem.rotation.z=droop? (idx-1)*0.85 : p[3]*0.4; g.add(stem);
+    const leaf=leafMesh(droop? 0x8a9a3c : 0x43a047,0.85,0.3,0.55);
+    leaf.position.set(p[0], droop? p[1]-0.28 : p[1], p[2]); leaf.rotation.z=droop? -0.9 : 0.2; g.add(leaf);
+  });
+  return g;
+}
+function buildCovered(){
+  const g=new THREE.Group(); plantInPot(g,false);
+  const bag=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,1.25,16,1,true),glassMat(0xe8f4fb,0.28));
+  bag.position.y=0.68; g.add(bag);
+  const top=new THREE.Mesh(new THREE.SphereGeometry(0.42,14,10),glassMat(0xe8f4fb,0.28));
+  top.scale.set(1,0.45,1); top.position.y=1.3; g.add(top);
+  const tie=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.025,8,18),stdMat(0xd33a2c,0.5));
+  tie.rotation.x=Math.PI/2; tie.position.y=1.42; g.add(tie);
+  g.position.set(1.8,0,-1.3);
+  return g;
+}
+function buildFreeplant(){
+  const g=new THREE.Group(); plantInPot(g,false);
+  const wrapBag=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.26,0.42,14,1,true),glassMat(0xdfe9f2,0.55));
+  wrapBag.position.y=0.2; g.add(wrapBag);
+  const tie=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.02,8,18),stdMat(0xd33a2c,0.5));
+  tie.rotation.x=Math.PI/2; tie.position.y=0.42; g.add(tie);
+  g.position.set(-3.4,0,1.7);
+  return g;
+}
+function buildHangLeaf(id){
+  const g=new THREE.Group();
+  const line=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.55,6),stdMat(0x5b7186,0.5));
+  line.position.y=1.05; g.add(line);
+  const jelly=id==='leafjelly';
+  const leaf=leafMesh(jelly? 0x57a773 : 0x43a047,0.95,0.28,0.65);
+  leaf.position.y=0.62; leaf.rotation.z=-0.35; g.add(leaf);
+  if(jelly){
+    [-0.02,0.16].forEach(dy=>{
+      const coat=new THREE.Mesh(new THREE.SphereGeometry(0.29,12,8),new THREE.MeshStandardMaterial({color:0xf7e9a0,roughness:0.12,metalness:0.05,transparent:true,opacity:0.55}));
+      coat.scale.set(0.95,0.3,0.65); coat.position.y=0.62+dy*0.4; coat.rotation.z=-0.35; g.add(coat);
+    });
+  }
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.7,0.05,0.4),stdMat(0x8d99a6,0.5)));
+  base.position.y=0.03; g.add(base);
+  const p=LAB[id]; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildFirm(){ const g=new THREE.Group(); plantInPot(g,false); g.position.set(0.7,0,1.7); return g; }
+function buildWilted(){ const g=new THREE.Group(); plantInPot(g,true); g.position.set(2.1,0,1.7); return g; }
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdfe9f2);
+  scene3.fog=new THREE.Fog(0xdfe9f2,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db4c6,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the lab bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xb9c9d8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(9.6,0.18,5.4),stdMat(0x8a6a44,0.9)));
+  bench.position.set(-0.4,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-4.9,-2.3],[4.1,-2.3],[-4.9,2.7],[4.1,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(7.5,2.6,0.08),stdMat(0x2e5e4e,0.95));
+  board.position.set(-0.4,1.7,-3.4); scene3.add(board);
+  /* the models */
+  reg('liquid',buildIon('liquid'));
+  reg('vapour',buildIon('vapour'));
+  reg('xylem',buildXylem());
+  reg('stoma',buildStoma());
+  reg('covered',buildCovered());
+  reg('freeplant',buildFreeplant());
+  reg('leafbare',buildHangLeaf('leafbare'));
+  reg('leafjelly',buildHangLeaf('leafjelly'));
+  reg('firm',buildFirm());
+  reg('wilted',buildWilted());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('liquid',p,G.liquid); }
+  { const p=sphProxy(0.55); p.position.set(0,0.45,0); addProxy('vapour',p,G.vapour); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('xylem',p,G.xylem); }
+  { const p=sphProxy(0.52); p.position.set(0,0.48,0); addProxy('stoma',p,G.stoma); }
+  { const p=sphProxy(0.58); p.position.set(0,0.7,0); addProxy('covered',p,G.covered); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('freeplant',p,G.freeplant); }
+  { const p=sphProxy(0.52); p.position.set(0,0.6,0); addProxy('leafbare',p,G.leafbare); }
+  { const p=sphProxy(0.52); p.position.set(0,0.6,0); addProxy('leafjelly',p,G.leafjelly); }
+  { const p=sphProxy(0.52); p.position.set(0,0.55,0); addProxy('firm',p,G.firm); }
+  { const p=sphProxy(0.52); p.position.set(0,0.5,0); addProxy('wilted',p,G.wilted); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a model */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['liquid','vapour'],      /* step 1: liquid water + water vapour */
+  ['xylem','stoma'],        /* step 2: xylem vessel + stoma */
+  ['covered','freeplant'],  /* step 3: fully bagged plant + leaves-free plant */
+  ['leafbare','leafjelly'], /* step 4: leaf with no jelly + leaf sealed with jelly */
+  [],                       /* step 5: card sort — no scene targets */
+  ['firm','wilted']         /* step 6: firm plant + wilted plant */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='liquid'){ T.s1liq=true; OBS.liq=true; T.s1hint=null; }
+    else if(id==='vapour'){ T.s1gas=true; OBS.gas=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='xylem'){ T.s2xyl=true; OBS.xyl=true; }
+    else if(id==='stoma'){ T.s2sto=true; OBS.sto=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='covered'){ T.s3cov=true; OBS.cov=true; }
+    else if(id==='freeplant'){ T.s3free=true; OBS.free=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='leafbare'){ T.s4bare=true; OBS.bare=true; }
+    else if(id==='leafjelly'){ T.s4jel=true; OBS.jel=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===5){
+    if(id==='firm'){ T.s6firm=true; OBS.firm=true; }
+    else if(id==='wilted'){ T.s6wilt=true; OBS.wilt=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* the vapour particles drift and bob inside their jar */
+  vapourDots.forEach((d,idx)=>{ d.position.y+=Math.sin(t*1.6+idx*1.3)*0.0009; d.position.x+=Math.cos(t*1.1+idx)*0.0006; });
+  /* the firm plant sways very gently; the wilted one stays slumped */
+  if(G.firm) G.firm.rotation.z=Math.sin(t*0.7)*0.012;
+  if(G.xylem) G.xylem.rotation.y=Math.sin(t*0.4)*0.05;
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='true'?'✓':'✗';
+  return ans==='faster'?'⬆':'⬇';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — true or false about Sofia’s set-up */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinTrue').innerHTML=bi(STR.binTrue);
+  $('ex1BinFalse').innerHTML=bi(STR.binFalse);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (one tap per question) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — faster or slower transpiration? */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinFast').innerHTML=bi(STR.binFast);
+  $('ex3BinSlow').innerHTML=bi(STR.binSlow);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinTrue').onclick=()=>ex1Place('true');
+$('ex1BinFalse').onclick=()=>ex1Place('false');
+$('ex3BinFast').onclick=()=>ex3Place('faster');
+$('ex3BinSlow').onclick=()=>ex3Place('slower');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.liq=false; OBS.gas=false; }
+  if(step===1){ OBS.xyl=false; OBS.sto=false; }
+  if(step===2){ OBS.cov=false; OBS.free=false; }
+  if(step===3){ OBS.bare=false; OBS.jel=false; }
+  if(step===4){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ OBS.firm=false; OBS.wilt=false; }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='true'||s.exAns.a1[id]==='false')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='faster'||s.exAns.a3[id]==='slower')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS/SORTED). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1liq=!!OBS.liq; t.s1gas=!!OBS.gas; }
+  else if(i===1){ t.s2xyl=!!OBS.xyl; t.s2sto=!!OBS.sto; }
+  else if(i===2){ t.s3cov=!!OBS.cov; t.s3free=!!OBS.free; }
+  else if(i===3){ t.s4bare=!!OBS.bare; t.s4jel=!!OBS.jel; }
+  else if(i===4){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.s6firm=!!OBS.firm; t.s6wilt=!!OBS.wilt; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-4-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

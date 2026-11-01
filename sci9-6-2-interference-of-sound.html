@@ -1,0 +1,1395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.2 Interference of sound — Sự giao thoa của âm thanh · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdeef2,#eef6ec)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.long{background:#7a4fd0}
+.binbtn.reinf{background:#0d9d58}
+.binbtn.cancel{background:#44586e}
+.binbtn.double{background:#7a4fd0}
+.binbtn.zero{background:#b03a3a}
+.binbtn.short{background:#0b76d1}
+.binbtn.good{background:#0d9d58}
+.binbtn.bad{background:#b03a3a}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.high{background:#b03a3a}
+.binbtn.low{background:#0b76d1}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="6.2 Interference of sound" data-vi="6.2 Sự giao thoa của âm thanh (Interference of sound)">6.2 Interference of sound</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Sound and space" data-vi="Bài 6 · Âm thanh và không gian (Sound and space)">Unit 6 · Sound and space</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What happens when two sound waves meet each other?" data-vi="Điều gì xảy ra khi hai sóng âm gặp nhau?">What happens when two sound waves meet each other?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Waves meet — interference" data-vi="Các sóng gặp nhau — giao thoa (interference)">Waves meet — interference</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Reinforce: louder" data-vi="Tăng cường (reinforce): to hơn">Reinforce: louder</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Cancel: silence" data-vi="Triệt tiêu (cancel): im lặng">Cancel: silence</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Using interference" data-vi="Ứng dụng giao thoa (interference)">Using interference</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the sound bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn âm thanh!">🖱 Drag to look around · Scroll to zoom · Tap the models on the sound bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 6 Sound and space · Section 6.2. The sound bench in this lesson is a simulation — the waves, loudspeakers and headphones are models." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 6 Âm thanh và không gian (Sound and space) · Mục 6.2. Bàn âm thanh trong bài học này là mô phỏng — các sóng, loa và tai nghe đều là mô hình.">Cambridge Lower Secondary Science 9 · Unit 6 Sound and space · Section 6.2. The sound bench in this lesson is a simulation — the waves, loudspeakers and headphones are models.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 6 Sound and space, section 6.2 Interference of sound, pages 207–215; Workbook 9 (ISBN 9781108742894), pages 112–116. All wording in this lesson is rewritten in our own words; no text is copied from the book. The Getting started paper task (drawing waves and sorting the drawings by amplitude and then by frequency) is a group paper activity and is not part of this interactive lesson; the class water-tray activity 6.2.1 is represented by step 1's two wave makers in one tray." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 6 Âm thanh và không gian (Sound and space), mục 6.2 Sự giao thoa của âm thanh (Interference of sound), trang 207–215; Sách bài tập 9 (ISBN 9781108742894), trang 112–116. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Bài giấy phần Khởi động (vẽ sóng và xếp các hình vẽ theo biên độ (amplitude) rồi theo tần số (frequency)) là hoạt động giấy theo nhóm và không thuộc bài học tương tác này; hoạt động khay nước 6.2.1 trên lớp được thể hiện bằng hai bộ tạo sóng trong cùng một khay ở bước 1.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 6 Sound and space, section 6.2 Interference of sound, pages 207–215; Workbook 9 (ISBN 9781108742894), pages 112–116. All wording in this lesson is rewritten in our own words; no text is copied from the book. The Getting started paper task (drawing waves and sorting the drawings by amplitude and then by frequency) is a group paper activity and is not part of this interactive lesson; the class water-tray activity 6.2.1 is represented by step 1's two wave makers in one tray.</p>
+    <p class="i18n" data-en="Objectives (from the book): find out how sound waves can reinforce each other to make louder sounds; find out how sound waves can cancel each other out to make no sound. Key words: interference, reinforce — plus cancel, amplitude, frequency, peak, trough and out of phase." data-vi="Mục tiêu (theo sách): tìm hiểu sóng âm có thể tăng cường (reinforce) lẫn nhau để tạo âm thanh to hơn như thế nào; tìm hiểu sóng âm có thể triệt tiêu (cancel) lẫn nhau để tạo ra không có âm thanh như thế nào. Từ khóa: interference (giao thoa), reinforce (tăng cường) — cùng cancel (triệt tiêu), amplitude (biên độ), frequency (tần số), peak (đỉnh sóng), trough (đáy sóng) và out of phase (lệch pha).">Objectives (from the book): find out how sound waves can reinforce each other to make louder sounds; find out how sound waves can cancel each other out to make no sound. Key words: interference, reinforce — plus cancel, amplitude, frequency, peak, trough and out of phase.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D sound bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the sound bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: water waves as an analogy for interference, waves that reinforce (peaks and troughs together — amplitudes add, frequency stays the same, the sound is louder), waves that cancel (a peak meets an equal trough and the amplitudes add to zero), noise-cancelling headphones, and the tuning-fork and pipe investigation, where the reflected wave reinforces the source wave and a higher frequency needs a shorter pipe. The book's own numbers are used: two 450 Hz waves of 0.5 mm amplitude reinforce to 450 Hz and 1.0 mm, and a 600 Hz wave of amplitude 0.25 mm needs an equal 0.25 mm wave to cancel to zero." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn âm thanh 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn âm thanh' chỉ di chuyển camera; muốn kiểm tra một ý thì phải chạm vào chính mô hình trên bàn. Các bước đi theo đúng thứ tự trong sách: sóng nước làm phép tương tự cho giao thoa (interference), sóng tăng cường (reinforce) (đỉnh và đáy gặp nhau cùng lúc — biên độ cộng lại, tần số giữ nguyên, âm thanh to hơn), sóng triệt tiêu (cancel) (một đỉnh gặp một đáy bằng nó và các biên độ cộng thành zero), tai nghe chống ồn, và khảo sát âm thoa với ống, trong đó sóng phản xạ tăng cường sóng từ nguồn và tần số cao hơn cần ống ngắn hơn. Số liệu của chính sách được dùng: hai sóng 450 Hz biên độ 0.5 mm tăng cường thành 450 Hz và 1.0 mm, và một sóng 600 Hz biên độ 0.25 mm cần một sóng 0.25 mm bằng nó để triệt tiêu thành zero.">How it works: each step asks for one real action — tapping the models on the 3D sound bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the sound bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: water waves as an analogy for interference, waves that reinforce (peaks and troughs together — amplitudes add, frequency stays the same, the sound is louder), waves that cancel (a peak meets an equal trough and the amplitudes add to zero), noise-cancelling headphones, and the tuning-fork and pipe investigation, where the reflected wave reinforces the source wave and a higher frequency needs a shorter pipe. The book's own numbers are used: two 450 Hz waves of 0.5 mm amplitude reinforce to 450 Hz and 1.0 mm, and a 600 Hz wave of amplitude 0.25 mm needs an equal 0.25 mm wave to cancel to zero.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn reinf" id="ex1BinReinf"></button>
+        <button class="binbtn cancel" id="ex1BinCancel"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn double" id="ex3BinDouble"></button>
+        <button class="binbtn zero" id="ex3BinZero"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-6-2 "Interference of sound"
+   (Science 9, Unit 6 · Sound and space)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= sound bench models ================= */
+const LAB={
+  srcA:  {emoji:'🌊', name:{en:'Left wave maker — dips in and out of the water',vi:'Bộ tạo sóng trái — chấm lên xuống mặt nước'}, short:{en:'Wave maker A',vi:'Bộ tạo sóng A'}, ring:0.55, labelY:1.3, fx:-3.6, fz:-1.3, fr:4.8},
+  srcB:  {emoji:'🌊', name:{en:'Right wave maker — same frequency, same amplitude',vi:'Bộ tạo sóng phải — cùng tần số (frequency), cùng biên độ (amplitude)'}, short:{en:'Wave maker B',vi:'Bộ tạo sóng B'}, ring:0.55, labelY:1.3, fx:-2.35, fz:-1.3, fr:4.4},
+  tray:  {emoji:'💧', name:{en:'The water tray — where the two wave patterns meet',vi:'Khay nước — nơi hai hệ sóng gặp nhau'}, short:{en:'Water tray',vi:'Khay nước'}, ring:0.6, labelY:1.2, fx:-1.15, fz:-1.3, fr:4.4},
+  spkA:  {emoji:'🔊', name:{en:'Left loudspeaker — plays the note',vi:'Loa trái — phát ra nốt nhạc'}, short:{en:'Speaker A',vi:'Loa A'}, ring:0.55, labelY:1.35, fx:0.05, fz:-1.3, fr:4.4},
+  spkB:  {emoji:'🔊', name:{en:'Right loudspeaker — plays the same note',vi:'Loa phải — phát cùng một nốt nhạc'}, short:{en:'Speaker B',vi:'Loa B'}, ring:0.55, labelY:1.35, fx:1.25, fz:-1.3, fr:4.4},
+  peak:  {emoji:'🔺', name:{en:'A peak — the wave’s maximum positive amplitude',vi:'Một đỉnh sóng (peak) — biên độ dương lớn nhất của sóng'}, short:{en:'Peak +',vi:'Đỉnh +'}, ring:0.5, labelY:1.25, fx:-3.2, fz:1.7, fr:4.6},
+  trough:{emoji:'🔻', name:{en:'A trough — the wave’s maximum negative amplitude',vi:'Một đáy sóng (trough) — biên độ âm lớn nhất của sóng'}, short:{en:'Trough −',vi:'Đáy −'}, ring:0.5, labelY:1.25, fx:-2.0, fz:1.7, fr:4.4},
+  phones:{emoji:'🎧', name:{en:'Noise-cancelling headphones',vi:'Tai nghe chống ồn (noise-cancelling headphones)'}, short:{en:'Headphones',vi:'Tai nghe'}, ring:0.55, labelY:1.35, fx:-0.8, fz:1.7, fr:4.4},
+  mic:   {emoji:'🎤', name:{en:'The small microphone — picks up the sound from the surroundings',vi:'Micro nhỏ — thu âm thanh từ xung quanh'}, short:{en:'Microphone',vi:'Micro'}, ring:0.5, labelY:1.3, fx:0.4, fz:1.7, fr:4.4},
+  fork:  {emoji:'🎵', name:{en:'A tuning fork — a sound source with a constant frequency',vi:'Một âm thoa (tuning fork) — nguồn âm có tần số không đổi'}, short:{en:'Tuning fork',vi:'Âm thoa'}, ring:0.5, labelY:1.4, fx:1.6, fz:1.7, fr:4.4},
+  pipe:  {emoji:'🎺', name:{en:'The pipe standing in water — move it to change the length above water',vi:'Ống đứng trong nước — di chuyển nó để đổi độ dài phần ống trên mặt nước'}, short:{en:'Pipe',vi:'Ống'}, ring:0.55, labelY:1.5, fx:2.8, fz:1.7, fr:4.6}
+};
+const FOCUSORDER=['srcA','srcB','tray','spkA','spkB','peak','trough','phones','mic','fork','pipe'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the sound bench',vi:'Trên bàn âm thanh'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to test an idea, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn kiểm tra một ý, hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My interference record',vi:'Bảng ghi giao thoa của con'},
+  u2Brief:{en:'What you have found out about waves that meet, in the order of the book.',vi:'Những gì con đã tìm ra về các sóng khi gặp nhau, theo đúng thứ tự trong sách.'},
+  recMeet:{en:'🌊 Two wave patterns meet — the effect is interference',vi:'🌊 Hai hệ sóng gặp nhau — hiệu ứng đó là giao thoa (interference)'},
+  recReinf:{en:'🔊 Peaks and troughs together: amplitudes add — louder sound',vi:'🔊 Đỉnh và đáy gặp nhau cùng lúc: các biên độ (amplitudes) cộng lại — âm thanh to hơn'},
+  recCancel:{en:'🔇 A peak meets an equal trough: amplitudes add to zero — no sound',vi:'🔇 Một đỉnh gặp một đáy bằng nó: các biên độ cộng thành zero — không có âm thanh'},
+  recPhones:{en:'🎧 Headphones make an opposite wave that cancels the noise',vi:'🎧 Tai nghe tạo một sóng ngược lại để triệt tiêu (cancel) tiếng ồn'},
+  recPipe:{en:'🎵 Reflected wave reinforces the fork: higher frequency, shorter pipe',vi:'🎵 Sóng phản xạ tăng cường (reinforce) âm thoa: tần số cao hơn, ống ngắn hơn'},
+  recSort:{en:'🃏 Meeting waves sorted: reinforce or cancel',vi:'🃏 Các sóng gặp nhau đã được phân loại: tăng cường (reinforce) hay triệt tiêu (cancel)'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for what happens when sound waves meet.',vi:'Danh sách kiểm tra về điều xảy ra khi các sóng âm gặp nhau.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundMeet:{en:'Interference happens when waves of the same type meet',vi:'Giao thoa (interference) xảy ra khi các sóng cùng loại gặp nhau'},
+  foundReinf:{en:'Reinforcing: amplitude adds up, frequency does not change',vi:'Tăng cường (reinforce): biên độ cộng lại, tần số không đổi'},
+  foundCancel:{en:'Cancelling: + and − of equal size add to zero',vi:'Triệt tiêu (cancel): + và − bằng nhau cộng lại thành zero'},
+  foundPhones:{en:'A microphone picks up the noise; the headphones answer with the opposite wave',vi:'Một micro thu tiếng ồn; tai nghe đáp lại bằng sóng ngược lại'},
+  foundPipe:{en:'The loudest pipe length depends on the frequency of the fork',vi:'Độ dài ống cho âm thanh to nhất phụ thuộc vào tần số (frequency) của âm thoa'},
+  foundSort:{en:'I sorted the meeting waves: reinforce or cancel',vi:'Con đã phân loại các sóng gặp nhau: tăng cường (reinforce) hay triệt tiêu (cancel)'},
+  binGood:{en:'REINFORCE 🔊',vi:'TĂNG CƯỜNG 🔊 (reinforce)'},
+  binBad:{en:'CANCEL 🔇',vi:'TRIỆT TIÊU 🔇 (cancel)'},
+  binReinf:{en:'REINFORCE 🔊',vi:'TĂNG CƯỜNG 🔊 (reinforce)'},
+  binCancel:{en:'CANCEL 🔇',vi:'TRIỆT TIÊU 🔇 (cancel)'},
+  binDouble:{en:'AMPLITUDE DOUBLES ✖2',vi:'BIÊN ĐỘ GẤP ĐÔI ✖2 (amplitude doubles)'},
+  binZero:{en:'AMPLITUDE BECOMES ZERO 0',vi:'BIÊN ĐỘ THÀNH ZERO 0 (amplitude becomes zero)'},
+  lookMic:{en:'Look at the microphone 🎤',vi:'Ngắm micro 🎤'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.2'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Reinforcing sound (Workbook 6.2A)',vi:'Bài tập 1 · Focus — Âm thanh tăng cường (Workbook 6.2A)'},
+  ex1Inst:{en:'Think about what happens when sound waves meet. Tap a card, then tap REINFORCE or CANCEL to say what the two waves do. (Workbook 6.2A also asks what a reinforced sound becomes, and why the same piano note played by two people sounds louder.)',vi:'Hãy nghĩ về điều xảy ra khi các sóng âm gặp nhau. Chạm vào một thẻ, rồi chạm TĂNG CƯỜNG (REINFORCE) hoặc TRIỆT TIÊU (CANCEL) để nói hai sóng làm gì. (Workbook 6.2A còn hỏi một âm thanh được tăng cường sẽ trở nên thế nào, và vì sao cùng một nốt piano do hai người chơi lại nghe to hơn.)'},
+  ex2T:{en:'Exercise 2 · Practice — Cancelling and reinforcing (Workbook 6.2B)',vi:'Bài tập 2 · Practice — Triệt tiêu và tăng cường (Workbook 6.2B)'},
+  ex2Inst:{en:'Arun listens to one musical note from a loudspeaker while a second wave meets it. For each question, tap the ONE correct answer. The last two questions ask which second wave would reinforce wave S, and which would cancel it — in the book you draw those waves on a grid.',vi:'Arun nghe một nốt nhạc từ một loa trong khi một sóng thứ hai gặp nó. Với mỗi câu hỏi, chạm vào MỘT đáp án đúng. Hai câu cuối hỏi sóng thứ hai nào sẽ tăng cường (reinforce) sóng S, và sóng nào sẽ triệt tiêu (cancel) nó — trong sách con vẽ các sóng đó trên lưới ô.'},
+  ex3T:{en:'Exercise 3 · Challenge — Interfering sound waves (Workbook 6.2C)',vi:'Bài tập 3 · Challenge — Các sóng âm giao thoa (Workbook 6.2C)'},
+  ex3Inst:{en:'Work out what each pair of meeting waves does to the amplitude. Tap a card, then tap AMPLITUDE DOUBLES or AMPLITUDE BECOMES ZERO.',vi:'Hãy tính xem mỗi cặp sóng gặp nhau làm gì với biên độ (amplitude). Chạm vào một thẻ, rồi chạm BIÊN ĐỘ GẤP ĐÔI (AMPLITUDE DOUBLES) hoặc BIÊN ĐỘ THÀNH ZERO (AMPLITUDE BECOMES ZERO).'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'interference',vi:'giao thoa'},
+  {en:'reinforce',vi:'tăng cường'},
+  {en:'cancel',vi:'triệt tiêu'},
+  {en:'amplitude',vi:'biên độ'},
+  {en:'frequency',vi:'tần số'},
+  {en:'peak',vi:'đỉnh sóng'},
+  {en:'trough',vi:'đáy sóng'},
+  {en:'out of phase',vi:'lệch pha'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'When waves meet',vi:'Khi các sóng gặp nhau'}, word:{en:'interference',vi:'giao thoa (interference)'},
+  q:{en:'Dipping a finger in and out of water makes waves. What happens when two sets of waves meet each other?',vi:'Chấm một ngón tay lên xuống mặt nước sẽ tạo sóng. Điều gì xảy ra khi hai hệ sóng gặp nhau?'},
+  act:{en:'Tap the left wave maker in the tray. Then tap the right wave maker — both nails are on one piece of wood, so they dip with the same frequency and the same amplitude.',vi:'Chạm vào bộ tạo sóng trái trong khay. Sau đó chạm vào bộ tạo sóng phải — cả hai chiếc đinh gắn trên cùng một miếng gỗ, nên chúng chấm xuống với cùng tần số (frequency) và cùng biên độ (amplitude).'},
+  see:{en:'Where the two patterns cross, a new pattern appears — some places have bigger waves, some have almost none.',vi:'Nơi hai hệ sóng giao nhau, một hệ mới xuất hiện — một số chỗ sóng lớn hơn, một số chỗ hầu như không có sóng.'},
+  concl:[
+    {en:'The effect produced when waves meet each other is called interference.',vi:'Hiệu ứng tạo ra khi các sóng gặp nhau được gọi là giao thoa (interference).'},
+    {en:'Interference only happens between waves of the same type: sound waves interfere with sound waves, never with water waves. Water waves are just a helpful picture for how sound waves behave.',vi:'Giao thoa (interference) chỉ xảy ra giữa các sóng cùng loại: sóng âm giao thoa với sóng âm, không bao giờ với sóng nước. Sóng nước chỉ là một hình ảnh hữu ích cho cách sóng âm hoạt động.'},
+    {en:'Interference is easiest to see when the two waves have the same frequency and the same amplitude — that is why both nails are fixed to one piece of wood.',vi:'Giao thoa dễ thấy nhất khi hai sóng có cùng tần số (frequency) và cùng biên độ (amplitude) — đó là lý do cả hai chiếc đinh được gắn vào cùng một miếng gỗ.'}]},
+ {tag:{en:'Waves that reinforce',vi:'Các sóng tăng cường'}, word:{en:'reinforce',vi:'tăng cường (reinforce)'},
+  q:{en:'A concert stage has a loudspeaker on each side, both playing the same sound. Why is the sound extra loud in some seats?',vi:'Một sân khấu ca nhạc có một loa ở mỗi bên, cả hai phát cùng một âm thanh. Vì sao ở một số ghế âm thanh lại to hơn hẳn?'},
+  act:{en:'Tap the left loudspeaker. Then tap the right loudspeaker, playing exactly the same note.',vi:'Chạm vào loa trái. Sau đó chạm vào loa phải, đang phát đúng cùng một nốt nhạc.'},
+  see:{en:'Where a peak line from one speaker crosses a peak line from the other, a listener hears a louder sound.',vi:'Nơi một đường đỉnh từ loa này giao với một đường đỉnh từ loa kia, người nghe sẽ nghe thấy âm thanh to hơn.'},
+  concl:[
+    {en:'Waves reinforce when they meet with peaks together and troughs together. Reinforce means to make stronger.',vi:'Các sóng tăng cường (reinforce) khi chúng gặp nhau với đỉnh cùng đỉnh và đáy cùng đáy. Reinforce nghĩa là làm mạnh hơn.'},
+    {en:'The amplitudes of the two waves are added together, but the frequency does not change. Two waves of 450 Hz and 0.5 mm amplitude reinforce into one wave of 450 Hz and 1.0 mm amplitude.',vi:'Các biên độ (amplitudes) của hai sóng được cộng lại với nhau, nhưng tần số (frequency) không đổi. Hai sóng 450 Hz và biên độ 0.5 mm tăng cường thành một sóng 450 Hz và biên độ 1.0 mm.'},
+    {en:'Loudness depends on amplitude, so when sound waves reinforce, the sound becomes louder. Reflected waves off the audience and the walls add many extra waves, so in a real concert the waves almost never cancel completely.',vi:'Độ to (loudness) phụ thuộc vào biên độ (amplitude), nên khi các sóng âm tăng cường, âm thanh trở nên to hơn. Các sóng phản xạ từ khán giả và tường thêm vào rất nhiều sóng khác, nên trong một buổi diễn thật các sóng hầu như không bao giờ triệt tiêu hoàn toàn.'}]},
+ {tag:{en:'Waves that cancel',vi:'Các sóng triệt tiêu'}, word:{en:'cancel',vi:'triệt tiêu (cancel)'},
+  q:{en:'Can two sounds add together to make no sound at all?',vi:'Hai âm thanh có thể cộng lại để tạo ra hoàn toàn không có âm thanh không?'},
+  act:{en:'Tap the peak marker — the wave’s maximum positive amplitude. Then tap the trough marker — its maximum negative amplitude.',vi:'Chạm vào dấu đỉnh (peak) — biên độ dương lớn nhất của sóng. Sau đó chạm vào dấu đáy (trough) — biên độ âm lớn nhất của nó.'},
+  see:{en:'A peak of one wave meets a trough of the other: + and − of equal size add to zero.',vi:'Một đỉnh của sóng này gặp một đáy của sóng kia: + và − bằng nhau cộng lại thành zero.'},
+  concl:[
+    {en:'Waves cancel when a peak of one wave meets a trough of another wave. Cancel, for waves, means adding together to make zero — like 2 + (−2) = 0.',vi:'Các sóng triệt tiêu (cancel) khi một đỉnh (peak) của sóng này gặp một đáy (trough) của sóng khác. Cancel, với sóng, nghĩa là cộng lại thành zero — như 2 + (−2) = 0.'},
+    {en:'When sound waves cancel, the amplitude of the sound wave becomes zero and the result is no sound.',vi:'Khi các sóng âm triệt tiêu, biên độ (amplitude) của sóng âm trở thành zero và kết quả là không có âm thanh.'},
+    {en:'For complete cancellation the two waves must have the same frequency and the same amplitude. A 600 Hz wave of 0.25 mm amplitude needs a second wave of 0.25 mm to cancel it — and the amplitude afterwards is 0 mm.',vi:'Để triệt tiêu hoàn toàn, hai sóng phải có cùng tần số (frequency) và cùng biên độ (amplitude). Một sóng 600 Hz biên độ 0.25 mm cần một sóng thứ hai 0.25 mm để triệt tiêu nó — và biên độ sau đó là 0 mm.'}]},
+ {tag:{en:'Cancelling noise',vi:'Triệt tiêu tiếng ồn'}, word:{en:'microphone',vi:'micro (microphone)'},
+  q:{en:'How can a pair of headphones use cancelling waves on purpose?',vi:'Một chiếc tai nghe có thể cố ý dùng các sóng triệt tiêu bằng cách nào?'},
+  act:{en:'Tap the noise-cancelling headphones. Then tap the small microphone that picks up the sound from the surroundings.',vi:'Chạm vào tai nghe chống ồn. Sau đó chạm vào micro nhỏ thu âm thanh từ xung quanh.'},
+  see:{en:'The headphones build a new wave with the same amplitude and frequency as the noise, but out of phase with it — and the two cancel at your ear.',vi:'Tai nghe tạo một sóng mới có cùng biên độ (amplitude) và tần số (frequency) với tiếng ồn, nhưng lệch pha (out of phase) với nó — và hai sóng triệt tiêu nhau tại tai con.'},
+  concl:[
+    {en:'Noise-cancelling headphones pick up the sound from the surroundings with a small microphone.',vi:'Tai nghe chống ồn (noise-cancelling headphones) thu âm thanh từ xung quanh bằng một micro nhỏ.'},
+    {en:'The headphones analyse that wave and create another wave with the same amplitude and the same frequency, but out of phase with the original.',vi:'Tai nghe phân tích sóng đó và tạo một sóng khác có cùng biên độ (amplitude) và cùng tần số (frequency), nhưng lệch pha (out of phase) với sóng gốc.'},
+    {en:'The created wave cancels the surrounding sound wave where they meet, so the listener hears far less noise.',vi:'Sóng được tạo ra triệt tiêu (cancel) sóng âm từ xung quanh tại nơi chúng gặp nhau, nên người nghe nghe thấy ít tiếng ồn hơn nhiều.'}]},
+ {tag:{en:'Listening for reinforcement',vi:'Nghe sự tăng cường'}, word:{en:'frequency',vi:'tần số (frequency)'},
+  q:{en:'A sound can reflect back and reinforce its own source. How could you find the pipe length where a tuning fork sounds loudest?',vi:'Một âm thanh có thể phản xạ ngược lại và tăng cường chính nguồn của nó. Làm sao con tìm được độ dài ống mà ở đó âm thoa nghe to nhất?'},
+  act:{en:'Tap the tuning fork and strike it. Then tap the pipe and imagine sliding it up and down in the water, changing the length of pipe above the water.',vi:'Chạm vào âm thoa (tuning fork) và gõ nó. Sau đó chạm vào ống và tưởng tượng trượt nó lên xuống trong nước, thay đổi độ dài phần ống trên mặt nước.'},
+  see:{en:'At one length the reflected wave reinforces the fork’s wave and the sound is loudest. Measure that length, then repeat with a fork of a different pitch.',vi:'Ở một độ dài nào đó sóng phản xạ tăng cường (reinforce) sóng của âm thoa và âm thanh to nhất. Hãy đo độ dài đó, rồi lặp lại với một âm thoa có cao độ khác.'},
+  concl:[
+    {en:'In the investigation you record each fork’s frequency and the pipe length above water that made its sound loudest, in a table.',vi:'Trong khảo sát này con ghi tần số (frequency) của mỗi âm thoa và độ dài ống trên mặt nước làm âm thanh của nó to nhất, vào một bảng.'},
+    {en:'The trend: the higher the frequency of the tuning fork, the shorter the length of pipe above the water at the loudest point.',vi:'Xu hướng: tần số (frequency) của âm thoa càng cao, độ dài ống trên mặt nước tại điểm to nhất càng ngắn.'},
+    {en:'That is why the range of notes a wind instrument can play depends on its length: a longer air space gives lower notes, a shorter one gives higher notes.',vi:'Đó là lý do quãng nốt một nhạc cụ hơi có thể chơi phụ thuộc vào độ dài của nó: khoảng không khí dài hơn cho nốt trầm hơn, khoảng ngắn hơn cho nốt cao hơn.'}]},
+ {tag:{en:'Reinforce or cancel?',vi:'Tăng cường hay triệt tiêu?'}, word:{en:'amplitude',vi:'biên độ (amplitude)'},
+  q:{en:'Which meetings of waves make a sound louder — and which make it disappear?',vi:'Những cuộc gặp nhau nào của sóng làm âm thanh to hơn — và những cuộc gặp nào làm nó biến mất?'},
+  act:{en:'Tap a card, then tap REINFORCE or CANCEL.',vi:'Chạm vào một thẻ, rồi chạm TĂNG CƯỜNG (REINFORCE) hoặc TRIỆT TIÊU (CANCEL).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can say how sound waves reinforce.',vi:'Con nói được sóng âm tăng cường (reinforce) như thế nào.'},
+    {en:'I can say what happens to the loudness of a sound when sound waves reinforce.',vi:'Con nói được điều gì xảy ra với độ to (loudness) của một âm thanh khi các sóng âm tăng cường.'},
+    {en:'I can say how sound waves cancel.',vi:'Con nói được sóng âm triệt tiêu (cancel) như thế nào.'},
+    {en:'I can say what happens to the loudness of a sound when sound waves cancel.',vi:'Con nói được điều gì xảy ra với độ to (loudness) của một âm thanh khi các sóng âm triệt tiêu.'}]}
+];
+const CARDS6=[
+ {id:'g_peaks',emoji:'🔊',en:'Two loudspeakers play the same note and their peaks cross at your seat',vi:'Hai loa phát cùng một nốt và các đỉnh của chúng giao nhau tại ghế của con',ans:'good'},
+ {id:'g_pt',emoji:'🔇',en:'A peak meets a trough of exactly the same size',vi:'Một đỉnh gặp một đáy có kích thước đúng bằng nó',ans:'bad'},
+ {id:'g_piano',emoji:'🎹',en:'Two people play the same piano note at the same moment',vi:'Hai người chơi cùng một nốt piano tại cùng một thời điểm',ans:'good'},
+ {id:'g_phones',emoji:'🎧',en:'Headphones play a wave opposite to the noise around you',vi:'Tai nghe phát một sóng ngược lại với tiếng ồn xung quanh con',ans:'bad'},
+ {id:'g_troughs',emoji:'〰️',en:'Troughs meet troughs, making one deeper trough',vi:'Các đáy gặp các đáy, tạo thành một đáy sâu hơn',ans:'good'},
+ {id:'g_zero',emoji:'➕',en:'+2 and −2 add together when the waves meet',vi:'+2 và −2 cộng lại với nhau khi các sóng gặp nhau',ans:'bad'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'Which of these will always result in a louder sound being heard?',vi:'Điều nào sau đây luôn làm ta nghe thấy một âm thanh to hơn?'},
+  o:[{en:'Two sound waves refract',vi:'Hai sóng âm khúc xạ (refract)'},
+     {en:'Two sound waves reinforce',vi:'Hai sóng âm tăng cường (reinforce) lẫn nhau'},
+     {en:'Two sound waves reflect',vi:'Hai sóng âm phản xạ (reflect)'}],a:1,
+  e:{en:'When sound waves reinforce, their amplitudes add together. A bigger amplitude means a louder sound.',vi:'Khi các sóng âm tăng cường (reinforce), các biên độ (amplitudes) của chúng cộng lại với nhau. Biên độ lớn hơn nghĩa là âm thanh to hơn.'}},
+ {q:{en:'Which of these will always result in no sound being heard?',vi:'Điều nào sau đây luôn làm ta không nghe thấy âm thanh nào?'},
+  o:[{en:'Two sound waves reinforce',vi:'Hai sóng âm tăng cường (reinforce) lẫn nhau'},
+     {en:'Two sound waves reflect',vi:'Hai sóng âm phản xạ (reflect)'},
+     {en:'Two sound waves cancel',vi:'Hai sóng âm triệt tiêu (cancel) lẫn nhau'}],a:2,
+  e:{en:'When sound waves cancel completely, a peak and an equal trough add to zero amplitude — and zero amplitude means no sound.',vi:'Khi các sóng âm triệt tiêu (cancel) hoàn toàn, một đỉnh và một đáy bằng nó cộng lại thành biên độ zero — và biên độ zero nghĩa là không có âm thanh.'}},
+ {q:{en:'Two waves of 450 Hz and 0.5 mm amplitude meet and reinforce. What is the wave that is formed?',vi:'Hai sóng 450 Hz và biên độ 0.5 mm gặp nhau và tăng cường. Sóng được tạo thành là sóng nào?'},
+  o:[{en:'450 Hz with an amplitude of 1.0 mm',vi:'450 Hz với biên độ 1.0 mm'},
+     {en:'900 Hz with an amplitude of 1.0 mm',vi:'900 Hz với biên độ 1.0 mm'},
+     {en:'450 Hz with an amplitude of 0.5 mm',vi:'450 Hz với biên độ 0.5 mm'}],a:0,
+  e:{en:'On reinforcing, the amplitudes add (0.5 mm + 0.5 mm = 1.0 mm) but the frequency does not change — it stays 450 Hz.',vi:'Khi tăng cường (reinforce), các biên độ cộng lại (0.5 mm + 0.5 mm = 1.0 mm) nhưng tần số (frequency) không đổi — nó vẫn là 450 Hz.'}},
+ {q:{en:'Two sound waves both have a frequency of 600 Hz. One has an amplitude of 0.25 mm. What amplitude must the other wave have to cancel it completely, and what is the amplitude afterwards?',vi:'Hai sóng âm đều có tần số 600 Hz. Một sóng có biên độ 0.25 mm. Sóng kia phải có biên độ bao nhiêu để triệt tiêu nó hoàn toàn, và biên độ sau đó là bao nhiêu?'},
+  o:[{en:'0.5 mm, and afterwards 0.25 mm',vi:'0.5 mm, và sau đó là 0.25 mm'},
+     {en:'0.25 mm, and afterwards 0 mm',vi:'0.25 mm, và sau đó là 0 mm'},
+     {en:'0 mm, and afterwards 0.25 mm',vi:'0 mm, và sau đó là 0.25 mm'}],a:1,
+  e:{en:'Complete cancellation needs equal amplitudes meeting peak-to-trough: 0.25 mm against 0.25 mm adds to an amplitude of 0 mm — no sound.',vi:'Triệt tiêu hoàn toàn cần các biên độ bằng nhau gặp nhau đỉnh-với-đáy: 0.25 mm với 0.25 mm cộng lại thành biên độ 0 mm — không có âm thanh.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'f_peakpeak',emoji:'〰️',en:'Peaks meet peaks and troughs meet troughs',vi:'Đỉnh gặp đỉnh và đáy gặp đáy',ans:'reinf'},
+ {id:'f_pt',emoji:'🔇',en:'A peak of one wave meets a trough of the other, of equal amplitude',vi:'Một đỉnh của sóng này gặp một đáy của sóng kia, có biên độ bằng nó',ans:'cancel'},
+ {id:'f_piano',emoji:'🎹',en:'Zara and Sofia play the same piano note at the same time in one room',vi:'Zara và Sofia chơi cùng một nốt piano tại cùng thời điểm trong một phòng',ans:'reinf'},
+ {id:'f_opp',emoji:'🎧',en:'Headphones make a wave exactly opposite to the sound from the surroundings',vi:'Tai nghe tạo một sóng đúng ngược lại với âm thanh từ xung quanh',ans:'cancel'},
+ {id:'f_cross',emoji:'🔊',en:'Peak lines from two loudspeakers cross at a concert seat',vi:'Các đường đỉnh từ hai loa giao nhau tại một ghế ở buổi hòa nhạc',ans:'reinf'},
+ {id:'f_zero',emoji:'➕',en:'+2 meets −2 and the two waves add together',vi:'+2 gặp −2 và hai sóng cộng lại với nhau',ans:'cancel'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'What happens when a sound is reinforced?',vi:'Điều gì xảy ra khi một âm thanh được tăng cường (reinforced)?'},
+  opts:[{en:'The sound becomes higher pitch',vi:'Âm thanh trở nên cao hơn (higher pitch)'},
+        {en:'The sound becomes louder',vi:'Âm thanh trở nên to hơn (louder)'},
+        {en:'The sound becomes quieter',vi:'Âm thanh trở nên nhỏ hơn (quieter)'}],a:1,
+  e:{en:'Reinforcing adds the amplitudes together, and loudness depends on amplitude — so the sound becomes louder. The pitch does not change.',vi:'Tăng cường (reinforce) cộng các biên độ (amplitudes) lại với nhau, và độ to phụ thuộc vào biên độ — nên âm thanh trở nên to hơn. Cao độ (pitch) không đổi.'}},
+ {q:{en:'Arun hears one note from a loudspeaker. An identical note reinforces it. What difference does he hear?',vi:'Arun nghe một nốt từ một loa. Một nốt giống hệt tăng cường (reinforce) nó. Anh ấy nghe thấy khác biệt gì?'},
+  opts:[{en:'The pitch stays the same and the loudness increases',vi:'Cao độ (pitch) giữ nguyên và độ to (loudness) tăng lên'},
+        {en:'The pitch increases and the loudness stays the same',vi:'Cao độ tăng lên và độ to giữ nguyên'},
+        {en:'The pitch and the loudness both stay the same',vi:'Cả cao độ và độ to đều giữ nguyên'}],a:0,
+  e:{en:'Reinforcing never changes the frequency, so the pitch is unchanged. The amplitude grows, so the note sounds louder.',vi:'Tăng cường không bao giờ làm đổi tần số (frequency), nên cao độ không đổi. Biên độ lớn lên, nên nốt nhạc nghe to hơn.'}},
+ {q:{en:'Now a second sound of the same pitch cancels the loudspeaker’s sound completely. What does Arun hear?',vi:'Giờ một âm thanh thứ hai cùng cao độ triệt tiêu (cancel) hoàn toàn âm thanh của loa. Arun nghe thấy gì?'},
+  opts:[{en:'A much louder note',vi:'Một nốt to hơn nhiều'},
+        {en:'The same note, but higher',vi:'Cùng một nốt, nhưng cao hơn'},
+        {en:'Nothing — no sound at all',vi:'Không gì cả — hoàn toàn không có âm thanh'}],a:2,
+  e:{en:'Complete cancellation makes the amplitude zero. Zero amplitude means no sound reaches Arun at all.',vi:'Triệt tiêu hoàn toàn làm biên độ thành zero. Biên độ zero nghĩa là không có âm thanh nào tới được Arun cả.'}},
+ {q:{en:'Wave S is drawn on a grid. Which second wave would REINFORCE wave S?',vi:'Sóng S được vẽ trên một lưới ô. Sóng thứ hai nào sẽ TĂNG CƯỜNG (REINFORCE) sóng S?'},
+  opts:[{en:'A wave with peaks where S has troughs',vi:'Một sóng có đỉnh ở nơi S có đáy'},
+        {en:'A wave exactly like S, with its peaks lined up with the peaks of S',vi:'Một sóng đúng giống S, với các đỉnh của nó thẳng hàng với các đỉnh của S'},
+        {en:'A wave with a much bigger frequency than S',vi:'Một sóng có tần số (frequency) lớn hơn S rất nhiều'}],a:1,
+  e:{en:'To reinforce, the second wave must arrive peak-to-peak and trough-to-trough with S — the same frequency and amplitude, lined up in the same places.',vi:'Để tăng cường, sóng thứ hai phải đến đỉnh-với-đỉnh và đáy-với-đáy với S — cùng tần số (frequency) và biên độ (amplitude), thẳng hàng tại cùng các vị trí.'}},
+ {q:{en:'Which second wave would CANCEL wave S completely?',vi:'Sóng thứ hai nào sẽ TRIỆT TIÊU (CANCEL) sóng S hoàn toàn?'},
+  opts:[{en:'A wave with the same amplitude and frequency as S, but with peaks where S has troughs',vi:'Một sóng có cùng biên độ (amplitude) và tần số (frequency) với S, nhưng có đỉnh ở nơi S có đáy'},
+        {en:'A wave exactly like S, lined up peak-to-peak',vi:'Một sóng đúng giống S, thẳng hàng đỉnh-với-đỉnh'},
+        {en:'A wave with a smaller amplitude than S, lined up peak-to-peak',vi:'Một sóng có biên độ nhỏ hơn S, thẳng hàng đỉnh-với-đỉnh'}],a:0,
+  e:{en:'To cancel completely, every peak of the second wave must meet a trough of S of equal size, and every trough must meet a peak — same amplitude, same frequency, opposite way up.',vi:'Để triệt tiêu hoàn toàn, mỗi đỉnh của sóng thứ hai phải gặp một đáy của S có kích thước bằng nó, và mỗi đáy phải gặp một đỉnh — cùng biên độ, cùng tần số, ngược chiều nhau.'}}
+];
+const EX3=[
+ {id:'c_05',emoji:'📏',en:'Two 0.5 mm waves meet peak-to-peak — the result is 1.0 mm',vi:'Hai sóng 0.5 mm gặp nhau đỉnh-với-đỉnh — kết quả là 1.0 mm',ans:'double'},
+ {id:'c_pt25',emoji:'➖',en:'A 0.25 mm peak meets a 0.25 mm trough',vi:'Một đỉnh 0.25 mm gặp một đáy 0.25 mm',ans:'zero'},
+ {id:'c_part',emoji:'🎵',en:'Particle P is swung 1 mm each way by wave W, then an identical wave reinforces it — P now swings 2 mm each way',vi:'Hạt P bị sóng W làm dao động 1 mm mỗi phía, rồi một sóng giống hệt tăng cường nó — giờ P dao động 2 mm mỗi phía',ans:'double'},
+ {id:'c_de',emoji:'🔇',en:'Waves D and E, with equal amplitudes and equal frequencies, meet peak-to-trough',vi:'Hai sóng D và E, có biên độ bằng nhau và tần số bằng nhau, gặp nhau đỉnh-với-đáy',ans:'zero'},
+ {id:'c_concert',emoji:'🔊',en:'At one concert seat, peaks from both loudspeakers arrive together',vi:'Tại một ghế ở buổi hòa nhạc, các đỉnh từ cả hai loa đến cùng lúc',ans:'double'},
+ {id:'c_hp',emoji:'🎧',en:'Noise-cancelling headphones add a wave exactly opposite to the noise',vi:'Tai nghe chống ồn cộng thêm một sóng đúng ngược lại với tiếng ồn',ans:'zero'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 5 + 6 = 17 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-6-2';
+const SUMKEY='camb:sum:sci9-6-2';
+const BOT_CODE='sci9-6.2';
+let OBS={sA:false,sB:false,rA:false,rB:false,pk:false,tr:false,ph:false,mi:false,fk:false,pp:false};
+let SORTED=new Set();
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1a:false, s1b:false, s1hint:null,
+  s2a:false, s2b:false,
+  s3pk:false, s3tr:false,
+  s4ph:false, s4mi:false,
+  s5fk:false, s5pp:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1a&&T.s1b;
+  if(i===1) return T.s2a&&T.s2b;
+  if(i===2) return T.s3pk&&T.s3tr;
+  if(i===3) return T.s4ph&&T.s4mi;
+  if(i===4) return T.s5fk&&T.s5pp;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not a wave maker in the tray. Look at the back row of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải bộ tạo sóng trong khay. Hãy nhìn hàng sau của bàn!');
+    }
+    return B('You did: left wave maker '+(T.s1a?'✓':'…')+' · right wave maker '+(T.s1b?'✓':'…')+'. Tap the models on the bench!',
+             'Con đã làm: bộ tạo sóng trái '+(T.s1a?'✓':'…')+' · bộ tạo sóng phải '+(T.s1b?'✓':'…')+'. Hãy chạm vào các mô hình trên bàn!');
+  }
+  if(i===1){
+    return B('Left loudspeaker tapped '+(T.s2a?'✓':'…')+' · right loudspeaker tapped '+(T.s2b?'✓ (same note — peaks can cross)':'…')+'.',
+             'Đã chạm loa trái '+(T.s2a?'✓':'…')+' · đã chạm loa phải '+(T.s2b?'✓ (cùng nốt — các đỉnh có thể giao nhau)':'…')+'.');
+  }
+  if(i===2){
+    return B('Peak tapped '+(T.s3pk?'✓ (+ maximum)':'…')+' · trough tapped '+(T.s3tr?'✓ (− maximum, equal size)':'…')+'.',
+             'Đã chạm đỉnh (peak) '+(T.s3pk?'✓ (+ lớn nhất)':'…')+' · đã chạm đáy (trough) '+(T.s3tr?'✓ (− lớn nhất, kích thước bằng nhau)':'…')+'.');
+  }
+  if(i===3){
+    return B('Headphones tapped '+(T.s4ph?'✓':'…')+' · microphone tapped '+(T.s4mi?'✓ (it picks up the surrounding sound)':'…')+'.',
+             'Đã chạm tai nghe '+(T.s4ph?'✓':'…')+' · đã chạm micro '+(T.s4mi?'✓ (nó thu âm thanh từ xung quanh)':'…')+'.');
+  }
+  if(i===4){
+    return B('Tuning fork tapped '+(T.s5fk?'✓':'…')+' · pipe tapped '+(T.s5pp?'✓ (change its length above water)':'…')+'.',
+             'Đã chạm âm thoa (tuning fork) '+(T.s5fk?'✓':'…')+' · đã chạm ống '+(T.s5pp?'✓ (đổi độ dài của nó trên mặt nước)':'…')+'.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap REINFORCE or CANCEL.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm TĂNG CƯỜNG (REINFORCE) hoặc TRIỆT TIÊU (CANCEL).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🌊',label:{en:'Left wave maker',vi:'Bộ tạo sóng trái'},got:T.s1a},
+      {emoji:'🌊',label:{en:'Right wave maker',vi:'Bộ tạo sóng phải'},got:T.s1b}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔊',label:{en:'Left loudspeaker',vi:'Loa trái'},got:T.s2a},
+      {emoji:'🔊',label:{en:'Right loudspeaker — same note',vi:'Loa phải — cùng nốt'},got:T.s2b},
+      {emoji:'📈',label:{en:'Amplitudes add: 0.5 + 0.5 = 1.0 mm',vi:'Biên độ cộng lại: 0.5 + 0.5 = 1.0 mm'},got:T.s2a&&T.s2b}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🔺',label:{en:'Peak: + maximum',vi:'Đỉnh (peak): + lớn nhất'},got:T.s3pk},
+      {emoji:'🔻',label:{en:'Trough: − maximum',vi:'Đáy (trough): − lớn nhất'},got:T.s3tr},
+      {emoji:'0️⃣',label:{en:'+ and − add to zero amplitude',vi:'+ và − cộng thành biên độ zero'},got:T.s3pk&&T.s3tr}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🎧',label:{en:'The headphones',vi:'Tai nghe'},got:T.s4ph},
+      {emoji:'🎤',label:{en:'The microphone listens first',vi:'Micro nghe trước'},got:T.s4mi}
+    ]);
+    if(!T.s4mi){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookMic);
+      b.onclick=()=>focusThing('mic');
+      box.appendChild(b);
+    }
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🎵',label:{en:'The tuning fork',vi:'Âm thoa (tuning fork)'},got:T.s5fk},
+      {emoji:'🎺',label:{en:'The pipe in the water',vi:'Ống trong nước'},got:T.s5pp},
+      {emoji:'📏',label:{en:'Loudest length is measured',vi:'Độ dài to nhất được đo'},got:T.s5fk&&T.s5pp}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'good',label:STR.binGood,cls:'good'},{key:'bad',label:STR.binBad,cls:'bad'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('srcA'); bounceThing('srcA'); setTimeout(()=>{ focusVisual('srcB'); bounceThing('srcB'); },900); }
+  else if(i===1){ focusVisual('spkA'); bounceThing('spkA'); setTimeout(()=>{ focusVisual('spkB'); bounceThing('spkB'); },900); }
+  else if(i===2){ focusVisual('peak'); bounceThing('peak'); setTimeout(()=>{ focusVisual('trough'); bounceThing('trough'); },900); }
+  else if(i===3){ focusVisual('phones'); bounceThing('phones'); setTimeout(()=>{ focusVisual('mic'); bounceThing('mic'); },900); }
+  else if(i===4){ focusVisual('fork'); bounceThing('fork'); setTimeout(()=>{ focusVisual('pipe'); bounceThing('pipe'); },900); }
+  else if(i===5){ demoSortMine(CARDS6,T.s6correct,{good:'good',bad:'bad'}); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recMeet,OBS.sA&&OBS.sB)+
+    row(STR.recReinf,OBS.rA&&OBS.rB)+
+    row(STR.recCancel,OBS.pk&&OBS.tr)+
+    row(STR.recPhones,OBS.ph&&OBS.mi)+
+    row(STR.recPipe,OBS.fk&&OBS.pp)+
+    row(STR.recSort,doneSteps.has(5));
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.sA&&OBS.sB)||doneSteps.has(0),label:STR.foundMeet},
+    {got:(OBS.rA&&OBS.rB)||doneSteps.has(1),label:STR.foundReinf},
+    {got:(OBS.pk&&OBS.tr)||doneSteps.has(2),label:STR.foundCancel},
+    {got:(OBS.ph&&OBS.mi)||doneSteps.has(3),label:STR.foundPhones},
+    {got:(OBS.fk&&OBS.pp)||doneSteps.has(4),label:STR.foundPipe},
+    {got:doneSteps.has(5),label:STR.foundSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let placMesh=null, smokeMesh=null, oxyMat=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; G[id]=group; scene3.add(group); return group; }
+function standMesh(r){
+  const s=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,0.07,16),stdMat(0x8d99a6,0.5)));
+  s.position.y=0.04; return s;
+}
+function buildWaveMaker(col,x,z){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const bond=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.34,8),stdMat(0x5b7186,0.5));
+  bond.rotation.z=Math.PI/2; bond.position.y=0.5; g.add(bond);
+  [-0.19,0.19].forEach(xx=>{
+    const o=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.18,12,10),stdMat(col,0.5)));
+    o.position.set(xx,0.5,0); g.add(o);
+  });
+  const dip=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.34,8),stdMat(0x8d6e4a,0.8));
+  dip.position.set(0,0.18,0); g.add(dip);
+  g.position.set(x,0,z);
+  return g;
+}
+function buildTray(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.14,0.75),stdMat(0x9fb6c4,0.6)));
+  base.position.y=0.1; g.add(base);
+  placMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,12),stdMat(0x3d9bd6,0.45)));
+  placMesh.position.set(0,0.2,0); placMesh.scale.set(1.6,0.35,1.0); g.add(placMesh);
+  g.position.set(-1.15,0,-1.3);
+  return g;
+}
+function buildSpeaker(col,x,z){
+  const g=new THREE.Group();
+  const boxM=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.46,0.62,0.3),stdMat(0x2f3b47,0.7)));
+  boxM.position.y=0.42; g.add(boxM);
+  const big=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.04,18),stdMat(col,0.5));
+  big.rotation.x=Math.PI/2; big.position.set(0,0.34,0.17); g.add(big);
+  const small=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,0.04,14),stdMat(0xc9d4de,0.5));
+  small.rotation.x=Math.PI/2; small.position.set(0,0.58,0.17); g.add(small);
+  g.position.set(x,0,z);
+  return g;
+}
+function buildPeak(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  const cone=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.26,0.55,14),stdMat(0xe8590c,0.55)));
+  cone.position.y=0.42; g.add(cone);
+  g.position.set(-3.2,0,1.7);
+  return g;
+}
+function buildTrough(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  const cone=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.26,0.55,14),stdMat(0x0288a8,0.55)));
+  cone.rotation.z=Math.PI; cone.position.y=0.36; g.add(cone);
+  g.position.set(-2.0,0,1.7);
+  return g;
+}
+function buildPhones(){
+  const g=new THREE.Group();
+  const band=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.045,8,20,Math.PI),stdMat(0x2f3b47,0.6));
+  band.position.y=0.42; g.add(band);
+  [-0.3,0.3].forEach(x=>{
+    const cup=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.15,12,10),stdMat(0x7a4fd0,0.55)));
+    cup.position.set(x,0.4,0); cup.scale.set(0.7,1,1); g.add(cup);
+  });
+  g.position.set(-0.8,0,1.7);
+  return g;
+}
+function buildMic(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.28));
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.5,8),stdMat(0x44586e,0.6));
+  stem.position.set(0,0.3,0); stem.rotation.z=0.35; g.add(stem);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.13,12,10),stdMat(0x9aa5b1,0.5)));
+  head.position.set(0.1,0.58,0); g.add(head);
+  g.position.set(0.4,0,1.7);
+  return g;
+}
+function buildFork(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.28));
+  const stem=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.4,0.05),stdMat(0xb9c4ce,0.4));
+  stem.position.y=0.25; g.add(stem);
+  [-0.09,0.09].forEach(x=>{
+    const prong=new THREE.Mesh(new THREE.BoxGeometry(0.055,0.42,0.05),stdMat(0xd7e2ec,0.4));
+    prong.position.set(x,0.62,0); g.add(prong);
+  });
+  g.position.set(1.6,0,1.7);
+  return g;
+}
+function buildPipe(){
+  const g=new THREE.Group();
+  const water=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.22,0.62),stdMat(0x3d9bd6,0.5)));
+  water.position.y=0.11; g.add(water);
+  const tube=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.19,0.95,16,1,true),stdMat(0xf2b134,0.45)));
+  tube.position.y=0.62; g.add(tube);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.19,0.025,8,20),stdMat(0xb7791f,0.5));
+  rim.rotation.x=Math.PI/2; rim.position.y=1.1; g.add(rim);
+  g.position.set(2.8,0,1.7);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xe8f2fb);
+  scene3.fog=new THREE.Fog(0xe8f2fb,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0xd8b7c3,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the sound bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd6e4ee,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(9.6,0.18,5.4),stdMat(0xb08a68,0.9)));
+  bench.position.set(-0.4,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-4.9,-2.3],[4.1,-2.3],[-4.9,2.7],[4.1,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(7.5,2.6,0.08),stdMat(0x2c4a68,0.95));
+  board.position.set(-0.4,1.7,-3.4); scene3.add(board);
+  /* the models */
+  reg('srcA',buildWaveMaker(0x2f7fd0,-3.6,-1.3));
+  reg('srcB',buildWaveMaker(0x8a5fd0,-2.35,-1.3));
+  reg('tray',buildTray());
+  reg('spkA',buildSpeaker(0xe8590c,0.05,-1.3));
+  reg('spkB',buildSpeaker(0x0d9d58,1.25,-1.3));
+  reg('peak',buildPeak());
+  reg('trough',buildTrough());
+  reg('phones',buildPhones());
+  reg('mic',buildMic());
+  reg('fork',buildFork());
+  reg('pipe',buildPipe());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.6); p.position.set(0,0.5,0); addProxy('srcA',p,G.srcA); }
+  { const p=sphProxy(0.6); p.position.set(0,0.5,0); addProxy('srcB',p,G.srcB); }
+  { const p=sphProxy(0.62); p.position.set(0,0.25,0); addProxy('tray',p,G.tray); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('spkA',p,G.spkA); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('spkB',p,G.spkB); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('peak',p,G.peak); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('trough',p,G.trough); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('phones',p,G.phones); }
+  { const p=sphProxy(0.55); p.position.set(0,0.4,0); addProxy('mic',p,G.mic); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('fork',p,G.fork); }
+  { const p=sphProxy(0.6); p.position.set(0,0.6,0); addProxy('pipe',p,G.pipe); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a model */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['srcA','srcB'],   /* step 1: two wave makers in one tray */
+  ['spkA','spkB'],   /* step 2: two loudspeakers, same note */
+  ['peak','trough'], /* step 3: peak meets trough */
+  ['phones','mic'],  /* step 4: headphones + their microphone */
+  ['fork','pipe'],   /* step 5: tuning fork + resonance pipe */
+  []                 /* step 6: card sort — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='srcA'){ T.s1a=true; OBS.sA=true; T.s1hint=null; }
+    else if(id==='srcB'){ T.s1b=true; OBS.sB=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='spkA'){ T.s2a=true; OBS.rA=true; }
+    else if(id==='spkB'){ T.s2b=true; OBS.rB=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='peak'){ T.s3pk=true; OBS.pk=true; }
+    else if(id==='trough'){ T.s3tr=true; OBS.tr=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='phones'){ T.s4ph=true; OBS.ph=true; }
+    else if(id==='mic'){ T.s4mi=true; OBS.mi=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='fork'){ T.s5fk=true; OBS.fk=true; }
+    else if(id==='pipe'){ T.s5pp=true; OBS.pp=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* the tray water ripples gently — waves are always crossing it */
+  if(placMesh){ const s=1+Math.sin(t*2.2)*0.04; placMesh.scale.set(1.6*s,0.35,1.0*s); }
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='reinf'?'🔊':'🔇';
+  return ans==='double'?'✖2':'0';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — reinforce or cancel? (Workbook 6.2A) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinReinf').innerHTML=bi(STR.binReinf);
+  $('ex1BinCancel').innerHTML=bi(STR.binCancel);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (Workbook 6.2B) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — what happens to the amplitude? (Workbook 6.2C) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinDouble').innerHTML=bi(STR.binDouble);
+  $('ex3BinZero').innerHTML=bi(STR.binZero);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinReinf').onclick=()=>ex1Place('reinf');
+$('ex1BinCancel').onclick=()=>ex1Place('cancel');
+$('ex3BinDouble').onclick=()=>ex3Place('double');
+$('ex3BinZero').onclick=()=>ex3Place('zero');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.sA=false; OBS.sB=false; }
+  if(step===1){ OBS.rA=false; OBS.rB=false; }
+  if(step===2){ OBS.pk=false; OBS.tr=false; }
+  if(step===3){ OBS.ph=false; OBS.mi=false; }
+  if(step===4){ OBS.fk=false; OBS.pp=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='reinf'||s.exAns.a1[id]==='cancel')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='double'||s.exAns.a3[id]==='zero')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS/SORTED). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1a=!!OBS.sA; t.s1b=!!OBS.sB; }
+  else if(i===1){ t.s2a=!!OBS.rA; t.s2b=!!OBS.rB; }
+  else if(i===2){ t.s3pk=!!OBS.pk; t.s3tr=!!OBS.tr; }
+  else if(i===3){ t.s4ph=!!OBS.ph; t.s4mi=!!OBS.mi; }
+  else if(i===4){ t.s5fk=!!OBS.fk; t.s5pp=!!OBS.pp; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-6-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.4 Moving from hot to cold — Truyền từ nóng sang lạnh · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdeeda,#e3eef7)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.gains{background:#b03a3a}
+.binbtn.loses{background:#0b76d1}
+.binbtn.cools{background:#0288a8}
+.binbtn.warms{background:#d9930d}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no, method choice */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.coptrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.copt{flex:1;font-size:16.5px;font-weight:800;padding:12px 8px;border-radius:14px;color:#fff;border:none;line-height:1.3;min-width:100px}
+.copt.a{background:#7a4fd0}
+.copt.b{background:#0d9d58}
+.copt.same{background:#44586e}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="3.4 Moving from hot to cold" data-vi="3.4 Truyền từ nóng sang lạnh (Moving from hot to cold)">3.4 Moving from hot to cold</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why does thermal energy always move from hot to cold?" data-vi="Vì sao năng lượng nhiệt (thermal energy) luôn truyền từ nóng sang lạnh?">Why does thermal energy always move from hot to cold?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Hotter" data-vi="Nóng hơn (hotter)">Hotter</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Thermal energy moves" data-vi="Năng lượng nhiệt (thermal energy) truyền đi">Thermal energy moves</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Colder" data-vi="Lạnh hơn (colder)">Colder</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="It spreads out — dissipation" data-vi="Nó tỏa ra — sự tỏa nhiệt (dissipation)">It spreads out — dissipation</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap the things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 3 Forces and energy · Section 3.4. The bench in this lesson is a simulation — the lamp investigation is modelled here, and in a real laboratory only the glass part of the lamp goes in the water." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 3 Lực và năng lượng (Forces and energy) · Mục 3.4. Bàn trong bài học này là mô phỏng — khảo sát với bóng đèn được mô hình hóa tại đây, và trong phòng thí nghiệm thật chỉ phần thủy tinh của bóng đèn mới được nhúng vào nước.">Cambridge Lower Secondary Science 9 · Unit 3 Forces and energy · Section 3.4. The bench in this lesson is a simulation — the lamp investigation is modelled here, and in a real laboratory only the glass part of the lamp goes in the water.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 3 Forces and energy, section 3.4 Moving from hot to cold, pages 105–110; Workbook 9 (ISBN 9781108742894), pages 55–57. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 3 Lực và năng lượng (Forces and energy), mục 3.4 Truyền từ nóng sang lạnh (Moving from hot to cold), trang 105–110; Sách bài tập 9 (ISBN 9781108742894), trang 55–57. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 3 Forces and energy, section 3.4 Moving from hot to cold, pages 105–110; Workbook 9 (ISBN 9781108742894), pages 55–57. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives (from the book): discover that thermal energy always transfers from hotter places to colder places; understand what is meant by heat dissipation. Key words: hotter, colder — plus thermal energy, dissipation and temperature difference." data-vi="Mục tiêu (theo sách): khám phá rằng năng lượng nhiệt (thermal energy) luôn truyền từ nơi nóng hơn (hotter) sang nơi lạnh hơn (colder); hiểu tỏa nhiệt (dissipation) nghĩa là gì. Từ khóa: hotter (nóng hơn), colder (lạnh hơn) — cùng thermal energy (năng lượng nhiệt), dissipation (sự tỏa nhiệt) và temperature difference (chênh lệch nhiệt độ).">Objectives (from the book): discover that thermal energy always transfers from hotter places to colder places; understand what is meant by heat dissipation. Key words: hotter, colder — plus thermal energy, dissipation and temperature difference.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the things on the 3D bench itself, or answering the big question the book poses. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; the steps follow the book's order: feeling heat (a hot drink warms your colder hands), the uses on page 106 (a refrigerator cools food; water carries thermal energy away from a car engine), feeling cold (holding ice — cold is not an energy and never flows), the open window and dissipation (with the book's ice cream at −18 °C in a room at 22 °C), the hot-coffee thought experiment of Activity 3.4.1, and the lamp-and-beaker investigation, where the water temperature rises, then stops rising when heating and dissipation balance. Watch out for the two tricky ideas: 'cold' never moves — thermal energy moves away — and dissipated energy is spread out, never destroyed." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các vật ngay trên bàn 3D, hoặc trả lời câu hỏi lớn mà sách đặt ra. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn thí nghiệm' chỉ di chuyển camera. Các bước đi theo đúng thứ tự trong sách: cảm nhận nóng (đồ uống nóng làm ấm đôi tay lạnh hơn), các ứng dụng ở trang 106 (tủ lạnh làm nguội thức ăn; nước mang năng lượng nhiệt ra khỏi động cơ ô tô), cảm nhận lạnh (cầm đá — lạnh không phải là năng lượng và không bao giờ tự truyền), cửa sổ mở và sự tỏa nhiệt (dissipation) (với kem của sách ở −18 °C trong phòng 22 °C), thí nghiệm tưởng tượng cà phê nóng của Hoạt động 3.4.1, và khảo sát bóng đèn với cốc nước, nơi nhiệt độ nước tăng lên rồi ngừng tăng khi đun nóng và tỏa nhiệt cân bằng nhau. Lưu ý hai ý dễ nhầm: 'cái lạnh' không bao giờ di chuyển — năng lượng nhiệt mới truyền đi — và năng lượng đã tỏa ra chỉ lan rộng, không bao giờ bị phá hủy.">How it works: each step asks for one real action — tapping the things on the 3D bench itself, or answering the big question the book poses. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; the steps follow the book's order: feeling heat (a hot drink warms your colder hands), the uses on page 106 (a refrigerator cools food; water carries thermal energy away from a car engine), feeling cold (holding ice — cold is not an energy and never flows), the open window and dissipation (with the book's ice cream at −18 °C in a room at 22 °C), the hot-coffee thought experiment of Activity 3.4.1, and the lamp-and-beaker investigation, where the water temperature rises, then stops rising when heating and dissipation balance. Watch out for the two tricky ideas: 'cold' never moves — thermal energy moves away — and dissipated energy is spread out, never destroyed.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn gains" id="ex1BinGain"></button>
+        <button class="binbtn loses" id="ex1BinLose"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn cools" id="ex3BinCool"></button>
+        <button class="binbtn warms" id="ex3BinWarm"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-3-4 "Moving from hot to cold"
+   (Science 9, Unit 3 · Forces and energy)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const LAB={
+  mug:     {emoji:'☕', name:{en:'A hot drink',vi:'Một đồ uống nóng (hot drink)'},              short:{en:'Hot drink',vi:'Đồ uống nóng'},   ring:0.55, labelY:1.25, fx:-3.6, fz:-1.3, fr:4.6},
+  hands:   {emoji:'🙌', name:{en:'Your hands, at body temperature',vi:'Đôi tay của bạn, ở nhiệt độ cơ thể (body temperature)'}, short:{en:'Your hands',vi:'Đôi tay'}, ring:0.6, labelY:1.3, fx:-2.3, fz:-1.3, fr:4.6},
+  ice:     {emoji:'🧊', name:{en:'A bowl of ice',vi:'Một bát đá (ice)'},                        short:{en:'Ice',vi:'Đá (ice)'},           ring:0.55, labelY:1.2,  fx:-0.9, fz:-1.3, fr:4.6},
+  window:  {emoji:'🪟', name:{en:'A window — colder outside',vi:'Một cửa sổ — bên ngoài lạnh hơn (colder)'}, short:{en:'Window',vi:'Cửa sổ'}, ring:0.65, labelY:1.9, fx:0.6, fz:-1.7, fr:5.0},
+  icecream:{emoji:'🍦', name:{en:'Ice cream at −18 °C',vi:'Kem (ice cream) ở −18 °C'},          short:{en:'Ice cream −18 °C',vi:'Kem −18 °C'}, ring:0.5, labelY:1.3, fx:1.9, fz:-1.3, fr:4.4},
+  fridge:  {emoji:'🧊', name:{en:'A refrigerator with food inside',vi:'Một tủ lạnh (refrigerator) có thức ăn bên trong'}, short:{en:'Refrigerator',vi:'Tủ lạnh'}, ring:0.6, labelY:1.8, fx:3.3, fz:-1.3, fr:4.8},
+  engine:  {emoji:'🚗', name:{en:'A car engine with water flowing through it',vi:'Một động cơ ô tô (engine) có nước chảy qua'}, short:{en:'Car engine',vi:'Động cơ ô tô'}, ring:0.65, labelY:1.25, fx:-3.0, fz:1.7, fr:4.8},
+  coffee:  {emoji:'☕', name:{en:'A cup of hot coffee',vi:'Một tách cà phê nóng (coffee)'},      short:{en:'Hot coffee',vi:'Cà phê nóng'},  ring:0.5,  labelY:1.2,  fx:-1.5, fz:1.7,  fr:4.4},
+  milk:    {emoji:'🥛', name:{en:'A jug of cold milk',vi:'Một bình sữa lạnh (cold milk)'},      short:{en:'Cold milk',vi:'Sữa lạnh'},      ring:0.5,  labelY:1.2,  fx:-0.3, fz:1.7,  fr:4.4},
+  lamp:    {emoji:'💡', name:{en:'A beaker of water heated by a lamp',vi:'Một cốc nước (beaker of water) được đun bằng bóng đèn (lamp)'}, short:{en:'Lamp and beaker',vi:'Bóng đèn và cốc nước'}, ring:0.6, labelY:1.5, fx:1.0, fz:1.7, fr:4.6},
+  thermo:  {emoji:'🌡️', name:{en:'A thermometer in the water',vi:'Một nhiệt kế (thermometer) trong nước'}, short:{en:'Thermometer',vi:'Nhiệt kế'}, ring:0.5, labelY:1.5, fx:2.3, fz:1.7, fr:4.4}
+};
+const FOCUSORDER=['mug','hands','ice','window','icecream','fridge','engine','coffee','milk','lamp','thermo'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a thing. Looking is not doing — to feel the transfer, tap the thing on the bench itself!',vi:'Chạm vào một tên để NGẮM một vật. Ngắm chưa phải là làm — muốn cảm nhận sự truyền nhiệt, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My transfer record',vi:'Bảng ghi sự truyền nhiệt của con'},
+  u2Brief:{en:'Which way thermal energy moved, in the order of the book.',vi:'Năng lượng nhiệt (thermal energy) đã truyền theo chiều nào, theo đúng thứ tự trong sách.'},
+  recHands:{en:'☕ Hot drink → hands: your hands feel warmer',vi:'☕ Đồ uống nóng → đôi tay: tay bạn cảm thấy ấm hơn'},
+  recFridge:{en:'🧊 Food → refrigerator air: the food gets colder',vi:'🧊 Thức ăn → không khí trong tủ lạnh: thức ăn lạnh đi'},
+  recEngine:{en:'🚗 Engine → water: the water carries thermal energy away',vi:'🚗 Động cơ → nước: nước mang năng lượng nhiệt (thermal energy) đi'},
+  recIce:{en:'🧊 Hand → ice: your hand feels cold — nothing flows into it',vi:'🧊 Tay → đá: tay bạn cảm thấy lạnh — không có gì truyền vào tay cả'},
+  recWindow:{en:'🪟 Warm room → cold outside: thermal energy dissipates',vi:'🪟 Phòng ấm → bên ngoài lạnh: năng lượng nhiệt tỏa ra (dissipates)'},
+  recCoffee:{en:'☕ Method B wins: milk in first keeps the coffee hottest',vi:'☕ Phương án B thắng: cho sữa vào trước giữ cà phê nóng nhất'},
+  recLamp:{en:'💡 Lamp investigation: the temperature rises, then levels off',vi:'💡 Khảo sát bóng đèn: nhiệt độ (temperature) tăng lên, rồi chững lại'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for the direction of thermal energy transfer.',vi:'Danh sách kiểm tra chiều truyền năng lượng nhiệt (thermal energy) của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundHeat:{en:'Thermal energy moves from the hotter drink into colder hands',vi:'Năng lượng nhiệt (thermal energy) truyền từ đồ uống nóng hơn (hotter) vào đôi tay lạnh hơn (colder)'},
+  foundUses:{en:'Fridges and engine water both remove thermal energy',vi:'Tủ lạnh và nước làm mát động cơ đều lấy năng lượng nhiệt đi'},
+  foundCold:{en:'Cold is not an energy — thermal energy leaves the hand for the ice',vi:'Lạnh không phải là năng lượng — năng lượng nhiệt rời tay truyền sang đá'},
+  foundDiss:{en:'Dissipation: thermal energy spreads out from hot places to cold places',vi:'Tỏa nhiệt (dissipation): năng lượng nhiệt lan tỏa từ nơi nóng sang nơi lạnh'},
+  foundCoffee:{en:'A smaller temperature difference means slower dissipation',vi:'Chênh lệch nhiệt độ (temperature difference) nhỏ hơn nghĩa là tỏa nhiệt chậm hơn'},
+  foundLamp:{en:'The temperature stops rising when heating balances dissipation',vi:'Nhiệt độ ngừng tăng khi đun nóng cân bằng với tỏa nhiệt'},
+  binGain:{en:'GAINS THERMAL ⬆',vi:'NHẬN THÊM NHIỆT ⬆ (gains thermal)'},
+  binLose:{en:'LOSES THERMAL ⬇',vi:'MẤT NHIỆT ⬇ (loses thermal)'},
+  binCool:{en:'COOLS DOWN ❄',vi:'NGUỘI ĐI ❄ (cools down)'},
+  binWarm:{en:'WARMS UP 🔥',vi:'NÓNG LÊN 🔥 (warms up)'},
+  coldQ:{en:'Does “cold” flow from the ice into your hand?',vi:'“Cái lạnh” có truyền từ viên đá vào tay bạn không?'},
+  yesBtn:{en:'YES',vi:'CÓ'},
+  noBtn:{en:'NO',vi:'KHÔNG'},
+  tapIce:{en:'👆 Tap the bowl of ice on the bench first!',vi:'👆 Trước tiên hãy chạm vào bát đá (ice) trên bàn!'},
+  coffeeQ:{en:'Your friend arrives in five minutes and hates cold coffee. Which method keeps the coffee hottest?',vi:'Năm phút nữa bạn của bạn đến và bạn ấy ghét cà phê nguội. Phương án nào giữ cà phê nóng nhất?'},
+  methA:{en:'A · Milk after 5 minutes',vi:'A · Cho sữa sau 5 phút'},
+  methB:{en:'B · Milk straight away',vi:'B · Cho sữa ngay'},
+  methSame:{en:'No difference',vi:'Không khác nhau'},
+  lookThermo:{en:'Look at the thermometer 🌡️',vi:'Ngắm nhiệt kế (thermometer) 🌡️'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Which way does thermal energy flow?',vi:'Bài tập 1 · Focus — Năng lượng nhiệt truyền theo chiều nào?'},
+  ex1Inst:{en:'Each card names one thing from Workbook exercise 3.4A, with the temperatures around it. Tap a card, then tap GAINS THERMAL or LOSES THERMAL for that thing. (Workbook 3.4A also asks you to complete: thermal energy is transferred from a place of higher temperature to a place of lower temperature.)',vi:'Mỗi thẻ nêu một vật từ bài tập Workbook 3.4A, kèm nhiệt độ xung quanh nó. Chạm vào một thẻ, rồi chạm NHẬN THÊM NHIỆT (GAINS THERMAL) hoặc MẤT NHIỆT (LOSES THERMAL) cho vật đó. (Workbook 3.4A còn yêu cầu hoàn thành: năng lượng nhiệt được truyền từ nơi có nhiệt độ cao hơn tới nơi có nhiệt độ thấp hơn.)'},
+  ex2T:{en:'Exercise 2 · Practice — Thinking about the transfer',vi:'Bài tập 2 · Practice — Suy nghĩ về sự truyền nhiệt'},
+  ex2Inst:{en:'Questions from Workbook exercise 3.4B in more detail. For each question, tap the ONE correct answer.',vi:'Các câu hỏi từ bài tập Workbook 3.4B ở mức chi tiết hơn. Với mỗi câu hỏi, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Predict the temperature change',vi:'Bài tập 3 · Challenge — Dự đoán sự thay đổi nhiệt độ'},
+  ex3Inst:{en:'Predictions from Workbook exercise 3.4C. Tap a card, then tap COOLS DOWN or WARMS UP for the thing named first.',vi:'Các dự đoán từ bài tập Workbook 3.4C. Chạm vào một thẻ, rồi chạm NGUỘI ĐI (COOLS DOWN) hoặc NÓNG LÊN (WARMS UP) cho vật được nêu đầu tiên.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'hotter',vi:'nóng hơn'},
+  {en:'colder',vi:'lạnh hơn'},
+  {en:'thermal energy',vi:'năng lượng nhiệt'},
+  {en:'dissipation',vi:'sự tỏa nhiệt / tiêu tán'},
+  {en:'temperature',vi:'nhiệt độ'},
+  {en:'temperature difference',vi:'chênh lệch nhiệt độ'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started: feeling heat',vi:'Khởi động: cảm nhận nóng'}, word:{en:'hotter',vi:'nóng hơn (hotter)'},
+  q:{en:'You wrap your hands around a hot drink. Why do your hands feel warm?',vi:'Bạn ôm tay quanh một đồ uống nóng. Vì sao tay bạn cảm thấy ấm?'},
+  act:{en:'Tap the hot drink on the bench. Then tap your hands beside it.',vi:'Chạm vào đồ uống nóng (hot drink) trên bàn. Sau đó chạm vào đôi tay bên cạnh nó.'},
+  see:{en:'Warmth spreads from the drink, through the cup and into your hands.',vi:'Hơi ấm lan từ đồ uống, qua thành cốc và vào đôi tay bạn.'},
+  concl:[
+    {en:'Hotter means at a higher temperature, and colder means at a lower temperature.',vi:'Nóng hơn (hotter) nghĩa là ở nhiệt độ (temperature) cao hơn, còn lạnh hơn (colder) nghĩa là ở nhiệt độ thấp hơn.'},
+    {en:'The drink is hotter than your hands, so thermal energy moves from the drink, through the container, into your hands.',vi:'Đồ uống nóng hơn tay bạn, nên năng lượng nhiệt (thermal energy) truyền từ đồ uống, qua thành cốc, vào tay bạn.'},
+    {en:'Thermal energy always moves from hotter places to colder places.',vi:'Năng lượng nhiệt (thermal energy) luôn truyền từ nơi nóng hơn (hotter) sang nơi lạnh hơn (colder).'}]},
+ {tag:{en:'Using the transfer',vi:'Ứng dụng sự truyền nhiệt'}, word:{en:'colder',vi:'lạnh hơn (colder)'},
+  q:{en:'How do a refrigerator and a car engine both use thermal energy moving?',vi:'Tủ lạnh (refrigerator) và động cơ ô tô đều lợi dụng sự truyền năng lượng nhiệt như thế nào?'},
+  act:{en:'Tap the refrigerator. Then tap the car engine with water flowing through it.',vi:'Chạm vào tủ lạnh (refrigerator). Sau đó chạm vào động cơ ô tô (engine) có nước chảy qua.'},
+  see:{en:'The food inside the fridge gets colder — and the engine water carries thermal energy away to the radiator.',vi:'Thức ăn trong tủ lạnh lạnh đi — và nước trong động cơ mang năng lượng nhiệt (thermal energy) đi tới két nước (radiator).'},
+  concl:[
+    {en:'Food put into a refrigerator loses thermal energy to the colder inside of the fridge, so the food becomes colder.',vi:'Thức ăn cho vào tủ lạnh (refrigerator) mất năng lượng nhiệt sang không khí lạnh hơn bên trong tủ, nên thức ăn lạnh đi.'},
+    {en:'Water flowing through a car engine removes thermal energy from the hot metal parts, which stops the engine overheating.',vi:'Nước chảy qua động cơ ô tô lấy năng lượng nhiệt (thermal energy) khỏi các bộ phận kim loại nóng, giúp động cơ không bị quá nóng.'},
+    {en:'When thermal energy is removed from a hot object, we say the thermal energy has dissipated.',vi:'Khi năng lượng nhiệt (thermal energy) bị lấy khỏi một vật nóng, ta nói năng lượng nhiệt đó đã tỏa ra (dissipated).'}]},
+ {tag:{en:'Feeling cold',vi:'Cảm nhận lạnh'}, word:{en:'thermal energy',vi:'năng lượng nhiệt (thermal energy)'},
+  q:{en:'You hold a piece of ice and your hand feels cold. Has “cold” moved into your hand?',vi:'Bạn cầm một viên đá và tay bạn cảm thấy lạnh. Có phải “cái lạnh” đã truyền vào tay bạn không?'},
+  act:{en:'Tap the bowl of ice on the bench. Then answer the big question below.',vi:'Chạm vào bát đá (ice) trên bàn. Sau đó trả lời câu hỏi lớn ở dưới.'},
+  see:{en:'Your hand feels colder and colder — and the ice slowly starts to melt.',vi:'Tay bạn cảm thấy ngày càng lạnh — và viên đá từ từ bắt đầu tan.'},
+  concl:[
+    {en:'Cold is not a type of energy. Feeling cold just means there is less thermal energy.',vi:'Lạnh không phải là một dạng năng lượng. Cảm thấy lạnh chỉ có nghĩa là có ít năng lượng nhiệt (thermal energy) hơn.'},
+    {en:'Thermal energy moves from your hotter hand into the colder ice, so your hand loses thermal energy — and that loss is what feels cold.',vi:'Năng lượng nhiệt (thermal energy) truyền từ bàn tay nóng hơn (hotter) của bạn vào viên đá lạnh hơn (colder), nên tay bạn mất năng lượng nhiệt — và chính sự mất mát đó tạo cảm giác lạnh.'},
+    {en:'Holding ice for too long can damage skin, because skin needs the right amount of thermal energy to work properly.',vi:'Cầm đá quá lâu có thể làm tổn thương da, vì da cần đúng lượng năng lượng nhiệt (thermal energy) để hoạt động bình thường.'}]},
+ {tag:{en:'Dissipation',vi:'Sự tỏa nhiệt (dissipation)'}, word:{en:'dissipation',vi:'sự tỏa nhiệt (dissipation)'},
+  q:{en:'It is colder outside than inside. What happens when someone opens the window — and what happens to ice cream left out of the freezer?',vi:'Bên ngoài lạnh hơn bên trong. Điều gì xảy ra khi ai đó mở cửa sổ — và điều gì xảy ra với kem để ngoài tủ đông?'},
+  act:{en:'Tap the window to open it. Then tap the ice cream (at −18 °C, in room air at 22 °C).',vi:'Chạm vào cửa sổ (window) để mở nó. Sau đó chạm vào cây kem (ice cream) (ở −18 °C, trong không khí phòng 22 °C).'},
+  see:{en:'The warm room starts to cool — and the ice cream softens and begins to melt.',vi:'Căn phòng ấm bắt đầu nguội đi — và cây kem mềm ra, bắt đầu tan.'},
+  concl:[
+    {en:'Opening the window lets thermal energy move from the hotter inside to the colder outside, so the room cools down.',vi:'Mở cửa sổ (window) cho năng lượng nhiệt (thermal energy) truyền từ bên trong nóng hơn (hotter) ra bên ngoài lạnh hơn (colder), nên căn phòng nguội đi.'},
+    {en:'When thermal energy spreads out from a hotter place to a colder place like this, we say it has dissipated from the hotter place.',vi:'Khi năng lượng nhiệt lan tỏa từ một nơi nóng hơn sang nơi lạnh hơn như vậy, ta nói nó đã tỏa ra (dissipated) khỏi nơi nóng hơn.'},
+    {en:'The bigger the temperature difference, the faster the transfer — and the energy is never destroyed, only spread out. The ice cream warms up because thermal energy moves from the warmer room air (22 °C) into the colder ice cream (−18 °C).',vi:'Chênh lệch nhiệt độ (temperature difference) càng lớn, sự truyền càng nhanh — và năng lượng không bao giờ bị phá hủy, chỉ lan tỏa ra. Cây kem nóng lên vì năng lượng nhiệt truyền từ không khí phòng ấm hơn (22 °C) vào cây kem lạnh hơn (colder) (−18 °C).'}]},
+ {tag:{en:'Activity 3.4.1: the coffee thought experiment',vi:'Hoạt động 3.4.1: thí nghiệm tưởng tượng về cà phê'}, word:{en:'temperature difference',vi:'chênh lệch nhiệt độ (temperature difference)'},
+  q:{en:'A friend wants hot coffee with a little cold milk, and arrives in five minutes. When should the milk go in?',vi:'Một người bạn muốn cà phê nóng pha chút sữa lạnh, và năm phút nữa sẽ đến. Nên cho sữa vào lúc nào?'},
+  act:{en:'Tap the cup of hot coffee. Then tap the jug of cold milk. Then choose method A, method B, or “no difference”.',vi:'Chạm vào tách cà phê nóng (coffee). Sau đó chạm vào bình sữa lạnh (milk). Rồi chọn phương án A, phương án B, hoặc “không khác nhau”.'},
+  see:{en:'Both cups lose thermal energy to the room — but not at the same rate.',vi:'Cả hai tách đều mất năng lượng nhiệt (thermal energy) ra phòng — nhưng không cùng tốc độ.'},
+  concl:[
+    {en:'Method B keeps the coffee hottest: adding the cold milk straight away makes the coffee a little cooler at the start, so the temperature difference between the coffee and the room is smaller.',vi:'Phương án B giữ cà phê nóng nhất: cho sữa lạnh vào ngay làm cà phê nguội đi một chút lúc đầu, nên chênh lệch nhiệt độ (temperature difference) giữa cà phê và căn phòng nhỏ hơn.'},
+    {en:'A smaller temperature difference means thermal energy dissipates more slowly, so after five minutes the method B coffee has lost less thermal energy overall.',vi:'Chênh lệch nhiệt độ nhỏ hơn nghĩa là năng lượng nhiệt tỏa ra (dissipates) chậm hơn, nên sau năm phút cà phê của phương án B mất ít năng lượng nhiệt hơn về tổng thể.'},
+    {en:'In method A the very hot coffee has a big temperature difference with the room and dissipates fast — then the cold milk cools it further at the end.',vi:'Ở phương án A, cà phê rất nóng có chênh lệch nhiệt độ lớn với căn phòng và tỏa nhiệt nhanh — rồi sữa lạnh ở cuối làm nó nguội thêm nữa.'}]},
+ {tag:{en:'Think like a scientist: the lamp investigation',vi:'Tư duy như nhà khoa học: khảo sát với bóng đèn'}, word:{en:'dissipation',vi:'sự tỏa nhiệt (dissipation)'},
+  q:{en:'A lamp heats a small beaker of water. The temperature climbs — then stops climbing. Why?',vi:'Một bóng đèn (lamp) đun một cốc nước nhỏ. Nhiệt độ (temperature) tăng lên — rồi ngừng tăng. Vì sao?'},
+  act:{en:'Tap the lamp in the beaker to switch it on. Then tap the thermometer standing in the water.',vi:'Chạm vào bóng đèn (lamp) trong cốc để bật nó lên. Sau đó chạm vào nhiệt kế (thermometer) cắm trong nước.'},
+  see:{en:'The thermometer column rises quickly at first, then more and more slowly, until it levels off.',vi:'Cột của nhiệt kế (thermometer) dâng nhanh lúc đầu, rồi càng lúc càng chậm, cho tới khi chững lại.'},
+  concl:[
+    {en:'At first the lamp adds thermal energy to the water much faster than the water loses it, so the temperature rises quickly.',vi:'Lúc đầu bóng đèn (lamp) thêm năng lượng nhiệt (thermal energy) vào nước nhanh hơn nhiều so với tốc độ nước mất nhiệt, nên nhiệt độ tăng nhanh.'},
+    {en:'As the water gets hotter, it dissipates thermal energy to its surroundings faster and faster — until the rate of dissipation matches the rate of heating, and the temperature stops changing.',vi:'Khi nước nóng lên, nó tỏa năng lượng nhiệt ra môi trường xung quanh ngày càng nhanh — cho tới khi tốc độ tỏa nhiệt bằng tốc độ đun nóng, và nhiệt độ ngừng thay đổi.'},
+    {en:'I know that thermal energy moves from hotter places to colder places, and that the spreading out of thermal energy is called dissipation.',vi:'Con biết rằng năng lượng nhiệt (thermal energy) truyền từ nơi nóng hơn (hotter) sang nơi lạnh hơn (colder), và sự lan tỏa ra của năng lượng nhiệt được gọi là tỏa nhiệt (dissipation).'}]}
+];
+const QUIZ=[
+ {q:{en:'Thermal energy always transfers from…',vi:'Năng lượng nhiệt (thermal energy) luôn truyền từ…'},
+  o:[{en:'hotter places to colder places',vi:'nơi nóng hơn (hotter) sang nơi lạnh hơn (colder)'},
+     {en:'colder places to hotter places',vi:'nơi lạnh hơn (colder) sang nơi nóng hơn (hotter)'},
+     {en:'cold objects into hot objects',vi:'vật lạnh vào vật nóng'}],a:0,
+  e:{en:'Hotter means at a higher temperature. Thermal energy moves from the hotter place to the colder place — never the other way round.',vi:'Nóng hơn (hotter) nghĩa là ở nhiệt độ cao hơn. Năng lượng nhiệt (thermal energy) truyền từ nơi nóng hơn sang nơi lạnh hơn — không bao giờ ngược lại.'}},
+ {q:{en:'You hold a piece of ice and your hand feels cold. What is really happening?',vi:'Bạn cầm một viên đá và tay bạn cảm thấy lạnh. Điều gì thực sự đang xảy ra?'},
+  o:[{en:'Cold flows from the ice into your hand',vi:'Cái lạnh truyền từ viên đá vào tay bạn'},
+     {en:'Thermal energy transfers from your hand into the ice',vi:'Năng lượng nhiệt (thermal energy) truyền từ tay bạn vào viên đá'},
+     {en:'The ice makes thermal energy disappear',vi:'Viên đá làm năng lượng nhiệt biến mất'}],a:1,
+  e:{en:'Cold is not a type of energy, so cold cannot flow. Your hand is hotter than the ice, so thermal energy leaves your hand for the ice — losing that energy is what feels cold.',vi:'Lạnh không phải là một dạng năng lượng, nên cái lạnh không thể truyền đi. Tay bạn nóng hơn (hotter) viên đá, nên năng lượng nhiệt (thermal energy) rời tay bạn sang viên đá — mất năng lượng đó chính là cảm giác lạnh.'}},
+ {q:{en:'In the coffee thought experiment, which method keeps the coffee hottest after five minutes?',vi:'Trong thí nghiệm tưởng tượng về cà phê, phương án nào giữ cà phê nóng nhất sau năm phút?'},
+  o:[{en:'Method A — leave the coffee, add the cold milk after five minutes',vi:'Phương án A — để cà phê, cho sữa lạnh vào sau năm phút'},
+     {en:'Both methods give exactly the same temperature',vi:'Cả hai phương án cho nhiệt độ giống hệt nhau'},
+     {en:'Method B — add the cold milk straight away, then leave it',vi:'Phương án B — cho sữa lạnh vào ngay, rồi để yên'}],a:2,
+  e:{en:'Adding the milk straight away lowers the coffee temperature a little, shrinking the temperature difference with the room. Thermal energy then dissipates more slowly, so method B loses less thermal energy in the five minutes.',vi:'Cho sữa vào ngay làm nhiệt độ cà phê giảm một chút, thu hẹp chênh lệch nhiệt độ (temperature difference) với căn phòng. Năng lượng nhiệt (thermal energy) khi đó tỏa ra (dissipates) chậm hơn, nên phương án B mất ít năng lượng nhiệt hơn trong năm phút.'}},
+ {q:{en:'In the lamp investigation, the water temperature rises and then stops rising. Why does it stop?',vi:'Trong khảo sát với bóng đèn (lamp), nhiệt độ nước tăng lên rồi ngừng tăng. Vì sao nó ngừng?'},
+  o:[{en:'The lamp has used up all its energy',vi:'Bóng đèn đã dùng hết năng lượng của nó'},
+     {en:'The water dissipates thermal energy as fast as the lamp adds it',vi:'Nước tỏa năng lượng nhiệt (thermal energy) nhanh bằng tốc độ bóng đèn thêm vào'},
+     {en:'The thermometer cannot measure any higher',vi:'Nhiệt kế (thermometer) không đo cao hơn được nữa'}],a:1,
+  e:{en:'Hotter water dissipates thermal energy faster. The temperature levels off when the rate of dissipation outwards matches the rate at which the lamp adds thermal energy — the energy is spread out, not destroyed.',vi:'Nước nóng hơn tỏa năng lượng nhiệt (thermal energy) nhanh hơn. Nhiệt độ chững lại khi tốc độ tỏa nhiệt ra ngoài bằng tốc độ bóng đèn thêm năng lượng nhiệt vào — năng lượng lan tỏa ra, không bị phá hủy.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'g_pot',emoji:'🍲',en:'A cooking pot at 100 °C, sitting in a flame at 450 °C — the pot…',vi:'Một nồi nấu ở 100 °C, đặt trong ngọn lửa 450 °C — cái nồi…',ans:'gains'},
+ {id:'g_drink',emoji:'☕',en:'A hot drink at 80 °C, held in hands at 37 °C — the drink…',vi:'Một đồ uống nóng ở 80 °C, được cầm trong tay 37 °C — đồ uống…',ans:'loses'},
+ {id:'g_icepack',emoji:'🧊',en:'An ice pack at 0 °C, pressed on a foot at 37 °C — the ice pack…',vi:'Một túi đá (ice pack) ở 0 °C, áp lên bàn chân 37 °C — túi đá…',ans:'gains'},
+ {id:'g_engine',emoji:'🚗',en:'A hot engine block with cooler water flowing through it — the engine block…',vi:'Một khối động cơ nóng với nước mát hơn chảy qua — khối động cơ…',ans:'loses'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'Two objects are in contact and at different temperatures. Which way does thermal energy transfer between them?',vi:'Hai vật tiếp xúc nhau và ở nhiệt độ khác nhau. Năng lượng nhiệt (thermal energy) truyền giữa chúng theo chiều nào?'},
+  opts:[{en:'From the colder object to the hotter object',vi:'Từ vật lạnh hơn (colder) sang vật nóng hơn (hotter)'},
+        {en:'From the hotter object to the colder object',vi:'Từ vật nóng hơn (hotter) sang vật lạnh hơn (colder)'},
+        {en:'Equally fast in both directions, so nothing changes',vi:'Nhanh bằng nhau theo cả hai chiều, nên không có gì thay đổi'}],a:1,
+  e:{en:'Thermal energy always transfers from the object at the higher temperature to the one at the lower temperature, until both reach the same temperature.',vi:'Năng lượng nhiệt (thermal energy) luôn truyền từ vật ở nhiệt độ cao hơn sang vật ở nhiệt độ thấp hơn, cho tới khi cả hai đạt cùng một nhiệt độ.'}},
+ {q:{en:'Three metal blocks touch each other in a row: 20 °C, 10 °C and 30 °C. Which block gains thermal energy from BOTH of its neighbours?',vi:'Ba khối kim loại chạm nhau thành một hàng: 20 °C, 10 °C và 30 °C. Khối nào nhận năng lượng nhiệt từ CẢ HAI khối kề bên?'},
+  opts:[{en:'The 20 °C block',vi:'Khối 20 °C'},
+        {en:'The 30 °C block',vi:'Khối 30 °C'},
+        {en:'The 10 °C block',vi:'Khối 10 °C'}],a:2,
+  e:{en:'The 10 °C block is colder than both neighbours, and thermal energy always moves from hotter to colder — so it flows into the 10 °C block from the 20 °C block and from the 30 °C block.',vi:'Khối 10 °C lạnh hơn (colder) cả hai khối kề bên, và năng lượng nhiệt luôn truyền từ nóng hơn (hotter) sang lạnh hơn — nên nó truyền vào khối 10 °C từ khối 20 °C và từ khối 30 °C.'}},
+ {q:{en:'A cup of hot tea at 60 °C is left in a room at 25 °C. Which description matches how its temperature changes with time?',vi:'Một tách trà nóng ở 60 °C được để trong phòng 25 °C. Mô tả nào khớp với sự thay đổi nhiệt độ của nó theo thời gian?'},
+  opts:[{en:'It falls quickly at first, then more slowly, and levels off at 25 °C',vi:'Nó giảm nhanh lúc đầu, rồi chậm dần, và chững lại ở 25 °C'},
+        {en:'It falls in a straight line all the way down to 0 °C',vi:'Nó giảm theo đường thẳng xuống tận 0 °C'},
+        {en:'It stays at 60 °C for a long time, then suddenly drops to 25 °C',vi:'Nó giữ ở 60 °C rất lâu, rồi đột ngột rơi xuống 25 °C'}],a:0,
+  e:{en:'The tea is hottest at the start, so the temperature difference with the room is biggest and it dissipates thermal energy fastest. As it cools, the difference shrinks, the cooling slows, and it settles at room temperature, 25 °C.',vi:'Trà nóng nhất lúc đầu, nên chênh lệch nhiệt độ (temperature difference) với căn phòng lớn nhất và nó tỏa năng lượng nhiệt nhanh nhất. Khi nó nguội đi, chênh lệch thu hẹp, tốc độ nguội chậm lại, và nó ổn định ở nhiệt độ phòng, 25 °C.'}}
+];
+const EX3=[
+ {id:'h_zaracold',emoji:'🥶',en:'Zara (body temperature 37 °C) stands in air at 5 °C — her skin…',vi:'Zara (nhiệt độ cơ thể 37 °C) đứng trong không khí 5 °C — da của cô ấy…',ans:'cools'},
+ {id:'h_milk',emoji:'🥛',en:'Cold milk is poured into hot coffee — the milk…',vi:'Sữa lạnh được rót vào cà phê nóng — sữa…',ans:'warms'},
+ {id:'h_water',emoji:'💧',en:'Water at 10 °C has ice at −15 °C added to it — the water…',vi:'Nước ở 10 °C được thêm đá (ice) ở −15 °C — nước…',ans:'cools'},
+ {id:'h_zarahot',emoji:'🥵',en:'Zara (body temperature 37 °C) stands in air at 40 °C — her skin…',vi:'Zara (nhiệt độ cơ thể 37 °C) đứng trong không khí 40 °C — da của cô ấy…',ans:'warms'},
+ {id:'h_coffee',emoji:'☕',en:'Hot coffee has cold milk added to it — the coffee…',vi:'Cà phê nóng được thêm sữa lạnh — cà phê…',ans:'cools'},
+ {id:'h_cream',emoji:'🍦',en:'Ice cream at −18 °C is taken into a room at 22 °C — the ice cream…',vi:'Kem (ice cream) ở −18 °C được mang vào phòng 22 °C — cây kem…',ans:'warms'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 3 + 6 = 13 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-3-4';
+const SUMKEY='camb:sum:sci9-3-4';
+const BOT_CODE='sci9-3.4';
+let OBS={mug:false,hands:false,fridge:false,engine:false,ice:false,window:false,icecream:false,coffee:false,milk:false,lamp:false,thermo:false};
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1mug:false, s1hands:false, s1hint:null,
+  s2fridge:false, s2engine:false,
+  s3ice:false, s3ans:false, s3wrong:false,
+  s4win:false, s4cream:false,
+  s5coffee:false, s5milk:false, s5choice:false, s5wrong:false,
+  s6lamp:false, s6thermo:false
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1mug&&T.s1hands;
+  if(i===1) return T.s2fridge&&T.s2engine;
+  if(i===2) return T.s3ice&&T.s3ans;
+  if(i===3) return T.s4win&&T.s4cream;
+  if(i===4) return T.s5coffee&&T.s5milk&&T.s5choice;
+  if(i===5) return T.s6lamp&&T.s6thermo;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not the hot drink or your hands. Look at the back-left of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải đồ uống nóng hay đôi tay. Hãy nhìn phía sau-bên trái của bàn!');
+    }
+    return B('You did: the hot drink '+(T.s1mug?'✓':'…')+' · your hands '+(T.s1hands?'✓':'…')+'. Tap the things on the bench!',
+             'Con đã làm: đồ uống nóng '+(T.s1mug?'✓':'…')+' · đôi tay '+(T.s1hands?'✓':'…')+'. Hãy chạm vào các vật trên bàn!');
+  }
+  if(i===1){
+    return B('Tapped: the refrigerator '+(T.s2fridge?'✓':'…')+' · the car engine '+(T.s2engine?'✓':'…')+'.',
+             'Đã chạm: tủ lạnh (refrigerator) '+(T.s2fridge?'✓':'…')+' · động cơ ô tô (engine) '+(T.s2engine?'✓':'…')+'.');
+  }
+  if(i===2){
+    if(!T.s3ice) return B('The bowl of ice is on the bench. Tap it to hold the ice!','Bát đá (ice) ở trên bàn. Hãy chạm vào nó để cầm viên đá!');
+    if(T.s3wrong&&!T.s3ans) return B('Think again! Cold is not an energy, so cold cannot flow anywhere. What moves instead?','Nghĩ lại nào! Lạnh không phải là năng lượng, nên cái lạnh không thể truyền đi đâu cả. Cái gì di chuyển thay vào đó?');
+    if(!T.s3ans) return B('You are holding the ice and your hand feels cold. Now answer the big question: does “cold” flow into your hand?','Bạn đang cầm viên đá và tay bạn cảm thấy lạnh. Giờ trả lời câu hỏi lớn: “cái lạnh” có truyền vào tay bạn không?');
+    return B('You held the ice and answered the big question.','Bạn đã cầm viên đá và trả lời câu hỏi lớn.');
+  }
+  if(i===3){
+    return B('Window opened '+(T.s4win?'✓':'…')+' · ice cream tapped '+(T.s4cream?'✓':'…')+'.',
+             'Đã mở cửa sổ (window) '+(T.s4win?'✓':'…')+' · đã chạm cây kem (ice cream) '+(T.s4cream?'✓':'…')+'.');
+  }
+  if(i===4){
+    if(T.s5coffee&&T.s5milk&&!T.s5choice) return B('Coffee and milk are ready. Now choose: method A, method B, or no difference?','Cà phê và sữa đã sẵn sàng. Giờ hãy chọn: phương án A, phương án B, hay không khác nhau?');
+    return B('Hot coffee tapped '+(T.s5coffee?'✓':'…')+' · cold milk tapped '+(T.s5milk?'✓':'…')+' · method chosen '+(T.s5choice?'✓':'…')+'.',
+             'Đã chạm cà phê nóng '+(T.s5coffee?'✓':'…')+' · đã chạm sữa lạnh '+(T.s5milk?'✓':'…')+' · đã chọn phương án '+(T.s5choice?'✓':'…')+'.');
+  }
+  if(i===5){
+    return B('Lamp switched on '+(T.s6lamp?'✓':'…')+' · thermometer read '+(T.s6thermo?'✓':'…')+'.',
+             'Đã bật bóng đèn (lamp) '+(T.s6lamp?'✓':'…')+' · đã đọc nhiệt kế (thermometer) '+(T.s6thermo?'✓':'…')+'.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'☕',label:{en:'The hot drink',vi:'Đồ uống nóng'},got:T.s1mug},
+      {emoji:'🙌',label:{en:'Your hands',vi:'Đôi tay của bạn'},got:T.s1hands}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'The refrigerator',vi:'Tủ lạnh (refrigerator)'},got:T.s2fridge},
+      {emoji:'🚗',label:{en:'The car engine',vi:'Động cơ ô tô (engine)'},got:T.s2engine},
+      {emoji:'💨',label:{en:'Thermal energy removed = dissipated',vi:'Năng lượng nhiệt bị lấy đi = đã tỏa ra (dissipated)'},got:T.s2fridge&&T.s2engine}
+    ]);
+  }else if(curStep===2){
+    if(!T.s3ice){
+      const p=document.createElement('p'); p.style.margin='2px 0 0'; p.innerHTML='<b>'+bi(STR.tapIce)+'</b>';
+      box.appendChild(p);
+    }else if(!T.s3ans){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.coldQ);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='ynrow';
+      const by=document.createElement('button'); by.className='ynbtn yes'; by.innerHTML=bi(STR.yesBtn);
+      const bn=document.createElement('button'); bn.className='ynbtn no'; bn.innerHTML=bi(STR.noBtn);
+      by.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3wrong=true; addMistake(); by.classList.add('shake'); setTimeout(()=>by.classList.remove('shake'),500); refreshEvidence(); };
+      bn.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s3ans=true; saveProg(); renderStepExtra(); refreshEvidence(); };
+      row.appendChild(by); row.appendChild(bn); box.appendChild(row);
+    }
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🪟',label:{en:'Window opened — the room cools',vi:'Đã mở cửa sổ — phòng nguội đi'},got:T.s4win},
+      {emoji:'🍦',label:{en:'Ice cream at −18 °C in air at 22 °C',vi:'Kem (ice cream) ở −18 °C trong không khí 22 °C'},got:T.s4cream}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'☕',label:{en:'The hot coffee',vi:'Cà phê nóng (coffee)'},got:T.s5coffee},
+      {emoji:'🥛',label:{en:'The cold milk',vi:'Sữa lạnh (milk)'},got:T.s5milk}
+    ]);
+    if(T.s5coffee&&T.s5milk&&!T.s5choice){
+      const q=document.createElement('div'); q.className='qbig'; q.innerHTML=bi(STR.coffeeQ);
+      box.appendChild(q);
+      const row=document.createElement('div'); row.className='coptrow';
+      const ba=document.createElement('button'); ba.className='copt a'; ba.innerHTML=bi(STR.methA);
+      const bb=document.createElement('button'); bb.className='copt b'; bb.innerHTML=bi(STR.methB);
+      const bs=document.createElement('button'); bs.className='copt same'; bs.innerHTML=bi(STR.methSame);
+      const wrongPick=(btn)=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5wrong=true; addMistake(); btn.classList.add('shake'); setTimeout(()=>btn.classList.remove('shake'),500); refreshEvidence(); };
+      ba.onclick=()=>wrongPick(ba);
+      bs.onclick=()=>wrongPick(bs);
+      bb.onclick=()=>{ if(stepLocked()){ flashReadBtn(); return; } T.s5choice=true; saveProg(); renderStepExtra(); refreshEvidence(); };
+      row.appendChild(ba); row.appendChild(bb); row.appendChild(bs); box.appendChild(row);
+    }
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'💡',label:{en:'Lamp on — heating the water',vi:'Bóng đèn bật — đang đun nước'},got:T.s6lamp},
+      {emoji:'🌡️',label:{en:'Temperature read — it levels off',vi:'Đã đọc nhiệt độ — nó chững lại'},got:T.s6thermo}
+    ]);
+    if(T.s6lamp&&!T.s6thermo){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookThermo);
+      b.onclick=()=>focusThing('thermo');
+      box.appendChild(b);
+    }
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('mug'); bounceThing('mug'); setTimeout(()=>{ focusVisual('hands'); bounceThing('hands'); },900); }
+  else if(i===1){ focusVisual('fridge'); bounceThing('fridge'); setTimeout(()=>{ focusVisual('engine'); bounceThing('engine'); },900); }
+  else if(i===2){ focusVisual('ice'); bounceThing('ice'); }
+  else if(i===3){ focusVisual('window'); bounceThing('window'); setTimeout(()=>{ focusVisual('icecream'); bounceThing('icecream'); },900); }
+  else if(i===4){ focusVisual('coffee'); bounceThing('coffee'); setTimeout(()=>{ focusVisual('milk'); bounceThing('milk'); },900); }
+  else if(i===5){ focusVisual('lamp'); bounceThing('lamp'); setTimeout(()=>{ focusVisual('thermo'); bounceThing('thermo'); },900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recHands,OBS.mug&&OBS.hands)+
+    row(STR.recFridge,OBS.fridge)+
+    row(STR.recEngine,OBS.engine)+
+    row(STR.recIce,OBS.ice)+
+    row(STR.recWindow,OBS.window)+
+    row(STR.recCoffee,OBS.coffee&&OBS.milk)+
+    row(STR.recLamp,OBS.lamp&&OBS.thermo);
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.mug&&OBS.hands)||doneSteps.has(0),label:STR.foundHeat},
+    {got:(OBS.fridge&&OBS.engine)||doneSteps.has(1),label:STR.foundUses},
+    {got:OBS.ice||doneSteps.has(2),label:STR.foundCold},
+    {got:(OBS.window&&OBS.icecream)||doneSteps.has(3),label:STR.foundDiss},
+    {got:(OBS.coffee&&OBS.milk)||doneSteps.has(4),label:STR.foundCoffee},
+    {got:(OBS.lamp&&OBS.thermo)||doneSteps.has(5),label:STR.foundLamp}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let fridgeDoor=null, windowSash=null, lampBulb=null, thermoLiquid=null, steamPuffs=[], iceCubes=[], lampStartMs=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; G[id]=group; scene3.add(group); return group; }
+function glassMat(hex,op){ return new THREE.MeshStandardMaterial({color:hex,roughness:0.25,metalness:0.05,transparent:true,opacity:op}); }
+function buildMug(){
+  const g=new THREE.Group();
+  const saucer=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.26,0.05,18),stdMat(0xf4f7f9,0.4)));
+  saucer.position.y=0.03; g.add(saucer);
+  const cup=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.19,0.34,18,1,true),stdMat(0xd35450,0.45)));
+  cup.position.y=0.24; g.add(cup);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.19,0.03,18),stdMat(0xd35450,0.45));
+  bottom.position.y=0.08; g.add(bottom);
+  const drink=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,0.02,18),stdMat(0x6b4226,0.3));
+  drink.position.y=0.4; g.add(drink);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.03,8,18,Math.PI),stdMat(0xd35450,0.45));
+  handle.position.set(0.26,0.24,0); handle.rotation.z=-Math.PI/2; g.add(handle);
+  for(let k=0;k<3;k++){
+    const s=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.35}));
+    s.position.set(-0.08+k*0.08,0.55+k*0.05,0); s.userData.steamK=k; steamPuffs.push(s); g.add(s);
+  }
+  const p=LAB.mug; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildHand(side){
+  const g=new THREE.Group();
+  const skin=stdMat(0xe8b08a,0.55);
+  const palm=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.3,0.42,0.1),skin));
+  palm.position.y=0.28; g.add(palm);
+  for(let f=0;f<4;f++){
+    const fin=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.032,0.032,0.22,8),skin));
+    fin.position.set(-0.11+f*0.073,0.58,0); g.add(fin);
+  }
+  const thumb=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.18,8),skin));
+  thumb.position.set(side*0.19,0.32,0.02); thumb.rotation.z=side*0.7; g.add(thumb);
+  const cuff=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.14,0.13),stdMat(0x44586e,0.7)));
+  cuff.position.y=0.02; g.add(cuff);
+  return g;
+}
+function buildHands(){
+  const g=new THREE.Group();
+  const h1=buildHand(1); h1.position.x=-0.24; h1.rotation.z=0.15; g.add(h1);
+  const h2=buildHand(-1); h2.position.x=0.24; h2.rotation.z=-0.15; g.add(h2);
+  const p=LAB.hands; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildIce(){
+  const g=new THREE.Group();
+  const bowl=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.24,0.22,16,1,true),glassMat(0xcfe8f5,0.4)));
+  bowl.position.y=0.13; g.add(bowl);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.03,16),glassMat(0xcfe8f5,0.5));
+  base.position.y=0.02; g.add(base);
+  const cubeAt=(x,y,z,s,ry)=>{
+    const c=shadowed(new THREE.Mesh(new THREE.BoxGeometry(s,s,s),glassMat(0xdff2fb,0.75)));
+    c.position.set(x,y,z); c.rotation.y=ry; iceCubes.push(c); g.add(c);
+  };
+  cubeAt(0,0.3,0,0.2,0.3); cubeAt(0.17,0.27,0.1,0.16,0.8); cubeAt(-0.16,0.27,-0.08,0.15,0.1); cubeAt(0.02,0.46,-0.02,0.15,0.55);
+  const p=LAB.ice; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildWindow(){
+  const g=new THREE.Group();
+  const frameM=stdMat(0xf4f7f9,0.5);
+  const mk=(w,h,d,x,y,z)=>{ const m=shadowed(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),frameM)); m.position.set(x,y,z); g.add(m); return m; };
+  mk(1.15,0.08,0.1,0,1.62,0); mk(1.15,0.08,0.1,0,0.1,0); mk(0.08,1.6,0.1,-0.54,0.86,0); mk(0.08,1.6,0.1,0.54,0.86,0);
+  mk(0.05,1.5,0.05,0,0.86,0);
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(1.0,1.45,0.02),glassMat(0xbfe0f2,0.3));
+  glass.position.set(-0.27,0.86,-0.01); g.add(glass);
+  windowSash=new THREE.Group(); windowSash.position.set(0.03,0.86,0);
+  const sg=new THREE.Mesh(new THREE.BoxGeometry(0.48,1.45,0.02),glassMat(0xbfe0f2,0.3));
+  sg.position.x=0.24; windowSash.add(sg);
+  const sb=new THREE.Mesh(new THREE.BoxGeometry(0.05,1.5,0.05),frameM);
+  sb.position.x=0.48; windowSash.add(sb);
+  g.add(windowSash);
+  const snow=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,10,8),stdMat(0xffffff,0.95)));
+  snow.position.set(0.1,0.02,-0.55); snow.scale.y=0.45; g.add(snow);
+  const snow2=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.22,10,8),stdMat(0xffffff,0.95)));
+  snow2.position.set(-0.35,0.02,-0.6); snow2.scale.y=0.45; g.add(snow2);
+  const p=LAB.window; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildIcecream(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.26,0.07,14),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.04; g.add(stand);
+  const cone=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.17,0.42,12),stdMat(0xd9a45b,0.7)));
+  cone.rotation.x=Math.PI; cone.position.y=0.32; g.add(cone);
+  const scoop1=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.17,12,10),stdMat(0xf7c8d8,0.5)));
+  scoop1.position.y=0.58; g.add(scoop1);
+  const scoop2=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.13,12,10),stdMat(0xfff6ea,0.5)));
+  scoop2.position.y=0.76; g.add(scoop2);
+  const p=LAB.icecream; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildFridge(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,1.7,0.6),stdMat(0xdfe6ec,0.35)));
+  body.position.y=0.88; g.add(body);
+  fridgeDoor=new THREE.Group(); fridgeDoor.position.set(-0.42,0.88,0.31);
+  const door=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.82,1.66,0.05),stdMat(0xf4f7f9,0.3)));
+  door.position.x=0.41; fridgeDoor.add(door);
+  const line=new THREE.Mesh(new THREE.BoxGeometry(0.82,0.03,0.02),stdMat(0x8d99a6,0.5));
+  line.position.set(0.41,0.35,0.04); fridgeDoor.add(line);
+  const handle=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.4,8),stdMat(0x8d99a6,0.4));
+  handle.position.set(0.74,0.1,0.07); fridgeDoor.add(handle);
+  g.add(fridgeDoor);
+  const inner=new THREE.Mesh(new THREE.BoxGeometry(0.7,1.5,0.02),new THREE.MeshBasicMaterial({color:0xbfe8f5}));
+  inner.position.set(0,0.88,0.28); g.add(inner);
+  [[0xf2b134,-0.15],[0x7fc46a,0.15],[0xd35450,-0.02]].forEach((f,i)=>{
+    const food=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.16,0.18),stdMat(f[0],0.5));
+    food.position.set(f[1],0.45+i*0.42,0.3); g.add(food);
+  });
+  const p=LAB.fridge; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildEngine(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.5,0.1,0.8),stdMat(0x44586e,0.7)));
+  base.position.y=0.05; g.add(base);
+  const block=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.5,0.55),stdMat(0x707880,0.4)));
+  block.position.set(-0.35,0.36,0); g.add(block);
+  for(let c=0;c<4;c++){
+    const cyl=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,0.14,10),stdMat(0x3c4147,0.4)));
+    cyl.position.set(-0.56+c*0.14,0.68,0); g.add(cyl);
+  }
+  const rad=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.55,0.1),stdMat(0x9db4c6,0.4)));
+  rad.position.set(0.42,0.38,0); g.add(rad);
+  for(let rI=0;rI<4;rI++){
+    const slat=new THREE.Mesh(new THREE.BoxGeometry(0.46,0.03,0.12),stdMat(0x5b7186,0.5));
+    slat.position.set(0.42,0.2+rI*0.12,0); g.add(slat);
+  }
+  const hoseM=stdMat(0x2e2a26,0.5);
+  const hoseTop=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.045,8,14,Math.PI),hoseM);
+  hoseTop.position.set(0.03,0.62,0); g.add(hoseTop);
+  const hoseBot=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.045,8,14,Math.PI),hoseM);
+  hoseBot.position.set(0.03,0.22,0); hoseBot.rotation.x=Math.PI; g.add(hoseBot);
+  const p=LAB.engine; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildCoffee(){
+  const g=new THREE.Group();
+  const saucer=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.22,0.05,18),stdMat(0xf4f7f9,0.4)));
+  saucer.position.y=0.03; g.add(saucer);
+  const cup=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.16,0.3,18,1,true),stdMat(0x2e5e4e,0.45)));
+  cup.position.y=0.21; g.add(cup);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.03,18),stdMat(0x2e5e4e,0.45));
+  bottom.position.y=0.07; g.add(bottom);
+  const drink=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.19,0.02,18),stdMat(0x4a2c14,0.3));
+  drink.position.y=0.35; g.add(drink);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.028,8,18,Math.PI),stdMat(0x2e5e4e,0.45));
+  handle.position.set(0.23,0.21,0); handle.rotation.z=-Math.PI/2; g.add(handle);
+  for(let k=0;k<2;k++){
+    const s=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.35}));
+    s.position.set(-0.05+k*0.1,0.48+k*0.05,0); s.userData.steamK=k+1; steamPuffs.push(s); g.add(s);
+  }
+  const p=LAB.coffee; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildMilk(){
+  const g=new THREE.Group();
+  const jug=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.18,0.36,14,1,true),glassMat(0xeaf6fb,0.55)));
+  jug.position.y=0.21; g.add(jug);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.18,0.03,14),glassMat(0xeaf6fb,0.5));
+  bottom.position.y=0.03; g.add(bottom);
+  const milkSurf=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.15,0.26,14),stdMat(0xffffff,0.4));
+  milkSurf.position.y=0.17; g.add(milkSurf);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.025,8,16,Math.PI),glassMat(0xeaf6fb,0.55));
+  handle.position.set(-0.19,0.24,0); handle.rotation.z=Math.PI/2; g.add(handle);
+  const p=LAB.milk; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildLamp(){
+  const g=new THREE.Group();
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.26,0.6,16,1,true),glassMat(0xcfe8f5,0.35)));
+  glass.position.y=0.3; g.add(glass);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,0.04,16),glassMat(0xcfe8f5,0.5));
+  base.position.y=0.02; g.add(base);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.23,0.42,14),stdMat(0x7fc4e8,0.35));
+  water.position.y=0.23; g.add(water);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.5,8),stdMat(0x44586e,0.5));
+  stem.position.set(0,0.82,-0.18); g.add(stem);
+  const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.35,8),stdMat(0x44586e,0.5));
+  arm.rotation.x=Math.PI/2; arm.position.set(0,1.05,-0.05); g.add(arm);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.07,0.1,10),stdMat(0x2e2a26,0.5));
+  cap.position.set(0,1.0,0.1); g.add(cap);
+  lampBulb=new THREE.Mesh(new THREE.SphereGeometry(0.11,12,10),new THREE.MeshStandardMaterial({color:0xf7e9b8,roughness:0.3,metalness:0.05,transparent:true,opacity:0.9}));
+  lampBulb.position.set(0,0.32,0.1); g.add(lampBulb);
+  const p=LAB.lamp; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildThermo(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.3,0.06,0.2),stdMat(0x8d99a6,0.5)));
+  stand.position.y=0.03; g.add(stand);
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.95,8),stdMat(0x44586e,0.5)));
+  post.position.set(-0.1,0.52,0); g.add(post);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.85,10),glassMat(0xeaf6fb,0.6));
+  tube.position.set(0.05,0.6,0); g.add(tube);
+  thermoLiquid=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.8,8),new THREE.MeshBasicMaterial({color:0xd33a2c}));
+  thermoLiquid.position.set(0.05,0.6,0); thermoLiquid.scale.y=0.2; g.add(thermoLiquid);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.06,10,8),new THREE.MeshBasicMaterial({color:0xd33a2c}));
+  bulb.position.set(0.05,0.16,0); g.add(bulb);
+  const p=LAB.thermo; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdfe9f2);
+  scene3.fog=new THREE.Fog(0xdfe9f2,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db4c6,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the lab bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xb9c9d8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(9.6,0.18,5.4),stdMat(0x8a6a44,0.9)));
+  bench.position.set(-0.4,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-4.9,-2.3],[4.1,-2.3],[-4.9,2.7],[4.1,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(7.5,2.6,0.08),stdMat(0x2e5e4e,0.95));
+  board.position.set(-0.4,1.7,-3.4); scene3.add(board);
+  /* the things */
+  reg('mug',buildMug());
+  reg('hands',buildHands());
+  reg('ice',buildIce());
+  reg('window',buildWindow());
+  reg('icecream',buildIcecream());
+  reg('fridge',buildFridge());
+  reg('engine',buildEngine());
+  reg('coffee',buildCoffee());
+  reg('milk',buildMilk());
+  reg('lamp',buildLamp());
+  reg('thermo',buildThermo());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('mug',p,G.mug); }
+  { const p=sphProxy(0.58); p.position.set(0,0.4,0); addProxy('hands',p,G.hands); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('ice',p,G.ice); }
+  { const p=sphProxy(0.62); p.position.set(0,0.9,0); addProxy('window',p,G.window); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('icecream',p,G.icecream); }
+  { const p=sphProxy(0.62); p.position.set(0,0.9,0); addProxy('fridge',p,G.fridge); }
+  { const p=sphProxy(0.6); p.position.set(0,0.4,0); addProxy('engine',p,G.engine); }
+  { const p=sphProxy(0.5); p.position.set(0,0.25,0); addProxy('coffee',p,G.coffee); }
+  { const p=sphProxy(0.5); p.position.set(0,0.25,0); addProxy('milk',p,G.milk); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('lamp',p,G.lamp); }
+  { const p=sphProxy(0.5); p.position.set(0,0.6,0); addProxy('thermo',p,G.thermo); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a thing */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['mug','hands'],          /* step 1: the hot drink + your hands */
+  ['fridge','engine'],      /* step 2: refrigerator + car engine */
+  ['ice'],                  /* step 3: hold the ice (then answer in the card) */
+  ['window','icecream'],    /* step 4: open the window + the ice cream */
+  ['coffee','milk'],        /* step 5: coffee + milk (then choose in the card) */
+  ['lamp','thermo']         /* step 6: lamp on + read the thermometer */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='mug'){ T.s1mug=true; OBS.mug=true; T.s1hint=null; }
+    else if(id==='hands'){ T.s1hands=true; OBS.hands=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='fridge'){ T.s2fridge=true; OBS.fridge=true; }
+    else if(id==='engine'){ T.s2engine=true; OBS.engine=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='ice'){ T.s3ice=true; OBS.ice=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='window'){ T.s4win=true; OBS.window=true; }
+    else if(id==='icecream'){ T.s4cream=true; OBS.icecream=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='coffee'){ T.s5coffee=true; OBS.coffee=true; }
+    else if(id==='milk'){ T.s5milk=true; OBS.milk=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===5){
+    if(id==='lamp'){ T.s6lamp=true; OBS.lamp=true; }
+    else if(id==='thermo'){ T.s6thermo=true; OBS.thermo=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* steam drifts up from the hot drinks */
+  steamPuffs.forEach((s,i)=>{ s.position.y=0.5+((t*0.25+i*0.22)%0.55); s.material.opacity=0.35-((t*0.25+i*0.22)%0.55)*0.4; });
+  /* the fridge door swings open once the fridge has been tapped */
+  if(fridgeDoor) fridgeDoor.rotation.y+=(((OBS.fridge? -0.85:0))-fridgeDoor.rotation.y)*0.06;
+  /* the window sash swings open once the window has been tapped */
+  if(windowSash) windowSash.rotation.y+=(((OBS.window? 0.95:0))-windowSash.rotation.y)*0.06;
+  /* the ice slowly shrinks (melts) once it has been held */
+  if(OBS.ice) iceCubes.forEach(c=>{ c.scale.setScalar(Math.max(0.72,c.scale.x-0.0006)); });
+  /* the lamp glows when on; the thermometer column rises, fast then slow, then levels off */
+  if(lampBulb) lampBulb.material.color.setHex(OBS.lamp? 0xffc93c : 0xf7e9b8);
+  if(thermoLiquid){
+    if(OBS.lamp){
+      if(lampStartMs===null) lampStartMs=now;
+      const f=1-Math.exp(-(now-lampStartMs)/2600);
+      thermoLiquid.scale.y=0.2+0.78*f;
+    }else{
+      lampStartMs=null;
+      thermoLiquid.scale.y=0.2;
+    }
+  }
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='gains'?'⬆':'⬇';
+  return ans==='cools'?'❄':'🔥';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — gains or loses thermal? (tap a card, then tap its bin) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinGain').innerHTML=bi(STR.binGain);
+  $('ex1BinLose').innerHTML=bi(STR.binLose);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (one tap per question) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — cools down or warms up? */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinCool').innerHTML=bi(STR.binCool);
+  $('ex3BinWarm').innerHTML=bi(STR.binWarm);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinGain').onclick=()=>ex1Place('gains');
+$('ex1BinLose').onclick=()=>ex1Place('loses');
+$('ex3BinCool').onclick=()=>ex3Place('cools');
+$('ex3BinWarm').onclick=()=>ex3Place('warms');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.mug=false; OBS.hands=false; }
+  if(step===1){ OBS.fridge=false; OBS.engine=false; }
+  if(step===2){ OBS.ice=false; }
+  if(step===3){ OBS.window=false; OBS.icecream=false; }
+  if(step===4){ OBS.coffee=false; OBS.milk=false; }
+  if(step===5){ OBS.lamp=false; OBS.thermo=false; }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='gains'||s.exAns.a1[id]==='loses')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='cools'||s.exAns.a3[id]==='warms')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1mug=!!OBS.mug; t.s1hands=!!OBS.hands; }
+  else if(i===1){ t.s2fridge=!!OBS.fridge; t.s2engine=!!OBS.engine; }
+  else if(i===2){ t.s3ice=!!OBS.ice; t.s3ans=!!OBS.ice; }
+  else if(i===3){ t.s4win=!!OBS.window; t.s4cream=!!OBS.icecream; }
+  else if(i===4){ t.s5coffee=!!OBS.coffee; t.s5milk=!!OBS.milk; t.s5choice=!!(OBS.coffee&&OBS.milk); }
+  else if(i===5){ t.s6lamp=!!OBS.lamp; t.s6thermo=!!OBS.thermo; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-3-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>9.4 Investigating electromagnets — Khảo sát nam châm điện · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="9.4 Investigating electromagnets" data-vi="9.4 Khảo sát nam châm điện (Investigating electromagnets)">9.4 Investigating electromagnets</span>
+    <span class="eqchip i18n" data-en="Unit 9 · Magnetism" data-vi="Bài 9 · Từ tính (Magnetism)">Unit 9 · Magnetism</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Which factors make an electromagnet stronger — and how can we investigate them fairly?" data-vi="Những yếu tố (factors) nào làm nam châm điện (electromagnet) mạnh hơn — và ta khảo sát chúng công bằng bằng cách nào?">Which factors make an electromagnet stronger — and how can we investigate them fairly?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Coil + core + current" data-vi="Cuộn dây (coil) + lõi (core) + dòng điện (current)">Coil + core + current</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="More turns" data-vi="Nhiều vòng dây (turns) hơn">More turns</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Core material and current" data-vi="Vật liệu lõi (core) và dòng điện (current)">Core material and current</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="A fair, planned test" data-vi="Một thí nghiệm công bằng, có kế hoạch">A fair, planned test</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 9 Magnetism · Section 9.4. The bench scene in this lesson is a simulation — the turns results are the book’s own Workbook values; the core and current counts are illustrative test values." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 9 Từ tính (Magnetism) · Mục 9.4. Cảnh bàn thí nghiệm trong bài này là mô phỏng — kết quả về số vòng dây (turns) là số liệu của chính Sách bài tập; số đếm cho lõi (core) và dòng điện (current) là giá trị minh họa.">Cambridge Lower Secondary Science 8 · Unit 9 Magnetism · Section 9.4. The bench scene in this lesson is a simulation — the turns results are the book’s own Workbook values; the core and current counts are illustrative test values.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 9 Magnetism, section 9.4, pages 311–316; Workbook 8 (ISBN 9781108742856), pages 198–203. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 9 Magnetism (Từ tính), mục 9.4, trang 311–316; Sách bài tập 8 (ISBN 9781108742856), trang 198–203. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 9 Magnetism, section 9.4, pages 311–316; Workbook 8 (ISBN 9781108742856), pages 198–203. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: discover which factors affect the strength of an electromagnet, and investigate how these variables affect its strength. Key words: factors, soft iron." data-vi="Mục tiêu: khám phá những yếu tố (factors) nào ảnh hưởng tới sức mạnh của một nam châm điện (electromagnet), và khảo sát các biến số này ảnh hưởng tới sức mạnh của nó như thế nào. Từ khóa: factors (yếu tố), soft iron (sắt non).">Objectives: discover which factors affect the strength of an electromagnet, and investigate how these variables affect its strength. Key words: factors, soft iron.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — naming the three things an electromagnet needs, running the book's turns investigation with the Workbook's own Marcus results (5 turns → 1 paperclip, 10 → 2, 15 → 4, 20 → 5), testing core materials, testing the current with added cells, planning the current investigation as a fair test, and judging the book's four-core question (wood, rubber, nickel, aluminium). The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Left out of the interactive lesson, with reasons: the Getting started group discussion (scrap sorter, toaster, fire door, electric bell) is folded into step 1's question and the final conclusion rather than role-played; the 2019 record electromagnet (4500× a school bar magnet) is a reading fact with no learner action, so it is not staged; the end-of-unit Check your progress and Project pages belong to the whole of Unit 9 (9.1–9.4), not to this section; in Part 3 the book lets learners plan freely — here the plan is a fixed card sort so it can be machine-checked, and the optional practical follow-through is represented by the step-4 current test. Paperclip counts for the core and current tests are illustrative simulation values, because the book gives the method and leaves the results to the class." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn thí nghiệm 3D — kể ba thứ một nam châm điện cần, chạy khảo sát vòng dây (turns) của sách với kết quả Marcus của chính Sách bài tập (5 vòng → 1 ghim, 10 → 2, 15 → 4, 20 → 5), thử các vật liệu lõi, thử dòng điện (current) bằng cách thêm pin, lập kế hoạch khảo sát dòng điện như một thí nghiệm công bằng, và phán đoán câu hỏi bốn lõi của sách (gỗ, cao su, niken (nickel), nhôm). Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nội dung không đưa vào bài tương tác, kèm lý do: phần thảo luận nhóm Khởi động (máy phân loại phế liệu, máy nướng bánh, cửa chống cháy, chuông điện) được gộp vào câu hỏi của bước 1 và kết luận cuối thay vì đóng vai; nam châm điện kỷ lục năm 2019 (mạnh gấp 4500 lần nam châm thanh ở trường) là một thông tin đọc không có hành động cho học sinh, nên không dựng cảnh; các trang Check your progress và Project cuối bài thuộc về toàn Bài 9 (9.1–9.4), không riêng mục này; ở Phần 3 sách để học sinh tự lập kế hoạch — ở đây kế hoạch là một bài phân loại thẻ cố định để máy kiểm tra được, và phần thực hành tùy chọn được thay bằng thí nghiệm dòng điện ở bước 4. Số ghim cho các thí nghiệm lõi và dòng điện là giá trị mô phỏng minh họa, vì sách cho phương pháp và để kết quả cho lớp tự đo.">How it works: each step asks for one real action on the 3D bench. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-9-4 "Investigating electromagnets" (Science 8, Unit 9)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  coil:    {emoji:'🧲', name:{en:'The electromagnet — a coil of wire around an iron nail, with a current flowing',vi:'Nam châm điện — một cuộn dây (coil) quấn quanh một đinh sắt, có dòng điện (current) chạy qua'}, short:{en:'Electromagnet',vi:'Nam châm điện'}, ring:0.85, labelY:1.35, fx:-2.6, fz:-1.2, fr:5.2},
+  core:    {emoji:'🔩', name:{en:'An iron nail — the magnetic core inside the coil',vi:'Một đinh sắt — lõi (core) từ tính bên trong cuộn dây'}, short:{en:'Iron nail core',vi:'Lõi đinh sắt'}, ring:0.5, labelY:0.85, fx:-0.5, fz:-1.7, fr:4.6},
+  cells:   {emoji:'🔋', name:{en:'Cells — they drive the electric current around the coil',vi:'Các pin (cells) — chúng tạo dòng điện (current) chạy quanh cuộn dây'}, short:{en:'Cells',vi:'Pin'}, ring:0.6, labelY:0.95, fx:1.5, fz:-1.5, fr:4.8},
+  spool:   {emoji:'🧵', name:{en:'A spool of wire — add more turns to the coil',vi:'Một cuộn dây (wire) — thêm vòng (turns) vào cuộn dây chính'}, short:{en:'Spool of wire',vi:'Cuộn dây'}, ring:0.55, labelY:0.9, fx:-4.4, fz:0.7, fr:4.6},
+  coreiron:{emoji:'🪙', name:{en:'A soft iron core — test it in the coil',vi:'Một lõi sắt non (soft iron) — thử nó trong cuộn dây'}, short:{en:'Soft iron core',vi:'Lõi sắt non'}, ring:0.5, labelY:1.0, fx:2.7, fz:1.1, fr:4.6},
+  coresteel:{emoji:'🔗', name:{en:'A steel core — test it in the coil',vi:'Một lõi thép (steel) — thử nó trong cuộn dây'}, short:{en:'Steel core',vi:'Lõi thép'}, ring:0.5, labelY:1.0, fx:4.1, fz:0.1, fr:4.6},
+  corewood:{emoji:'✏️', name:{en:'A wooden core (a pencil) — test it in the coil',vi:'Một lõi gỗ (một cây bút chì) — thử nó trong cuộn dây'}, short:{en:'Wooden core',vi:'Lõi gỗ'}, ring:0.5, labelY:1.0, fx:5.3, fz:1.3, fr:4.6},
+  rignickel:{emoji:'⚙️', name:{en:'Electromagnet A — a nickel core',vi:'Nam châm điện A — lõi niken (nickel)'}, short:{en:'A · nickel core',vi:'A · lõi niken'}, ring:0.65, labelY:1.1, fx:-3.6, fz:2.7, fr:4.8},
+  rigwood: {emoji:'🪵', name:{en:'Electromagnet B — a wooden core',vi:'Nam châm điện B — lõi gỗ (wood)'}, short:{en:'B · wooden core',vi:'B · lõi gỗ'}, ring:0.65, labelY:1.1, fx:-1.4, fz:3.0, fr:4.8},
+  rigrubber:{emoji:'🧽', name:{en:'Electromagnet C — a rubber core',vi:'Nam châm điện C — lõi cao su (rubber)'}, short:{en:'C · rubber core',vi:'C · lõi cao su'}, ring:0.65, labelY:1.1, fx:0.8, fz:2.8, fr:4.8},
+  rigalu:  {emoji:'🥫', name:{en:'Electromagnet D — an aluminium core',vi:'Nam châm điện D — lõi nhôm (aluminium)'}, short:{en:'D · aluminium core',vi:'D · lõi nhôm'}, ring:0.65, labelY:1.1, fx:2.9, fz:2.9, fr:4.8},
+  barmagnet:{emoji:'🧲', name:{en:'An ordinary bar magnet — it is always magnetic and cannot be switched off',vi:'Một nam châm thanh thường — nó luôn có từ tính và không tắt được'}, short:{en:'Bar magnet',vi:'Nam châm thanh'}, ring:0.6, labelY:0.9, fx:5.7, fz:-1.9, fr:4.8}
+};
+const FOCUSORDER=['coil','core','cells','spool','coreiron','rignickel'];
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at the object. Looking is not doing — to do a step, tap the object itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Investigation results',vi:'Kết quả khảo sát'},
+  u2Brief:{en:'What your tests found, as you run them on the bench.',vi:'Những gì các thí nghiệm của con tìm ra, khi con thực hiện chúng trên bàn.'},
+  recTurns:{en:'Turns test — 20 turns held',vi:'Thí nghiệm vòng dây — 20 vòng giữ được'},
+  recCore:{en:'Core test — soft iron held',vi:'Thí nghiệm lõi — sắt non (soft iron) giữ được'},
+  recCurrent:{en:'Current test — 3 cells held',vi:'Thí nghiệm dòng điện — 3 pin giữ được'},
+  recPlan:{en:'Fair-test plan for the current test',vi:'Kế hoạch thí nghiệm công bằng cho dòng điện'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your investigator checklist.',vi:'Danh sách thực hành khảo sát của con.'},
+  didSetup:{en:'Named the three things an electromagnet needs',vi:'Đã kể được ba thứ một nam châm điện (electromagnet) cần'},
+  didTurns:{en:'Investigated changing the number of turns',vi:'Đã khảo sát việc thay đổi số vòng dây (turns)'},
+  didCore:{en:'Investigated changing the core material',vi:'Đã khảo sát việc thay đổi vật liệu lõi (core)'},
+  didPlan:{en:'Planned a fair test of the current',vi:'Đã lập kế hoạch thí nghiệm công bằng về dòng điện (current)'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'CHANGE IT 🔀',vi:'THAY ĐỔI 🔀'},
+  binMix:{en:'KEEP THE SAME ⚖️',vi:'GIỮ NGUYÊN ⚖️'},
+  binPerm:{en:'FEWER PINS ↓',vi:'ÍT GHIM HƠN ↓'},
+  binNot:{en:'MORE PINS ↑',vi:'NHIỀU GHIM HƠN ↑'},
+  lookPaper:{en:'Look at the electromagnet 🧲',vi:'Ngắm nam châm điện 🧲'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 9.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 9.4'},
+  exIntro:{en:'Workbook games for this lesson: Marcus and his turns (Exercise 9.4A), Sofia and the current (9.4B), and Arun measuring strength (9.4C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: Marcus và số vòng dây (Bài tập 9.4A), Sofia và dòng điện (current) (9.4B), và Arun đo sức mạnh (9.4C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Marcus and the turns (9.4A)',vi:'Bài tập 1 · Focus — Marcus và số vòng dây (9.4A)'},
+  ex1Inst:{en:'Marcus tested 5, 10, 15, 20, 25, 30 and 35 turns. The clips lifted were 1, 2, 4, 5, 10, 12 and 16. Tap the 4 statements that are TRUE about his results.',vi:'Marcus thử 5, 10, 15, 20, 25, 30 và 35 vòng dây (turns). Số ghim (paperclips) nâng được là 1, 2, 4, 5, 10, 12 và 16. Chạm vào 4 câu ĐÚNG về kết quả của cậu ấy.'},
+  ex2T:{en:'Exercise 2 · Practice — Sofia and the pins (9.4B)',vi:'Bài tập 2 · Practice — Sofia và các ghim (9.4B)'},
+  ex2Inst:{en:'Sofia measures strength by counting steel pins lifted. At a current of 1.0 A her electromagnet lifts 25 pins. Tap a current card, then tap FEWER PINS or MORE PINS to predict the result.',vi:'Sofia đo sức mạnh bằng cách đếm số ghim thép (pins) nâng được. Ở dòng điện (current) 1,0 A, nam châm điện của cô ấy nâng được 25 ghim. Chạm vào một thẻ dòng điện, rồi chạm ÍT GHIM HƠN hoặc NHIỀU GHIM HƠN để dự đoán kết quả.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (9.4C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (9.4C)'},
+  ex3Inst:{en:'Each sentence is about measuring electromagnet strength carefully and safely. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về việc đo sức mạnh của nam châm điện (electromagnet) một cách cẩn thận và an toàn. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'electromagnet',vi:'nam châm điện'},
+  {en:'coil',vi:'cuộn dây'},
+  {en:'core',vi:'lõi'},
+  {en:'current',vi:'dòng điện'},
+  {en:'factor',vi:'yếu tố (biến số)'},
+  {en:'soft iron',vi:'sắt non'}
+];
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Three things make it work',vi:'Ba thứ làm nó hoạt động'}, word:{en:'electromagnet',vi:'nam châm điện'},
+  q:{en:'Getting started: an electromagnet can sort scrap metal, hold a fire door open or ring an electric bell — and it can be switched off, unlike the bar magnet on the bench. What three things does an electromagnet need?',vi:'Khởi động: một nam châm điện (electromagnet) có thể phân loại phế liệu kim loại, giữ cửa chống cháy mở hoặc rung chuông điện — và nó tắt được, khác với nam châm thanh trên bàn. Một nam châm điện cần ba thứ gì?'},
+  act:{en:'Tap the three things on the bench: the coil of wire (the electromagnet itself), the iron nail core inside it, and the cells that drive the current.',vi:'Chạm vào ba thứ trên bàn: cuộn dây (coil) (chính nam châm điện), lõi đinh sắt (core) bên trong nó, và các pin (cells) tạo dòng điện (current).'},
+  see:{en:'Each part bounces and shows its name. Together they make a magnet you can switch on and off.',vi:'Mỗi bộ phận nảy lên và hiện tên của nó. Cùng nhau chúng tạo thành một nam châm bật tắt được.'},
+  concl:[
+    {en:'An electromagnet (electromagnet) needs three things: a coil (coil) of wire, a magnetic core (core) inside the coil, and an electric current (current) flowing in the coil.',vi:'Một nam châm điện (electromagnet) cần ba thứ: một cuộn dây (coil), một lõi (core) từ tính bên trong cuộn dây, và một dòng điện (current) chạy trong cuộn dây.'},
+    {en:'These three things are also the factors (factors) that affect how strong the electromagnet is: the number of turns in the coil, the material of the core, and the current in the coil. A factor is another word for a variable that affects something.',vi:'Ba thứ này cũng chính là các yếu tố (factors) ảnh hưởng tới độ mạnh của nam châm điện: số vòng dây (turns) trong cuộn, vật liệu của lõi (core), và dòng điện (current) trong cuộn. Yếu tố (factor) là một cách gọi khác của biến số ảnh hưởng tới một điều gì đó.'}]},
+ {tag:{en:'More turns, stronger magnet',vi:'Nhiều vòng hơn, nam châm mạnh hơn'}, word:{en:'factor',vi:'yếu tố'},
+  q:{en:'Investigation Part 1: how does the number of turns in the coil affect the strength? We measure strength by counting how many paperclips the electromagnet can hold.',vi:'Khảo sát Phần 1: số vòng dây (turns) trong cuộn ảnh hưởng thế nào tới sức mạnh? Ta đo sức mạnh bằng cách đếm số ghim giấy (paperclips) mà nam châm điện giữ được.'},
+  act:{en:'The coil starts with 5 turns. Tap the spool of wire to add 5 more turns and test again — do this three times, testing at 10, 15 and 20 turns. Keep the current and the core exactly the same every time.',vi:'Cuộn dây bắt đầu với 5 vòng. Chạm vào cuộn dây dự trữ (spool) để thêm 5 vòng và thử lại — làm như vậy ba lần, thử ở 10, 15 và 20 vòng. Giữ dòng điện (current) và lõi (core) hoàn toàn như nhau mỗi lần.'},
+  see:{en:'Each test adds its result to the evidence line: 5 turns held 1 paperclip, and the count climbs as the turns go up.',vi:'Mỗi lần thử thêm kết quả của nó vào dòng căn cứ: 5 vòng giữ được 1 ghim giấy, và số lượng tăng lên khi số vòng tăng.'},
+  concl:[
+    {en:'The more turns in the coil, the stronger the electromagnet: in these tests 5 turns held 1 paperclip, 10 turns held 2, 15 turns held 4 and 20 turns held 5.',vi:'Càng nhiều vòng dây (turns) trong cuộn, nam châm điện (electromagnet) càng mạnh: trong các thí nghiệm này 5 vòng giữ được 1 ghim giấy, 10 vòng giữ 2, 15 vòng giữ 4 và 20 vòng giữ 5.'},
+    {en:'Number of turns is a measurement that can change smoothly, so results like these are drawn as a line graph, with the number of turns on the horizontal axis.',vi:'Số vòng dây là một đại lượng đo có thể thay đổi liên tục, nên các kết quả như thế này được vẽ thành đồ thị đường (line graph), với số vòng dây trên trục ngang.'},
+    {en:'Repeating the whole investigation matters: if one result does not fit the pattern — like the 25-turn result in the Workbook, where 10 paperclips were lifted — measure it again rather than trusting it.',vi:'Lặp lại toàn bộ khảo sát rất quan trọng: nếu một kết quả không khớp với xu hướng — như kết quả 25 vòng trong Sách bài tập, khi 10 ghim giấy được nâng lên — hãy đo lại thay vì tin ngay vào nó.'}]},
+ {tag:{en:'Change the core',vi:'Thay đổi lõi'}, word:{en:'soft iron',vi:'sắt non'},
+  q:{en:'Investigation Part 2: does the material of the core matter? The coil keeps its maximum turns and the current stays the same — only the core changes.',vi:'Khảo sát Phần 2: vật liệu của lõi (core) có quan trọng không? Cuộn dây giữ số vòng tối đa và dòng điện (current) giữ nguyên — chỉ lõi thay đổi.'},
+  act:{en:'Tap each core sample to slide it into the coil and test it: the soft iron core, the steel core and the wooden core.',vi:'Chạm vào từng mẫu lõi để đưa nó vào cuộn dây và thử: lõi sắt non (soft iron), lõi thép (steel) và lõi gỗ (wood).'},
+  see:{en:'The evidence line records how many paperclips each core lets the electromagnet hold.',vi:'Dòng căn cứ ghi lại mỗi lõi giúp nam châm điện giữ được bao nhiêu ghim giấy.'},
+  concl:[
+    {en:'The core material matters a lot: in our tests the soft iron (soft iron) core held 12 paperclips, the steel (steel) core held 7, and the wooden core held none at all — wood is not magnetic.',vi:'Vật liệu lõi rất quan trọng: trong thí nghiệm của ta, lõi sắt non (soft iron) giữ được 12 ghim giấy, lõi thép (steel) giữ 7, và lõi gỗ giữ được không cái nào — gỗ không có từ tính.'},
+    {en:'Iron and some types of steel make the strongest electromagnets. Soft iron is not soft like modelling clay: “soft” means it is easily magnetised and easily demagnetised — it loses its magnetism when the current stops.',vi:'Sắt và một số loại thép tạo ra nam châm điện mạnh nhất. Sắt non (soft iron) không mềm như đất nặn: “non” nghĩa là nó dễ bị nhiễm từ và dễ mất từ — nó mất từ tính khi dòng điện (current) dừng.'},
+    {en:'Core materials are separate categories, not a smooth measurement, so results like these are drawn as a bar chart — a line graph would not be suitable.',vi:'Vật liệu lõi là các loại riêng biệt, không phải một đại lượng đo liên tục, nên các kết quả như thế này được vẽ thành biểu đồ cột (bar chart) — đồ thị đường sẽ không phù hợp.'}]},
+ {tag:{en:'Change the current',vi:'Thay đổi dòng điện'}, word:{en:'current',vi:'dòng điện'},
+  q:{en:'Investigation Part 3: how does the current in the coil affect the strength? Adding cells makes the current bigger. The turns and the core stay the same.',vi:'Khảo sát Phần 3: dòng điện (current) trong cuộn ảnh hưởng thế nào tới sức mạnh? Thêm pin (cells) làm dòng điện lớn hơn. Số vòng dây (turns) và lõi (core) giữ nguyên.'},
+  act:{en:'The circuit starts with 1 cell, holding 4 paperclips. Tap the cells twice: test with 2 cells, then with 3 cells. Switch off again quickly each time — a working electromagnet must only stay on for the shortest possible time.',vi:'Mạch bắt đầu với 1 pin, giữ được 4 ghim giấy. Chạm vào các pin hai lần: thử với 2 pin, rồi với 3 pin. Mỗi lần hãy tắt nhanh lại — một nam châm điện đang hoạt động chỉ nên bật trong thời gian ngắn nhất có thể.'},
+  see:{en:'Each extra cell makes the current bigger, and the evidence line shows the paperclip count rising with it.',vi:'Mỗi pin thêm vào làm dòng điện (current) lớn hơn, và dòng căn cứ cho thấy số ghim giấy tăng theo.'},
+  concl:[
+    {en:'The greater the current in the coil, the stronger the electromagnet: in our tests 1 cell held 4 paperclips, 2 cells held 8 and 3 cells held 12.',vi:'Dòng điện (current) trong cuộn càng lớn, nam châm điện càng mạnh: trong thí nghiệm của ta, 1 pin giữ được 4 ghim giấy, 2 pin giữ 8 và 3 pin giữ 12.'},
+    {en:'Safety: keep the electromagnet switched on only briefly, and check the wire in the coil — if it becomes hot, switch off immediately and tell your teacher. Big currents make wires hot.',vi:'An toàn: chỉ bật nam châm điện trong thời gian ngắn, và kiểm tra dây trong cuộn — nếu dây nóng lên, tắt ngay và báo giáo viên. Dòng điện lớn làm dây nóng.'},
+    {en:'This is why very strong electromagnets use so much electricity: a laboratory like CERN, which needs extremely strong electromagnets, uses as much electricity as a small city.',vi:'Đây là lý do các nam châm điện rất mạnh dùng rất nhiều điện: một phòng thí nghiệm như CERN, nơi cần các nam châm điện cực mạnh, dùng lượng điện bằng cả một thành phố nhỏ.'}]},
+ {tag:{en:'Plan a fair test',vi:'Lập kế hoạch thí nghiệm công bằng'}, word:{en:'factor',vi:'yếu tố'},
+  q:{en:'Before testing the current, a scientist plans: which variable will I change, which will I measure, and which must I keep the same so the test is fair?',vi:'Trước khi thử dòng điện (current), một nhà khoa học lập kế hoạch: biến số nào tôi sẽ thay đổi, biến số nào tôi sẽ đo, và biến số nào tôi phải giữ nguyên để thí nghiệm công bằng?'},
+  act:{en:'Each card is one part of the current investigation. Tap a card, then tap CHANGE IT for the one variable you change, or KEEP THE SAME for a variable you control.',vi:'Mỗi thẻ là một phần của khảo sát dòng điện. Chạm vào một thẻ, rồi chạm THAY ĐỔI cho biến số duy nhất con thay đổi, hoặc GIỮ NGUYÊN cho một biến số con kiểm soát.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'In the current investigation the independent variable — the one you change — is the current in the coil. The dependent variable — the one you measure — is the number of paperclips the electromagnet holds.',vi:'Trong khảo sát dòng điện, biến độc lập (independent variable) — biến con thay đổi — là dòng điện (current) trong cuộn. Biến phụ thuộc (dependent variable) — biến con đo — là số ghim giấy mà nam châm điện giữ được.'},
+    {en:'Everything else is controlled: the number of turns, the core material, the paperclips and how long the magnet is switched on all stay the same, so any change in strength can only be caused by the current.',vi:'Mọi thứ còn lại đều được kiểm soát: số vòng dây (turns), vật liệu lõi (core), các ghim giấy và thời gian bật nam châm đều giữ nguyên, nên mọi thay đổi về sức mạnh chỉ có thể do dòng điện gây ra.'},
+    {en:'Prediction: as the current increases, the number of paperclips held increases — the results of the current test are a smooth measurement, so a line graph suits them best.',vi:'Dự đoán: khi dòng điện (current) tăng, số ghim giấy giữ được tăng — kết quả của thí nghiệm dòng điện là một đại lượng đo liên tục, nên đồ thị đường (line graph) phù hợp nhất với chúng.'}]},
+ {tag:{en:'The strongest core of all',vi:'Lõi mạnh nhất trong tất cả'}, word:{en:'electromagnet',vi:'nam châm điện'},
+  q:{en:'Final challenge: four electromagnets stand on the front bench. All four have the same current and the same number of turns — only the core material differs: A nickel, B wood, C rubber, D aluminium. Which one is strongest?',vi:'Thử thách cuối: bốn nam châm điện đứng trên bàn phía trước. Cả bốn có cùng dòng điện (current) và cùng số vòng dây (turns) — chỉ vật liệu lõi khác nhau: A niken (nickel), B gỗ (wood), C cao su (rubber), D nhôm (aluminium). Cái nào mạnh nhất?'},
+  act:{en:'Tap electromagnet B (the wooden core) to test a core that should fail, then tap electromagnet A (the nickel core) to test the one the book picks as strongest.',vi:'Chạm vào nam châm điện B (lõi gỗ) để thử một lõi đáng lẽ phải thất bại, rồi chạm vào nam châm điện A (lõi niken (nickel)) để thử cái mà sách chọn là mạnh nhất.'},
+  see:{en:'The wooden core holds no paperclips at all. The nickel core holds a whole chain of them.',vi:'Lõi gỗ không giữ được ghim giấy nào. Lõi niken (nickel) giữ được cả một chuỗi ghim.'},
+  concl:[
+    {en:'Electromagnet A, with the nickel core, is the strongest of the four: nickel is a magnetic metal, while wood, rubber and aluminium are not magnetic, so those cores add no strength at all.',vi:'Nam châm điện A, với lõi niken (nickel), là mạnh nhất trong bốn cái: niken là kim loại có từ tính, còn gỗ, cao su (rubber) và nhôm (aluminium) không có từ tính, nên các lõi đó không thêm chút sức mạnh nào.'},
+    {en:'That is why the scrapyard electromagnet — which must lift whole cars — is built with many turns, a soft iron core and a very large current, while the small electromagnet that holds a toaster handle down needs only a gentle pull.',vi:'Đó là lý do nam châm điện ở bãi phế liệu — thứ phải nâng cả ô tô — được làm với nhiều vòng dây (turns), lõi sắt non (soft iron) và dòng điện (current) rất lớn, trong khi nam châm điện nhỏ giữ tay cầm máy nướng bánh chỉ cần một lực kéo nhẹ.'},
+    {en:'I can recall the three factors that affect electromagnet strength.',vi:'Con nhớ được ba yếu tố (factors) ảnh hưởng tới sức mạnh của nam châm điện (electromagnet).'},
+    {en:'I can plan an investigation to test the effect of changing one of these factors.',vi:'Con lập kế hoạch được một khảo sát để thử tác động của việc thay đổi một trong các yếu tố (factors) này.'},
+    {en:'I can choose whether a line graph or a bar chart is more suitable for presenting results.',vi:'Con chọn được đồ thị đường (line graph) hay biểu đồ cột (bar chart) phù hợp hơn để trình bày kết quả.'}]}
+];
+const PLANS=[
+ {id:'c_current',emoji:'🔋',en:'The current in the coil — changed by adding cells',vi:'Dòng điện (current) trong cuộn — thay đổi bằng cách thêm pin (cells)',ans:'change'},
+ {id:'c_turns',emoji:'🧵',en:'The number of turns on the coil',vi:'Số vòng dây (turns) trên cuộn',ans:'same'},
+ {id:'c_core',emoji:'🔩',en:'The material of the core',vi:'Vật liệu của lõi (core)',ans:'same'},
+ {id:'c_clips',emoji:'📎',en:'The size of the paperclips',vi:'Kích thước của các ghim giấy (paperclips)',ans:'same'},
+ {id:'c_time',emoji:'⏱️',en:'How long the magnet is switched on for each test',vi:'Thời gian bật nam châm trong mỗi lần thử',ans:'same'},
+ {id:'c_cliptype',emoji:'🗂️',en:'The paperclips themselves — all from the same box',vi:'Chính các ghim giấy (paperclips) — tất cả từ cùng một hộp',ans:'same'}
+];
+const PLANS_ORDER=mixOrder(PLANS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'Which three factors affect the strength of an electromagnet?',vi:'Ba yếu tố (factors) nào ảnh hưởng tới sức mạnh của một nam châm điện (electromagnet)?'},
+  o:[{en:'The colour of the wire, the size of the bench and the switch',vi:'Màu của dây, kích thước của bàn và công tắc'},{en:'The number of turns in the coil, the material of the core and the current in the coil',vi:'Số vòng dây (turns) trong cuộn, vật liệu của lõi (core) và dòng điện (current) trong cuộn'},{en:'The size of the paperclips, the room temperature and the nail',vi:'Kích thước ghim giấy, nhiệt độ phòng và cây đinh'}],a:1,
+  e:{en:'Strength depends on the coil (more turns = stronger), the core (iron and some steels are best) and the current (bigger current = stronger).',vi:'Sức mạnh phụ thuộc vào cuộn dây (nhiều vòng hơn = mạnh hơn), lõi (core) (sắt và một số thép là tốt nhất) và dòng điện (current) (dòng lớn hơn = mạnh hơn).'}},
+ {q:{en:'Four electromagnets have the same current and the same number of turns. Their cores are: A nickel, B wood, C rubber, D aluminium. Which makes the strongest electromagnet?',vi:'Bốn nam châm điện có cùng dòng điện (current) và cùng số vòng dây (turns). Lõi của chúng là: A niken (nickel), B gỗ (wood), C cao su (rubber), D nhôm (aluminium). Cái nào tạo nam châm điện mạnh nhất?'},
+  o:[{en:'A — the nickel core',vi:'A — lõi niken (nickel)'},{en:'B — the wooden core',vi:'B — lõi gỗ (wood)'},{en:'D — the aluminium core',vi:'D — lõi nhôm (aluminium)'},{en:'C — the rubber core',vi:'C — lõi cao su (rubber)'}],a:0,
+  e:{en:'Nickel is a magnetic metal, so its core strengthens the electromagnet. Wood, rubber and aluminium are not magnetic and add no strength.',vi:'Niken (nickel) là kim loại có từ tính, nên lõi của nó làm nam châm điện mạnh hơn. Gỗ, cao su (rubber) và nhôm (aluminium) không có từ tính và không thêm sức mạnh nào.'}},
+ {q:{en:'Marcus tests 5, 10, 15, 20, 25, 30 and 35 turns; the clips lifted are 1, 2, 4, 5, 10, 12 and 16. The 25-turn result does not fit the pattern. What should Marcus do?',vi:'Marcus thử 5, 10, 15, 20, 25, 30 và 35 vòng dây (turns); số ghim nâng được là 1, 2, 4, 5, 10, 12 và 16. Kết quả ở 25 vòng không khớp với xu hướng. Marcus nên làm gì?'},
+  o:[{en:'Delete it and forget it',vi:'Xóa nó đi và quên nó'},{en:'Change all the other results to match it',vi:'Sửa mọi kết quả còn lại cho khớp với nó'},{en:'Repeat that measurement to check it',vi:'Lặp lại phép đo đó để kiểm tra nó'}],a:2,
+  e:{en:'A result that breaks the pattern is called anomalous. The right response is to repeat that measurement — the investigation is repeated anyway, and odd results are checked, not deleted or copied into the others.',vi:'Một kết quả phá vỡ xu hướng được gọi là bất thường (anomalous). Cách xử lý đúng là lặp lại phép đo đó — khảo sát vốn được lặp lại, và các kết quả lạ được kiểm tra, không bị xóa hay ép các kết quả khác theo.'}},
+ {q:{en:'The CERN laboratory in Switzerland uses very strong electromagnets, and as much electricity as a small city. Why?',vi:'Phòng thí nghiệm CERN ở Thụy Sĩ dùng các nam châm điện (electromagnets) rất mạnh, và lượng điện bằng cả một thành phố nhỏ. Vì sao?'},
+  o:[{en:'Its scientists leave the lights on all night',vi:'Các nhà khoa học ở đó để đèn sáng cả đêm'},{en:'Making an electromagnet stronger takes a greater current, and CERN’s magnets need enormous currents',vi:'Muốn một nam châm điện mạnh hơn cần dòng điện (current) lớn hơn, và các nam châm của CERN cần dòng điện khổng lồ'},{en:'Strong electromagnets heat the whole building like a toaster',vi:'Các nam châm điện mạnh sưởi ấm cả tòa nhà như một máy nướng bánh'}],a:1,
+  e:{en:'Current is one of the three factors in electromagnet strength. Extremely strong electromagnets need extremely large currents — and large currents mean using a great deal of electricity.',vi:'Dòng điện (current) là một trong ba yếu tố (factors) quyết định sức mạnh của nam châm điện. Các nam châm điện cực mạnh cần dòng điện cực lớn — và dòng điện lớn nghĩa là dùng rất nhiều điện.'}}
+];
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_trend',emoji:'📈',en:'As the number of turns increases, the number of paperclips lifted increases',vi:'Khi số vòng dây (turns) tăng, số ghim giấy (paperclips) nâng được tăng',keyw:true},
+ {id:'e_weaker',emoji:'📉',en:'More turns make the electromagnet weaker',vi:'Nhiều vòng dây hơn làm nam châm điện yếu đi',keyw:false},
+ {id:'e_stronger',emoji:'💪',en:'The electromagnet gets stronger as the number of turns increases',vi:'Nam châm điện mạnh lên khi số vòng dây (turns) tăng',keyw:true},
+ {id:'e_current',emoji:'🔋',en:'Marcus changed the current during his investigation',vi:'Marcus đã thay đổi dòng điện (current) trong lúc khảo sát',keyw:false},
+ {id:'e_anom',emoji:'🔍',en:'The 25-turn result — 10 paperclips — does not fit the pattern of the other results',vi:'Kết quả ở 25 vòng — 10 ghim giấy — không khớp với xu hướng của các kết quả còn lại',keyw:true},
+ {id:'e_repeat',emoji:'🔁',en:'Marcus should repeat the measurement that looks anomalous',vi:'Marcus nên lặp lại phép đo trông có vẻ bất thường (anomalous)',keyw:true},
+ {id:'e_delete',emoji:'🗑️',en:'An anomalous result should be deleted at once and never checked',vi:'Một kết quả bất thường nên bị xóa ngay và không bao giờ kiểm tra lại',keyw:false},
+ {id:'e_clips',emoji:'📎',en:'The size of the paperclips makes no difference to the results',vi:'Kích thước của ghim giấy (paperclips) không ảnh hưởng gì tới kết quả',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_a05',emoji:'🔋',en:'Current 0.5 A',vi:'Dòng điện (current) 0,5 A',ans:'fewer'},
+ {id:'x_a20',emoji:'🔋',en:'Current 2.0 A',vi:'Dòng điện (current) 2,0 A',ans:'more'},
+ {id:'x_a02',emoji:'🔋',en:'Current 0.2 A',vi:'Dòng điện (current) 0,2 A',ans:'fewer'},
+ {id:'x_a15',emoji:'🔋',en:'Current 1.5 A',vi:'Dòng điện (current) 1,5 A',ans:'more'},
+ {id:'x_a08',emoji:'🔋',en:'Current 0.8 A',vi:'Dòng điện (current) 0,8 A',ans:'fewer'},
+ {id:'x_a30',emoji:'🔋',en:'Current 3.0 A',vi:'Dòng điện (current) 3,0 A',ans:'more'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'To measure strength more exactly, Arun should use',vi:'Để đo sức mạnh chính xác hơn, Arun nên dùng'},
+  wrong:1,
+  opts:[{en:'small paperclips, because each extra clip is a smaller step in strength',vi:'ghim giấy (paperclips) nhỏ, vì mỗi ghim thêm là một bước sức mạnh nhỏ hơn'},{en:'large paperclips, because they are easier to count',vi:'ghim giấy lớn, vì chúng dễ đếm hơn'}],
+  e:{en:'Small paperclips give better results: each clip adds only a small amount of pull, so small differences in strength show up in the count. Cross out “large paperclips”.',vi:'Ghim giấy (paperclips) nhỏ cho kết quả tốt hơn: mỗi ghim chỉ thêm một lực kéo nhỏ, nên những khác biệt nhỏ về sức mạnh cũng hiện ra trong số đếm. Hãy gạch bỏ “ghim giấy lớn”.'}},
+ {pre:{en:'When the current in the coil gets larger, the safety risk Sofia must watch for is that',vi:'Khi dòng điện (current) trong cuộn lớn hơn, rủi ro an toàn Sofia phải để ý là'},
+  wrong:1,
+  opts:[{en:'the wire in the coil gets too hot',vi:'dây trong cuộn dây (coil) trở nên quá nóng'},{en:'the pins get too hot',vi:'các ghim (pins) trở nên quá nóng'}],
+  e:{en:'A larger current heats the wire of the coil — that is the safety risk (and why the magnet is switched on only briefly). The pins do not heat up. Cross out “the pins get too hot”.',vi:'Dòng điện (current) lớn hơn làm nóng dây của cuộn dây (coil) — đó là rủi ro an toàn (và là lý do nam châm chỉ được bật trong thời gian ngắn). Các ghim không nóng lên. Hãy gạch bỏ “các ghim trở nên quá nóng”.'}},
+ {pre:{en:'An electromagnet hangs above an iron block resting on a digital balance. When the electromagnet is switched on, the balance reading will',vi:'Một nam châm điện treo phía trên một khối sắt đặt trên một cân điện tử (digital balance). Khi nam châm điện được bật, số đọc của cân sẽ'},
+  wrong:1,
+  opts:[{en:'decrease, because the magnet pulls the iron block upwards, so the block presses down less',vi:'giảm, vì nam châm kéo khối sắt lên trên, nên khối sắt ấn xuống nhẹ hơn'},{en:'increase, because the magnet pushes the iron block downwards',vi:'tăng, vì nam châm đẩy khối sắt xuống dưới'}],
+  e:{en:'The electromagnet attracts the iron block upwards. The block still rests on the balance, but part of its weight is now held by the magnet, so the reading decreases — and it decreases more as the current increases. Cross out “increase”.',vi:'Nam châm điện hút khối sắt lên trên. Khối sắt vẫn đặt trên cân, nhưng một phần trọng lượng của nó nay do nam châm giữ, nên số đọc giảm — và giảm nhiều hơn khi dòng điện (current) tăng. Hãy gạch bỏ “tăng”.'}},
+ {pre:{en:'Marcus claims that reversing the connections to the power supply will reverse the change in the balance reading. He is',vi:'Marcus tuyên bố rằng đảo ngược các đầu nối tới nguồn điện (power supply) sẽ đảo ngược sự thay đổi của số đọc cân. Cậu ấy'},
+  wrong:0,
+  opts:[{en:'correct — the magnet will now push the block down instead',vi:'đúng — nam châm giờ sẽ đẩy khối sắt xuống thay vì hút'},{en:'not correct — the iron block is attracted to the electromagnet whichever way round the current flows',vi:'không đúng — khối sắt bị hút về phía nam châm điện (electromagnet) dù dòng điện (current) chạy theo chiều nào'}],
+  e:{en:'Reversing the connections swaps the magnet’s poles, but an iron block is attracted to either pole. The block is still pulled up, so the reading still decreases. Marcus is not correct — cross out “correct”.',vi:'Đảo ngược đầu nối làm đổi cực của nam châm, nhưng một khối sắt bị hút bởi cả hai cực. Khối sắt vẫn bị kéo lên, nên số đọc vẫn giảm. Marcus không đúng — hãy gạch bỏ “đúng”.'}},
+ {pre:{en:'Besides the number of turns, the strength of an electromagnet also depends on',vi:'Ngoài số vòng dây (turns), sức mạnh của một nam châm điện (electromagnet) còn phụ thuộc vào'},
+  wrong:1,
+  opts:[{en:'the current in the coil and the material of the core',vi:'dòng điện (current) trong cuộn và vật liệu của lõi (core)'},{en:'the colour of the wire and the size of the bench',vi:'màu của dây và kích thước của bàn'}],
+  e:{en:'The three factors are turns, core material and current. Wire colour and bench size change nothing. Cross out “the colour of the wire”.',vi:'Ba yếu tố (factors) là số vòng dây, vật liệu lõi (core) và dòng điện (current). Màu dây và kích thước bàn không thay đổi gì cả. Hãy gạch bỏ “màu của dây”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-9-4';
+const SUMKEY='camb:sum:sci8-9-4';
+const BOT_CODE='sci8-9.4';
+let FOUND={coil:false,core:false,cell:false,turnsLvl:0,coreiron:false,coresteel:false,corewood:false,cellLvl:0,nickel:false,woodrig:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1coil:false, s1core:false, s1cell:false,
+  s2tests:0,
+  s3iron:false, s3steel:false, s3wood:false,
+  s4tests:0,
+  s5correct:new Set(), s5sel:null,
+  s6nickel:false, s6wood:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.s1coil&&T.s1core&&T.s1cell;
+  if(i===1) return T.s2tests>=3;
+  if(i===2) return T.s3iron&&T.s3steel&&T.s3wood;
+  if(i===3) return T.s4tests>=2;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6nickel&&T.s6wood;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Electromagnet parts tapped: the coil of wire '+(T.s1coil?'✓':'…')+' · the iron nail core '+(T.s1core?'✓':'…')+' · the cells driving the current '+(T.s1cell?'✓':'…')+'.',
+                     'Các bộ phận của nam châm điện đã chạm: cuộn dây (coil) '+(T.s1coil?'✓':'…')+' · lõi đinh sắt (core) '+(T.s1core?'✓':'…')+' · các pin tạo dòng điện (current) '+(T.s1cell?'✓':'…')+'.');
+  if(i===1){
+    const rows=['5 turns → 1 paperclip','10 turns → 2 paperclips','15 turns → 4 paperclips','20 turns → 5 paperclips'];
+    const rowsVi=['5 vòng → 1 ghim giấy','10 vòng → 2 ghim giấy','15 vòng → 4 ghim giấy','20 vòng → 5 ghim giấy'];
+    const done=rows.slice(0,1+T.s2tests).join(' · '), more=T.s2tests<3? ' · tap the spool to test '+(10+T.s2tests*5)+' turns':'';
+    const doneVi=rowsVi.slice(0,1+T.s2tests).join(' · '), moreVi=T.s2tests<3? ' · chạm cuộn dây dự trữ để thử '+(10+T.s2tests*5)+' vòng':'';
+    return B('Turns results so far: '+done+more+'.', 'Kết quả vòng dây tới nay: '+doneVi+moreVi+'.');
+  }
+  if(i===2) return B('Core tests: soft iron held 12 paperclips '+(T.s3iron?'✓':'…')+' · steel held 7 paperclips '+(T.s3steel?'✓':'…')+' · wood held 0 paperclips '+(T.s3wood?'✓':'…')+'.',
+                     'Thí nghiệm lõi: sắt non (soft iron) giữ 12 ghim giấy '+(T.s3iron?'✓':'…')+' · thép (steel) giữ 7 ghim giấy '+(T.s3steel?'✓':'…')+' · gỗ giữ 0 ghim giấy '+(T.s3wood?'✓':'…')+'.');
+  if(i===3){
+    const rows=['1 cell → 4 paperclips','2 cells → 8 paperclips','3 cells → 12 paperclips'];
+    const rowsVi=['1 pin → 4 ghim giấy','2 pin → 8 ghim giấy','3 pin → 12 ghim giấy'];
+    const done=rows.slice(0,1+T.s4tests).join(' · '), more=T.s4tests<2? ' · tap the cells to test '+(2+T.s4tests)+' cells':'';
+    const doneVi=rowsVi.slice(0,1+T.s4tests).join(' · '), moreVi=T.s4tests<2? ' · chạm các pin để thử '+(2+T.s4tests)+' pin':'';
+    return B('Current results so far: '+done+more+'.', 'Kết quả dòng điện tới nay: '+doneVi+moreVi+'.');
+  }
+  if(i===4){
+    const c=T.s5sel? PLANS.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap CHANGE IT or KEEP THE SAME.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm THAY ĐỔI hoặc GIỮ NGUYÊN.');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5) return B('Core challenge: electromagnet B (wooden core) tested — held 0 paperclips '+(T.s6wood?'✓':'…')+' · electromagnet A (nickel core) tested — held a whole chain of paperclips '+(T.s6nickel?'✓':'…')+'.',
+                     'Thử thách lõi: nam châm điện B (lõi gỗ) đã thử — giữ 0 ghim giấy '+(T.s6wood?'✓':'…')+' · nam châm điện A (lõi niken (nickel)) đã thử — giữ cả một chuỗi ghim giấy '+(T.s6nickel?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🧲',label:{en:'A coil of wire',vi:'Một cuộn dây (coil)'},got:T.s1coil},
+      {emoji:'🔩',label:{en:'A magnetic core',vi:'Một lõi (core) từ tính'},got:T.s1core},
+      {emoji:'🔋',label:{en:'An electric current',vi:'Một dòng điện (current)'},got:T.s1cell}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🧵',label:{en:'Test at 10 turns',vi:'Thử ở 10 vòng'},got:T.s2tests>=1},
+      {emoji:'🧵',label:{en:'Test at 15 turns',vi:'Thử ở 15 vòng'},got:T.s2tests>=2},
+      {emoji:'🧵',label:{en:'Test at 20 turns',vi:'Thử ở 20 vòng'},got:T.s2tests>=3}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🪙',label:{en:'Soft iron core — 12 clips',vi:'Lõi sắt non (soft iron) — 12 ghim'},got:T.s3iron},
+      {emoji:'🔗',label:{en:'Steel core — 7 clips',vi:'Lõi thép (steel) — 7 ghim'},got:T.s3steel},
+      {emoji:'✏️',label:{en:'Wooden core — 0 clips',vi:'Lõi gỗ — 0 ghim'},got:T.s3wood}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🔋',label:{en:'Test with 2 cells',vi:'Thử với 2 pin'},got:T.s4tests>=1},
+      {emoji:'🔋',label:{en:'Test with 3 cells',vi:'Thử với 3 pin'},got:T.s4tests>=2}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,PLANS_ORDER,
+      [{key:'change',label:STR.binPure,cls:'living'},{key:'same',label:STR.binMix,cls:'nonliving'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🪵',label:{en:'B · wooden core — 0 clips',vi:'B · lõi gỗ — 0 ghim'},got:T.s6wood},
+      {emoji:'⚙️',label:{en:'A · nickel core — strongest',vi:'A · lõi niken (nickel) — mạnh nhất'},got:T.s6nickel}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('coil'); bounceThing('coil'); setTimeout(()=>{ focusVisual('core'); bounceThing('core'); },900); }
+  else if(i===1){ focusThing('spool'); }
+  else if(i===2){ focusThing('coreiron'); setTimeout(()=>focusThing('corewood'),900); }
+  else if(i===3){ focusThing('cells'); }
+  else if(i===4){ demoSort(PLANS,T.s5correct); }
+  else if(i===5){ focusThing('rigwood'); setTimeout(()=>focusThing('rignickel'),900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recTurns)+'</span><b>'+(FOUND.turnsLvl>=3?'5 paperclips':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recCore)+'</span><b>'+(FOUND.coreiron?'12 paperclips':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recCurrent)+'</span><b>'+(FOUND.cellLvl>=2?'12 paperclips':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recPlan)+'</span><b>'+(doneSteps.has(4)?'ready ✓':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(1),label:STR.didTurns},
+    {got:doneSteps.has(2),label:STR.didCore},
+    {got:doneSteps.has(4),label:STR.didPlan}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let coilRings=[], cellBoxes=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildEmRig(){
+  const g=new THREE.Group();
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.7,0.09,1.0),stdMat(0xb08954,0.85)));
+  board.position.y=0.05; g.add(board);
+  [-0.62,0.62].forEach(x=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.85,8),stdMat(0x7a5c38,0.9));
+    post.position.set(x,0.5,0); g.add(post);
+  });
+  const coreBar=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,1.5,12),stdMat(0x9aa3ab,0.6)));
+  coreBar.rotation.z=Math.PI/2; coreBar.position.y=0.92; g.add(coreBar);
+  coilRings=[];
+  for(let k=0;k<4;k++){
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(0.21,0.045,8,20),stdMat(0xc46a1b,0.55));
+    ring.rotation.y=Math.PI/2; ring.position.set(-0.45+k*0.3,0.92,0); g.add(ring); coilRings.push(ring);
+  }
+  for(let k=0;k<5;k++){
+    const clip=new THREE.Mesh(new THREE.TorusGeometry(0.07,0.018,6,12),stdMat(0xd8dee6,0.35));
+    clip.position.set(-0.4+k*0.2,0.14,0.34); clip.rotation.x=0.4; g.add(clip);
+  }
+  g.position.set(-2.6,0,-1.2); g.userData.baseY=0;
+  return g;
+}
+function buildEmNail(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.08,0.4),stdMat(0x7f8c99,0.7)));
+  stand.position.y=0.04; g.add(stand);
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.01,0.7,10),stdMat(0xb9c2cc,0.4));
+  shaft.rotation.z=Math.PI/2; shaft.position.y=0.22; g.add(shaft);
+  const head=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.05,12),stdMat(0x9aa3ab,0.4));
+  head.rotation.z=Math.PI/2; head.position.set(-0.36,0.22,0); g.add(head);
+  g.position.set(-0.5,0,-1.7); g.userData.baseY=0;
+  return g;
+}
+function buildEmCells(){
+  const g=new THREE.Group();
+  const holder=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.1,0.45),stdMat(0x44586e,0.8)));
+  holder.position.y=0.05; g.add(holder);
+  cellBoxes=[];
+  for(let k=0;k<3;k++){
+    const cell=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.5,14),stdMat(k===0?0xf2762e:0x2e7d46,0.55));
+    body.rotation.z=Math.PI/2; cell.add(body);
+    const tip=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.07,8),stdMat(0xd8dee6,0.35));
+    tip.rotation.z=Math.PI/2; tip.position.x=0.28; cell.add(tip);
+    cell.position.set(-0.36+k*0.36,0.24,0); g.add(cell); cellBoxes.push(cell);
+  }
+  g.position.set(1.5,0,-1.5); g.userData.baseY=0;
+  return g;
+}
+function buildEmSpool(){
+  const g=new THREE.Group();
+  const axle=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.55,10),stdMat(0x7a5c38,0.9));
+  axle.position.y=0.3; g.add(axle);
+  [-0.24,0.24].forEach(dy=>{
+    const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.05,16),stdMat(0xb08954,0.85));
+    disc.position.y=0.3+dy; g.add(disc);
+  });
+  for(let k=0;k<3;k++){
+    const wrap=new THREE.Mesh(new THREE.TorusGeometry(0.19,0.035,8,20),stdMat(0xc46a1b,0.55));
+    wrap.rotation.x=Math.PI/2; wrap.position.y=0.18+k*0.12; g.add(wrap);
+  }
+  g.position.set(-4.4,0,0.7); g.userData.baseY=0;
+  return g;
+}
+function buildEmRod(color,x,z){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.08,16),stdMat(0x7f8c99,0.7)));
+  base.position.y=0.04; g.add(base);
+  const rod=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.85,12),stdMat(color,0.5)));
+  rod.position.y=0.5; g.add(rod);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildEmMiniRig(coreColor,x,z,clips){
+  const g=new THREE.Group();
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.08,0.7),stdMat(0xb08954,0.85)));
+  board.position.y=0.04; g.add(board);
+  const coreBar=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.95,10),stdMat(coreColor,0.5));
+  coreBar.rotation.z=Math.PI/2; coreBar.position.y=0.55; g.add(coreBar);
+  [-0.28,0,0.28].forEach(dx=>{
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.04,8,18),stdMat(0xc46a1b,0.55));
+    ring.rotation.y=Math.PI/2; ring.position.set(dx,0.55,0); g.add(ring);
+  });
+  [-0.42,0.42].forEach(dx=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.5,8),stdMat(0x7a5c38,0.9));
+    post.position.set(dx,0.3,0); g.add(post);
+  });
+  for(let k=0;k<clips;k++){
+    const clip=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.016,6,12),stdMat(0xd8dee6,0.35));
+    clip.position.set(0.1+k*0.09,0.32+k*0.05,0.12); clip.rotation.x=0.5; g.add(clip);
+  }
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildEmBar(){
+  const g=new THREE.Group();
+  const stand=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.07,0.35),stdMat(0x7f8c99,0.7)));
+  stand.position.y=0.04; g.add(stand);
+  const halfN=new THREE.Mesh(new THREE.BoxGeometry(0.36,0.16,0.2),stdMat(0xc0392b,0.6));
+  halfN.position.set(-0.19,0.3,0); g.add(halfN);
+  const halfS=new THREE.Mesh(new THREE.BoxGeometry(0.36,0.16,0.2),stdMat(0x2f5fb3,0.6));
+  halfS.position.set(0.19,0.3,0); g.add(halfS);
+  [-0.19,0.19].forEach(dx=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.16,6),stdMat(0x44586e,0.8));
+    leg.position.set(dx,0.15,0); g.add(leg);
+  });
+  g.position.set(5.7,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdfe9f2);
+  scene3.fog=new THREE.Fog(0xdfe9f2,20,38);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8a97a5,0.95));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.85);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-8; sunL.shadow.camera.right=8; sunL.shadow.camera.top=8; sunL.shadow.camera.bottom=-8;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.35); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0xc9a06a,0.95));
+  bench.position.set(0.8,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xb9c9d8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8eef4,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  reg('coil',buildEmRig());
+  reg('core',buildEmNail());
+  reg('cells',buildEmCells());
+  reg('spool',buildEmSpool());
+  reg('coreiron',buildEmRod(0xd8b13a,2.7,1.1));
+  reg('coresteel',buildEmRod(0x8d99a6,4.1,0.1));
+  reg('corewood',buildEmRod(0xb08954,5.3,1.3));
+  reg('rignickel',buildEmMiniRig(0xd9d3c3,-3.6,2.7,6));
+  reg('rigwood',buildEmMiniRig(0xb08954,-1.4,3.0,0));
+  reg('rigrubber',buildEmMiniRig(0x2b2f36,0.8,2.8,0));
+  reg('rigalu',buildEmMiniRig(0xe8edf2,2.9,2.9,0));
+  reg('barmagnet',buildEmBar());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.95); p.position.set(0,0.6,0); addProxy('coil',p,G.coil); }
+  { const p=sphProxy(0.55); p.position.set(0,0.25,0); addProxy('core',p,G.core); }
+  { const p=sphProxy(0.7); p.position.set(0,0.25,0); addProxy('cells',p,G.cells); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('spool',p,G.spool); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('coreiron',p,G.coreiron); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('coresteel',p,G.coresteel); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('corewood',p,G.corewood); }
+  { const p=sphProxy(0.7); p.position.set(0,0.4,0); addProxy('rignickel',p,G.rignickel); }
+  { const p=sphProxy(0.7); p.position.set(0,0.4,0); addProxy('rigwood',p,G.rigwood); }
+  { const p=sphProxy(0.7); p.position.set(0,0.4,0); addProxy('rigrubber',p,G.rigrubber); }
+  { const p=sphProxy(0.7); p.position.set(0,0.4,0); addProxy('rigalu',p,G.rigalu); }
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('barmagnet',p,G.barmagnet); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['coil','core','cells'],
+  ['spool'],
+  ['coreiron','coresteel','corewood'],
+  ['cells'],
+  [],
+  ['rignickel','rigwood']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='coil'){ T.s1coil=true; FOUND.coil=true; }
+    if(id==='core'){ T.s1core=true; FOUND.core=true; }
+    if(id==='cells'){ T.s1cell=true; FOUND.cell=true; }
+  }else if(curStep===1){
+    if(id==='spool'&&T.s2tests<3){ T.s2tests++; FOUND.turnsLvl=T.s2tests; }
+  }else if(curStep===2){
+    if(id==='coreiron'){ T.s3iron=true; FOUND.coreiron=true; }
+    if(id==='coresteel'){ T.s3steel=true; FOUND.coresteel=true; }
+    if(id==='corewood'){ T.s3wood=true; FOUND.corewood=true; }
+  }else if(curStep===3){
+    if(id==='cells'&&T.s4tests<2){ T.s4tests++; FOUND.cellLvl=T.s4tests; }
+  }else if(curStep===5){
+    if(id==='rignickel'){ T.s6nickel=true; FOUND.nickel=true; }
+    if(id==='rigwood'){ T.s6wood=true; FOUND.woodrig=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All bench objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  const tl=FOUND.turnsLvl||0;
+  coilRings.forEach((r,k)=>{ r.visible = k<=tl; });
+  const cl=FOUND.cellLvl||0;
+  cellBoxes.forEach((c,k)=>{ c.visible = k<=cl; });
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — true statements about Marcus's results */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — fewer or more pins */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='fewer'?'↓':'↑')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('fewer');
+$('ex2BinNot').onclick=()=>ex2Place('more');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.coil=false; FOUND.core=false; FOUND.cell=false; }
+  if(step===1){ FOUND.turnsLvl=0; }
+  if(step===2){ FOUND.coreiron=false; FOUND.coresteel=false; FOUND.corewood=false; }
+  if(step===3){ FOUND.cellLvl=0; }
+  if(step===4){ PLANS.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ FOUND.nickel=false; FOUND.woodrig=false; }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='fewer'||s.exAns.a2[id]==='more')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1coil=!!FOUND.coil; t.s1core=!!FOUND.core; t.s1cell=!!FOUND.cell; }
+  else if(i===1){ t.s2tests=3; }
+  else if(i===2){ t.s3iron=!!FOUND.coreiron; t.s3steel=!!FOUND.coresteel; t.s3wood=!!FOUND.corewood; }
+  else if(i===3){ t.s4tests=2; }
+  else if(i===4){ PLANS.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.s6nickel=!!FOUND.nickel; t.s6wood=!!FOUND.woodrig; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-9-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

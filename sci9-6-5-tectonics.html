@@ -1,0 +1,1461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.5 Tectonics — Kiến tạo mảng · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdeef2,#eef6ec)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.long{background:#7a4fd0}
+.binbtn.short{background:#0b76d1}
+.binbtn.good{background:#0d9d58}
+.binbtn.bad{background:#b03a3a}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.high{background:#b03a3a}
+.binbtn.low{background:#0b76d1}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="6.5 Tectonics" data-vi="6.5 Kiến tạo mảng (Tectonics)">6.5 Tectonics</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Sound and space" data-vi="Bài 6 · Âm thanh và không gian (Sound and space)">Unit 6 · Sound and space</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What makes the Earth's crust move — and how do we know it moves?" data-vi="Điều gì làm vỏ Trái Đất (crust) di chuyển — và làm sao ta biết nó đang di chuyển?">What makes the Earth's crust move — and how do we know it moves?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Layers of the Earth" data-vi="Các lớp của Trái Đất">Layers of the Earth</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Convection in the mantle" data-vi="Đối lưu (convection) trong lớp phủ (mantle)">Convection in the mantle</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Plates on the move" data-vi="Các mảng (plates) di chuyển">Plates on the move</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Evidence in fossils and rocks" data-vi="Bằng chứng trong hóa thạch (fossils) và đá">Evidence in fossils and rocks</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the Earth bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn Trái Đất!">🖱 Drag to look around · Scroll to zoom · Tap the models on the Earth bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 6 Sound and space · Section 6.5. The Earth bench in this lesson is a simulation — the layers, continents and fossils are models, and their movements are hugely speeded up." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 6 Âm thanh và không gian (Sound and space) · Mục 6.5. Bàn Trái Đất trong bài học này là mô phỏng — các lớp, các lục địa và hóa thạch đều là mô hình, và chuyển động của chúng được tăng tốc rất nhiều.">Cambridge Lower Secondary Science 9 · Unit 6 Sound and space · Section 6.5. The Earth bench in this lesson is a simulation — the layers, continents and fossils are models, and their movements are hugely speeded up.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 6 Sound and space, section 6.5 Tectonics, pages 224–233; Workbook 9 (ISBN 9781108742894), pages 125–130. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section project on impact craters and the unit check-your-progress pages are classroom investigation and review tasks and are not part of this interactive lesson. Activity 6.5.1 (cutting out paper continents to rebuild Pangaea) is represented here by the moving continent models in step 3 and the calculations in the exercises." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 6 Âm thanh và không gian (Sound and space), mục 6.5 Kiến tạo mảng (Tectonics), trang 224–233; Sách bài tập 9 (ISBN 9781108742894), trang 125–130. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Dự án của mục về hố va chạm (impact craters) và phần kiểm tra tiến bộ cuối bài là nhiệm vụ thực hành và ôn tập trên lớp, không thuộc bài học tương tác này. Hoạt động 6.5.1 (cắt các lục địa bằng giấy để ghép lại Pangaea) được thể hiện ở đây bằng các mô hình lục địa di chuyển ở bước 3 và các phép tính trong bài tập.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 6 Sound and space, section 6.5 Tectonics, pages 224–233; Workbook 9 (ISBN 9781108742894), pages 125–130. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section project on impact craters and the unit check-your-progress pages are classroom investigation and review tasks and are not part of this interactive lesson. Activity 6.5.1 (cutting out paper continents to rebuild Pangaea) is represented here by the moving continent models in step 3 and the calculations in the exercises.</p>
+    <p class="i18n" data-en="Objectives (from the book): discover how convection currents cause the movement of tectonic plates; learn about the evidence we have for tectonic plates. Key words: tectonic plates, convection current — plus crust, mantle, core, fossil record, alignment and mid-oceanic ridge." data-vi="Mục tiêu (theo sách): khám phá cách các dòng đối lưu (convection currents) gây ra chuyển động của các mảng kiến tạo (tectonic plates); tìm hiểu bằng chứng ta có về các mảng kiến tạo. Từ khóa: tectonic plates (mảng kiến tạo), convection current (dòng đối lưu) — cùng crust (vỏ), mantle (lớp phủ), core (lõi), fossil record (hồ sơ hóa thạch), alignment (sự sắp thẳng hàng) và mid-oceanic ridge (sống núi giữa đại dương).">Objectives (from the book): discover how convection currents cause the movement of tectonic plates; learn about the evidence we have for tectonic plates. Key words: tectonic plates, convection current — plus crust, mantle, core, fossil record, alignment and mid-oceanic ridge.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D Earth bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the Earth bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: the structure of the Earth from the Getting started discussion, then convection in the mantle driven by the core (over 5000 °C), plates moving slowly (0.6–10 cm per year in the book), then the evidence in the book's own order — the continental jigsaw and Pangaea (335–175 million years ago), Mesosaurus and Glossopteris fossils, magnetic alignment at mid-oceanic ridges (poles swapped almost 200 times in 100 million years), and earthquakes and volcanoes clustering at plate boundaries. The exercises use the Workbook's own tasks and numbers: 6.5A layers and convection arrows, 6.5B the mid-Atlantic ridge and the separation-speed calculation (5000 km in 140 million years ≈ 3.6 cm per year), and 6.5C evidence including GPS showing North America moving west at 23 mm per year." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn Trái Đất 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn Trái Đất' chỉ di chuyển camera; muốn kiểm tra một ý thì phải chạm vào chính mô hình trên bàn. Các bước đi theo đúng thứ tự trong sách: cấu trúc Trái Đất từ phần thảo luận Khởi động, rồi đối lưu (convection) trong lớp phủ (mantle) do lõi (core) thúc đẩy (trên 5000 °C), các mảng di chuyển chậm (0.6–10 cm mỗi năm theo sách), rồi bằng chứng theo đúng thứ tự của sách — bức tranh ghép lục địa và Pangaea (335–175 triệu năm trước), hóa thạch Mesosaurus và Glossopteris, sự sắp thẳng hàng từ tính (alignment) tại các sống núi giữa đại dương (mid-oceanic ridges) (cực từ đã đổi chỗ gần 200 lần trong 100 triệu năm), và động đất cùng núi lửa tập trung tại ranh giới mảng (plate boundaries). Bài tập dùng chính nhiệm vụ và số liệu của Workbook: 6.5A các lớp và mũi tên đối lưu, 6.5B sống núi giữa Đại Tây Dương (mid-Atlantic ridge) và phép tính tốc độ tách ra (5000 km trong 140 triệu năm ≈ 3.6 cm mỗi năm), và 6.5C bằng chứng gồm GPS cho thấy Bắc Mỹ di chuyển về phía tây 23 mm mỗi năm.">How it works: each step asks for one real action — tapping the models on the 3D Earth bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the Earth bench' panel only move the camera; testing an idea means tapping the model on the bench. The steps follow the book's order: the structure of the Earth from the Getting started discussion, then convection in the mantle driven by the core (over 5000 °C), plates moving slowly (0.6–10 cm per year in the book), then the evidence in the book's own order — the continental jigsaw and Pangaea (335–175 million years ago), Mesosaurus and Glossopteris fossils, magnetic alignment at mid-oceanic ridges (poles swapped almost 200 times in 100 million years), and earthquakes and volcanoes clustering at plate boundaries. The exercises use the Workbook's own tasks and numbers: 6.5A layers and convection arrows, 6.5B the mid-Atlantic ridge and the separation-speed calculation (5000 km in 140 million years ≈ 3.6 cm per year), and 6.5C evidence including GPS showing North America moving west at 23 mm per year.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn long" id="ex1BinLong"></button>
+        <button class="binbtn short" id="ex1BinShort"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn good" id="ex3BinGood"></button>
+        <button class="binbtn bad" id="ex3BinBad"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-6-5 "Tectonics"
+   (Science 9, Unit 6 · Sound and space)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= Earth bench models ================= */
+const LAB={
+  innercore:{emoji:'🟡', name:{en:'The inner core — solid iron, over 5000 °C',vi:'Lõi trong (inner core) — sắt rắn, trên 5000 °C'}, short:{en:'Inner core',vi:'Lõi trong'}, ring:0.45, labelY:1.2, fx:-3.9, fz:-1.3, fr:4.4},
+  outercore:{emoji:'🟠', name:{en:'The outer core — liquid metal around the inner core',vi:'Lõi ngoài (outer core) — kim loại lỏng quanh lõi trong'}, short:{en:'Outer core',vi:'Lõi ngoài'}, ring:0.55, labelY:1.35, fx:-2.6, fz:-1.3, fr:4.4},
+  mantle:   {emoji:'🔴', name:{en:'The mantle — a very thick, slow-flowing fluid layer',vi:'Lớp phủ (mantle) — một lớp chất lỏng rất dày, chảy rất chậm'}, short:{en:'Mantle',vi:'Lớp phủ'}, ring:0.65, labelY:1.55, fx:-1.3, fz:-1.3, fr:4.6},
+  crust:    {emoji:'🪨', name:{en:'The crust — the thin, solid, rocky outer layer',vi:'Vỏ (crust) — lớp đá rắn mỏng ở ngoài cùng'}, short:{en:'Crust',vi:'Vỏ'}, ring:0.5, labelY:1.25, fx:0.0, fz:-1.3, fr:4.4},
+  hot:      {emoji:'🔥', name:{en:'Hot mantle material — heated, expanded, less dense, rising',vi:'Vật chất lớp phủ nóng — bị nung, giãn nở, nhẹ hơn, đang đi lên'}, short:{en:'Hot, rising',vi:'Nóng, đi lên'}, ring:0.5, labelY:1.3, fx:1.3, fz:-1.3, fr:4.4},
+  cool:     {emoji:'🔵', name:{en:'Cool mantle material — cooled, more dense, sinking',vi:'Vật chất lớp phủ nguội — đã nguội, nặng hơn, đang chìm xuống'}, short:{en:'Cool, sinking',vi:'Nguội, chìm xuống'}, ring:0.5, labelY:1.3, fx:2.6, fz:-1.3, fr:4.4},
+  sam:      {emoji:'🌎', name:{en:'South America — a continent on its own tectonic plate',vi:'Nam Mỹ (South America) — một lục địa trên mảng kiến tạo (tectonic plate) của riêng nó'}, short:{en:'South America',vi:'Nam Mỹ'}, ring:0.6, labelY:1.35, fx:-3.5, fz:1.7, fr:4.6},
+  africa:   {emoji:'🌍', name:{en:'Africa — a continent on its own tectonic plate',vi:'Châu Phi (Africa) — một lục địa trên mảng kiến tạo (tectonic plate) của riêng nó'}, short:{en:'Africa',vi:'Châu Phi'}, ring:0.6, labelY:1.35, fx:-2.1, fz:1.7, fr:4.6},
+  meso:     {emoji:'🦎', name:{en:'A Mesosaurus fossil — a reptile that lived about 275 million years ago',vi:'Một hóa thạch Mesosaurus — loài bò sát sống khoảng 275 triệu năm trước'}, short:{en:'Mesosaurus fossil',vi:'Hóa thạch Mesosaurus'}, ring:0.5, labelY:1.15, fx:-0.7, fz:1.7, fr:4.4},
+  gloss:    {emoji:'🌿', name:{en:'A Glossopteris fossil — a plant from about 300 million years ago',vi:'Một hóa thạch Glossopteris — loài cây từ khoảng 300 triệu năm trước'}, short:{en:'Glossopteris fossil',vi:'Hóa thạch Glossopteris'}, ring:0.5, labelY:1.3, fx:0.7, fz:1.7, fr:4.4},
+  ridge:    {emoji:'🌋', name:{en:'A mid-oceanic ridge — new rock forming under the ocean',vi:'Một sống núi giữa đại dương (mid-oceanic ridge) — đá mới đang hình thành dưới đại dương'}, short:{en:'Mid-ocean ridge',vi:'Sống núi giữa đại dương'}, ring:0.6, labelY:1.4, fx:2.1, fz:1.7, fr:4.6},
+  oldrock:  {emoji:'🧲', name:{en:'Older rock far from the ridge — its magnetic crystals point the opposite way',vi:'Đá già hơn ở xa sống núi — các tinh thể từ tính của nó chỉ theo hướng ngược lại'}, short:{en:'Older rock',vi:'Đá già hơn'}, ring:0.5, labelY:1.25, fx:3.5, fz:1.7, fr:4.4}
+};
+const FOCUSORDER=['innercore','outercore','mantle','crust','hot','cool','sam','africa','meso','gloss','ridge','oldrock'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the Earth bench',vi:'Trên bàn Trái Đất'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to test an idea, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn kiểm tra một ý, hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My tectonics record',vi:'Bảng ghi kiến tạo mảng của con'},
+  u2Brief:{en:'What you have found out about the moving Earth, in the order of the book.',vi:'Những gì con đã tìm ra về Trái Đất đang di chuyển, theo đúng thứ tự trong sách.'},
+  recLayers:{en:'🌍 The Earth has four layers: crust, mantle, outer core, inner core',vi:'🌍 Trái Đất có bốn lớp: vỏ (crust), lớp phủ (mantle), lõi ngoài (outer core), lõi trong (inner core)'},
+  recConv:{en:'🔥 Convection currents carry mantle material up, across and down',vi:'🔥 Các dòng đối lưu (convection currents) mang vật chất lớp phủ đi lên, đi ngang và đi xuống'},
+  recPlates:{en:'🌎 Convection drags the tectonic plates of the crust along with it',vi:'🌎 Đối lưu kéo các mảng kiến tạo (tectonic plates) của vỏ đi theo'},
+  recFossil:{en:'🦎 The same fossils on separated continents are evidence of movement',vi:'🦎 Cùng một loại hóa thạch (fossils) trên các lục địa đã tách ra là bằng chứng của chuyển động'},
+  recMag:{en:'🧲 Magnetic alignment in ocean rocks records the field when each rock formed',vi:'🧲 Sự sắp thẳng hàng từ tính (alignment) trong đá đại dương ghi lại từ trường khi mỗi khối đá hình thành'},
+  recBound:{en:'🌋 Earthquakes and volcanoes cluster at plate boundaries',vi:'🌋 Động đất và núi lửa tập trung tại ranh giới mảng (plate boundaries)'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for why scientists believe the plates move.',vi:'Danh sách kiểm tra về vì sao các nhà khoa học tin rằng các mảng đang di chuyển.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundLayers:{en:'I named all four layers of the Earth, from the crust to the inner core',vi:'Con đã kể tên cả bốn lớp của Trái Đất, từ vỏ (crust) tới lõi trong (inner core)'},
+  foundConv:{en:'Hot mantle material rises and cool mantle material sinks',vi:'Vật chất lớp phủ nóng đi lên và vật chất lớp phủ nguội chìm xuống'},
+  foundPlates:{en:'South America and Africa are moving apart, about 3.6 cm per year on average',vi:'Nam Mỹ (South America) và châu Phi (Africa) đang tách ra xa nhau, trung bình khoảng 3.6 cm mỗi năm'},
+  foundFossil:{en:'Mesosaurus and Glossopteris fossils match across oceans',vi:'Hóa thạch Mesosaurus và Glossopteris khớp nhau qua các đại dương'},
+  foundMag:{en:'New rock at a ridge points north; older rock further away can point the opposite way',vi:'Đá mới tại sống núi chỉ về phía bắc; đá già hơn ở xa hơn có thể chỉ theo hướng ngược lại'},
+  foundBound:{en:'I sorted events that cluster at plate boundaries from events that do not',vi:'Con đã phân loại các sự kiện tập trung tại ranh giới mảng và các sự kiện không tập trung tại đó'},
+  binBound:{en:'AT PLATE BOUNDARIES 🌋',vi:'TẠI RANH GIỚI MẢNG 🌋 (at plate boundaries)'},
+  binElse:{en:'NOT LINKED TO BOUNDARIES 🌈',vi:'KHÔNG LIÊN QUAN TỚI RANH GIỚI 🌈 (not linked to boundaries)'},
+  binRise:{en:'RISES ↑',vi:'ĐI LÊN ↑ (rises)'},
+  binSink:{en:'SINKS ↓',vi:'CHÌM XUỐNG ↓ (sinks)'},
+  binEvidence:{en:'EVIDENCE FOR MOVING PLATES ✓',vi:'BẰNG CHỨNG CHO MẢNG DI CHUYỂN ✓ (evidence for moving plates)'},
+  binNotEv:{en:'NOT EVIDENCE ✗',vi:'KHÔNG PHẢI BẰNG CHỨNG ✗ (not evidence)'},
+  lookRidge:{en:'Look at the mid-ocean ridge 🌋',vi:'Ngắm sống núi giữa đại dương 🌋'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.5',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.5'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Which way does the mantle move? (Workbook 6.5A)',vi:'Bài tập 1 · Focus — Lớp phủ di chuyển theo hướng nào? (Workbook 6.5A)'},
+  ex1Inst:{en:'In the Workbook you draw arrows on a section through the Earth to show the convection currents. Here, tap a card, then sort it: does this mantle material RISE or SINK?',vi:'Trong Workbook, con vẽ mũi tên lên hình cắt qua Trái Đất để chỉ các dòng đối lưu (convection currents). Ở đây, chạm vào một thẻ, rồi xếp nó: vật chất lớp phủ (mantle) này ĐI LÊN (RISES) hay CHÌM XUỐNG (SINKS)?'},
+  ex2T:{en:'Exercise 2 · Practice — Plates, ridges and calculations (Workbook 6.5B)',vi:'Bài tập 2 · Practice — Mảng, sống núi và các phép tính (Workbook 6.5B)'},
+  ex2Inst:{en:'Use the ideas and the book’s own numbers: the inner core is over 5000 °C, plates move at 0.6–10 cm per year, and Africa and South America have separated by about 5000 km in 140 million years. For each question, tap the ONE correct answer.',vi:'Dùng các ý tưởng và chính số liệu trong sách: lõi trong (inner core) trên 5000 °C, các mảng di chuyển 0.6–10 cm mỗi năm, và châu Phi cùng Nam Mỹ đã tách ra khoảng 5000 km trong 140 triệu năm. Với mỗi câu hỏi, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Evidence, or not? (Workbook 6.5C)',vi:'Bài tập 3 · Challenge — Có phải bằng chứng không? (Workbook 6.5C)'},
+  ex3Inst:{en:'Alfred Wegener first suggested moving continents in 1912, but few believed him. Tap a card, then judge it: is it EVIDENCE FOR MOVING PLATES, or NOT EVIDENCE?',vi:'Alfred Wegener là người đầu tiên gợi ý các lục địa đang di chuyển vào năm 1912, nhưng ít người tin ông. Chạm vào một thẻ, rồi xét nó: đó là BẰNG CHỨNG CHO MẢNG DI CHUYỂN (EVIDENCE FOR MOVING PLATES) hay KHÔNG PHẢI BẰNG CHỨNG (NOT EVIDENCE)?'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'tectonic plates',vi:'mảng kiến tạo'},
+  {en:'convection current',vi:'dòng đối lưu'},
+  {en:'crust',vi:'vỏ Trái Đất'},
+  {en:'mantle',vi:'lớp phủ'},
+  {en:'core',vi:'lõi'},
+  {en:'fossil record',vi:'hồ sơ hóa thạch'},
+  {en:'alignment',vi:'sự sắp thẳng hàng'},
+  {en:'mid-oceanic ridge',vi:'sống núi giữa đại dương'},
+  {en:'Pangaea',vi:'siêu lục địa cổ'},
+  {en:'evidence',vi:'bằng chứng'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Inside the Earth',vi:'Bên trong Trái Đất'}, word:{en:'crust',vi:'vỏ (crust)'},
+  q:{en:'In the Getting started discussion you described the structure of the Earth. What is the Earth made of, layer by layer?',vi:'Trong phần thảo luận Khởi động, con đã mô tả cấu trúc của Trái Đất. Trái Đất gồm những lớp nào, kể từng lớp một?'},
+  act:{en:'Tap all four layer models on the back row of the bench: the crust, the mantle, the outer core and the inner core.',vi:'Chạm vào cả bốn mô hình lớp ở hàng sau của bàn: vỏ (crust), lớp phủ (mantle), lõi ngoài (outer core) và lõi trong (inner core).'},
+  see:{en:'A thin solid crust rests on the thick mantle, and deep inside lie the outer core and the inner core.',vi:'Một lớp vỏ (crust) rắn mỏng nằm trên lớp phủ (mantle) dày, và sâu bên trong là lõi ngoài (outer core) và lõi trong (inner core).'},
+  concl:[
+    {en:'The outer part of the Earth is the solid, rocky crust. Below it is the mantle — a very thick fluid layer that flows only very slowly.',vi:'Phần ngoài cùng của Trái Đất là vỏ (crust) rắn bằng đá. Bên dưới nó là lớp phủ (mantle) — một lớp chất lỏng rất dày chỉ chảy rất chậm.'},
+    {en:'Deeper still are the outer core and the inner core. The inner core is over 5000 °C, heated by energy left over from when the Earth formed, by friction, and by reactions in the rocks.',vi:'Sâu hơn nữa là lõi ngoài (outer core) và lõi trong (inner core). Lõi trong trên 5000 °C, được nung nóng bởi năng lượng còn lại từ khi Trái Đất hình thành, bởi ma sát (friction), và bởi các phản ứng trong đá.'},
+    {en:'The crust is not one single shell — it is made of separate pieces called tectonic plates, and those plates rest on the mantle.',vi:'Vỏ (crust) không phải là một lớp vỏ liền duy nhất — nó gồm các mảnh riêng biệt gọi là mảng kiến tạo (tectonic plates), và các mảng đó nằm trên lớp phủ (mantle).'}]},
+ {tag:{en:'Convection in the mantle',vi:'Đối lưu trong lớp phủ'}, word:{en:'convection current',vi:'dòng đối lưu (convection current)'},
+  q:{en:'Thermal energy can move through a fluid by convection. What happens to the fluid in the mantle, heated from below by the core?',vi:'Nhiệt năng (thermal energy) có thể di chuyển qua chất lỏng bằng đối lưu (convection). Điều gì xảy ra với chất lỏng trong lớp phủ (mantle), khi nó bị lõi (core) nung nóng từ bên dưới?'},
+  act:{en:'Tap the hot mantle model, which rises. Then tap the cool mantle model, which sinks back down.',vi:'Chạm vào mô hình lớp phủ nóng, đang đi lên. Sau đó chạm vào mô hình lớp phủ nguội, đang chìm ngược xuống.'},
+  see:{en:'Heated mantle material expands, becomes less dense and rises; near the crust it cools, becomes more dense and sinks — a convection current.',vi:'Vật chất lớp phủ bị nung nóng giãn nở, trở nên nhẹ hơn (less dense) và đi lên; gần vỏ (crust) nó nguội đi, trở nên nặng hơn (more dense) và chìm xuống — một dòng đối lưu (convection current).'},
+  concl:[
+    {en:'The inner part of the mantle receives thermal energy from the core. The heated fluid expands and becomes less dense than the fluid around it, so it rises towards the crust.',vi:'Phần trong của lớp phủ (mantle) nhận nhiệt năng (thermal energy) từ lõi (core). Chất lỏng bị nung nóng giãn nở và trở nên nhẹ hơn chất lỏng xung quanh, nên nó đi lên về phía vỏ (crust).'},
+    {en:'Near the crust the fluid cools and sinks again. Rising, moving across and sinking together make a convection current.',vi:'Gần vỏ (crust), chất lỏng nguội đi và lại chìm xuống. Đi lên, đi ngang và chìm xuống cùng nhau tạo thành một dòng đối lưu (convection current).'},
+    {en:'The mantle is so thick and slow-flowing that its convection currents creep along — they do not race like water in a kettle.',vi:'Lớp phủ (mantle) dày và chảy chậm đến mức các dòng đối lưu (convection currents) của nó di chuyển rất chậm — chúng không chảy nhanh như nước trong ấm.'}]},
+ {tag:{en:'Plates on the move',vi:'Các mảng di chuyển'}, word:{en:'tectonic plates',vi:'mảng kiến tạo (tectonic plates)'},
+  q:{en:'If the mantle is slowly circulating underneath the crust, what should happen to the tectonic plates that rest on it?',vi:'Nếu lớp phủ (mantle) đang lưu chuyển chậm chạp bên dưới vỏ (crust), điều gì sẽ xảy ra với các mảng kiến tạo (tectonic plates) nằm trên nó?'},
+  act:{en:'Tap the South America model. Then tap the Africa model — two continents carried on different plates.',vi:'Chạm vào mô hình Nam Mỹ (South America). Sau đó chạm vào mô hình châu Phi (Africa) — hai lục địa được mang trên hai mảng khác nhau.'},
+  see:{en:'The two continent models drift apart, just as the real continents are slowly separating across the Atlantic Ocean.',vi:'Hai mô hình lục địa trôi ra xa nhau, đúng như các lục địa thật đang tách ra chậm chạp qua Đại Tây Dương (Atlantic Ocean).'},
+  concl:[
+    {en:'As the convection currents move across underneath the crust, they drag the tectonic plates along with them.',vi:'Khi các dòng đối lưu (convection currents) di chuyển ngang bên dưới vỏ (crust), chúng kéo các mảng kiến tạo (tectonic plates) đi theo.'},
+    {en:'Plate movement is very slow — between 0.6 and 10 cm per year. South America and Africa, once joined, are now about 5000 km apart.',vi:'Chuyển động của mảng rất chậm — từ 0.6 đến 10 cm mỗi năm. Nam Mỹ (South America) và châu Phi (Africa), từng liền nhau, nay đã cách nhau khoảng 5000 km.'},
+    {en:'A tectonic plate is one of the large pieces that make up the crust, carried on the moving mantle below.',vi:'Một mảng kiến tạo (tectonic plate) là một trong những mảnh lớn tạo nên vỏ (crust), được mang trên lớp phủ (mantle) đang di chuyển bên dưới.'}]},
+ {tag:{en:'Evidence from fossils',vi:'Bằng chứng từ hóa thạch'}, word:{en:'fossil record',vi:'hồ sơ hóa thạch (fossil record)'},
+  q:{en:'Long ago, the continents may have fitted together like a jigsaw in one supercontinent, Pangaea. Do fossils support that idea?',vi:'Ngày xưa, các lục địa có thể đã khớp nhau như một bức tranh ghép trong một siêu lục địa, Pangaea. Hóa thạch (fossils) có ủng hộ ý tưởng đó không?'},
+  act:{en:'Tap the Mesosaurus fossil model. Then tap the Glossopteris leaf fossil model.',vi:'Chạm vào mô hình hóa thạch Mesosaurus. Sau đó chạm vào mô hình hóa thạch lá Glossopteris.'},
+  see:{en:'The same kinds of fossils turn up on continents that are now separated by wide oceans.',vi:'Cùng một loại hóa thạch (fossils) xuất hiện trên các lục địa nay đã bị các đại dương rộng lớn chia cách.'},
+  concl:[
+    {en:'Fossils of the reptile Mesosaurus, which lived about 275 million years ago at coasts and in shallow water, are found in both Africa and South America — the very parts that fit together in the jigsaw model.',vi:'Hóa thạch của loài bò sát Mesosaurus, từng sống khoảng 275 triệu năm trước ở bờ biển và vùng nước nông, được tìm thấy ở cả châu Phi (Africa) và Nam Mỹ (South America) — đúng những phần khớp nhau trong mô hình tranh ghép.'},
+    {en:'Mesosaurus is very unlikely to have swum across the 5000 km of Atlantic Ocean that separates those continents today.',vi:'Mesosaurus rất khó có thể đã bơi qua 5000 km Đại Tây Dương (Atlantic Ocean) chia cách hai lục địa đó ngày nay.'},
+    {en:'Fossils of the plant Glossopteris, about 300 million years old, are found in Antarctica, India, Australia, Africa and South America — more evidence that these continents were once joined.',vi:'Hóa thạch của loài cây Glossopteris, khoảng 300 triệu năm tuổi, được tìm thấy ở Nam Cực (Antarctica), Ấn Độ (India), Australia, châu Phi và Nam Mỹ — thêm bằng chứng rằng các lục địa này từng liền nhau.'}]},
+ {tag:{en:'Evidence from magnetic rocks',vi:'Bằng chứng từ đá có từ tính'}, word:{en:'alignment',vi:'sự sắp thẳng hàng (alignment)'},
+  q:{en:'At mid-oceanic ridges, magma rises and hardens into new rock. What do the magnetic crystals inside those rocks record?',vi:'Tại các sống núi giữa đại dương (mid-oceanic ridges), magma trồi lên và cứng lại thành đá mới. Các tinh thể từ tính bên trong những khối đá đó ghi lại điều gì?'},
+  act:{en:'Tap the mid-ocean ridge model, where new rock forms. Then tap the older rock model, far from the ridge.',vi:'Chạm vào mô hình sống núi giữa đại dương (mid-oceanic ridge), nơi đá mới hình thành. Sau đó chạm vào mô hình đá già hơn, ở xa sống núi.'},
+  see:{en:'Crystals in the new rock line up pointing north, like compass needles. In the older rock further away, they point the opposite way.',vi:'Các tinh thể trong đá mới sắp hàng chỉ về phía bắc, như kim la bàn. Trong đá già hơn ở xa hơn, chúng chỉ theo hướng ngược lại.'},
+  concl:[
+    {en:'While rock is molten, its magnetic crystals line up with the Earth’s magnetic field — this lining-up is called alignment. When the rock solidifies, the alignment is frozen in.',vi:'Khi đá còn nóng chảy, các tinh thể từ tính của nó sắp hàng theo từ trường của Trái Đất — sự sắp hàng này gọi là alignment. Khi đá cứng lại, sự sắp hàng đó bị giữ nguyên.'},
+    {en:'At mid-oceanic ridges, magma from the mantle solidifies into new rock, pushing the continents on either side away from each other.',vi:'Tại các sống núi giữa đại dương (mid-oceanic ridges), magma từ lớp phủ (mantle) cứng lại thành đá mới, đẩy các lục địa ở hai bên ra xa nhau.'},
+    {en:'Rocks further from a ridge can show the opposite alignment, because the Earth’s magnetic poles have swapped places — almost 200 times in the last 100 million years. Those older rocks formed when the field pointed the other way.',vi:'Đá ở xa sống núi hơn có thể cho thấy sự sắp hàng (alignment) ngược lại, vì các cực từ của Trái Đất đã đổi chỗ cho nhau — gần 200 lần trong 100 triệu năm qua. Những khối đá già hơn đó hình thành khi từ trường chỉ theo hướng ngược lại.'}]},
+ {tag:{en:'At the boundaries',vi:'Tại các ranh giới'}, word:{en:'plate boundaries',vi:'ranh giới mảng (plate boundaries)'},
+  q:{en:'If plates really move, which events should happen most often where two plates meet — at plate boundaries?',vi:'Nếu các mảng thật sự di chuyển, những sự kiện nào sẽ xảy ra thường xuyên nhất ở nơi hai mảng gặp nhau — tại ranh giới mảng (plate boundaries)?'},
+  act:{en:'Tap a card, then tap AT PLATE BOUNDARIES or NOT LINKED TO BOUNDARIES.',vi:'Chạm vào một thẻ, rồi chạm TẠI RANH GIỚI MẢNG (AT PLATE BOUNDARIES) hoặc KHÔNG LIÊN QUAN TỚI RANH GIỚI (NOT LINKED TO BOUNDARIES).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can describe how convection currents in the mantle move tectonic plates.',vi:'Con mô tả được cách các dòng đối lưu (convection currents) trong lớp phủ (mantle) làm các mảng kiến tạo (tectonic plates) di chuyển.'},
+    {en:'I can say what a tectonic plate is, and link the model of plate tectonics to the structure of the Earth.',vi:'Con nói được mảng kiến tạo (tectonic plate) là gì, và nối được mô hình kiến tạo mảng với cấu trúc của Trái Đất.'},
+    {en:'I can describe evidence for tectonic plates: the continental jigsaw, the fossil record, and the alignment of magnetic materials in rocks.',vi:'Con mô tả được bằng chứng cho mảng kiến tạo: bức tranh ghép lục địa, hồ sơ hóa thạch (fossil record), và sự sắp thẳng hàng (alignment) của vật liệu từ tính trong đá.'},
+    {en:'I can name events that are more likely to occur at plate boundaries — earthquakes and volcanoes.',vi:'Con kể được các sự kiện dễ xảy ra hơn tại ranh giới mảng (plate boundaries) — động đất và núi lửa.'}]}
+];
+const CARDS6=[
+ {id:'b_quake',emoji:'🌐',en:'An earthquake shakes the ground',vi:'Một trận động đất làm rung chuyển mặt đất',ans:'bound'},
+ {id:'b_rainbow',emoji:'🌈',en:'A rainbow appears after rain',vi:'Một cầu vồng xuất hiện sau cơn mưa',ans:'else'},
+ {id:'b_volcano',emoji:'🌋',en:'A volcano erupts',vi:'Một ngọn núi lửa phun trào',ans:'bound'},
+ {id:'b_daynight',emoji:'🌙',en:'Day turns into night',vi:'Ngày chuyển thành đêm',ans:'else'},
+ {id:'b_ridge',emoji:'🆕',en:'New rock forms at a mid-ocean ridge',vi:'Đá mới hình thành tại một sống núi giữa đại dương (mid-ocean ridge)',ans:'bound'},
+ {id:'b_seasons',emoji:'🍂',en:'The seasons change through the year',vi:'Các mùa thay đổi trong năm',ans:'else'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'How does a convection current form in the Earth’s mantle?',vi:'Một dòng đối lưu (convection current) hình thành trong lớp phủ (mantle) của Trái Đất như thế nào?'},
+  o:[{en:'Wind blows across the surface of the mantle',vi:'Gió thổi qua bề mặt lớp phủ'},
+     {en:'Mantle material heated by the core expands, becomes less dense and rises; it then cools near the crust and sinks again',vi:'Vật chất lớp phủ bị lõi (core) nung nóng giãn nở, trở nên nhẹ hơn và đi lên; rồi nó nguội đi gần vỏ (crust) và lại chìm xuống'},
+     {en:'The Moon’s gravity stirs the mantle round and round',vi:'Lực hấp dẫn (gravity) của Mặt Trăng khuấy lớp phủ quay vòng vòng'}],a:1,
+  e:{en:'Thermal energy from the core heats the inner mantle. The heated fluid expands and becomes less dense, so it rises; cooling near the crust makes it sink again — a convection current. Those slow currents drag the tectonic plates along.',vi:'Nhiệt năng từ lõi (core) nung nóng phần trong của lớp phủ (mantle). Chất lỏng bị nung nóng giãn nở và trở nên nhẹ hơn, nên nó đi lên; nguội đi gần vỏ (crust) làm nó lại chìm xuống — một dòng đối lưu (convection current). Những dòng chậm chạp đó kéo các mảng kiến tạo (tectonic plates) đi theo.'}},
+ {q:{en:'What is a tectonic plate?',vi:'Mảng kiến tạo (tectonic plate) là gì?'},
+  o:[{en:'One of the large pieces that make up the Earth’s crust, resting and moving on the mantle',vi:'Một trong những mảnh lớn tạo nên vỏ (crust) của Trái Đất, nằm trên và di chuyển cùng lớp phủ (mantle)'},
+     {en:'A layer of liquid metal deep inside the Earth',vi:'Một lớp kim loại lỏng sâu bên trong Trái Đất'},
+     {en:'A flat map scientists draw of the continents',vi:'Một bản đồ phẳng các lục địa mà các nhà khoa học vẽ'}],a:0,
+  e:{en:'The crust is broken into large pieces — tectonic plates. They rest on the mantle, whose convection currents carry them along at only 0.6–10 cm per year. The liquid metal layer is the outer core, not a plate.',vi:'Vỏ (crust) bị vỡ thành những mảnh lớn — các mảng kiến tạo (tectonic plates). Chúng nằm trên lớp phủ (mantle), nơi các dòng đối lưu (convection currents) mang chúng đi với tốc độ chỉ 0.6–10 cm mỗi năm. Lớp kim loại lỏng là lõi ngoài (outer core), không phải một mảng.'}},
+ {q:{en:'Fossils of Mesosaurus are found in both Africa and South America. Why is that evidence for moving plates?',vi:'Hóa thạch Mesosaurus được tìm thấy ở cả châu Phi (Africa) và Nam Mỹ (South America). Vì sao đó là bằng chứng cho các mảng đang di chuyển?'},
+  o:[{en:'Mesosaurus was a strong swimmer that often crossed whole oceans',vi:'Mesosaurus là loài bơi rất giỏi và thường vượt qua cả đại dương'},
+     {en:'Scientists carried the fossils across the ocean in ships',vi:'Các nhà khoa học đã chở các hóa thạch qua đại dương bằng tàu'},
+     {en:'Mesosaurus lived at coasts and in shallow water, so it is unlikely to have crossed the 5000 km Atlantic — the continents were probably once joined',vi:'Mesosaurus sống ở bờ biển và vùng nước nông, nên nó rất khó có thể đã vượt 5000 km Đại Tây Dương (Atlantic) — các lục địa có lẽ từng liền nhau'}],a:2,
+  e:{en:'Mesosaurus lived about 275 million years ago at coasts and in shallow water, like a crocodile. Finding its fossils on both sides of a 5000 km ocean fits the continents once being joined in Pangaea, then separating as their plates moved.',vi:'Mesosaurus sống khoảng 275 triệu năm trước ở bờ biển và vùng nước nông, giống một con cá sấu. Việc tìm thấy hóa thạch của nó ở cả hai phía của một đại dương 5000 km phù hợp với việc các lục địa từng liền nhau trong Pangaea, rồi tách ra khi các mảng của chúng di chuyển.'}},
+ {q:{en:'Magnetic crystals in rock far from a mid-oceanic ridge point the opposite way to crystals in new rock at the ridge. What does that tell us?',vi:'Các tinh thể từ tính trong đá ở xa một sống núi giữa đại dương (mid-oceanic ridge) chỉ theo hướng ngược lại với tinh thể trong đá mới tại sống núi. Điều đó cho ta biết gì?'},
+  o:[{en:'The old rock was once turned upside down by an earthquake',vi:'Khối đá già từng bị một trận động đất lật úp'},
+     {en:'The older rock formed long ago, when the Earth’s magnetic field pointed the opposite way — and new rock at the ridge is pushing the plates apart',vi:'Khối đá già hơn hình thành từ lâu, khi từ trường của Trái Đất chỉ theo hướng ngược lại — và đá mới tại sống núi đang đẩy các mảng ra xa nhau'},
+     {en:'Compasses do not work near the ocean',vi:'La bàn không hoạt động được gần đại dương'}],a:1,
+  e:{en:'Magnetic crystals line up with the field while rock is molten, and the alignment is frozen when it solidifies. The poles have swapped almost 200 times in 100 million years, so older rocks away from a ridge can record a reversed field — while new rock at the ridge keeps forming and pushing the plates apart.',vi:'Các tinh thể từ tính sắp hàng theo từ trường khi đá còn nóng chảy, và sự sắp hàng (alignment) bị giữ nguyên khi đá cứng lại. Các cực đã đổi chỗ gần 200 lần trong 100 triệu năm, nên đá già hơn ở xa sống núi có thể ghi lại một từ trường đảo ngược — trong khi đá mới tại sống núi không ngừng hình thành và đẩy các mảng ra xa nhau.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'v_nearcore',emoji:'🔥',en:'Mantle material right next to the hot core',vi:'Vật chất lớp phủ (mantle) ngay cạnh lõi (core) nóng',ans:'long'},
+ {id:'v_nearcrust',emoji:'🧊',en:'Mantle material that has cooled near the crust',vi:'Vật chất lớp phủ (mantle) đã nguội đi gần vỏ (crust)',ans:'short'},
+ {id:'v_expanded',emoji:'🎈',en:'Heated fluid that has expanded and become less dense',vi:'Chất lỏng bị nung nóng đã giãn nở và trở nên nhẹ hơn (less dense)',ans:'long'},
+ {id:'v_denser',emoji:'⚖️',en:'Cooled fluid that has become more dense',vi:'Chất lỏng đã nguội và trở nên nặng hơn (more dense)',ans:'short'},
+ {id:'v_warmed',emoji:'♨️',en:'Material warmed by thermal energy from the core',vi:'Vật chất được nung ấm bởi nhiệt năng (thermal energy) từ lõi (core)',ans:'long'},
+ {id:'v_lostheat',emoji:'🌡️',en:'Material that has lost its heat at the top of the mantle',vi:'Vật chất đã mất nhiệt ở phần trên của lớp phủ (mantle)',ans:'short'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'List the parts of the Earth in order from hottest to coldest.',vi:'Liệt kê các phần của Trái Đất theo thứ tự từ nóng nhất tới lạnh nhất.'},
+  opts:[{en:'Inner core → outer core → mantle → crust',vi:'Lõi trong (inner core) → lõi ngoài (outer core) → lớp phủ (mantle) → vỏ (crust)'},
+        {en:'Crust → mantle → outer core → inner core',vi:'Vỏ (crust) → lớp phủ (mantle) → lõi ngoài (outer core) → lõi trong (inner core)'},
+        {en:'Mantle → inner core → crust → outer core',vi:'Lớp phủ (mantle) → lõi trong (inner core) → vỏ (crust) → lõi ngoài (outer core)'}],a:0,
+  e:{en:'The inner core is hottest — over 5000 °C. Then come the outer core and the mantle, and the crust at the surface is coldest. The Workbook also asks which part holds the large convection currents: the mantle.',vi:'Lõi trong (inner core) nóng nhất — trên 5000 °C. Tiếp theo là lõi ngoài (outer core) và lớp phủ (mantle), và vỏ (crust) ở bề mặt là lạnh nhất. Workbook cũng hỏi phần nào chứa các dòng đối lưu (convection currents) lớn: lớp phủ (mantle).'}},
+ {q:{en:'What causes the convection currents in the mantle?',vi:'Điều gì gây ra các dòng đối lưu (convection currents) trong lớp phủ (mantle)?'},
+  opts:[{en:'Earthquakes shaking the mantle like a bottle',vi:'Động đất lắc lớp phủ như lắc một cái chai'},
+        {en:'Thermal energy from the core heating the mantle material, so it expands, becomes less dense and rises, then cools and sinks',vi:'Nhiệt năng (thermal energy) từ lõi (core) nung nóng vật chất lớp phủ, khiến nó giãn nở, trở nên nhẹ hơn và đi lên, rồi nguội đi và chìm xuống'},
+        {en:'The crust pushing the mantle down from above',vi:'Vỏ (crust) đẩy lớp phủ xuống từ phía trên'}],a:1,
+  e:{en:'The core heats the mantle from below. Heated material expands and becomes less dense, so it rises; cooled material sinks. This circulation is the convection current that drags the plates along.',vi:'Lõi (core) nung nóng lớp phủ (mantle) từ bên dưới. Vật chất bị nung nóng giãn nở và trở nên nhẹ hơn, nên nó đi lên; vật chất đã nguội chìm xuống. Sự lưu chuyển này là dòng đối lưu (convection current) kéo các mảng đi theo.'}},
+ {q:{en:'At the mid-Atlantic ridge, the crust is pushed up from below. Why are North America and Europe moving away from each other?',vi:'Tại sống núi giữa Đại Tây Dương (mid-Atlantic ridge), vỏ (crust) bị đẩy lên từ bên dưới. Vì sao Bắc Mỹ (North America) và châu Âu (Europe) đang di chuyển ra xa nhau?'},
+  opts:[{en:'Ocean currents push the continents apart',vi:'Các dòng hải lưu đẩy các lục địa ra xa nhau'},
+        {en:'The continents are floating on water and drifting with the tide',vi:'Các lục địa đang nổi trên nước và trôi theo thủy triều'},
+        {en:'New rock forming at the ridge pushes the plates on either side apart, carrying the continents with them',vi:'Đá mới hình thành tại sống núi đẩy các mảng ở hai bên ra xa nhau, mang các lục địa đi theo'}],a:2,
+  e:{en:'The mid-Atlantic ridge is where magma rises and solidifies into new crust. The new rock pushes the plates apart, so North America and Europe — riding on those plates — slowly separate. Most underwater volcanoes and earthquakes in the Atlantic also happen along this ridge, because it is a plate boundary.',vi:'Sống núi giữa Đại Tây Dương (mid-Atlantic ridge) là nơi magma trồi lên và cứng lại thành vỏ mới. Đá mới đẩy các mảng ra xa nhau, nên Bắc Mỹ (North America) và châu Âu (Europe) — nằm trên các mảng đó — tách ra chậm chạp. Hầu hết núi lửa và động đất dưới nước ở Đại Tây Dương cũng xảy ra dọc sống núi này, vì nó là một ranh giới mảng (plate boundary).'}},
+ {q:{en:'Africa and South America are about 5000 km apart and separated about 140 million years ago. What is their average speed of separation?',vi:'Châu Phi (Africa) và Nam Mỹ (South America) cách nhau khoảng 5000 km và đã tách ra khoảng 140 triệu năm trước. Tốc độ tách ra trung bình của chúng là bao nhiêu?'},
+  opts:[{en:'About 36 cm per year',vi:'Khoảng 36 cm mỗi năm'},
+        {en:'About 3.6 cm per year',vi:'Khoảng 3.6 cm mỗi năm'},
+        {en:'About 0.36 cm per year',vi:'Khoảng 0.36 cm mỗi năm'}],a:1,
+  e:{en:'5000 km = 500 000 000 cm. Divide by 140 000 000 years: 500 000 000 ÷ 140 000 000 ≈ 3.6 cm per year — inside the book’s range of 0.6–10 cm per year for plate movement.',vi:'5000 km = 500 000 000 cm. Chia cho 140 000 000 năm: 500 000 000 ÷ 140 000 000 ≈ 3.6 cm mỗi năm — nằm trong khoảng 0.6–10 cm mỗi năm mà sách nêu cho chuyển động của mảng.'}},
+ {q:{en:'The Earth’s magnetic field has reversed 183 times in 83 million years. What is the average time between reversals?',vi:'Từ trường của Trái Đất đã đảo ngược 183 lần trong 83 triệu năm. Thời gian trung bình giữa các lần đảo ngược là bao lâu?'},
+  opts:[{en:'About 450 000 years',vi:'Khoảng 450 000 năm'},
+        {en:'About 45 000 years',vi:'Khoảng 45 000 năm'},
+        {en:'About 4 500 000 years',vi:'Khoảng 4 500 000 năm'}],a:0,
+  e:{en:'83 000 000 ÷ 183 ≈ 453 552 years — about 450 000 years between reversals on average. That is why rocks of different ages, at different distances from a ridge, can show opposite magnetic alignment.',vi:'83 000 000 ÷ 183 ≈ 453 552 năm — trung bình khoảng 450 000 năm giữa các lần đảo ngược. Đó là vì sao đá ở các độ tuổi khác nhau, ở các khoảng cách khác nhau tính từ sống núi, có thể cho thấy sự sắp hàng từ tính (alignment) ngược nhau.'}},
+ {q:{en:'Which layer of the Earth is made of tectonic plates?',vi:'Lớp nào của Trái Đất được tạo thành từ các mảng kiến tạo (tectonic plates)?'},
+  opts:[{en:'The mantle',vi:'Lớp phủ (mantle)'},
+        {en:'The outer core',vi:'Lõi ngoài (outer core)'},
+        {en:'The crust',vi:'Vỏ (crust)'}],a:2,
+  e:{en:'The tectonic plates are the large pieces of the crust. They rest on the mantle, whose convection currents carry them along.',vi:'Các mảng kiến tạo (tectonic plates) là những mảnh lớn của vỏ (crust). Chúng nằm trên lớp phủ (mantle), nơi các dòng đối lưu (convection currents) mang chúng đi theo.'}}
+];
+const EX3=[
+ {id:'e_fossils',emoji:'🦎',en:'The same types of fossils have been found on different continents',vi:'Cùng một loại hóa thạch (fossils) đã được tìm thấy trên các lục địa khác nhau',ans:'good'},
+ {id:'e_landnorth',emoji:'🧭',en:'There is more land north of the equator than south of it',vi:'Có nhiều đất hơn ở phía bắc đường xích đạo (equator) so với phía nam',ans:'bad'},
+ {id:'e_gps',emoji:'🛰️',en:'GPS measurements show North America moving west at 23 mm per year',vi:'Các đo đạc GPS cho thấy Bắc Mỹ (North America) đang di chuyển về phía tây 23 mm mỗi năm',ans:'good'},
+ {id:'e_climates',emoji:'🌦️',en:'Each continent has parts with different climates',vi:'Mỗi lục địa có những phần với khí hậu (climates) khác nhau',ans:'bad'},
+ {id:'e_magnetite',emoji:'🧲',en:'The alignment of magnetite in rocks reverses in older rock further from where new rock forms',vi:'Sự sắp hàng (alignment) của magnetite trong đá đảo ngược ở đá già hơn, xa nơi đá mới hình thành hơn',ans:'good'},
+ {id:'e_rockages',emoji:'🪨',en:'Some rocks on a continent are older than other rocks',vi:'Một số đá trên một lục địa già hơn các đá khác',ans:'bad'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 6 + 6 + 6 = 18 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX2_ORD=EX2.map(()=>fyIdx(3));   /* exercises: per-question option display order */
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-6-5';
+const SUMKEY='camb:sum:sci9-6-5';
+const BOT_CODE='sci9-6.5';
+let OBS={crust:false,mantle:false,outer:false,inner:false,hot:false,cool:false,sam:false,afr:false,meso:false,gloss:false,ridge:false,old:false};
+let SORTED=new Set();
+/* per-visit attempt trackers (reset when a step is entered — demo actions never write here as 'user') */
+function newTrack(){return {
+  s1crust:false, s1mantle:false, s1outer:false, s1inner:false, s1hint:null,
+  s2hot:false, s2cool:false,
+  s3sam:false, s3afr:false,
+  s4meso:false, s4gloss:false,
+  s5ridge:false, s5old:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1crust&&T.s1mantle&&T.s1outer&&T.s1inner;
+  if(i===1) return T.s2hot&&T.s2cool;
+  if(i===2) return T.s3sam&&T.s3afr;
+  if(i===3) return T.s4meso&&T.s4gloss;
+  if(i===4) return T.s5ridge&&T.s5old;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. That is not one of the four layers. Look at the back row of the bench!',
+               'Đó là '+t.name.vi+'. Đó không phải một trong bốn lớp. Hãy nhìn hàng sau của bàn!');
+    }
+    return B('Layers named: crust '+(T.s1crust?'✓':'…')+' · mantle '+(T.s1mantle?'✓':'…')+' · outer core '+(T.s1outer?'✓':'…')+' · inner core '+(T.s1inner?'✓':'…')+'. Tap the layer models on the bench!',
+             'Đã gọi tên các lớp: vỏ (crust) '+(T.s1crust?'✓':'…')+' · lớp phủ (mantle) '+(T.s1mantle?'✓':'…')+' · lõi ngoài (outer core) '+(T.s1outer?'✓':'…')+' · lõi trong (inner core) '+(T.s1inner?'✓':'…')+'. Hãy chạm vào các mô hình lớp trên bàn!');
+  }
+  if(i===1){
+    return B('Hot rising material tapped '+(T.s2hot?'✓':'…')+' · cool sinking material tapped '+(T.s2cool?'✓':'…')+'.',
+             'Đã chạm vật chất nóng đang đi lên '+(T.s2hot?'✓':'…')+' · đã chạm vật chất nguội đang chìm xuống '+(T.s2cool?'✓':'…')+'.');
+  }
+  if(i===2){
+    return B('South America tapped '+(T.s3sam?'✓':'…')+' · Africa tapped '+(T.s3afr?'✓':'…')+'.',
+             'Đã chạm Nam Mỹ (South America) '+(T.s3sam?'✓':'…')+' · đã chạm châu Phi (Africa) '+(T.s3afr?'✓':'…')+'.');
+  }
+  if(i===3){
+    return B('Mesosaurus fossil tapped '+(T.s4meso?'✓':'…')+' · Glossopteris fossil tapped '+(T.s4gloss?'✓':'…')+'.',
+             'Đã chạm hóa thạch Mesosaurus '+(T.s4meso?'✓':'…')+' · đã chạm hóa thạch Glossopteris '+(T.s4gloss?'✓':'…')+'.');
+  }
+  if(i===4){
+    return B('Mid-ocean ridge tapped '+(T.s5ridge?'✓ (new rock, crystals point north)':'…')+' · older rock tapped '+(T.s5old?'✓ (crystals point the opposite way)':'…')+'.',
+             'Đã chạm sống núi giữa đại dương (mid-oceanic ridge) '+(T.s5ridge?'✓ (đá mới, các tinh thể chỉ về phía bắc)':'…')+' · đã chạm đá già hơn '+(T.s5old?'✓ (các tinh thể chỉ theo hướng ngược lại)':'…')+'.');
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap AT PLATE BOUNDARIES or NOT LINKED TO BOUNDARIES.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm TẠI RANH GIỚI MẢNG (AT PLATE BOUNDARIES) hoặc KHÔNG LIÊN QUAN TỚI RANH GIỚI (NOT LINKED TO BOUNDARIES).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🪨',label:{en:'Crust',vi:'Vỏ (crust)'},got:T.s1crust},
+      {emoji:'🔴',label:{en:'Mantle',vi:'Lớp phủ (mantle)'},got:T.s1mantle},
+      {emoji:'🟠',label:{en:'Outer core',vi:'Lõi ngoài (outer core)'},got:T.s1outer},
+      {emoji:'🟡',label:{en:'Inner core — over 5000 °C',vi:'Lõi trong (inner core) — trên 5000 °C'},got:T.s1inner}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔥',label:{en:'Heated material rises',vi:'Vật chất bị nung nóng đi lên'},got:T.s2hot},
+      {emoji:'🔵',label:{en:'Cooled material sinks',vi:'Vật chất đã nguội chìm xuống'},got:T.s2cool},
+      {emoji:'🔄',label:{en:'A convection current loops',vi:'Một dòng đối lưu (convection current) quay vòng'},got:T.s2hot&&T.s2cool}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🌎',label:{en:'South America',vi:'Nam Mỹ (South America)'},got:T.s3sam},
+      {emoji:'🌍',label:{en:'Africa',vi:'Châu Phi (Africa)'},got:T.s3afr},
+      {emoji:'📏',label:{en:'Now about 5000 km apart',vi:'Nay cách nhau khoảng 5000 km'},got:T.s3sam&&T.s3afr}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🦎',label:{en:'Mesosaurus — Africa and South America',vi:'Mesosaurus — châu Phi và Nam Mỹ'},got:T.s4meso},
+      {emoji:'🌿',label:{en:'Glossopteris — five southern continents',vi:'Glossopteris — năm lục địa phía nam'},got:T.s4gloss}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🌋',label:{en:'New rock at the ridge',vi:'Đá mới tại sống núi'},got:T.s5ridge},
+      {emoji:'🧲',label:{en:'Older rock — reversed alignment',vi:'Đá già hơn — alignment đảo ngược'},got:T.s5old}
+    ]);
+    if(!T.s5ridge){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookRidge);
+      b.onclick=()=>focusThing('ridge');
+      box.appendChild(b);
+    }
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'bound',label:STR.binBound,cls:'bound'},{key:'else',label:STR.binElse,cls:'else'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('crust'); bounceThing('crust'); setTimeout(()=>{ focusVisual('mantle'); bounceThing('mantle'); },900); setTimeout(()=>{ focusVisual('outercore'); bounceThing('outercore'); },1800); setTimeout(()=>{ focusVisual('innercore'); bounceThing('innercore'); },2700); }
+  else if(i===1){ focusVisual('hot'); bounceThing('hot'); setTimeout(()=>{ focusVisual('cool'); bounceThing('cool'); },900); }
+  else if(i===2){ focusVisual('sam'); bounceThing('sam'); setTimeout(()=>{ focusVisual('africa'); bounceThing('africa'); },900); }
+  else if(i===3){ focusVisual('meso'); bounceThing('meso'); setTimeout(()=>{ focusVisual('gloss'); bounceThing('gloss'); },900); }
+  else if(i===4){ focusVisual('ridge'); bounceThing('ridge'); setTimeout(()=>{ focusVisual('oldrock'); bounceThing('oldrock'); },900); }
+  else if(i===5){ demoSortMine(CARDS6,T.s6correct,{bound:'bound',else:'else'}); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recLayers,OBS.crust&&OBS.mantle&&OBS.outer&&OBS.inner)+
+    row(STR.recConv,OBS.hot&&OBS.cool)+
+    row(STR.recPlates,OBS.sam&&OBS.afr)+
+    row(STR.recFossil,OBS.meso&&OBS.gloss)+
+    row(STR.recMag,OBS.ridge&&OBS.old)+
+    row(STR.recBound,doneSteps.has(5));
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.crust&&OBS.mantle&&OBS.outer&&OBS.inner)||doneSteps.has(0),label:STR.foundLayers},
+    {got:(OBS.hot&&OBS.cool)||doneSteps.has(1),label:STR.foundConv},
+    {got:(OBS.sam&&OBS.afr)||doneSteps.has(2),label:STR.foundPlates},
+    {got:(OBS.meso&&OBS.gloss)||doneSteps.has(3),label:STR.foundFossil},
+    {got:(OBS.ridge&&OBS.old)||doneSteps.has(4),label:STR.foundMag},
+    {got:doneSteps.has(5),label:STR.foundBound}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let hotMesh=null, coolMesh=null, ridgeMat=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; group.userData.baseX=group.position.x; G[id]=group; scene3.add(group); return group; }
+function standMesh(r){
+  const s=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,0.07,16),stdMat(0x8d99a6,0.5)));
+  s.position.y=0.04; return s;
+}
+function buildInnerCore(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.3));
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.24,14,12),stdMat(0xffd23c,0.35)));
+  ball.position.y=0.42; g.add(ball);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),new THREE.MeshBasicMaterial({color:0xffe58a,transparent:true,opacity:0.35}));
+  glow.position.y=0.42; g.add(glow);
+  g.position.set(-3.9,0,-1.3);
+  return g;
+}
+function buildOuterCore(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.32,14,12),stdMat(0xf2762e,0.45)));
+  ball.position.y=0.48; ball.scale.y=0.92; g.add(ball);
+  const inner=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.15,12,10),stdMat(0xffd23c,0.35)));
+  inner.position.set(0.14,0.55,0.2); g.add(inner);
+  g.position.set(-2.6,0,-1.3);
+  return g;
+}
+function buildMantle(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.44));
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.42,16,12),stdMat(0xb03a2e,0.6)));
+  ball.position.y=0.58; g.add(ball);
+  const swirl=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.05,8,20),stdMat(0xe07b24,0.55));
+  swirl.position.y=0.58; swirl.rotation.x=1.1; g.add(swirl);
+  const cap=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2,12,10),stdMat(0x6e7f8c,0.7)));
+  cap.position.set(0,0.94,0); cap.scale.set(1.4,0.4,1.4); g.add(cap);
+  g.position.set(-1.3,0,-1.3);
+  return g;
+}
+function buildCrust(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const rock=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.3,0),stdMat(0x7a6a58,0.95)));
+  rock.position.y=0.42; rock.rotation.set(0.4,0.7,0.2); g.add(rock);
+  const top=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.44,0.07,0.34),stdMat(0x5da24a,0.85)));
+  top.position.y=0.62; top.rotation.y=0.4; g.add(top);
+  g.position.set(0.0,0,-1.3);
+  return g;
+}
+function buildHot(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  hotMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.22,12,10),stdMat(0xe8452c,0.45)));
+  hotMesh.position.y=0.42; g.add(hotMesh);
+  const arrow=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.3,10),stdMat(0xf2762e,0.45));
+  arrow.position.y=0.82; g.add(arrow);
+  g.position.set(1.3,0,-1.3);
+  return g;
+}
+function buildCool(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.34));
+  coolMesh=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.22,12,10),stdMat(0x3d8bfd,0.5)));
+  coolMesh.position.y=0.6; g.add(coolMesh);
+  const arrow=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.3,10),stdMat(0x2b6cb0,0.5));
+  arrow.position.y=0.22; arrow.rotation.x=Math.PI; g.add(arrow);
+  g.position.set(2.6,0,-1.3);
+  return g;
+}
+function buildSam(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.07,16),stdMat(0x2e6da4,0.7)));
+  base.position.y=0.04; g.add(base);
+  const top=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),stdMat(0x4caf50,0.8)));
+  top.position.set(-0.05,0.18,0); top.scale.set(0.85,0.35,1.0); g.add(top);
+  const tail=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.16,0.5,10),stdMat(0x66bb6a,0.8)));
+  tail.position.set(0.08,0.16,0.28); tail.rotation.x=2.6; tail.scale.z=0.4; g.add(tail);
+  g.position.set(-3.5,0,1.7);
+  return g;
+}
+function buildAfrica(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.07,16),stdMat(0x2e6da4,0.7)));
+  base.position.y=0.04; g.add(base);
+  const top=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.32,12,10),stdMat(0xd9a05a,0.85)));
+  top.position.set(0,0.18,-0.05); top.scale.set(1.0,0.35,0.95); g.add(top);
+  const horn=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.16,10,8),stdMat(0xc98f3d,0.85)));
+  horn.position.set(0.26,0.18,-0.18); horn.scale.set(1,0.35,0.8); g.add(horn);
+  const south=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.18,0.42,10),stdMat(0x8fbf5a,0.85)));
+  south.position.set(-0.02,0.16,0.26); south.rotation.x=2.7; south.scale.z=0.4; g.add(south);
+  g.position.set(-2.1,0,1.7);
+  return g;
+}
+function buildMeso(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.14,0.18),stdMat(0x6a994e,0.8)));
+  body.position.y=0.3; g.add(body);
+  const head=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.2,0.1,0.13),stdMat(0x7fae5f,0.8)));
+  head.position.set(0.36,0.32,0); g.add(head);
+  const tail=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.07,0.4,8),stdMat(0x6a994e,0.8)));
+  tail.position.set(-0.45,0.3,0); tail.rotation.z=Math.PI/2+0.25; g.add(tail);
+  [-0.18,0.18].forEach(x=>{ [-0.12,0.12].forEach(z=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.2,6),stdMat(0x557f3e,0.8));
+    leg.position.set(x,0.16,z); g.add(leg);
+  });});
+  g.position.set(-0.7,0,1.7);
+  return g;
+}
+function buildGloss(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.3));
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.04,0.55,8),stdMat(0x557f3e,0.8));
+  stem.position.y=0.3; stem.rotation.z=0.25; g.add(stem);
+  const leaf=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.24,12,10),stdMat(0x43a047,0.75)));
+  leaf.position.set(0.1,0.62,0); leaf.scale.set(0.55,1.15,0.18); leaf.rotation.z=-0.3; g.add(leaf);
+  const leaf2=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.17,10,8),stdMat(0x66bb6a,0.75)));
+  leaf2.position.set(-0.14,0.5,0.05); leaf2.scale.set(0.55,1.1,0.18); leaf2.rotation.z=0.5; g.add(leaf2);
+  g.position.set(0.7,0,1.7);
+  return g;
+}
+function buildRidge(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.0,0.12,0.55),stdMat(0x2e6da4,0.8)));
+  base.position.y=0.06; g.add(base);
+  ridgeMat=stdMat(0xe8590c,0.45);
+  [-0.3,0,0.3].forEach((x,i)=>{
+    const cone=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.2-i*0.03,0.5+i*0.12,10),stdMat(0x5d6d7e,0.9)));
+    cone.position.set(x,0.35+i*0.05,0); g.add(cone);
+  });
+  const vent=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.1,0.16,10),ridgeMat);
+  vent.position.set(0,0.68,0); g.add(vent);
+  g.position.set(2.1,0,1.7);
+  return g;
+}
+function buildOldRock(){
+  const g=new THREE.Group();
+  g.add(standMesh(0.36));
+  const rock=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.3,0),stdMat(0x3a3f45,0.9)));
+  rock.position.y=0.42; rock.rotation.set(0.2,0.4,0.5); g.add(rock);
+  const needle=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.045,0.045),stdMat(0xd33a2c,0.4));
+  needle.position.set(0,0.78,0.15); needle.rotation.y=0.9; g.add(needle);
+  const pivot=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),stdMat(0xf4f7f9,0.4));
+  pivot.position.set(0,0.78,0.15); g.add(pivot);
+  g.position.set(3.5,0,1.7);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xeaf3fb);
+  scene3.fog=new THREE.Fog(0xeaf3fb,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0xb7c9d8,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  /* floor + the Earth bench top */
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd3dee8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(10.4,0.18,5.4),stdMat(0x8a6a4a,0.9)));
+  bench.position.set(-0.2,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-5.3,-2.3],[4.9,-2.3],[-5.3,2.7],[4.9,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  /* back wall board (decoration, not clickable) */
+  const board=new THREE.Mesh(new THREE.BoxGeometry(8.6,2.6,0.08),stdMat(0x274b63,0.95));
+  board.position.set(-0.2,1.7,-3.4); scene3.add(board);
+  /* the models */
+  reg('innercore',buildInnerCore());
+  reg('outercore',buildOuterCore());
+  reg('mantle',buildMantle());
+  reg('crust',buildCrust());
+  reg('hot',buildHot());
+  reg('cool',buildCool());
+  reg('sam',buildSam());
+  reg('africa',buildAfrica());
+  reg('meso',buildMeso());
+  reg('gloss',buildGloss());
+  reg('ridge',buildRidge());
+  reg('oldrock',buildOldRock());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('innercore',p,G.innercore); }
+  { const p=sphProxy(0.55); p.position.set(0,0.48,0); addProxy('outercore',p,G.outercore); }
+  { const p=sphProxy(0.68); p.position.set(0,0.58,0); addProxy('mantle',p,G.mantle); }
+  { const p=sphProxy(0.52); p.position.set(0,0.42,0); addProxy('crust',p,G.crust); }
+  { const p=sphProxy(0.52); p.position.set(0,0.5,0); addProxy('hot',p,G.hot); }
+  { const p=sphProxy(0.52); p.position.set(0,0.5,0); addProxy('cool',p,G.cool); }
+  { const p=sphProxy(0.58); p.position.set(0,0.25,0); addProxy('sam',p,G.sam); }
+  { const p=sphProxy(0.58); p.position.set(0,0.25,0); addProxy('africa',p,G.africa); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('meso',p,G.meso); }
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('gloss',p,G.gloss); }
+  { const p=sphProxy(0.62); p.position.set(0,0.4,0); addProxy('ridge',p,G.ridge); }
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('oldrock',p,G.oldrock); }
+  /* highlight ring + name label */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a model */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['crust','mantle','outercore','innercore'], /* step 1: the four layers */
+  ['hot','cool'],                             /* step 2: the convection loop */
+  ['sam','africa'],                           /* step 3: continents carried apart */
+  ['meso','gloss'],                           /* step 4: fossil evidence */
+  ['ridge','oldrock'],                        /* step 5: magnetic evidence */
+  []                                          /* step 6: card sort — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='crust'){ T.s1crust=true; OBS.crust=true; T.s1hint=null; }
+    else if(id==='mantle'){ T.s1mantle=true; OBS.mantle=true; T.s1hint=null; }
+    else if(id==='outercore'){ T.s1outer=true; OBS.outer=true; T.s1hint=null; }
+    else if(id==='innercore'){ T.s1inner=true; OBS.inner=true; T.s1hint=null; }
+    else T.s1hint=id;
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===1){
+    if(id==='hot'){ T.s2hot=true; OBS.hot=true; }
+    else if(id==='cool'){ T.s2cool=true; OBS.cool=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===2){
+    if(id==='sam'){ T.s3sam=true; OBS.sam=true; }
+    else if(id==='africa'){ T.s3afr=true; OBS.afr=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===3){
+    if(id==='meso'){ T.s4meso=true; OBS.meso=true; }
+    else if(id==='gloss'){ T.s4gloss=true; OBS.gloss=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }else if(curStep===4){
+    if(id==='ridge'){ T.s5ridge=true; OBS.ridge=true; }
+    else if(id==='oldrock'){ T.s5old=true; OBS.old=true; }
+    saveProg(); renderFound(); renderGroups(); renderStepExtra();
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* the hot blob bobs upward and the cool blob bobs downward — the loop never stops */
+  if(hotMesh) hotMesh.position.y=0.42+Math.sin(t*1.6)*0.1;
+  if(coolMesh) coolMesh.position.y=0.6-Math.abs(Math.sin(t*1.6))*0.12;
+  /* once both continents have been tapped, they drift slowly apart */
+  if(G.sam&&G.africa){
+    const apart=(OBS.sam&&OBS.afr)? 0.28 : 0;
+    G.sam.position.x=G.sam.userData.baseX-apart;
+    G.africa.position.x=G.africa.userData.baseX+apart;
+  }
+  /* the ridge vent glows once the ridge has been tapped */
+  if(ridgeMat) ridgeMat.color.setHex(OBS.ridge? 0xffb400 : 0xe8590c);
+  /* label + ring follow */
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine keeps the rules:
+   it calls scoreExercisesNow() on Submit, moves exBest itself, and
+   re-renders through exFeedback. No feedback is shown before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='long'?'↑':'↓';
+  return ans==='good'?'✓':'✗';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — which way does this mantle material move? (Workbook 6.5A) */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinLong').innerHTML=bi(STR.binRise);
+  $('ex1BinShort').innerHTML=bi(STR.binSink);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  /* Ex 2 · Practice — circle the correct answer (Workbook 6.5B) */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — evidence for moving plates, or not? (Workbook 6.5C) */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinGood').innerHTML=bi(STR.binEvidence);
+  $('ex3BinBad').innerHTML=bi(STR.binNotEv);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinLong').onclick=()=>ex1Place('long');
+$('ex1BinShort').onclick=()=>ex1Place('short');
+$('ex3BinGood').onclick=()=>ex3Place('good');
+$('ex3BinBad').onclick=()=>ex3Place('bad');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.crust=false; OBS.mantle=false; OBS.outer=false; OBS.inner=false; }
+  if(step===1){ OBS.hot=false; OBS.cool=false; }
+  if(step===2){ OBS.sam=false; OBS.afr=false; }
+  if(step===3){ OBS.meso=false; OBS.gloss=false; }
+  if(step===4){ OBS.ridge=false; OBS.old=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration =================
+   The engine's persistence framework owns the record's framework fields;
+   the lesson-specific fields are supplied/restored through these hooks. */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='long'||s.exAns.a1[id]==='short')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='good'||s.exAns.a3[id]==='bad')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* Rule 10: seed a DONE step's track for old saves that carry no trk —
+   rebuilt from this lesson's own persisted mirrors (OBS/SORTED). */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1crust=!!OBS.crust; t.s1mantle=!!OBS.mantle; t.s1outer=!!OBS.outer; t.s1inner=!!OBS.inner; }
+  else if(i===1){ t.s2hot=!!OBS.hot; t.s2cool=!!OBS.cool; }
+  else if(i===2){ t.s3sam=!!OBS.sam; t.s3afr=!!OBS.afr; }
+  else if(i===3){ t.s4meso=!!OBS.meso; t.s4gloss=!!OBS.gloss; }
+  else if(i===4){ t.s5ridge=!!OBS.ridge; t.s5old=!!OBS.old; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-6-5',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

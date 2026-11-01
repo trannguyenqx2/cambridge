@@ -1,0 +1,1406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.6 Cooling by evaporation — Làm lạnh bằng bay hơi · Cambridge Lower Secondary Science 9</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#fdf3d8,#eef2d8)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.team{background:#7a4fd0}
+.binbtn.alone{background:#44586e}
+.binbtn.defence{background:#0d9d58}
+.binbtn.attack{background:#b03a3a}
+.binbtn.predator{background:#d9930d}
+.binbtn.prey{background:#0d9d58}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+
+.binbtn.ionic{background:#7a4fd0}
+.binbtn.covalent{background:#0b76d1}
+.binbtn.diamond{background:#0288a8}
+.binbtn.graphite{background:#44586e}
+.binbtn.evap{background:#0d9d58}
+.binbtn.not{background:#64748b}
+.binbtn.cools{background:#0288a8}
+.binbtn.nocool{background:#44586e}
+.binbtn.true{background:#0d9d58}
+.binbtn.false{background:#b03a3a}
+.binbtn.high{background:#b03a3a}
+.binbtn.low{background:#0b76d1}
+.binbtn.reactant{background:#0b76d1}
+.binbtn.product{background:#7a4fd0}
+.binbtn.reaction{background:#b03a3a}
+.binbtn.reversible{background:#0d9d58}
+.ex2q{font-size:17.5px;line-height:1.55;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.ex2q:last-child{border-bottom:none}
+.ex2opt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:3px;cursor:pointer;font-size:16.5px;font-weight:700}
+.ex2opt.sel{border-color:var(--acc);background:#eef6ff}
+.ex2opt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 9" data-vi="← Môn Khoa học 9">← Science 9</a>
+    <span class="ttl i18n" data-en="3.6 Cooling by evaporation" data-vi="3.6 Làm lạnh bằng bay hơi (Cooling by evaporation)">3.6 Cooling by evaporation</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does evaporation make things cool?" data-vi="Sự bay hơi (evaporation) làm các vật nguội đi như thế nào?">How does evaporation make things cool?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Fastest particles escape" data-vi="Các hạt nhanh nhất thoát ra">Fastest particles escape</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Average energy falls" data-vi="Năng lượng trung bình (average energy) giảm">Average energy falls</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Temperature falls" data-vi="Nhiệt độ giảm">Temperature falls</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Sweat, pots and coolers use it" data-vi="Mồ hôi, bình xốp và máy làm mát đều dùng nó">Sweat, pots and coolers use it</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the models on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mô hình trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap the models on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 9 · Unit 3 Forces and energy · Section 3.6. The bench in this lesson is a simulation — the liquids on the bench are models, and only water, soap or perfume should ever be put on real skin." data-vi="Khoa học Cambridge cấp Trung học cơ sở 9 · Bài 3 Lực và năng lượng (Forces and energy) · Mục 3.6. Bàn trong bài học này là mô phỏng — các chất lỏng trên bàn là mô hình, và ngoài đời chỉ nước, xà phòng hoặc nước hoa mới được bôi lên da thật.">Cambridge Lower Secondary Science 9 · Unit 3 Forces and energy · Section 3.6. The bench in this lesson is a simulation — the liquids on the bench are models, and only water, soap or perfume should ever be put on real skin.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–7 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–7 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–7 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 3 Forces and energy, section 3.6 Cooling by evaporation, pages 122–133; Workbook 9 (ISBN 9781108742894), pages 62–65. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section's Project (Load lines, pages 129–130) is a group research and modelling project about density and ships, and the Check your progress pages (131–133) review the whole of Unit 3 — neither is part of this section's interactive lesson, so both are excluded here." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 9 (bản 2, 2021; ISBN 9781108742863), Bài 3 Lực và năng lượng (Forces and energy), mục 3.6 Làm lạnh bằng bay hơi (Cooling by evaporation), trang 122–133; Sách bài tập 9 (ISBN 9781108742894), trang 62–65. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách. Dự án của mục (Đường tải trọng — Load lines, trang 129–130) là dự án nghiên cứu và mô hình theo nhóm về khối lượng riêng và tàu thuyền, và phần Kiểm tra tiến bộ (trang 131–133) ôn tập cả Bài 3 — cả hai đều không thuộc bài học tương tác của mục này, nên được loại khỏi đây.">Source: Based on Cambridge Lower Secondary Science Learner's Book 9 (2nd edition, 2021; ISBN 9781108742863), Unit 3 Forces and energy, section 3.6 Cooling by evaporation, pages 122–133; Workbook 9 (ISBN 9781108742894), pages 62–65. All wording in this lesson is rewritten in our own words; no text is copied from the book. The section's Project (Load lines, pages 129–130) is a group research and modelling project about density and ships, and the Check your progress pages (131–133) review the whole of Unit 3 — neither is part of this section's interactive lesson, so both are excluded here.</p>
+    <p class="i18n" data-en="Objective (from the book): understand how evaporation causes cooling. Key words: porous, random — plus evaporation, average energy, thermal energy and humidity." data-vi="Mục tiêu (theo sách): hiểu sự bay hơi (evaporation) gây làm lạnh như thế nào. Từ khóa: porous (xốp), random (ngẫu nhiên) — cùng evaporation (sự bay hơi), average energy (năng lượng trung bình), thermal energy (nhiệt năng) và humidity (độ ẩm).">Objective (from the book): understand how evaporation causes cooling. Key words: porous, random — plus evaporation, average energy, thermal energy and humidity.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action — tapping the models on the 3D bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; testing evaporation means tapping the model on the bench. The steps follow the book's order: the Getting started particle discussion (water at about 22 °C; the book's diagram of highest-, medium- and lowest-energy particles), evaporation lowering the average energy and temperature, sweat cooling the skin and the danger when humid air stops it, the porous clay water cooler, the air cooler with a wet sponge and fan (the Think like a scientist practical, including keeping the thermometer dry and unheld), the comparison of perfume, water and liquid soap from Activity 3.6.1 (equal volumes at the same temperature; perfume evaporates fastest and feels coldest, liquid soap slowest), and the book's Summary checklist as a true/false self-check." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật — chạm vào các mô hình ngay trên bàn 3D, hoặc xếp thẻ vào các nhóm. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các nút trong bảng 'Trên bàn thí nghiệm' chỉ di chuyển camera; muốn thử sự bay hơi thì phải chạm vào chính mô hình trên bàn. Các bước đi theo đúng thứ tự trong sách: thảo luận hạt ở phần Khởi động (nước ở khoảng 22 °C; sơ đồ của sách về các hạt năng lượng cao nhất, trung bình và thấp nhất), bay hơi làm giảm năng lượng trung bình (average energy) và nhiệt độ, mồ hôi làm mát da và nguy hiểm khi không khí ẩm ngăn nó, bình nước đất sét xốp (porous), máy làm mát không khí với bọt biển ướt và quạt (bài thực hành Tư duy như nhà khoa học, gồm giữ nhiệt kế khô và không cầm tay), so sánh nước hoa, nước và xà phòng lỏng từ Hoạt động 3.6.1 (thể tích bằng nhau ở cùng nhiệt độ; nước hoa bay hơi nhanh nhất và thấy lạnh nhất, xà phòng lỏng chậm nhất), và danh sách tự kiểm tra cuối mục của sách dưới dạng tự kiểm tra đúng/sai.">How it works: each step asks for one real action — tapping the models on the 3D bench itself, or sorting cards into groups. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Buttons in the 'On the bench' panel only move the camera; testing evaporation means tapping the model on the bench. The steps follow the book's order: the Getting started particle discussion (water at about 22 °C; the book's diagram of highest-, medium- and lowest-energy particles), evaporation lowering the average energy and temperature, sweat cooling the skin and the danger when humid air stops it, the porous clay water cooler, the air cooler with a wet sponge and fan (the Think like a scientist practical, including keeping the thermometer dry and unheld), the comparison of perfume, water and liquid soap from Activity 3.6.1 (equal volumes at the same temperature; perfume evaporates fastest and feels coldest, liquid soap slowest), and the book's Summary checklist as a true/false self-check.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 7 steps" data-vi="7 bước của bài học">The 7 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="picgrid" id="ex1Grid"></div>
+      <div class="binrow">
+        <button class="binbtn evap" id="ex1BinEvap"></button>
+        <button class="binbtn not" id="ex1BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div id="ex2List"></div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div class="picgrid" id="ex3Grid"></div>
+      <div class="binrow">
+        <button class="binbtn cools" id="ex3BinCools"></button>
+        <button class="binbtn nocool" id="ex3BinNo"></button>
+      </div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci9-3-6 "Cooling by evaporation"
+   (Science 9, Unit 3 · Forces and energy)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour; the engine owns the rules
+   (read/ack gates, sequential lock, anti-guess, submit-mode scoring,
+   summary, wallet, bot duel). See migration/engine/API.md.
+   ===================================================================== */
+
+/* ================= bench models ================= */
+const LAB={
+  high:  {emoji:'🔴', name:{en:'Highest-energy particle',vi:'Hạt có năng lượng cao nhất (highest-energy particle)'}, short:{en:'Highest-energy particle',vi:'Hạt năng lượng cao nhất'}, ring:0.55, labelY:1.35, fx:-3.8, fz:-1.6},
+  med:   {emoji:'🟠', name:{en:'Medium-energy particle',vi:'Hạt có năng lượng trung bình (medium-energy particle)'}, short:{en:'Medium-energy particle',vi:'Hạt năng lượng trung bình'}, ring:0.5, labelY:1.25, fx:-2.5, fz:-1.6},
+  low:   {emoji:'🔵', name:{en:'Lowest-energy particle',vi:'Hạt có năng lượng thấp nhất (lowest-energy particle)'}, short:{en:'Lowest-energy particle',vi:'Hạt năng lượng thấp nhất'}, ring:0.5, labelY:1.2, fx:-1.2, fz:-1.6},
+  thermo:{emoji:'🌡️', name:{en:'Thermometer in the liquid',vi:'Nhiệt kế (thermometer) trong chất lỏng'}, short:{en:'Thermometer',vi:'Nhiệt kế'}, ring:0.5, labelY:1.5, fx:0.2, fz:-1.6},
+  remain:{emoji:'💧', name:{en:'The liquid that remains',vi:'Chất lỏng còn lại (the liquid that remains)'}, short:{en:'Remaining liquid',vi:'Chất lỏng còn lại'}, ring:0.55, labelY:1.3, fx:1.7, fz:-1.6},
+  perfume:{emoji:'🌸', name:{en:'Perfume bottle',vi:'Chai nước hoa (perfume)'}, short:{en:'Perfume',vi:'Nước hoa'}, ring:0.5, labelY:1.35, fx:3.1, fz:-1.6},
+  sweat: {emoji:'💦', name:{en:'Sweat droplet on the skin',vi:'Giọt mồ hôi (sweat) trên da'}, short:{en:'Sweat droplet',vi:'Giọt mồ hôi'}, ring:0.5, labelY:1.2, fx:-3.8, fz:0.1},
+  skin:  {emoji:'✋', name:{en:'Skin',vi:'Da (skin)'}, short:{en:'Skin',vi:'Da'}, ring:0.55, labelY:1.15, fx:-2.4, fz:0.1},
+  pot:   {emoji:'🏺', name:{en:'Porous clay water cooler pot',vi:'Bình làm mát nước bằng đất sét xốp (porous clay pot)'}, short:{en:'Porous clay pot',vi:'Bình đất sét xốp'}, ring:0.6, labelY:1.35, fx:-0.9, fz:0.1},
+  drip:  {emoji:'💧', name:{en:'Water that soaked through to the outside',vi:'Nước đã thấm qua ra mặt ngoài (soaked through)'}, short:{en:'Water outside the pot',vi:'Nước ngoài bình'}, ring:0.5, labelY:1.2, fx:0.5, fz:0.1},
+  sponge:{emoji:'🧽', name:{en:'Wet sponge in the air cooler',vi:'Miếng bọt biển ướt (wet sponge) trong máy làm mát không khí'}, short:{en:'Wet sponge',vi:'Bọt biển ướt'}, ring:0.55, labelY:1.25, fx:1.9, fz:0.1},
+  fan:   {emoji:'🌀', name:{en:'Fan of the air cooler',vi:'Quạt (fan) của máy làm mát không khí'}, short:{en:'Fan',vi:'Quạt'}, ring:0.55, labelY:1.4, fx:3.3, fz:0.1},
+  soap:  {emoji:'🧴', name:{en:'Liquid soap bottle',vi:'Chai xà phòng lỏng (liquid soap)'}, short:{en:'Liquid soap',vi:'Xà phòng lỏng'}, ring:0.5, labelY:1.3, fx:2.6, fz:1.9}
+};
+const FOCUSORDER=['high','med','low','thermo','remain','perfume','sweat','skin','pot','drip','sponge','fan','soap'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a model. Looking is not doing — to test evaporation, tap the model on the bench itself!',vi:'Chạm vào một tên để NGẮM một mô hình. Ngắm chưa phải là làm — muốn thử sự bay hơi (evaporation), hãy chạm vào chính mô hình trên bàn!'},
+  u2T:{en:'My cooling record',vi:'Bảng ghi làm lạnh của con'},
+  u2Brief:{en:'What you have found out about evaporation and cooling, in the order of the book.',vi:'Những gì con đã tìm ra về sự bay hơi (evaporation) và làm lạnh, theo đúng thứ tự trong sách.'},
+  recParticles:{en:'🔴 In a liquid, only the highest-energy particles escape',vi:'🔴 Trong chất lỏng, chỉ các hạt có năng lượng cao nhất mới thoát ra được'},
+  recCooling:{en:'🌡️ Escaping particles lower the average energy — the liquid cools',vi:'🌡️ Các hạt thoát ra làm giảm năng lượng trung bình (average energy) — chất lỏng nguội đi'},
+  recSweat:{en:'💦 Evaporating sweat takes thermal energy from the skin',vi:'💦 Mồ hôi (sweat) bay hơi lấy nhiệt năng (thermal energy) từ da'},
+  recPot:{en:'🏺 A porous clay pot cools the water inside it',vi:'🏺 Bình đất sét xốp (porous) làm mát nước bên trong nó'},
+  recAir:{en:'🌀 A fan and a wet sponge cool the air',vi:'🌀 Quạt và miếng bọt biển ướt làm mát không khí'},
+  recLiquids:{en:'🌸 Perfume evaporates fast and feels cold; liquid soap evaporates slowly',vi:'🌸 Nước hoa (perfume) bay hơi nhanh và thấy lạnh; xà phòng lỏng bay hơi chậm'},
+  u3T:{en:'Evidence I found',vi:'Bằng chứng con đã tìm thấy'},
+  u3Brief:{en:'Your checklist for explaining cooling by evaporation.',vi:'Danh sách kiểm tra để giải thích làm lạnh bằng bay hơi (evaporation) của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundParticles:{en:'Particles move randomly — their speeds and energies differ',vi:'Các hạt chuyển động ngẫu nhiên (random) — tốc độ và năng lượng của chúng khác nhau'},
+  foundCooling:{en:'Temperature measures the average energy of the particles',vi:'Nhiệt độ (temperature) đo năng lượng trung bình (average energy) của các hạt'},
+  foundSweat:{en:'Sweat at skin temperature still cools the skin when it evaporates',vi:'Mồ hôi ở cùng nhiệt độ với da vẫn làm mát da khi nó bay hơi (evaporates)'},
+  foundPot:{en:'Porous means water can slowly soak through the clay',vi:'Xốp (porous) nghĩa là nước có thể từ từ thấm qua đất sét'},
+  foundAir:{en:'Warm air gives thermal energy to evaporate water from the sponge',vi:'Không khí ấm cho nhiệt năng (thermal energy) để làm bay hơi nước từ miếng bọt biển'},
+  foundLiquids:{en:'Weaker forces between particles let a liquid evaporate faster',vi:'Lực giữa các hạt yếu hơn khiến chất lỏng bay hơi (evaporate) nhanh hơn'},
+  binEvap:{en:'IS EVAPORATION 💨',vi:'LÀ BAY HƠI 💨 (evaporation)'},
+  binNot:{en:'NOT EVAPORATION ✕',vi:'KHÔNG PHẢI BAY HƠI ✕'},
+  binCools:{en:'COOLS BY EVAPORATION ❄️',vi:'LÀM LẠNH BẰNG BAY HƠI ❄️ (evaporation)'},
+  binNo:{en:'DOES NOT COOL 🚫',vi:'KHÔNG LÀM LẠNH 🚫'},
+  binTrue:{en:'TRUE ✓',vi:'ĐÚNG ✓'},
+  binFalse:{en:'FALSE ✕',vi:'SAI ✕'},
+  lookFan:{en:'Look at the air cooler fan 🌀',vi:'Ngắm quạt của máy làm mát 🌀'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.6',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.6'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — How evaporation works',vi:'Bài tập 1 · Focus — Sự bay hơi (evaporation) diễn ra như thế nào'},
+  ex1Inst:{en:'From Workbook exercise 3.6A. Tap a card, then tap IS EVAPORATION or NOT EVAPORATION to say whether it describes evaporation.',vi:'Từ bài tập Workbook 3.6A. Chạm vào một thẻ, rồi chạm LÀ BAY HƠI (IS EVAPORATION) hoặc KHÔNG PHẢI BAY HƠI (NOT EVAPORATION) để nói nó có mô tả sự bay hơi hay không.'},
+  ex2T:{en:'Exercise 2 · Practice — Evaporation and cooling',vi:'Bài tập 2 · Practice — Bay hơi (evaporation) và làm lạnh'},
+  ex2Inst:{en:'From Workbook exercise 3.6B. For each question, tap the ONE correct answer.',vi:'Từ bài tập Workbook 3.6B. Với mỗi câu hỏi, chạm vào MỘT đáp án đúng.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cooling in more detail',vi:'Bài tập 3 · Challenge — Làm lạnh kỹ hơn'},
+  ex3Inst:{en:'From Workbook exercise 3.6C and the book’s coolers. Tap a card, then tap COOLS BY EVAPORATION or DOES NOT COOL.',vi:'Từ bài tập Workbook 3.6C và các thiết bị làm mát trong sách. Chạm vào một thẻ, rồi chạm LÀM LẠNH BẰNG BAY HƠI (COOLS BY EVAPORATION) hoặc KHÔNG LÀM LẠNH (DOES NOT COOL).'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'evaporation',vi:'sự bay hơi'},
+  {en:'random',vi:'ngẫu nhiên'},
+  {en:'porous',vi:'xốp, thấm qua được'},
+  {en:'average energy',vi:'năng lượng trung bình'},
+  {en:'thermal energy',vi:'nhiệt năng'},
+  {en:'humidity',vi:'độ ẩm'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started: particles escape',vi:'Khởi động: các hạt thoát ra'}, word:{en:'random',vi:'ngẫu nhiên (random)'},
+  q:{en:'Water boils at 100 °C — so how can it evaporate at only 15 °C?',vi:'Nước sôi ở 100 °C — vậy làm sao nó bay hơi (evaporate) ở chỉ 15 °C được?'},
+  act:{en:'Tap the highest-energy particle in the water. Then tap the lowest-energy particle.',vi:'Chạm vào hạt có năng lượng cao nhất trong nước. Sau đó chạm vào hạt có năng lượng thấp nhất.'},
+  see:{en:'The fastest particle escapes from the surface. The slowest one stays in the liquid.',vi:'Hạt nhanh nhất thoát ra khỏi bề mặt. Hạt chậm nhất ở lại trong chất lỏng.'},
+  concl:[
+    {en:'The particles in a liquid move around in random directions, at random speeds — so their energies are all different.',vi:'Các hạt trong chất lỏng chuyển động theo hướng ngẫu nhiên (random), với tốc độ ngẫu nhiên — nên năng lượng của chúng đều khác nhau.'},
+    {en:'Only the particles with the highest energy have enough energy to escape from the surface and become a gas. That change, liquid to gas, is evaporation.',vi:'Chỉ các hạt có năng lượng cao nhất mới đủ năng lượng thoát khỏi bề mặt và trở thành chất khí. Sự chuyển đổi đó, từ lỏng sang khí, là bay hơi (evaporation).'},
+    {en:'The lowest-energy particles stay in the liquid, and medium-energy ones may escape but get pulled back. Evaporation happens at the surface, at temperatures far below boiling point.',vi:'Các hạt có năng lượng thấp nhất ở lại trong chất lỏng, và các hạt năng lượng trung bình có thể thoát ra nhưng bị kéo trở lại. Bay hơi xảy ra ở bề mặt, ở nhiệt độ thấp hơn nhiều so với nhiệt độ sôi.'}]},
+ {tag:{en:'Evaporation cools the liquid',vi:'Bay hơi làm nguội chất lỏng'}, word:{en:'average energy',vi:'năng lượng trung bình (average energy)'},
+  q:{en:'The fastest particles have left the liquid. What happens to the liquid that stays behind?',vi:'Các hạt nhanh nhất đã rời khỏi chất lỏng. Điều gì xảy ra với chất lỏng còn lại?'},
+  act:{en:'Tap the thermometer in the liquid. Then tap the beaker of liquid that remains.',vi:'Chạm vào nhiệt kế (thermometer) trong chất lỏng. Sau đó chạm vào cốc chất lỏng còn lại.'},
+  see:{en:'The thermometer reading falls — the remaining liquid is cooler than before.',vi:'Số đo của nhiệt kế giảm xuống — chất lỏng còn lại mát hơn trước.'},
+  concl:[
+    {en:'Temperature is a measure of the average energy of the particles in a substance.',vi:'Nhiệt độ (temperature) là thước đo năng lượng trung bình (average energy) của các hạt trong một chất.'},
+    {en:'When the highest-energy particles escape, the average energy of the particles that remain goes down.',vi:'Khi các hạt có năng lượng cao nhất thoát ra, năng lượng trung bình (average energy) của các hạt còn lại giảm xuống.'},
+    {en:'So the temperature of the liquid falls: evaporation causes cooling, even when the liquid is not heated at all.',vi:'Vậy nhiệt độ của chất lỏng giảm: bay hơi (evaporation) gây làm lạnh, ngay cả khi chất lỏng không hề được đun nóng.'}]},
+ {tag:{en:'Sweat cools the skin',vi:'Mồ hôi làm mát da'}, word:{en:'evaporation',vi:'sự bay hơi (evaporation)'},
+  q:{en:'Sweat is made in the skin, so it starts at skin temperature. How can it cool you?',vi:'Mồ hôi (sweat) được tạo ra trong da, nên lúc đầu nó ở nhiệt độ của da. Làm sao nó làm mát con được?'},
+  act:{en:'Tap the sweat droplet on the skin. Then tap the skin itself.',vi:'Chạm vào giọt mồ hôi (sweat) trên da. Sau đó chạm vào chính vùng da.'},
+  see:{en:'The droplet shrinks as it evaporates — and the skin under it feels cooler.',vi:'Giọt mồ hôi nhỏ dần khi bay hơi — và vùng da dưới nó thấy mát hơn.'},
+  concl:[
+    {en:'It is not the liquid sweat itself that cools you. When the sweat evaporates, its highest-energy particles escape and its temperature drops.',vi:'Không phải bản thân mồ hôi lỏng làm mát con. Khi mồ hôi bay hơi (evaporates), các hạt năng lượng cao nhất của nó thoát ra và nhiệt độ của nó giảm.'},
+    {en:'Thermal energy then passes from your skin to the cooler sweat, again and again — so your skin loses thermal energy and cools.',vi:'Nhiệt năng (thermal energy) sau đó truyền từ da của con sang mồ hôi mát hơn, lặp đi lặp lại — nên da mất nhiệt năng và nguội đi.'},
+    {en:'In very humid conditions sweat may not be able to evaporate. That is dangerous, because the body cannot cool and its temperature can rise.',vi:'Trong điều kiện rất ẩm (humid), mồ hôi có thể không bay hơi được. Điều đó nguy hiểm, vì cơ thể không làm mát được và nhiệt độ của nó có thể tăng lên.'}]},
+ {tag:{en:'The porous clay water cooler',vi:'Bình nước đất sét xốp'}, word:{en:'porous',vi:'xốp (porous)'},
+  q:{en:'A clay pot with no fridge and no ice keeps drinking water cool. How?',vi:'Một bình đất sét không tủ lạnh, không đá mà giữ nước uống mát. Bằng cách nào?'},
+  act:{en:'Tap the porous clay pot. Then tap the water that has soaked through to its outside surface.',vi:'Chạm vào bình đất sét xốp (porous). Sau đó chạm vào nước đã thấm qua ra bề mặt ngoài của bình.'},
+  see:{en:'Water slowly soaks through the clay and wets the outside of the pot.',vi:'Nước từ từ thấm qua đất sét và làm ướt mặt ngoài của bình.'},
+  concl:[
+    {en:'Porous means that water can slowly soak through the clay to the outside of the pot.',vi:'Xốp (porous) nghĩa là nước có thể từ từ thấm qua đất sét ra mặt ngoài của bình.'},
+    {en:'That outside water evaporates into the air around the pot, taking thermal energy with it.',vi:'Nước ở mặt ngoài đó bay hơi (evaporates) vào không khí quanh bình, mang theo nhiệt năng (thermal energy).'},
+    {en:'Losing that thermal energy cools the pot — and the water inside it stays cool.',vi:'Mất nhiệt năng đó làm bình nguội đi — và nước bên trong bình giữ được mát.'}]},
+ {tag:{en:'Making an air cooler',vi:'Làm máy làm mát không khí'}, word:{en:'thermal energy',vi:'nhiệt năng (thermal energy)'},
+  q:{en:'Can moving air and a wet sponge make the air in a room cooler?',vi:'Không khí chuyển động và một miếng bọt biển ướt có làm không khí trong phòng mát hơn được không?'},
+  act:{en:'Tap the wet sponge inside the air cooler. Then tap the fan that blows air through it.',vi:'Chạm vào miếng bọt biển ướt (wet sponge) bên trong máy làm mát. Sau đó chạm vào quạt (fan) thổi không khí qua nó.'},
+  see:{en:'The fan spins fast and pushes the air through the wet sponge — the air coming out is cooler.',vi:'Quạt quay nhanh và đẩy không khí qua miếng bọt biển ướt — không khí đi ra mát hơn.'},
+  concl:[
+    {en:'The fan blows warm air from the room through the sponge that is soaked in water.',vi:'Quạt thổi không khí ấm từ phòng qua miếng bọt biển đã thấm nước.'},
+    {en:'The warm air provides the thermal energy needed to evaporate the water in the sponge.',vi:'Không khí ấm cung cấp nhiệt năng (thermal energy) cần để làm bay hơi (evaporate) nước trong miếng bọt biển.'},
+    {en:'So the thermal energy of the air decreases — the air leaves the cooler at a lower temperature. (In the book’s practical, the thermometer is kept dry and is never held in a warm hand.)',vi:'Vậy nhiệt năng của không khí giảm — không khí rời máy làm mát ở nhiệt độ thấp hơn. (Trong bài thực hành của sách, nhiệt kế (thermometer) được giữ khô và không bao giờ cầm trong tay ấm.)'}]},
+ {tag:{en:'Feeling evaporation: perfume and soap',vi:'Cảm nhận bay hơi: nước hoa và xà phòng'}, word:{en:'evaporation',vi:'sự bay hơi (evaporation)'},
+  q:{en:'Equal drops of perfume and liquid soap, at the same temperature — which feels colder on your skin?',vi:'Các giọt nước hoa (perfume) và xà phòng lỏng bằng nhau, ở cùng nhiệt độ — giọt nào thấy lạnh hơn trên da?'},
+  act:{en:'Tap the perfume bottle. Then tap the liquid soap bottle.',vi:'Chạm vào chai nước hoa (perfume). Sau đó chạm vào chai xà phòng lỏng (liquid soap).'},
+  see:{en:'The perfume vanishes quickly and feels cold. The soap stays — it hardly evaporates at all.',vi:'Nước hoa biến mất nhanh và thấy lạnh. Xà phòng ở lại — nó hầu như không bay hơi.'},
+  concl:[
+    {en:'Perfume has weaker forces holding its particles together, so it evaporates quickly and easily — that is why you can smell it.',vi:'Nước hoa (perfume) có lực giữ các hạt của nó yếu hơn, nên nó bay hơi (evaporates) nhanh và dễ — đó là lý do con ngửi thấy nó.'},
+    {en:'Faster evaporation removes thermal energy from the skin faster, so perfume feels colder than the same volume of water at the same temperature.',vi:'Bay hơi nhanh hơn lấy nhiệt năng (thermal energy) khỏi da nhanh hơn, nên nước hoa thấy lạnh hơn cùng một lượng nước ở cùng nhiệt độ.'},
+    {en:'Liquid soap has stronger forces between its particles and evaporates much more slowly than water, so water feels colder than soap. Safety: only water, soap or perfume may be put on skin.',vi:'Xà phòng lỏng (liquid soap) có lực giữa các hạt mạnh hơn và bay hơi chậm hơn nước rất nhiều, nên nước thấy lạnh hơn xà phòng. An toàn: chỉ nước, xà phòng hoặc nước hoa mới được bôi lên da.'}]},
+ {tag:{en:'Check yourself: true or false?',vi:'Tự kiểm tra: đúng hay sai?'}, word:{en:'average energy',vi:'năng lượng trung bình (average energy)'},
+  q:{en:'Can you sort the evaporation statements into TRUE and FALSE?',vi:'Con xếp được các câu về bay hơi (evaporation) vào ĐÚNG (TRUE) và SAI (FALSE) không?'},
+  act:{en:'Tap a card, then tap TRUE or FALSE.',vi:'Chạm vào một thẻ, rồi chạm ĐÚNG (TRUE) hoặc SAI (FALSE).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I know how evaporation can lower the average energy of particles in a liquid.',vi:'Con biết bay hơi (evaporation) làm giảm năng lượng trung bình (average energy) của các hạt trong chất lỏng như thế nào.'},
+    {en:'I know how evaporation can cause cooling effects.',vi:'Con biết bay hơi (evaporation) gây ra các hiệu ứng làm lạnh như thế nào.'},
+    {en:'Escaping highest-energy particles lower the average energy that remains — and that cooling works for liquids, sweat, porous pots and air coolers.',vi:'Các hạt năng lượng cao nhất thoát ra làm giảm năng lượng trung bình còn lại — và sự làm lạnh đó đúng với chất lỏng, mồ hôi, bình xốp (porous) và máy làm mát không khí.'}]}
+];
+const CARDS6=[
+ {id:'v_escape',emoji:'🔴',en:'The highest-energy particles escape from the liquid surface',vi:'Các hạt có năng lượng cao nhất thoát ra khỏi bề mặt chất lỏng',ans:'true'},
+ {id:'f_only100',emoji:'♨️',en:'Water can evaporate only at 100 °C',vi:'Nước chỉ bay hơi (evaporate) được ở 100 °C',ans:'false'},
+ {id:'v_average',emoji:'🌡️',en:'When they leave, the average energy of the particles left behind falls',vi:'Khi chúng rời đi, năng lượng trung bình (average energy) của các hạt còn lại giảm xuống',ans:'true'},
+ {id:'f_lowest',emoji:'🔵',en:'The lowest-energy particles are the ones that escape first',vi:'Các hạt có năng lượng thấp nhất là các hạt thoát ra trước tiên',ans:'false'},
+ {id:'v_sweat',emoji:'💦',en:'Evaporating sweat takes thermal energy from the skin',vi:'Mồ hôi (sweat) bay hơi lấy nhiệt năng (thermal energy) từ da',ans:'true'},
+ {id:'f_humid',emoji:'🌫️',en:'In high humidity, sweat evaporates easily and cools the skin well',vi:'Khi độ ẩm (humidity) cao, mồ hôi bay hơi dễ dàng và làm mát da tốt',ans:'false'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'A liquid is evaporating and is not being heated. What happens to its temperature, and why?',vi:'Một chất lỏng đang bay hơi (evaporating) và không được đun nóng. Nhiệt độ của nó thay đổi thế nào, và vì sao?'},
+  o:[{en:'It rises, because the slow particles leave',vi:'Nó tăng, vì các hạt chậm rời đi'},
+     {en:'It falls, because the highest-energy particles escape and the average energy of the rest drops',vi:'Nó giảm, vì các hạt có năng lượng cao nhất thoát ra và năng lượng trung bình (average energy) của các hạt còn lại giảm'},
+     {en:'It stays the same, because evaporation changes nothing',vi:'Nó giữ nguyên, vì bay hơi không thay đổi gì'}],a:1,
+  e:{en:'Temperature measures the average energy of the particles. When the particles with the most energy escape, the average energy of those left behind is lower, so the temperature falls — evaporation causes cooling.',vi:'Nhiệt độ đo năng lượng trung bình (average energy) của các hạt. Khi các hạt có năng lượng cao nhất thoát ra, năng lượng trung bình của các hạt còn lại thấp hơn, nên nhiệt độ giảm — bay hơi (evaporation) gây làm lạnh.'}},
+ {q:{en:'Sofia puts equal volumes of perfume and water, at the same temperature, on her skin. Which feels colder, and why?',vi:'Sofia đặt các lượng bằng nhau của nước hoa (perfume) và nước, ở cùng nhiệt độ, lên da. Cái nào thấy lạnh hơn, và vì sao?'},
+  o:[{en:'The perfume — it evaporates faster, so it removes thermal energy from the skin faster',vi:'Nước hoa — nó bay hơi (evaporates) nhanh hơn, nên nó lấy nhiệt năng (thermal energy) khỏi da nhanh hơn'},
+     {en:'The water — it evaporates faster than perfume',vi:'Nước — nó bay hơi nhanh hơn nước hoa'},
+     {en:'Neither — both feel the same',vi:'Không cái nào — cả hai thấy như nhau'}],a:0,
+  e:{en:'Perfume has weaker forces between its particles than water, so it evaporates faster. Faster evaporation takes thermal energy away from the skin faster, so the perfume feels colder.',vi:'Nước hoa (perfume) có lực giữa các hạt yếu hơn nước, nên nó bay hơi (evaporates) nhanh hơn. Bay hơi nhanh hơn lấy nhiệt năng (thermal energy) khỏi da nhanh hơn, nên nước hoa thấy lạnh hơn.'}},
+ {q:{en:'Why does sweat fail to cool the skin in very humid conditions?',vi:'Vì sao mồ hôi (sweat) không làm mát được da trong điều kiện rất ẩm?'},
+  o:[{en:'The skin stops making sweat',vi:'Da ngừng tạo mồ hôi'},
+     {en:'The sweat turns into ice',vi:'Mồ hôi biến thành băng'},
+     {en:'The sweat cannot evaporate, so no thermal energy is carried away from the skin',vi:'Mồ hôi không bay hơi (evaporate) được, nên không có nhiệt năng (thermal energy) nào bị mang khỏi da'}],a:2,
+  e:{en:'Cooling needs the sweat to evaporate: escaping high-energy particles carry thermal energy away. In high humidity evaporation stops, so the cooling stops too and body temperature can rise dangerously.',vi:'Làm mát cần mồ hôi bay hơi (evaporate): các hạt năng lượng cao thoát ra mang nhiệt năng (thermal energy) đi. Khi độ ẩm (humidity) cao, bay hơi dừng lại, nên sự làm mát cũng dừng và nhiệt độ cơ thể có thể tăng nguy hiểm.'}},
+ {q:{en:'How does a porous clay water cooler keep the water inside it cool?',vi:'Bình nước đất sét xốp (porous clay) giữ nước bên trong mát bằng cách nào?'},
+  o:[{en:'The clay is a good thermal insulator, like a flask',vi:'Đất sét cách nhiệt tốt, như một bình giữ nhiệt'},
+     {en:'Water soaks through the porous clay and evaporates from the outside, taking thermal energy away',vi:'Nước thấm qua đất sét xốp (porous) và bay hơi (evaporates) ở mặt ngoài, mang nhiệt năng (thermal energy) đi'},
+     {en:'The clay slowly freezes the water',vi:'Đất sét từ từ làm đóng băng nước'}],a:1,
+  e:{en:'Porous clay lets water slowly soak through to the outside surface. There it evaporates, and evaporation removes thermal energy — so the pot and the water inside it cool down.',vi:'Đất sét xốp (porous) cho nước từ từ thấm qua ra bề mặt ngoài. Ở đó nước bay hơi (evaporates), và bay hơi lấy đi nhiệt năng (thermal energy) — nên bình và nước bên trong nguội đi.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {id:'e_l2g',emoji:'💨',en:'A liquid changes to a gas',vi:'Một chất lỏng chuyển thành chất khí',ans:'evap'},
+ {id:'e_s2l',emoji:'🧊',en:'A solid changes to a liquid',vi:'Một chất rắn chuyển thành chất lỏng',ans:'not'},
+ {id:'e_high',emoji:'🔴',en:'The particles with the most energy escape from the surface',vi:'Các hạt có năng lượng nhiều nhất thoát ra khỏi bề mặt',ans:'evap'},
+ {id:'e_g2l',emoji:'💧',en:'A gas changes to a liquid',vi:'Một chất khí chuyển thành chất lỏng',ans:'not'}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+const EX2=[
+ {q:{en:'Sweat is produced in the skin. Which of these explains how sweat can cool the skin?',vi:'Mồ hôi (sweat) được tạo ra trong da. Câu nào giải thích mồ hôi làm mát da như thế nào?'},
+  opts:[{en:'Sweat evaporates, removing thermal energy from the skin',vi:'Mồ hôi bay hơi (evaporates), lấy nhiệt năng (thermal energy) khỏi da'},
+        {en:'Sweat evaporates, adding thermal energy to the skin',vi:'Mồ hôi bay hơi, thêm nhiệt năng vào da'},
+        {en:'Sweat is produced at a lower temperature than the skin',vi:'Mồ hôi được tạo ra ở nhiệt độ thấp hơn da'}],a:0,
+  e:{en:'Sweat is produced at skin temperature, so the liquid itself is not cold. Evaporating sweat carries thermal energy away, and the skin cools.',vi:'Mồ hôi được tạo ra ở nhiệt độ của da, nên bản thân chất lỏng không lạnh. Mồ hôi bay hơi (evaporates) mang nhiệt năng (thermal energy) đi, và da nguội đi.'}},
+ {q:{en:'A liquid is evaporating and is not being heated. What happens to the average energy of its particles?',vi:'Một chất lỏng đang bay hơi (evaporating) và không được đun nóng. Năng lượng trung bình (average energy) của các hạt của nó thay đổi thế nào?'},
+  opts:[{en:'It increases',vi:'Nó tăng'},{en:'It decreases',vi:'Nó giảm'},{en:'It stays exactly the same',vi:'Nó giữ nguyên chính xác'}],a:1,
+  e:{en:'The particles that escape are the ones with the highest energy, so the average energy of the particles that remain decreases.',vi:'Các hạt thoát ra là các hạt có năng lượng cao nhất, nên năng lượng trung bình (average energy) của các hạt còn lại giảm.'}},
+ {q:{en:'So what happens to the temperature of that evaporating liquid?',vi:'Vậy nhiệt độ của chất lỏng đang bay hơi đó thay đổi thế nào?'},
+  opts:[{en:'It falls',vi:'Nó giảm'},{en:'It rises',vi:'Nó tăng'},{en:'It must reach 100 °C',vi:'Nó phải đạt 100 °C'}],a:0,
+  e:{en:'Temperature measures average particle energy. The average energy falls, so the temperature falls too.',vi:'Nhiệt độ đo năng lượng trung bình của hạt. Năng lượng trung bình giảm, nên nhiệt độ cũng giảm.'}},
+ {q:{en:'Arun has sweat on his face and uses a fan. The fan does not change the air temperature. Why does the fan help him cool faster?',vi:'Arun có mồ hôi (sweat) trên mặt và dùng quạt (fan). Quạt không làm thay đổi nhiệt độ không khí. Vì sao quạt giúp anh ấy mát nhanh hơn?'},
+  opts:[{en:'The moving air makes the sweat evaporate faster',vi:'Không khí chuyển động làm mồ hôi bay hơi (evaporate) nhanh hơn'},
+        {en:'The fan makes the sweat colder before it evaporates',vi:'Quạt làm mồ hôi lạnh hơn trước khi nó bay hơi'},
+        {en:'The fan stops the sweat evaporating',vi:'Quạt ngăn mồ hôi bay hơi'}],a:0,
+  e:{en:'Moving air carries the escaped particles away and brings drier air to the skin, so evaporation speeds up — and faster evaporation removes thermal energy faster.',vi:'Không khí chuyển động mang các hạt đã thoát ra đi và đưa không khí khô hơn tới da, nên bay hơi (evaporation) nhanh hơn — và bay hơi nhanh hơn lấy nhiệt năng (thermal energy) đi nhanh hơn.'}},
+ {q:{en:'Sofia says water can only evaporate at 100 °C. Zara says water can evaporate at temperatures much lower than 100 °C. Who is correct?',vi:'Sofia nói nước chỉ bay hơi (evaporate) được ở 100 °C. Zara nói nước có thể bay hơi ở nhiệt độ thấp hơn 100 °C rất nhiều. Ai đúng?'},
+  opts:[{en:'Sofia — evaporation is the same as boiling',vi:'Sofia — bay hơi giống hệt sôi'},
+        {en:'Zara — puddles dry up and washing dries at room temperature',vi:'Zara — vũng nước cạn đi và đồ giặt khô ở nhiệt độ phòng'},
+        {en:'Neither of them',vi:'Không ai cả'}],a:1,
+  e:{en:'Evaporation happens at the surface at any temperature, when the highest-energy particles escape. Boiling at 100 °C happens throughout the liquid — puddles drying on a cool day prove Zara right.',vi:'Bay hơi (evaporation) xảy ra ở bề mặt ở mọi nhiệt độ, khi các hạt năng lượng cao nhất thoát ra. Sôi ở 100 °C xảy ra khắp chất lỏng — vũng nước cạn đi vào ngày mát chứng minh Zara đúng.'}}
+];
+const EX3=[
+ {id:'c_pot',emoji:'🏺',en:'A porous clay pot: water soaks through and evaporates from the outside',vi:'Bình đất sét xốp (porous): nước thấm qua và bay hơi (evaporates) ở mặt ngoài',ans:'cools'},
+ {id:'c_humid',emoji:'🌫️',en:'Sweat on skin in very humid air, where evaporation stops',vi:'Mồ hôi (sweat) trên da trong không khí rất ẩm, nơi bay hơi dừng lại',ans:'nocool'},
+ {id:'c_aircooler',emoji:'🌀',en:'An air cooler: a fan blows room air through a sponge soaked in water',vi:'Máy làm mát không khí: quạt (fan) thổi không khí phòng qua miếng bọt biển thấm nước',ans:'cools'},
+ {id:'c_sealed',emoji:'🍾',en:'Water sealed inside a closed bottle, so none of it can escape',vi:'Nước bị bịt kín trong một chai đóng, nên không phần nào thoát ra được',ans:'nocool'}
+];
+let EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 5 + 4 = 13 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex1sel=null, ex3sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={};
+let EX2_ORD=EX2.map(()=>fyIdx(3));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci9-3-6';
+const SUMKEY='camb:sum:sci9-3-6';
+const BOT_CODE='sci9-3.6';
+let OBS={hi:false,lo:false,th:false,rem:false,per:false,soap:false,sw:false,sk:false,pot:false,drip:false,spo:false,fan:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1hi:false, s1lo:false, s1hint:null,
+  s2th:false, s2rem:false,
+  s3sw:false, s3sk:false,
+  s4pot:false, s4drip:false,
+  s5spo:false, s5fan:false,
+  s6per:false, s6soap:false,
+  s7correct:new Set(), s7sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.s1hi&&T.s1lo;
+  if(i===1) return T.s2th&&T.s2rem;
+  if(i===2) return T.s3sw&&T.s3sk;
+  if(i===3) return T.s4pot&&T.s4drip;
+  if(i===4) return T.s5spo&&T.s5fan;
+  if(i===5) return T.s6per&&T.s6soap;
+  if(i===6) return T.s7correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    if(T.s1hint){
+      const t=LAB[T.s1hint];
+      return B('That is '+t.name.en+'. For this step, find the highest-energy and the lowest-energy particles at the back-left of the bench!',
+               'Đó là '+t.name.vi+'. Ở bước này, hãy tìm hạt năng lượng cao nhất và hạt năng lượng thấp nhất ở phía sau-bên trái của bàn!');
+    }
+    return B('You did: the highest-energy particle '+(T.s1hi?'✓':'…')+' · the lowest-energy particle '+(T.s1lo?'✓':'…')+'. Tap the models on the bench!',
+             'Con đã làm: hạt năng lượng cao nhất '+(T.s1hi?'✓':'…')+' · hạt năng lượng thấp nhất '+(T.s1lo?'✓':'…')+'. Hãy chạm vào các mô hình trên bàn!');
+  }
+  if(i===1) return B('Thermometer tapped '+(T.s2th?'✓ (reading falls)':'…')+' · remaining liquid tapped '+(T.s2rem?'✓':'…')+'.',
+                     'Đã chạm nhiệt kế '+(T.s2th?'✓ (số đo giảm)':'…')+' · đã chạm chất lỏng còn lại '+(T.s2rem?'✓':'…')+'.');
+  if(i===2) return B('Sweat droplet tapped '+(T.s3sw?'✓ (it evaporates)':'…')+' · skin tapped '+(T.s3sk?'✓ (it cools)':'…')+'.',
+                     'Đã chạm giọt mồ hôi '+(T.s3sw?'✓ (nó bay hơi)':'…')+' · đã chạm da '+(T.s3sk?'✓ (da mát đi)':'…')+'.');
+  if(i===3) return B('Porous clay pot tapped '+(T.s4pot?'✓':'…')+' · water on the outside tapped '+(T.s4drip?'✓ (it evaporates)':'…')+'.',
+                     'Đã chạm bình đất sét xốp '+(T.s4pot?'✓':'…')+' · đã chạm nước ở mặt ngoài '+(T.s4drip?'✓ (nó bay hơi)':'…')+'.');
+  if(i===4) return B('Wet sponge tapped '+(T.s5spo?'✓':'…')+' · fan tapped '+(T.s5fan?'✓ (air blows through)':'…')+'.',
+                     'Đã chạm bọt biển ướt '+(T.s5spo?'✓':'…')+' · đã chạm quạt '+(T.s5fan?'✓ (không khí thổi qua)':'…')+'.');
+  if(i===5) return B('Perfume tapped '+(T.s6per?'✓ (evaporates fast — feels cold)':'…')+' · liquid soap tapped '+(T.s6soap?'✓ (evaporates slowly)':'…')+'.',
+                     'Đã chạm nước hoa '+(T.s6per?'✓ (bay hơi nhanh — thấy lạnh)':'…')+' · đã chạm xà phòng lỏng '+(T.s6soap?'✓ (bay hơi chậm)':'…')+'.');
+  if(i===6){
+    const c=T.s7sel? CARDS6.find(x=>x.id===T.s7sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Now tap TRUE or FALSE.','Con đã chọn thẻ “'+c.vi+'”. Giờ hãy chạm ĐÚNG (TRUE) hoặc SAI (FALSE).');
+    return B('Cards right: '+T.s7correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s7correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔴',label:{en:'The highest-energy particle',vi:'Hạt năng lượng cao nhất'},got:T.s1hi},
+      {emoji:'🔵',label:{en:'The lowest-energy particle',vi:'Hạt năng lượng thấp nhất'},got:T.s1lo}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🌡️',label:{en:'Thermometer — reading falls',vi:'Nhiệt kế — số đo giảm'},got:T.s2th},
+      {emoji:'💧',label:{en:'The liquid that remains',vi:'Chất lỏng còn lại'},got:T.s2rem},
+      {emoji:'📉',label:{en:'Average energy goes down',vi:'Năng lượng trung bình giảm'},got:T.s2th&&T.s2rem}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'💦',label:{en:'The sweat droplet evaporates',vi:'Giọt mồ hôi bay hơi'},got:T.s3sw},
+      {emoji:'✋',label:{en:'The skin cools',vi:'Da mát đi'},got:T.s3sk}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🏺',label:{en:'The porous clay pot',vi:'Bình đất sét xốp'},got:T.s4pot},
+      {emoji:'💧',label:{en:'Water on the outside evaporates',vi:'Nước ở mặt ngoài bay hơi'},got:T.s4drip}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🧽',label:{en:'The wet sponge',vi:'Miếng bọt biển ướt'},got:T.s5spo},
+      {emoji:'🌀',label:{en:'The fan blows air through',vi:'Quạt thổi không khí qua'},got:T.s5fan}
+    ]);
+    if(!T.s5fan){
+      const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookFan);
+      b.onclick=()=>focusThing('fan');
+      box.appendChild(b);
+    }
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🌸',label:{en:'Perfume — evaporates fast, feels cold',vi:'Nước hoa — bay hơi nhanh, thấy lạnh'},got:T.s6per},
+      {emoji:'🧴',label:{en:'Liquid soap — evaporates slowly',vi:'Xà phòng lỏng — bay hơi chậm'},got:T.s6soap}
+    ]);
+  }else if(curStep===6){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'true',label:STR.binTrue,cls:'true'},{key:'false',label:STR.binFalse,cls:'false'}],
+      T.s7correct,()=>T.s7sel,v=>{T.s7sel=v;},null,onSortPlaced);
+  }
+}
+function demoSortMine(cards,correctSet,clsMap){
+  const c=cards.find(x=>!correctSet.has(x.id));
+  if(!c) return;
+  const el=$('card_'+c.id);
+  if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+  const bin=document.querySelector('.binbtn.'+(clsMap[c.ans]||c.ans));
+  if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  const pairs=[['high','low'],['thermo','remain'],['sweat','skin'],['pot','drip'],['sponge','fan'],['perfume','soap']];
+  if(i<6){ const pr=pairs[i]; focusVisual(pr[0]); bounceThing(pr[0]); setTimeout(()=>{ focusVisual(pr[1]); bounceThing(pr[1]); },900); }
+  else if(i===6){ demoSortMine(CARDS6,T.s7correct,{true:'true',false:'false'}); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=LAB[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderGroups(){
+  const row=(label,got)=>'<div class="grprow"><span>'+biInl(label)+'</span><b>'+(got?'✓':'—')+'</b></div>';
+  $('grpRows').innerHTML=
+    row(STR.recParticles,OBS.hi&&OBS.lo)+
+    row(STR.recCooling,OBS.th&&OBS.rem)+
+    row(STR.recSweat,OBS.sw&&OBS.sk)+
+    row(STR.recPot,OBS.pot&&OBS.drip)+
+    row(STR.recAir,OBS.spo&&OBS.fan)+
+    row(STR.recLiquids,OBS.per&&OBS.soap);
+}
+function renderFound(){
+  const items=[
+    {got:(OBS.hi&&OBS.lo)||doneSteps.has(0),label:STR.foundParticles},
+    {got:(OBS.th&&OBS.rem)||doneSteps.has(1),label:STR.foundCooling},
+    {got:(OBS.sw&&OBS.sk)||doneSteps.has(2),label:STR.foundSweat},
+    {got:(OBS.pot&&OBS.drip)||doneSteps.has(3),label:STR.foundPot},
+    {got:(OBS.spo&&OBS.fan)||doneSteps.has(4),label:STR.foundAir},
+    {got:(OBS.per&&OBS.soap)||doneSteps.has(5),label:STR.foundLiquids}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+let highMesh=null, thermoCol=null, fanRotor=null, sweatMesh=null;
+const ORB={r:9.6, th:0.12, ph:1.07, tx:0, ty:0.4, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); group.userData.baseY=group.position.y; G[id]=group; scene3.add(group); return group; }
+function glassMat36(hex,op){ return new THREE.MeshStandardMaterial({color:hex,roughness:0.25,metalness:0.05,transparent:true,opacity:op}); }
+function stand36(g,r){
+  const s=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r,r+0.06,0.07,16),stdMat(0x8d99a6,0.5)));
+  s.position.y=0.04; g.add(s);
+}
+function buildParticle(id){
+  const g=new THREE.Group();
+  stand36(g,0.3);
+  const cfg={high:{r:0.26,c:0xd33a2c,y:0.5},med:{r:0.22,c:0xf2762e,y:0.46},low:{r:0.18,c:0x3d8bfd,y:0.42}}[id];
+  const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(cfg.r,16,14),stdMat(cfg.c,0.45)));
+  s.position.y=cfg.y; g.add(s);
+  if(id==='high'){ highMesh=s;
+    const t1=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),stdMat(0xe88a7d,0.5));
+    t1.position.set(0.3,0.72,0.08); g.add(t1);
+    const t2=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),stdMat(0xe88a7d,0.5));
+    t2.position.set(0.44,0.9,0.12); g.add(t2);
+  }
+  if(id==='low'){
+    const nb=new THREE.Mesh(new THREE.SphereGeometry(0.09,8,6),stdMat(0x9db8cf,0.5));
+    nb.position.set(-0.24,0.3,0.1); g.add(nb);
+  }
+  const p=LAB[id]; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildThermo(){
+  const g=new THREE.Group();
+  stand36(g,0.3);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.95,10),glassMat36(0xcfe8f5,0.4));
+  tube.position.y=0.6; g.add(tube);
+  thermoCol=new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.028,0.72,8),stdMat(0xd33a2c,0.4));
+  thermoCol.position.y=0.52; g.add(thermoCol);
+  const bulb=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.11,12,10),stdMat(0xd33a2c,0.45)));
+  bulb.position.y=0.16; g.add(bulb);
+  const p=LAB.thermo; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildRemain(){
+  const g=new THREE.Group();
+  stand36(g,0.36);
+  const glass=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.28,0.68,16,1,true),glassMat36(0xcfe8f5,0.35)));
+  glass.position.y=0.4; g.add(glass);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,0.04,16),glassMat36(0xcfe8f5,0.5));
+  base.position.y=0.08; g.add(base);
+  const liq=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.25,0.42,14),stdMat(0x7fc4e8,0.35));
+  liq.position.y=0.3; g.add(liq);
+  [-0.14,0.1].forEach((x,i)=>{
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,6),stdMat(i? 0x3d8bfd:0xf2b134,0.5));
+    dot.position.set(x,0.34,0.12); g.add(dot);
+  });
+  const p=LAB.remain; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildDroplet(id,color){
+  const g=new THREE.Group();
+  stand36(g,0.3);
+  const s=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2,14,12),stdMat(color,0.35)));
+  s.scale.y=1.3; s.position.y=0.42; g.add(s);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.24,12),stdMat(color,0.35));
+  tip.position.y=0.72; g.add(tip);
+  if(id==='sweat') sweatMesh=s;
+  const p=LAB[id]; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildSkin(){
+  const g=new THREE.Group();
+  const slab=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.05,0.2,0.68),stdMat(0xe8b48c,0.7)));
+  slab.position.y=0.18; g.add(slab);
+  const top=new THREE.Mesh(new THREE.BoxGeometry(1.05,0.04,0.68),stdMat(0xf0c8a4,0.7));
+  top.position.y=0.3; g.add(top);
+  const p=LAB.skin; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildPot(){
+  const g=new THREE.Group();
+  stand36(g,0.4);
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.27,0.58,16),stdMat(0xa9603c,0.65)));
+  body.position.y=0.38; g.add(body);
+  const rim=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.39,0.39,0.07,16),stdMat(0x8a4f30,0.65)));
+  rim.position.y=0.7; g.add(rim);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.32,0.03,16),stdMat(0x7fc4e8,0.35));
+  water.position.y=0.68; g.add(water);
+  [-0.37,0.37].forEach(x=>{
+    const wet=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),stdMat(0x7fc4e8,0.4));
+    wet.position.set(x,0.3,0.18); g.add(wet);
+  });
+  const p=LAB.pot; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildSponge(){
+  const g=new THREE.Group();
+  stand36(g,0.38);
+  const sp=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.66,0.46,0.36),stdMat(0xf2cf4a,0.7)));
+  sp.position.y=0.36; g.add(sp);
+  [[-0.18,0.46],[0.05,0.28],[0.2,0.5]].forEach(pt=>{
+    const hole=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6),stdMat(0xc9a227,0.6));
+    hole.position.set(pt[0],pt[1],0.19); g.add(hole);
+  });
+  const p=LAB.sponge; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildFan(){
+  const g=new THREE.Group();
+  stand36(g,0.3);
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.55,8),stdMat(0x44586e,0.5));
+  pole.position.y=0.32; g.add(pole);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.03,8,24),stdMat(0x44586e,0.5));
+  ring.position.y=0.78; g.add(ring);
+  fanRotor=new THREE.Group(); fanRotor.position.y=0.78;
+  for(let k=0;k<3;k++){
+    const blade=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.26,0.02),stdMat(0x7fc4e8,0.5));
+    blade.position.y=0.15;
+    const holder=new THREE.Group(); holder.rotation.z=k*Math.PI*2/3; holder.add(blade);
+    fanRotor.add(holder);
+  }
+  const hub=new THREE.Mesh(new THREE.SphereGeometry(0.06,10,8),stdMat(0x44586e,0.5));
+  fanRotor.add(hub);
+  g.add(fanRotor);
+  const p=LAB.fan; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildPerfume(){
+  const g=new THREE.Group();
+  stand36(g,0.28);
+  const bottle=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.42,0.2),glassMat36(0xf2a7c3,0.55)));
+  bottle.position.y=0.32; g.add(bottle);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.16,10),stdMat(0xd9a441,0.35));
+  cap.position.y=0.61; g.add(cap);
+  const p=LAB.perfume; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function buildSoap(){
+  const g=new THREE.Group();
+  stand36(g,0.3);
+  const bottle=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.19,0.5,14),stdMat(0x9fd8cf,0.5)));
+  bottle.position.y=0.34; g.add(bottle);
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.14,8),stdMat(0x44586e,0.5));
+  neck.position.y=0.66; g.add(neck);
+  const pump=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.05,0.06),stdMat(0x44586e,0.5));
+  pump.position.set(0.08,0.75,0); g.add(pump);
+  const p=LAB.soap; g.position.set(p.fx,0,p.fz);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdfe9f2);
+  scene3.fog=new THREE.Fog(0xdfe9f2,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db4c6,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xb9c9d8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.92; floor.receiveShadow=true; scene3.add(floor);
+  const bench=shadowed(new THREE.Mesh(new THREE.BoxGeometry(9.6,0.18,5.4),stdMat(0x8a6a44,0.9)));
+  bench.position.set(-0.4,-0.09,0.2); bench.receiveShadow=true; scene3.add(bench);
+  [[-4.9,-2.3],[4.1,-2.3],[-4.9,2.7],[4.1,2.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.85,0.18),stdMat(0x5d4a36,0.95));
+    leg.position.set(p[0],-0.55,p[1]); scene3.add(leg);
+  });
+  const board=new THREE.Mesh(new THREE.BoxGeometry(7.5,2.6,0.08),stdMat(0x2e5e4e,0.95));
+  board.position.set(-0.4,1.7,-3.4); scene3.add(board);
+  reg('high',buildParticle('high'));
+  reg('med',buildParticle('med'));
+  reg('low',buildParticle('low'));
+  reg('thermo',buildThermo());
+  reg('remain',buildRemain());
+  reg('perfume',buildPerfume());
+  reg('sweat',buildDroplet('sweat',0x4aa8e0));
+  reg('skin',buildSkin());
+  reg('pot',buildPot());
+  reg('drip',buildDroplet('drip',0x7fc4e8));
+  reg('sponge',buildSponge());
+  reg('fan',buildFan());
+  reg('soap',buildSoap());
+  /* Mechanics v2: generous invisible hit proxies for every tap target */
+  const proxyFor=(id,y,r)=>{ const p=sphProxy(r||0.52); p.position.set(0,y,0); addProxy(id,p,G[id]); };
+  proxyFor('high',0.5); proxyFor('med',0.46); proxyFor('low',0.42);
+  proxyFor('thermo',0.55); proxyFor('remain',0.4); proxyFor('perfume',0.38);
+  proxyFor('sweat',0.45); proxyFor('skin',0.25,0.55); proxyFor('pot',0.4,0.55);
+  proxyFor('drip',0.45); proxyFor('sponge',0.36); proxyFor('fan',0.6); proxyFor('soap',0.4);
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function labPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=LAB[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=LAB[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=labPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=LAB[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr||4.6-sr)*0+sr+( (t.fr||4.6)-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.22; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['high','low'],
+  ['thermo','remain'],
+  ['sweat','skin'],
+  ['pot','drip'],
+  ['sponge','fan'],
+  ['perfume','soap'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!LAB[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='high'){ T.s1hi=true; OBS.hi=true; T.s1hint=null; }
+    else if(id==='low'){ T.s1lo=true; OBS.lo=true; T.s1hint=null; }
+    else T.s1hint=id;
+  }else if(curStep===1){
+    if(id==='thermo'){ T.s2th=true; OBS.th=true; }
+    else if(id==='remain'){ T.s2rem=true; OBS.rem=true; }
+  }else if(curStep===2){
+    if(id==='sweat'){ T.s3sw=true; OBS.sw=true; }
+    else if(id==='skin'){ T.s3sk=true; OBS.sk=true; }
+  }else if(curStep===3){
+    if(id==='pot'){ T.s4pot=true; OBS.pot=true; }
+    else if(id==='drip'){ T.s4drip=true; OBS.drip=true; }
+  }else if(curStep===4){
+    if(id==='sponge'){ T.s5spo=true; OBS.spo=true; }
+    else if(id==='fan'){ T.s5fan=true; OBS.fan=true; }
+  }else if(curStep===5){
+    if(id==='perfume'){ T.s6per=true; OBS.per=true; }
+    else if(id==='soap'){ T.s6soap=true; OBS.soap=true; }
+  }
+  if(curStep!==6){ saveProg(); renderFound(); renderGroups(); renderStepExtra(); }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: effects are derived from OBS in the render loop */
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  if(highMesh) highMesh.position.y=OBS.hi? 1.0+Math.sin(t*2)*0.05 : 0.5;
+  if(thermoCol){ thermoCol.material.color.setHex(OBS.th? 0x3d8bfd:0xd33a2c); thermoCol.scale.y=OBS.th? 0.5:1; thermoCol.position.y=OBS.th? 0.34:0.52; }
+  if(fanRotor) fanRotor.rotation.z=OBS.fan? t*9 : t*0.7;
+  if(sweatMesh){ const s=OBS.sw? 0.55:1; sweatMesh.scale.set(s,1.3*s,s); }
+  if(lastFocus&&LAB[lastFocus]){
+    const p=labPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+LAB[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function exTagFor(gridId,ans){
+  if(gridId==='ex1Grid') return ans==='evap'?'💨':'✕';
+  return ans==='cools'?'❄️':'🚫';
+}
+function renderSortSection(gridId,order,ansMap,doneSet,selId,revealed){
+  const g=$(gridId); g.innerHTML='';
+  order.forEach(it=>{
+    const ans=ansMap[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(selId===it.id?' sel':'')+(revealed? (doneSet.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+exTagFor(gridId,ans)+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; if(gridId==='ex1Grid') ex1sel=it.id; else ex3sel=it.id; renderExercises(); };
+    g.appendChild(d);
+  });
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1BinEvap').innerHTML=bi(STR.binEvap);
+  $('ex1BinNot').innerHTML=bi(STR.binNot);
+  renderSortSection('ex1Grid',EX1_ORDER,EX1ANS,EX1DONE,ex1sel,exRevealed);
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const list=$('ex2List'); list.innerHTML='';
+  EX2.forEach((qq,qi)=>{
+    const row=document.createElement('div'); row.className='ex2q';
+    let html='<div>'+esc(qi+1)+'. '+biInl(qq.q)+'</div><div style="margin-top:5px">';
+    (EX2_ORD[qi]||qq.opts.map((_,i)=>i)).forEach(oi=>{
+      const o=qq.opts[oi];
+      let cls='ex2opt';
+      if(EX2ANS[qi]===oi) cls+=' sel';
+      if(exRevealed&&oi===qq.a) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'">'+biInl(o)+'</button>';
+    });
+    html+='</div>';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(qi)? '✓ ' : '')+bi(qq.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.ex2opt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const qi=parseInt(b.dataset.q,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[qi]=oi; saveProg(); renderExercises();
+    };
+  });
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  $('ex3BinCools').innerHTML=bi(STR.binCools);
+  $('ex3BinNo').innerHTML=bi(STR.binNo);
+  renderSortSection('ex3Grid',EX3_ORDER,EX3ANS,EX3DONE,ex3sel,exRevealed);
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex1Place(key){
+  if(exRevealed||!ex1sel) return;
+  EX1ANS[ex1sel]=key; ex1sel=null; saveProg(); renderExercises();
+}
+function ex3Place(key){
+  if(exRevealed||!ex3sel) return;
+  EX3ANS[ex3sel]=key; ex3sel=null; saveProg(); renderExercises();
+}
+$('ex1BinEvap').onclick=()=>ex1Place('evap');
+$('ex1BinNot').onclick=()=>ex1Place('not');
+$('ex3BinCools').onclick=()=>ex3Place('cools');
+$('ex3BinNo').onclick=()=>ex3Place('nocool');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>EX1ANS[x.id]===x.ans).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((qq,qi)=>qi).filter(qi=>EX2ANS[qi]===EX2[qi].a));
+  EX3DONE=new Set(EX3.filter(x=>EX3ANS[x.id]===x.ans).map(x=>x.id));
+  ex1sel=null; ex3sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex1sel=null; ex3sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.ans,3);
+  EX3_ORDER=mixOrder(EX3,c=>c.ans,3);
+  EX2_ORD=EX2.map(()=>fyIdx(3));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderGroups(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ OBS.hi=false; OBS.lo=false; }
+  if(step===1){ OBS.th=false; OBS.rem=false; }
+  if(step===2){ OBS.sw=false; OBS.sk=false; }
+  if(step===3){ OBS.pot=false; OBS.drip=false; }
+  if(step===4){ OBS.spo=false; OBS.fan=false; }
+  if(step===5){ OBS.per=false; OBS.soap=false; }
+  if(step===6){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= persistence hooks + registration ================= */
+function extraSave(){
+  return {obs:OBS, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.obs&&typeof s.obs==='object') OBS=Object.assign(OBS,s.obs);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3);
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(id=>{ if(EX1.some(x=>x.id===id)&&(s.exAns.a1[id]==='evap'||s.exAns.a1[id]==='not')) EX1ANS[id]=s.exAns.a1[id]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const qi=Number(k); if(Number.isInteger(qi)&&qi>=0&&qi<EX2.length&&EX2[qi].opts[s.exAns.a2[k]]) EX2ANS[qi]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(id=>{ if(EX3.some(x=>x.id===id)&&(s.exAns.a3[id]==='cools'||s.exAns.a3[id]==='nocool')) EX3ANS[id]=s.exAns.a3[id]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1.forEach(it=>{ if(EX1DONE.has(it.id)) EX1ANS[it.id]=it.ans; });
+    EX2.forEach((qq,qi)=>{ if(EX2DONE.has(qi)) EX2ANS[qi]=qq.a; });
+    EX3.forEach(it=>{ if(EX3DONE.has(it.id)) EX3ANS[it.id]=it.ans; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1hi=!!OBS.hi; t.s1lo=!!OBS.lo; }
+  else if(i===1){ t.s2th=!!OBS.th; t.s2rem=!!OBS.rem; }
+  else if(i===2){ t.s3sw=!!OBS.sw; t.s3sk=!!OBS.sk; }
+  else if(i===3){ t.s4pot=!!OBS.pot; t.s4drip=!!OBS.drip; }
+  else if(i===4){ t.s5spo=!!OBS.spo; t.s5fan=!!OBS.fan; }
+  else if(i===5){ t.s6per=!!OBS.per; t.s6soap=!!OBS.soap; }
+  else if(i===6){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s7correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci9-3-6',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>
