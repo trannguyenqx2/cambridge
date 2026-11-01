@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>5.2 Purity — Độ tinh khiết · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="5.2 Purity" data-vi="5.2 Độ tinh khiết (Purity)">5.2 Purity</span>
+    <span class="eqchip i18n" data-en="Unit 5 · Materials and their structure" data-vi="Bài 5 · Vật liệu và cấu trúc của chúng (Materials and their structure)">Unit 5 · Materials and their structure</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What does it mean for a substance to be pure — and why is a pure product so hard to get?" data-vi="Một chất tinh khiết (pure) nghĩa là gì — và vì sao một sản phẩm tinh khiết lại khó thu được đến vậy?">What does it mean for a substance to be pure — and why is a pure product so hard to get?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Pure means only one substance" data-vi="Tinh khiết (pure) nghĩa là chỉ có một chất">Pure means only one substance</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Carats and marks measure purity" data-vi="Carat và dấu khắc đo độ tinh khiết (purity)">Carats and marks measure purity</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Percentage purity = part ÷ whole × 100" data-vi="Độ tinh khiết phần trăm = phần ÷ toàn thể × 100">Percentage purity = part ÷ whole × 100</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Mixtures must be separated" data-vi="Hỗn hợp (mixtures) phải được tách ra">Mixtures must be separated</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the samples on the laboratory bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các mẫu trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap the samples on the laboratory bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 5 Materials and their structure · Section 5.2. The bench in this lesson is a simulation — no real chemicals are used." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 5 Vật liệu và cấu trúc của chúng (Materials and their structure) · Mục 5.2. Bàn thí nghiệm trong bài này là mô phỏng — không dùng hóa chất thật.">Cambridge Lower Secondary Science 8 · Unit 5 Materials and their structure · Section 5.2. The bench in this lesson is a simulation — no real chemicals are used.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner&#8217;s Book 8 (2nd edition, ISBN 9781108742825), Unit 5 Materials and their structure, section 5.2, pages 152&#8211;159; Workbook 8 (ISBN 9781108742856), pages 91&#8211;96. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner&#8217;s Book 8 (bản 2, ISBN 9781108742825), Bài 5 Vật liệu và cấu trúc của chúng (Materials and their structure), mục 5.2, trang 152&#8211;159; Sách bài tập 8 (ISBN 9781108742856), trang 91&#8211;96. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner&#8217;s Book 8 (2nd edition, ISBN 9781108742825), Unit 5 Materials and their structure, section 5.2, pages 152&#8211;159; Workbook 8 (ISBN 9781108742856), pages 91&#8211;96. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: explain what is meant by purity; calculate percentage purity; describe why it is difficult to get a pure product. Key words: carat, translucent, suggest — plus purity, pure, impurity and mixture." data-vi="Mục tiêu: giải thích độ tinh khiết (purity) nghĩa là gì; tính độ tinh khiết phần trăm; mô tả vì sao khó thu được một sản phẩm tinh khiết. Từ khóa: carat (carat), translucent (trong mờ), suggest (gợi ý) — cùng purity (độ tinh khiết), pure (tinh khiết), impurity (tạp chất) và mixture (hỗn hợp).">Objectives: explain what is meant by purity; calculate percentage purity; describe why it is difficult to get a pure product. Key words: carat, translucent, suggest — plus purity, pure, impurity and mixture.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D laboratory bench — finding pure elements, reading the carat and silver marks, comparing pure and coloured diamonds, evaporating seawater in the book&#8217;s investigation, and sorting reactions and samples. The lesson checks the action itself (the dark &#8216;Show me&#8217; line), and the answer stays locked until the action is done. &#8216;Show me how&#8217; only demonstrates — it never counts as done. The numbers are the book&#8217;s own: 18 carat gold is 18/24 = 75% gold, silver marked 925 is 92.5% silver, the salts in seawater are 3.5% of its mass and about 68% of that salt is sodium chloride, so 1000 g of seawater holds about 23.8 g of sodium chloride. Note: the Workbook Challenge graph exercise (plotting gold hardness against purity) is discussed in class rather than reproduced as a tap task, because its point is drawing and reading a graph on paper." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn thí nghiệm 3D — tìm các nguyên tố tinh khiết, đọc dấu carat và dấu bạc, so sánh kim cương tinh khiết và kim cương màu, làm bay hơi nước biển trong bài thực hành của sách, và phân loại các phản ứng và mẫu vật. Bài học tự kiểm tra hành động đó (dòng tối &#8216;Căn cứ&#8217;), và đáp án chỉ mở khi hành động đã hoàn thành. &#8216;Xem cách làm&#8217; chỉ trình diễn — không bao giờ được tính là đã làm. Các con số là của chính sách: vàng 18 carat là 18/24 = 75% vàng, bạc khắc 925 là 92.5% bạc, muối trong nước biển chiếm 3.5% khối lượng của nó và khoảng 68% lượng muối đó là natri clorua (sodium chloride), nên 1000 g nước biển chứa khoảng 23.8 g natri clorua. Lưu ý: bài vẽ đồ thị ở phần Challenge của sách bài tập (vẽ độ cứng của vàng theo độ tinh khiết) được thảo luận trên lớp thay vì làm thành nhiệm vụ chạm, vì trọng tâm của nó là vẽ và đọc đồ thị trên giấy.">How it works: each step asks for one real action on the 3D laboratory bench. The lesson checks the action itself (the dark &#8216;Show me&#8217; line), and the answer stays locked until the action is done. &#8216;Show me how&#8217; only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-5-2 "Purity" (Science 8, Unit 5)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= laboratory bench things ================= */
+const THINGS={
+  goldbar:{emoji:'🥇', name:{en:'Gold bar — a pure element',vi:'Thỏi vàng — một nguyên tố tinh khiết (pure element)'}, short:{en:'Gold',vi:'Vàng'}, ring:0.6, labelY:1.0, fx:-3.6, fz:2.0, fr:5.0},
+  oxygen:{emoji:'🫧', name:{en:'Oxygen gas — a pure element',vi:'Khí oxy (oxygen) — một nguyên tố tinh khiết'}, short:{en:'Oxygen',vi:'Oxy'}, ring:0.6, labelY:1.5, fx:-2.2, fz:2.2, fr:5.0},
+  potassium:{emoji:'🧪', name:{en:'Potassium — a pure element',vi:'Kali (potassium) — một nguyên tố tinh khiết'}, short:{en:'Potassium',vi:'Kali'}, ring:0.55, labelY:1.1, fx:-0.8, fz:2.0, fr:5.0},
+  seawater:{emoji:'🌊', name:{en:'Sea water — a mixture of water and salts',vi:'Nước biển (sea water) — một hỗn hợp (mixture) của nước và các muối'}, short:{en:'Sea water',vi:'Nước biển'}, ring:0.6, labelY:1.1, fx:0.6, fz:2.2, fr:5.0},
+  rock:{emoji:'🪨', name:{en:'Rock — a distractor sample',vi:'Hòn đá (rock) — một mẫu gây nhiễu'}, short:{en:'Rock',vi:'Hòn đá'}, ring:0.6, labelY:0.8, fx:3.8, fz:2.4, fr:5.0},
+  ring24:{emoji:'💍', name:{en:'Ring — 24 carat gold',vi:'Nhẫn — vàng 24 carat'}, short:{en:'24 carat ring',vi:'Nhẫn 24 carat'}, ring:0.55, labelY:0.9, fx:-3.4, fz:0.2, fr:5.0},
+  ring18:{emoji:'💍', name:{en:'Ring — 18 carat gold (75% gold)',vi:'Nhẫn — vàng 18 carat (75% vàng)'}, short:{en:'18 carat · 75%',vi:'18 carat · 75%'}, ring:0.55, labelY:0.9, fx:-2.0, fz:0.4, fr:5.0},
+  ring9:{emoji:'💍', name:{en:'Ring — 9 carat gold (37.5% gold)',vi:'Nhẫn — vàng 9 carat (37.5% vàng)'}, short:{en:'9 carat · 37.5%',vi:'9 carat · 37.5%'}, ring:0.55, labelY:0.9, fx:-0.6, fz:0.2, fr:5.0},
+  silver925:{emoji:'💍', name:{en:'Silver ring — marked 925 (92.5% silver)',vi:'Nhẫn bạc — khắc 925 (92.5% bạc)'}, short:{en:'Silver 925 · 92.5%',vi:'Bạc 925 · 92.5%'}, ring:0.55, labelY:0.9, fx:0.8, fz:0.4, fr:5.0},
+  basin:{emoji:'🥣', name:{en:'Evaporating basin of sea water',vi:'Bát bay hơi (evaporating basin) đựng nước biển'}, short:{en:'Evaporating basin',vi:'Bát bay hơi'}, ring:0.65, labelY:1.0, fx:2.6, fz:0.0, fr:5.0},
+  saltpile:{emoji:'🧂', name:{en:'Salt left after evaporation — a mixture of salts',vi:'Muối còn lại sau bay hơi — một hỗn hợp (mixture) các muối'}, short:{en:'Salt mixture',vi:'Hỗn hợp muối'}, ring:0.55, labelY:0.8, fx:4.2, fz:0.2, fr:5.0},
+  diaPure:{emoji:'💎', name:{en:'Pure diamond — carbon only, colourless and translucent',vi:'Kim cương tinh khiết — chỉ có carbon, không màu và trong mờ (translucent)'}, short:{en:'Pure diamond',vi:'Kim cương tinh khiết'}, ring:0.55, labelY:1.0, fx:-3.4, fz:-1.6, fr:5.0},
+  diaYellow:{emoji:'💎', name:{en:'Yellow diamond — nitrogen mixed in',vi:'Kim cương vàng — có nitơ (nitrogen) lẫn vào'}, short:{en:'Yellow diamond',vi:'Kim cương vàng'}, ring:0.55, labelY:1.0, fx:-2.0, fz:-1.8, fr:5.0},
+  diaBlue:{emoji:'💎', name:{en:'Blue diamond — boron mixed in',vi:'Kim cương xanh — có boron lẫn vào'}, short:{en:'Blue diamond',vi:'Kim cương xanh'}, ring:0.55, labelY:1.0, fx:-0.6, fz:-1.6, fr:5.0},
+  diaGreen:{emoji:'💎', name:{en:'Green diamond — the rarest colour',vi:'Kim cương xanh lá — màu hiếm nhất'}, short:{en:'Green diamond',vi:'Kim cương xanh lá'}, ring:0.55, labelY:1.0, fx:0.8, fz:-1.8, fr:5.0}
+};
+const FOCUSORDER=['goldbar','oxygen','ring18','silver925','diaPure','diaBlue','basin','saltpile'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at a sample. Looking is not doing — to do a step, tap the sample itself on the bench!',vi:'Chạm vào một tên để NGẮM một mẫu. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính mẫu đó trên bàn!'},
+  u2T:{en:'Purity record',vi:'Bảng ghi độ tinh khiết'},
+  u2Brief:{en:'The book’s own purity values, as you work them out on the bench.',vi:'Các giá trị độ tinh khiết (purity) của chính sách, khi con tìm ra chúng trên bàn thí nghiệm.'},
+  recPens:{en:'18 carat gold — gold',vi:'Vàng 18 carat — vàng'},
+  recBands:{en:'Silver marked 925 — silver',vi:'Bạc khắc 925 — bạc'},
+  recFront:{en:'Sea water — salts by mass',vi:'Nước biển — muối theo khối lượng'},
+  recEagle:{en:'Sodium chloride in 1000 g of sea water',vi:'Natri clorua (sodium chloride) trong 1000 g nước biển'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your purity checklist.',vi:'Danh sách kiểm tra về độ tinh khiết của con.'},
+  didSetup:{en:'Found pure elements',vi:'Đã tìm các nguyên tố tinh khiết'},
+  didRun:{en:'Calculated percentage purity from carats and marks',vi:'Đã tính độ tinh khiết phần trăm từ carat và dấu khắc'},
+  didSort:{en:'Sorted pure substances from mixtures',vi:'Đã phân loại chất tinh khiết và hỗn hợp (mixtures)'},
+  didPlant:{en:'Evaporated sea water and weighed its salts',vi:'Đã làm bay hơi nước biển và cân muối của nó'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'PURE — one substance only',vi:'TINH KHIẾT (pure) — chỉ một chất duy nhất'},
+  binMix:{en:'MIXTURE — substances mixed together',vi:'HỖN HỢP (mixture) — các chất trộn lẫn với nhau'},
+  binSingle:{en:'ONE PRODUCT ONLY',vi:'CHỈ MỘT SẢN PHẨM'},
+  binMulti:{en:'MORE THAN ONE PRODUCT',vi:'NHIỀU HƠN MỘT SẢN PHẨM'},
+  binPerm:{en:'PURE GOLD — 24 carat ✓',vi:'VÀNG TINH KHIẾT — 24 carat ✓'},
+  binNot:{en:'ALLOY — less than 24 carat',vi:'HỢP KIM (alloy) — dưới 24 carat'},
+  lookPaper:{en:'Look at the pure diamond 💎',vi:'Ngắm kim cương tinh khiết 💎'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 5.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 5.2'},
+  exIntro:{en:'Workbook games for this lesson (Exercise 5.2): diamonds and purity in Focus, carats and pure gold in Practice, and a Challenge on the key ideas. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này (Bài tập 5.2): kim cương và độ tinh khiết ở Focus, carat và vàng tinh khiết ở Practice, và phần Challenge về các ý chính. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Diamonds and purity',vi:'Bài tập 1 · Focus — Kim cương và độ tinh khiết (purity)'},
+  ex1Inst:{en:'Tap the 4 cards that are TRUE about diamonds and purity.',vi:'Chạm vào 4 thẻ ĐÚNG về kim cương và độ tinh khiết (purity).'},
+  ex2T:{en:'Exercise 2 · Practice — Pure gold or alloy?',vi:'Bài tập 2 · Practice — Vàng tinh khiết hay hợp kim (alloy)?'},
+  ex2Inst:{en:'Gold objects are marked in carats: 24 carat is pure gold, anything less is an alloy with other metals mixed in. Tap a card, then tap PURE GOLD — 24 carat or ALLOY.',vi:'Đồ vàng được khắc theo carat: 24 carat là vàng tinh khiết (pure), thấp hơn là hợp kim (alloy) có kim loại khác trộn vào. Chạm vào một thẻ, rồi chạm VÀNG TINH KHIẾT — 24 carat hoặc HỢP KIM.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai'},
+  ex3Inst:{en:'In each sentence, tap the WRONG word or phrase to cross it out.',vi:'Trong mỗi câu, chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'purity',vi:'độ tinh khiết'},
+  {en:'pure',vi:'tinh khiết'},
+  {en:'carat',vi:'carat — 1/24 của vàng tinh khiết'},
+  {en:'translucent',vi:'trong mờ — cho ánh sáng đi qua'},
+  {en:'suggest',vi:'gợi ý / đề xuất'},
+  {en:'impurity',vi:'tạp chất'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'What does pure mean?',vi:'Tinh khiết nghĩa là gì?'}, word:{en:'pure',vi:'tinh khiết'},
+  q:{en:'A pure element is made of only one kind of atom. Which samples on the bench are pure elements?',vi:'Một nguyên tố tinh khiết (pure element) chỉ gồm một loại nguyên tử. Những mẫu nào trên bàn là nguyên tố tinh khiết?'},
+  act:{en:'Tap the three pure elements on the bench: the gold bar, the oxygen and the potassium. Sea water is a mixture, so leave it alone.',vi:'Chạm vào ba nguyên tố tinh khiết trên bàn: thỏi vàng, oxy (oxygen) và kali (potassium). Nước biển là một hỗn hợp (mixture), nên đừng chạm vào nó.'},
+  see:{en:'Each pure element bounces and shows its name. Finding all three completes the step.',vi:'Mỗi nguyên tố tinh khiết nảy lên và hiện tên. Tìm đủ ba nguyên tố là hoàn thành bước.'},
+  concl:[
+    {en:'A substance is pure (pure) when it contains only one substance — a pure element contains only one kind of atom, all exactly the same.',vi:'Một chất là tinh khiết (pure) khi nó chỉ chứa một chất duy nhất — một nguyên tố tinh khiết chỉ chứa một loại nguyên tử, tất cả giống hệt nhau.'},
+    {en:'Gold, oxygen and potassium can each be pure elements. Sea water, orange juice and soil are mixtures (mixtures) — more than one substance mixed together.',vi:'Vàng, oxy (oxygen) và kali (potassium) đều có thể là nguyên tố tinh khiết. Nước biển, nước cam và đất là hỗn hợp (mixtures) — nhiều hơn một chất trộn lẫn với nhau.'}]},
+ {tag:{en:'Carats and silver marks',vi:'Carat và dấu khắc bạc'}, word:{en:'carat',vi:'carat'},
+  q:{en:'Gold is marked in carats (carat) out of 24, and silver in parts out of 1000. What purity does each mark mean?',vi:'Vàng được khắc theo carat (carat) trên 24, còn bạc theo số phần trên 1000. Mỗi dấu khắc cho biết độ tinh khiết bao nhiêu?'},
+  act:{en:'Tap the 18 carat gold ring, then tap the silver ring marked 925, and work out each percentage as you go.',vi:'Chạm vào nhẫn vàng 18 carat, rồi chạm vào nhẫn bạc khắc 925, và tính phần trăm của từng chiếc khi làm.'},
+  see:{en:'Each ring shows its mark and its percentage: 18/24 = 75% gold, and 925/1000 = 92.5% silver.',vi:'Mỗi chiếc nhẫn hiện dấu khắc và phần trăm của nó: 18/24 = 75% vàng, và 925/1000 = 92.5% bạc.'},
+  concl:[
+    {en:'Percentage purity = (part that is the pure substance ÷ whole) × 100. For gold the whole is 24 carats (carat): 18 carat gold is 18 ÷ 24 × 100 = 75% gold, and the other 6 parts are metals such as silver or copper — an alloy.',vi:'Độ tinh khiết phần trăm = (phần là chất tinh khiết ÷ toàn thể) × 100. Với vàng, toàn thể là 24 carat (carat): vàng 18 carat là 18 ÷ 24 × 100 = 75% vàng, và 6 phần còn lại là các kim loại như bạc hay đồng — một hợp kim (alloy).'},
+    {en:'Silver marked 925 is 925 ÷ 1000 × 100 = 92.5% silver, so it is purer than silver marked 900, which is 90% silver.',vi:'Bạc khắc 925 là 925 ÷ 1000 × 100 = 92.5% bạc, nên nó tinh khiết hơn bạc khắc 900, vốn là 90% bạc.'},
+    {en:'Pure gold itself is 24 carat — 24/24, or 100% gold.',vi:'Bản thân vàng tinh khiết là 24 carat — 24/24, tức 100% vàng.'}]},
+ {tag:{en:'Coloured diamonds',vi:'Kim cương màu'}, word:{en:'translucent',vi:'trong mờ'},
+  q:{en:'Diamonds are made of the element carbon. A pure diamond is colourless — so where do coloured diamonds come from?',vi:'Kim cương được tạo thành từ nguyên tố carbon. Một viên kim cương tinh khiết không có màu — vậy kim cương màu từ đâu ra?'},
+  act:{en:'Tap the pure diamond, then the yellow diamond, then the blue diamond, and notice which extra element each coloured one contains.',vi:'Chạm vào viên kim cương tinh khiết, rồi viên kim cương vàng, rồi viên kim cương xanh, và để ý mỗi viên màu chứa thêm nguyên tố nào.'},
+  see:{en:'The pure diamond is colourless and translucent (translucent — it lets light through). The yellow one holds nitrogen atoms; the blue one holds boron atoms.',vi:'Viên kim cương tinh khiết không màu và trong mờ (translucent — nó cho ánh sáng đi qua). Viên vàng chứa nguyên tử nitơ (nitrogen); viên xanh chứa nguyên tử boron.'},
+  concl:[
+    {en:'A pure diamond contains only carbon atoms, arranged in a particular way. It is colourless and translucent (translucent).',vi:'Một viên kim cương tinh khiết chỉ chứa nguyên tử carbon, sắp xếp theo một cách nhất định. Nó không màu và trong mờ (translucent).'},
+    {en:'When a few carbon atoms are replaced by nitrogen atoms, the diamond turns yellow. When some are replaced by boron atoms, it turns blue.',vi:'Khi một vài nguyên tử carbon bị thay bằng nguyên tử nitơ (nitrogen), kim cương chuyển sang màu vàng. Khi một số bị thay bằng nguyên tử boron, nó chuyển sang màu xanh.'},
+    {en:'The rarest colour of all is green, formed when about one carbon atom in 1000 is replaced by nitrogen, nickel or hydrogen.',vi:'Màu hiếm nhất là xanh lá, hình thành khi khoảng một nguyên tử carbon trong 1000 bị thay bằng nitơ (nitrogen), niken (nickel) hoặc hydro (hydrogen).'}]},
+ {tag:{en:'Salts from sea water',vi:'Muối từ nước biển'}, word:{en:'purity',vi:'độ tinh khiết'},
+  q:{en:'Sea water tastes salty. If you evaporate the water away, is the salt left behind pure sodium chloride?',vi:'Nước biển có vị mặn. Nếu con làm bay hơi hết nước, muối còn lại có phải là natri clorua (sodium chloride) tinh khiết không?'},
+  act:{en:'Carry out the book’s evaporation investigation in order: tap the sea water sample, then the evaporating basin (heat it until the water has gone), then the pile of salt left behind.',vi:'Thực hiện bài thực hành bay hơi của sách theo thứ tự: chạm vào mẫu nước biển, rồi bát bay hơi (evaporating basin) (đun cho tới khi nước bay hơi hết), rồi đống muối còn lại.'},
+  see:{en:'The water evaporates and a white pile of salts remains. In the book’s figures, salts are 3.5% of sea water by mass — 35 g in every 1000 g.',vi:'Nước bay hơi và một đống muối trắng còn lại. Theo số liệu của sách, muối chiếm 3.5% khối lượng nước biển — 35 g trong mỗi 1000 g.'},
+  concl:[
+    {en:'Evaporating sea water leaves ALL of its dissolved salts behind, not just one of them — so the salt obtained is a mixture (mixture), not a pure substance.',vi:'Làm bay hơi nước biển để lại TẤT CẢ các muối đã hòa tan của nó, không chỉ một muối — nên muối thu được là một hỗn hợp (mixture), không phải một chất tinh khiết.'},
+    {en:'About 68% of the salt in sea water is sodium chloride; the rest is magnesium chloride, sodium sulfate, calcium chloride and other salts. So salt from sea water is only about 68% pure sodium chloride.',vi:'Khoảng 68% muối trong nước biển là natri clorua (sodium chloride); phần còn lại là magie clorua (magnesium chloride), natri sunfat (sodium sulfate), canxi clorua (calcium chloride) và các muối khác. Nên muối từ nước biển chỉ tinh khiết khoảng 68% natri clorua.'},
+    {en:'The mass of sodium chloride in 1000 g of sea water is 35 × 68 ÷ 100 = 23.8 g. Getting it pure means removing the other salts as well.',vi:'Khối lượng natri clorua (sodium chloride) trong 1000 g nước biển là 35 × 68 ÷ 100 = 23.8 g. Muốn nó tinh khiết còn phải loại bỏ các muối khác nữa.'}]},
+ {tag:{en:'One product or many?',vi:'Một sản phẩm hay nhiều?'}, word:{en:'suggest',vi:'gợi ý'},
+  q:{en:'A chemical reaction makes products. When is a product easy to get pure, and when is it mixed up with other things?',vi:'Một phản ứng hóa học tạo ra các sản phẩm. Khi nào một sản phẩm dễ thu được ở dạng tinh khiết, và khi nào nó bị trộn lẫn với các thứ khác?'},
+  act:{en:'Each card shows a reaction and its products. Tap a card, then tap ONE PRODUCT ONLY or MORE THAN ONE PRODUCT.',vi:'Mỗi thẻ cho thấy một phản ứng và các sản phẩm của nó. Chạm vào một thẻ, rồi chạm CHỈ MỘT SẢN PHẨM hoặc NHIỀU HƠN MỘT SẢN PHẨM.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'In a simple reaction there is only one product — magnesium + oxygen → magnesium oxide — so that product starts off on its own.',vi:'Trong một phản ứng đơn giản chỉ có một sản phẩm — magie (magnesium) + oxy (oxygen) → magie oxit (magnesium oxide) — nên sản phẩm đó bắt đầu ở dạng riêng lẻ.'},
+    {en:'In many reactions there are two or more products mixed together, and they may also be mixed with reactants that were not all used up. The products must be separated and purified before any one of them is pure.',vi:'Trong nhiều phản ứng có hai sản phẩm trở lên trộn lẫn với nhau, và chúng còn có thể trộn với các chất phản ứng (reactants) chưa dùng hết. Các sản phẩm phải được tách ra và tinh chế trước khi bất kỳ sản phẩm nào trong số chúng trở nên tinh khiết.'},
+    {en:'This matters most for products such as medicines, which must be free from impurities (impurities) that could change how they work or harm the patient.',vi:'Điều này quan trọng nhất với các sản phẩm như thuốc (medicines), vốn phải không có tạp chất (impurities) có thể làm thay đổi tác dụng của thuốc hoặc gây hại cho người bệnh.'}]},
+ {tag:{en:'Pure substance or mixture?',vi:'Chất tinh khiết hay hỗn hợp?'}, word:{en:'mixture',vi:'hỗn hợp'},
+  q:{en:'Can you sort samples the way the Getting started activity asked — which of these are pure substances, and which are mixtures?',vi:'Con có phân loại các mẫu như hoạt động Khởi động đã yêu cầu không — mẫu nào là chất tinh khiết, và mẫu nào là hỗn hợp (mixtures)?'},
+  act:{en:'Tap a card, then tap PURE or MIXTURE.',vi:'Chạm vào một thẻ, rồi chạm TINH KHIẾT (PURE) hoặc HỖN HỢP (MIXTURE).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'A pure substance contains only one substance: an element such as oxygen or potassium, or a compound such as sodium chloride or copper oxide on its own.',vi:'Một chất tinh khiết chỉ chứa một chất duy nhất: một nguyên tố như oxy (oxygen) hay kali (potassium), hoặc một hợp chất như natri clorua (sodium chloride) hay đồng oxit (copper oxide) ở dạng riêng lẻ.'},
+    {en:'Sea water, orange juice, soil and black ink are mixtures (mixtures) — several substances mixed together, so none of them is pure.',vi:'Nước biển, nước cam, đất và mực đen là các hỗn hợp (mixtures) — nhiều chất trộn lẫn với nhau, nên không mẫu nào trong số chúng là tinh khiết.'},
+    {en:'I can explain what is meant by purity.',vi:'Con giải thích được độ tinh khiết (purity) nghĩa là gì.'},
+    {en:'I can calculate percentage purity.',vi:'Con tính được độ tinh khiết phần trăm (percentage purity).'},
+    {en:'I can explain why it is difficult to obtain a pure product.',vi:'Con giải thích được vì sao khó thu được một sản phẩm tinh khiết (pure product).'}]}
+];
+const REACT=[
+ {id:'r_mgo',emoji:'🔥',en:'Magnesium + oxygen → magnesium oxide',vi:'Magie (magnesium) + oxy (oxygen) → magie oxit (magnesium oxide)',ans:'single'},
+ {id:'r_acidalk',emoji:'🧪',en:'Sulfuric acid + sodium hydroxide → sodium sulfate + water',vi:'Axit sunfuric (sulfuric acid) + natri hydroxit (sodium hydroxide) → natri sunfat (sodium sulfate) + nước (water)',ans:'multi'},
+ {id:'r_h2o',emoji:'💧',en:'Hydrogen + oxygen → water',vi:'Hydro (hydrogen) + oxy (oxygen) → nước (water)',ans:'single'},
+ {id:'r_barium',emoji:'⚗️',en:'Barium chloride + sodium sulfate → barium sulfate + sodium chloride',vi:'Bari clorua (barium chloride) + natri sunfat (sodium sulfate) → bari sunfat (barium sulfate) + natri clorua (sodium chloride)',ans:'multi'},
+ {id:'r_fes',emoji:'🪨',en:'Iron + sulfur → iron sulfide',vi:'Sắt (iron) + lưu huỳnh (sulfur) → sắt sunfua (iron sulfide)',ans:'single'},
+ {id:'r_copper',emoji:'🫧',en:'Copper carbonate + hydrochloric acid → copper chloride + water + carbon dioxide',vi:'Đồng cacbonat (copper carbonate) + axit clohydric (hydrochloric acid) → đồng clorua (copper chloride) + nước (water) + carbon dioxide',ans:'multi'}
+];
+const REACT_ORDER=mixOrder(REACT,c=>c.ans,2);
+const CLASS=[
+ {id:'c_oxygen',emoji:'🫧',en:'Oxygen on its own',vi:'Oxy (oxygen) ở dạng riêng lẻ',ans:'pure'},
+ {id:'c_seawater',emoji:'🌊',en:'Sea water',vi:'Nước biển (sea water)',ans:'mixture'},
+ {id:'c_nacl',emoji:'🧂',en:'Sodium chloride on its own',vi:'Natri clorua (sodium chloride) ở dạng riêng lẻ',ans:'pure'},
+ {id:'c_juice',emoji:'🍊',en:'Orange juice',vi:'Nước cam (orange juice)',ans:'mixture'},
+ {id:'c_cuo',emoji:'🧪',en:'Copper oxide on its own',vi:'Đồng oxit (copper oxide) ở dạng riêng lẻ',ans:'pure'},
+ {id:'c_ink',emoji:'🖋️',en:'Black ink',vi:'Mực đen (black ink)',ans:'mixture'}
+];
+const CLASS_ORDER=mixOrder(CLASS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'What percentage of 9 carat gold is gold?',vi:'Vàng 9 carat có bao nhiêu phần trăm là vàng?'},
+  o:[{en:'9%',vi:'9%'},{en:'37.5%',vi:'37.5%'},{en:'75%',vi:'75%'}],a:1,
+  e:{en:'9 ÷ 24 × 100 = 37.5%. Carats are parts out of 24.',vi:'9 ÷ 24 × 100 = 37.5%. Carat là số phần trên 24.'}},
+ {q:{en:'What percentage of silver is in silver marked 900?',vi:'Bạc khắc 900 có bao nhiêu phần trăm là bạc?'},
+  o:[{en:'85%',vi:'85%'},{en:'92.5%',vi:'92.5%'},{en:'90%',vi:'90%'}],a:2,
+  e:{en:'900 ÷ 1000 × 100 = 90%. Silver marks are parts out of 1000.',vi:'900 ÷ 1000 × 100 = 90%. Dấu khắc bạc là số phần trên 1000.'}},
+ {q:{en:'Which element mixed with carbon in a diamond makes it blue?',vi:'Nguyên tố nào lẫn với carbon trong kim cương làm cho nó có màu xanh?'},
+  o:[{en:'Boron',vi:'Boron'},{en:'Nitrogen',vi:'Nitơ (nitrogen)'},{en:'Nickel',vi:'Niken (nickel)'}],a:0,
+  e:{en:'Boron atoms replacing some carbon atoms give a blue diamond. Nitrogen gives a yellow one.',vi:'Nguyên tử boron thay thế một số nguyên tử carbon cho ra kim cương xanh. Nitơ (nitrogen) cho ra kim cương vàng.'}},
+ {q:{en:'Why is the sodium chloride obtained from sea water not pure?',vi:'Vì sao natri clorua (sodium chloride) thu được từ nước biển không tinh khiết?'},
+  o:[{en:'Because the water evaporates too slowly',vi:'Vì nước bay hơi quá chậm'},{en:'Because other salts are dissolved in the sea water too, and they are left behind with it',vi:'Vì các muối khác cũng hòa tan trong nước biển, và chúng còn lại cùng với nó'},{en:'Because sodium chloride disappears when it is heated',vi:'Vì natri clorua biến mất khi bị đun nóng'}],a:1,
+  e:{en:'Sea water contains several dissolved salts. Evaporation leaves them all behind together, so the sodium chloride is only about 68% pure.',vi:'Nước biển chứa nhiều muối hòa tan. Sự bay hơi để tất cả chúng lại cùng nhau, nên natri clorua (sodium chloride) chỉ tinh khiết khoảng 68%.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_carbon',emoji:'💎',en:'Diamonds are made of carbon atoms',vi:'Kim cương được tạo thành từ nguyên tử carbon',keyw:true},
+ {id:'e_hydro',emoji:'💧',en:'Diamonds are made only of hydrogen atoms',vi:'Kim cương chỉ được tạo thành từ nguyên tử hydro (hydrogen)',keyw:false},
+ {id:'e_pureclear',emoji:'✨',en:'A pure diamond is colourless and translucent — it lets light through',vi:'Một viên kim cương tinh khiết không màu và trong mờ (translucent) — nó cho ánh sáng đi qua',keyw:true},
+ {id:'e_yellowpure',emoji:'🟨',en:'Pure diamonds are always yellow',vi:'Kim cương tinh khiết luôn có màu vàng',keyw:false},
+ {id:'e_nitrogen',emoji:'🟡',en:'Nitrogen atoms mixed in with the carbon make a diamond yellow',vi:'Nguyên tử nitơ (nitrogen) lẫn vào carbon làm kim cương có màu vàng',keyw:true},
+ {id:'e_nitroblue',emoji:'🔵',en:'Nitrogen atoms mixed in make a diamond blue',vi:'Nguyên tử nitơ (nitrogen) lẫn vào làm kim cương có màu xanh',keyw:false},
+ {id:'e_boron',emoji:'💙',en:'Boron atoms mixed in with the carbon make a diamond blue',vi:'Nguyên tử boron lẫn vào carbon làm kim cương có màu xanh',keyw:true},
+ {id:'e_greencommon',emoji:'🟢',en:'Green is the most common colour of diamond',vi:'Xanh lá là màu phổ biến nhất của kim cương',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_ring24',emoji:'💍',en:'A ring marked 24 carat',vi:'Một chiếc nhẫn khắc 24 carat',ans:'biased'},
+ {id:'x_bracelet18',emoji:'📿',en:'A bracelet marked 18 carat — 75% gold, the rest other metals',vi:'Một chiếc vòng khắc 18 carat — 75% vàng, phần còn lại là kim loại khác',ans:'independent'},
+ {id:'x_coin24',emoji:'🪙',en:'A coin marked 24 carat',vi:'Một đồng xu khắc 24 carat',ans:'biased'},
+ {id:'x_earring9',emoji:'✨',en:'Earrings marked 9 carat — 37.5% gold',vi:'Đôi bông tai khắc 9 carat — 37.5% vàng',ans:'independent'},
+ {id:'x_bar24',emoji:'🥇',en:'A gold bar marked 24 carat',vi:'Một thỏi vàng khắc 24 carat',ans:'biased'},
+ {id:'x_necklace14',emoji:'📿',en:'A necklace marked 14 carat — about 58.3% gold',vi:'Một chiếc dây chuyền khắc 14 carat — khoảng 58.3% vàng',ans:'independent'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Pure gold is marked',vi:'Vàng tinh khiết (pure gold) được khắc'},wrong:1,
+  opts:[{en:'24 carat',vi:'24 carat'},{en:'9 carat',vi:'9 carat'}],
+  e:{en:'Pure gold is 24 carat — 24/24 is 100% gold. Cross out “9 carat”.',vi:'Vàng tinh khiết là 24 carat — 24/24 là 100% vàng. Hãy gạch bỏ “9 carat”.'}},
+ {pre:{en:'A pure diamond lets light through — it is',vi:'Một viên kim cương tinh khiết cho ánh sáng đi qua — nó'},wrong:1,
+  opts:[{en:'translucent',vi:'trong mờ (translucent)'},{en:'opaque',vi:'đục — không cho ánh sáng qua (opaque)'}],
+  e:{en:'Translucent means light can pass through. A pure diamond is translucent, not opaque — cross out “opaque”.',vi:'Trong mờ (translucent) nghĩa là ánh sáng có thể đi qua. Một viên kim cương tinh khiết trong mờ, không đục — hãy gạch bỏ “opaque”.'}},
+ {pre:{en:'18 carat gold is',vi:'Vàng 18 carat là'},wrong:1,
+  opts:[{en:'75% gold',vi:'75% vàng'},{en:'18% gold',vi:'18% vàng'}],
+  e:{en:'18 ÷ 24 × 100 = 75%, not 18%. Cross out “18% gold”.',vi:'18 ÷ 24 × 100 = 75%, không phải 18%. Hãy gạch bỏ “18% vàng”.'}},
+ {pre:{en:'The salt left when sea water evaporates is',vi:'Muối còn lại khi nước biển bay hơi là'},wrong:0,
+  opts:[{en:'pure sodium chloride',vi:'natri clorua (sodium chloride) tinh khiết'},{en:'a mixture of salts',vi:'một hỗn hợp (mixture) các muối'}],
+  e:{en:'Several salts are dissolved in sea water, so evaporation leaves a mixture of salts — cross out “pure sodium chloride”.',vi:'Nhiều muối hòa tan trong nước biển, nên bay hơi để lại một hỗn hợp (mixture) các muối — hãy gạch bỏ “natri clorua tinh khiết”.'}},
+ {pre:{en:'Silver marked 925 is',vi:'Bạc khắc 925 là'},wrong:1,
+  opts:[{en:'92.5% silver',vi:'92.5% bạc'},{en:'925% silver',vi:'925% bạc'}],
+  e:{en:'925 ÷ 1000 × 100 = 92.5%. A percentage cannot be 925% here — cross out “925% silver”.',vi:'925 ÷ 1000 × 100 = 92.5%. Ở đây phần trăm không thể là 925% — hãy gạch bỏ “925% bạc”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-5-2';
+const SUMKEY='camb:sum:sci8-5-2';
+const BOT_CODE='sci8-5.2';
+let FOUND={gold:false,oxy:false,pot:false,ring:false,silv:false,diaP:false,diaY:false,diaB:false,sea:false,basin:false,salt:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fGold:false, fOxy:false, fPot:false,
+  s2ring:false, s2silv:false,
+  s3pure:false, s3yel:false, s3blue:false,
+  s4sea:false, s4basin:false, s4salt:false,
+  s5correct:new Set(), s5sel:null,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fGold&&T.fOxy&&T.fPot;
+  if(i===1) return T.s2ring&&T.s2silv;
+  if(i===2) return T.s3pure&&T.s3yel&&T.s3blue;
+  if(i===3) return T.s4sea&&T.s4basin&&T.s4salt;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Pure elements found: gold '+(T.fGold?'✓':'…')+' · oxygen '+(T.fOxy?'✓':'…')+' · potassium '+(T.fPot?'✓':'…')+'. Tap the samples on the bench!',
+                     'Nguyên tố tinh khiết đã tìm: vàng '+(T.fGold?'✓':'…')+' · oxy (oxygen) '+(T.fOxy?'✓':'…')+' · kali (potassium) '+(T.fPot?'✓':'…')+'. Hãy chạm vào các mẫu trên bàn!');
+  if(i===1) return B('18 carat ring: 18/24 = 75% gold '+(T.s2ring?'✓':'…')+' · silver 925: 925/1000 = 92.5% silver '+(T.s2silv?'✓':'…')+'.',
+                     'Nhẫn 18 carat: 18/24 = 75% vàng '+(T.s2ring?'✓':'…')+' · bạc 925: 925/1000 = 92.5% bạc '+(T.s2silv?'✓':'…')+'.');
+  if(i===2) return B('Diamonds examined: pure — carbon only '+(T.s3pure?'✓':'…')+' · yellow — nitrogen '+(T.s3yel?'✓':'…')+' · blue — boron '+(T.s3blue?'✓':'…')+'.',
+                     'Kim cương đã xem: tinh khiết — chỉ có carbon '+(T.s3pure?'✓':'…')+' · vàng — nitơ (nitrogen) '+(T.s3yel?'✓':'…')+' · xanh — boron '+(T.s3blue?'✓':'…')+'.');
+  if(i===3) return B('Investigation: sea water sample '+(T.s4sea?'✓':'…')+' · evaporated in the basin '+(T.s4basin?'✓':'…')+' · salt mixture left behind '+(T.s4salt?'✓':'…')+'. Salts are 3.5% of sea water by mass.',
+                     'Thực hành: mẫu nước biển '+(T.s4sea?'✓':'…')+' · đã bay hơi trong bát '+(T.s4basin?'✓':'…')+' · hỗn hợp muối còn lại '+(T.s4salt?'✓':'…')+'. Muối chiếm 3.5% khối lượng nước biển.');
+  if(i===4){
+    const c=T.s5sel? REACT.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap ONE PRODUCT ONLY or MORE THAN ONE PRODUCT.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm CHỈ MỘT SẢN PHẨM hoặc NHIỀU HƠN MỘT SẢN PHẨM.');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5){
+    const c=T.s6sel? CLASS.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap PURE or MIXTURE.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm TINH KHIẾT (PURE) hoặc HỖN HỢP (MIXTURE).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🥇',label:{en:'Gold — pure element',vi:'Vàng — nguyên tố tinh khiết'},got:T.fGold},
+      {emoji:'🫧',label:{en:'Oxygen — pure element',vi:'Oxy — nguyên tố tinh khiết'},got:T.fOxy},
+      {emoji:'🧪',label:{en:'Potassium — pure element',vi:'Kali — nguyên tố tinh khiết'},got:T.fPot}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'💍',label:{en:'18 carat gold — 75%',vi:'Vàng 18 carat — 75%'},got:T.s2ring},
+      {emoji:'💍',label:{en:'Silver 925 — 92.5%',vi:'Bạc 925 — 92.5%'},got:T.s2silv}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'💎',label:{en:'Pure — carbon only',vi:'Tinh khiết — chỉ có carbon'},got:T.s3pure},
+      {emoji:'🟡',label:{en:'Yellow — nitrogen',vi:'Vàng — nitơ'},got:T.s3yel},
+      {emoji:'💙',label:{en:'Blue — boron',vi:'Xanh — boron'},got:T.s3blue}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🌊',label:{en:'Sea water sample',vi:'Mẫu nước biển'},got:T.s4sea},
+      {emoji:'🥣',label:{en:'Evaporate in the basin',vi:'Bay hơi trong bát'},got:T.s4basin},
+      {emoji:'🧂',label:{en:'Salt mixture left',vi:'Hỗn hợp muối còn lại'},got:T.s4salt}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,REACT_ORDER,
+      [{key:'single',label:STR.binSingle,cls:'living'},{key:'multi',label:STR.binMulti,cls:'nonliving'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    buildSort(box,CLASS_ORDER,
+      [{key:'pure',label:STR.binPure,cls:'living'},{key:'mixture',label:STR.binMix,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('goldbar'); bounceThing('goldbar'); setTimeout(()=>{ focusVisual('oxygen'); bounceThing('oxygen'); },900); }
+  else if(i===1){ focusThing('ring18'); setTimeout(()=>focusThing('silver925'),900); }
+  else if(i===2){ focusThing('diaPure'); setTimeout(()=>focusThing('diaBlue'),900); }
+  else if(i===3){ focusThing('seawater'); setTimeout(()=>focusThing('saltpile'),900); }
+  else if(i===4){ demoSort(REACT,T.s5correct); }
+  else if(i===5){ demoSort(CLASS,T.s6correct); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t2=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t2.emoji+'</span>'+biInl(t2.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recPens)+'</span><b>'+(FOUND.ring?'75%':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recBands)+'</span><b>'+(FOUND.silv?'92.5%':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recFront)+'</span><b>'+(FOUND.salt?'3.5%':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recEagle)+'</span><b>'+(FOUND.salt?'23.8 g':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(1),label:STR.didRun},
+    {got:doneSteps.has(3),label:STR.didPlant},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let pondMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildBar(color,x,z){
+  const g=new THREE.Group();
+  const bar=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.72,0.22,0.4),stdMat(color,0.35)));
+  bar.position.y=0.32; bar.rotation.y=0.3; g.add(bar);
+  const bar2=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.6,0.2,0.36),stdMat(color,0.35)));
+  bar2.position.set(0.08,0.52,0.02); bar2.rotation.y=-0.15; g.add(bar2);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildTank(color,x,z){
+  const g=new THREE.Group();
+  const tank=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,1.05,16),stdMat(color,0.4)));
+  tank.position.y=0.55; g.add(tank);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.18,10),stdMat(0x39424e,0.6));
+  cap.position.y=1.16; g.add(cap);
+  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.265,0.265,0.28,16),stdMat(0xf5f0e6,0.6));
+  band.position.y=0.62; g.add(band);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildJar(color,x,z){
+  const g=new THREE.Group();
+  const jar=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.62,14),new THREE.MeshStandardMaterial({color:color,roughness:0.25,transparent:true,opacity:0.75})));
+  jar.position.y=0.33; g.add(jar);
+  const fill=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.29,0.3,14),stdMat(0xd8dde2,0.7));
+  fill.position.y=0.2; g.add(fill);
+  const lid=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.32,0.07,14),stdMat(0x39424e,0.6));
+  lid.position.y=0.67; g.add(lid);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildRing(color,x,z){
+  const g=new THREE.Group();
+  const ring=shadowed(new THREE.Mesh(new THREE.TorusGeometry(0.3,0.085,12,28),stdMat(color,0.3)));
+  ring.position.y=0.42; ring.rotation.x=0.5; g.add(ring);
+  const gem=new THREE.Mesh(new THREE.OctahedronGeometry(0.11),stdMat(0xdff4ff,0.2));
+  gem.position.set(0,0.72,0.14); g.add(gem);
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.26,0.1,12),stdMat(0x44586e,0.7));
+  stand.position.y=0.05; g.add(stand);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildDiamond(color,x,z){
+  const g=new THREE.Group();
+  const gem=shadowed(new THREE.Mesh(new THREE.OctahedronGeometry(0.34),new THREE.MeshStandardMaterial({color:color,roughness:0.15,transparent:true,opacity:0.9})));
+  gem.position.y=0.5; gem.scale.y=1.25; g.add(gem);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.1,14),stdMat(0x2c3e50,0.7));
+  base.position.y=0.05; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBasin(x,z){
+  const g=new THREE.Group();
+  const basin=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.52,0.3,0.24,20),stdMat(0xf0ead8,0.5)));
+  basin.position.y=0.3; g.add(basin);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.46,0.46,0.05,20),stdMat(0x3fa7d6,0.3));
+  water.position.y=0.4; g.add(water);
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.4,0.2,14),stdMat(0x39424e,0.7));
+  stand.position.y=0.1; g.add(stand);
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.26,8),new THREE.MeshBasicMaterial({color:0xff8c42}));
+  flame.position.set(0.62,0.14,0); g.add(flame);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildSalt(x,z){
+  const g=new THREE.Group();
+  const pile=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.42,0.36,16),stdMat(0xffffff,0.85)));
+  pile.position.y=0.18; g.add(pile);
+  const dish=new THREE.Mesh(new THREE.CylinderGeometry(0.52,0.4,0.07,18),stdMat(0xb9c9d8,0.6));
+  dish.position.y=0.035; g.add(dish);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildRock(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.42,0),stdMat(0x8d99a6,0.95)));
+  r.position.y=0.3; r.scale.y=0.75; g.add(r);
+  g.position.set(3.8,0,2.4); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xe8eef2);
+  scene3.fog=new THREE.Fog(0xe8eef2,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0xb08954,0.9));
+  bench.position.set(0.8,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd5dde3,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xf2f5f7,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  reg('goldbar',buildBar(0xf2c230,-3.6,2.0));
+  reg('oxygen',buildTank(0x3d7bd6,-2.2,2.2));
+  reg('potassium',buildJar(0xb9c9d8,-0.8,2.0));
+  reg('seawater',buildJar(0x3fa7d6,0.6,2.2));
+  reg('rock',buildRock());
+  reg('ring24',buildRing(0xffd94d,-3.4,0.2));
+  reg('ring18',buildRing(0xf2c230,-2.0,0.4));
+  reg('ring9',buildRing(0xe0a83e,-0.6,0.2));
+  reg('silver925',buildRing(0xd8dde2,0.8,0.4));
+  reg('basin',buildBasin(2.6,0.0));
+  reg('saltpile',buildSalt(4.2,0.2));
+  reg('diaPure',buildDiamond(0xeaf7ff,-3.4,-1.6));
+  reg('diaYellow',buildDiamond(0xffd94d,-2.0,-1.8));
+  reg('diaBlue',buildDiamond(0x6db3f2,-0.6,-1.6));
+  reg('diaGreen',buildDiamond(0x7ed37e,0.8,-1.8));
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.55); p.position.set(0,0.35,0); addProxy('goldbar',p,G.goldbar); }
+  { const p=sphProxy(0.52); p.position.set(0,0.6,0); addProxy('oxygen',p,G.oxygen); }
+  { const p=sphProxy(0.5); p.position.set(0,0.35,0); addProxy('potassium',p,G.potassium); }
+  { const p=sphProxy(0.5); p.position.set(0,0.35,0); addProxy('seawater',p,G.seawater); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('rock',p,G.rock); }
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('ring24',p,G.ring24); }
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('ring18',p,G.ring18); }
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('ring9',p,G.ring9); }
+  { const p=sphProxy(0.5); p.position.set(0,0.42,0); addProxy('silver925',p,G.silver925); }
+  { const p=sphProxy(0.58); p.position.set(0,0.3,0); addProxy('basin',p,G.basin); }
+  { const p=sphProxy(0.52); p.position.set(0,0.2,0); addProxy('saltpile',p,G.saltpile); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('diaPure',p,G.diaPure); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('diaYellow',p,G.diaYellow); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('diaBlue',p,G.diaBlue); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('diaGreen',p,G.diaGreen); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['goldbar','oxygen','potassium'],
+  ['ring18','silver925'],
+  ['diaPure','diaYellow','diaBlue'],
+  ['seawater','basin','saltpile'],
+  [],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='goldbar'){ T.fGold=true; FOUND.gold=true; }
+    if(id==='oxygen'){ T.fOxy=true; FOUND.oxy=true; }
+    if(id==='potassium'){ T.fPot=true; FOUND.pot=true; }
+  }else if(curStep===1){
+    if(id==='ring18'){ T.s2ring=true; FOUND.ring=true; }
+    if(id==='silver925'){ T.s2silv=true; FOUND.silv=true; }
+  }else if(curStep===2){
+    if(id==='diaPure'){ T.s3pure=true; FOUND.diaP=true; }
+    if(id==='diaYellow'){ T.s3yel=true; FOUND.diaY=true; }
+    if(id==='diaBlue'){ T.s3blue=true; FOUND.diaB=true; }
+  }else if(curStep===3){
+    if(id==='seawater'){ T.s4sea=true; FOUND.sea=true; }
+    if(id==='basin'){ T.s4basin=true; FOUND.basin=true; }
+    if(id==='saltpile'){ T.s4salt=true; FOUND.salt=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All bench samples stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — find the key words */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — permitted or not */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='biased'?'👑':'🔗')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('biased');
+$('ex2BinNot').onclick=()=>ex2Place('independent');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.gold=false; FOUND.oxy=false; FOUND.pot=false; }
+  if(step===1){ FOUND.ring=false; FOUND.silv=false; }
+  if(step===2){ FOUND.diaP=false; FOUND.diaY=false; FOUND.diaB=false; }
+  if(step===3){ FOUND.sea=false; FOUND.basin=false; FOUND.salt=false; }
+  if(step===4){ REACT.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ CLASS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='biased'||s.exAns.a2[id]==='independent')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fGold=!!FOUND.gold; t.fOxy=!!FOUND.oxy; t.fPot=!!FOUND.pot; }
+  else if(i===1){ t.s2ring=!!FOUND.ring; t.s2silv=!!FOUND.silv; }
+  else if(i===2){ t.s3pure=!!FOUND.diaP; t.s3yel=!!FOUND.diaY; t.s3blue=!!FOUND.diaB; }
+  else if(i===3){ t.s4sea=!!FOUND.sea; t.s4basin=!!FOUND.basin; t.s4salt=!!FOUND.salt; }
+  else if(i===4){ REACT.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ CLASS.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-5-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

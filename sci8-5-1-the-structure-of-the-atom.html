@@ -1,0 +1,1324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>5.1 The structure of the atom — Cấu trúc của nguyên tử · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="5.1 The structure of the atom" data-vi="5.1 Cấu trúc của nguyên tử">5.1 The structure of the atom</span>
+    <span class="eqchip i18n" data-en="Unit 5 · Materials and their structure" data-vi="Bài 5 · Vật liệu và cấu trúc của chúng (Materials and their structure)">Unit 5 · Materials and their structure</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What is an atom made of — and how did scientists find out?" data-vi="Nguyên tử được tạo thành từ những gì — và các nhà khoa học đã tìm ra điều đó như thế nào?">What is an atom made of — and how did scientists find out?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Three sub-atomic particles" data-vi="Ba hạt hạ nguyên tử (sub-atomic particles)">Three sub-atomic particles</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Packed into a nucleus" data-vi="Xếp vào một hạt nhân (nucleus)">Packed into a nucleus</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Charges cancel out" data-vi="Các điện tích (charges) triệt tiêu nhau">Charges cancel out</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Models built by many scientists" data-vi="Các mô hình do nhiều nhà khoa học xây nên">Models built by many scientists</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the particles and models in the atom lab!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các hạt và mô hình trong phòng thí nghiệm nguyên tử!">🖱 Drag to look around · Scroll to zoom · Tap the particles and models in the atom lab!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 5 Materials and their structure · Section 5.1. The atom lab in this lesson is a simulation — atoms are far too small to see or touch." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 5 Vật liệu và cấu trúc của chúng (Materials and their structure) · Mục 5.1. Phòng thí nghiệm nguyên tử trong bài này là mô phỏng — nguyên tử nhỏ hơn rất nhiều so với mức có thể nhìn hay chạm vào.">Cambridge Lower Secondary Science 8 · Unit 5 Materials and their structure · Section 5.1. The atom lab in this lesson is a simulation — atoms are far too small to see or touch.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 5 Materials and their structure, section 5.1, pages 147–151; Workbook 8 (ISBN 9781108742856), pages 88–90. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 5 Materials and their structure (Vật liệu và cấu trúc của chúng), mục 5.1, trang 147–151; Sách bài tập 8 (ISBN 9781108742856), trang 88–90. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 5 Materials and their structure, section 5.1, pages 147–151; Workbook 8 (ISBN 9781108742856), pages 88–90. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: describe the structure of the atom; list the particles found in an atom; describe some of the properties of the particles found in an atom; describe some of the discoveries that led to the model of the atom used today. Key words: atoms, sub-atomic particles, protons, neutrons, electrons, nucleus, electrical charge, electrostatic attraction, deflected." data-vi="Mục tiêu: mô tả cấu trúc (structure) của nguyên tử; liệt kê các hạt có trong nguyên tử; mô tả một số tính chất của các hạt trong nguyên tử; mô tả một số khám phá đã dẫn tới mô hình nguyên tử dùng ngày nay. Từ khóa: atoms (nguyên tử), sub-atomic particles (các hạt hạ nguyên tử), protons (proton), neutrons (neutron), electrons (electron), nucleus (hạt nhân), electrical charge (điện tích), electrostatic attraction (lực hút tĩnh điện), deflected (bị lệch hướng).">Objectives: describe the structure of the atom; list the particles found in an atom; describe some of the properties of the particles found in an atom; describe some of the discoveries that led to the model of the atom used today. Key words: atoms, sub-atomic particles, protons, neutrons, electrons, nucleus, electrical charge, electrostatic attraction, deflected.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action in the 3D atom lab — finding the three sub-atomic particles in a helium atom, sorting them by mass, running Rutherford's gold foil experiment (most particles pass straight through; about 1 in 8000 is deflected), tracing the Thomson, Rutherford and Chadwick discoveries, counting helium's charges (+1 +1 −1 −1 = 0), and sorting true facts from false ones. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The Workbook's drawing tasks (labelling a diagram, drawing the Thomson and Rutherford models, completing the gold foil diagram) are turned into tap-and-sort tasks with the same content." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trong phòng thí nghiệm nguyên tử 3D — tìm ba hạt hạ nguyên tử trong một nguyên tử helium, phân loại chúng theo khối lượng, chạy thí nghiệm lá vàng của Rutherford (hầu hết hạt đi thẳng qua; khoảng 1 trong 8000 hạt bị lệch hướng — deflected), lần theo các khám phá của Thomson, Rutherford và Chadwick, đếm điện tích của helium (+1 +1 −1 −1 = 0), và phân loại các sự thật đúng và sai. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các bài vẽ của sách bài tập (ghi nhãn sơ đồ, vẽ mô hình của Thomson và Rutherford, hoàn thành sơ đồ lá vàng) được chuyển thành bài chạm-và-phân-loại với cùng nội dung.">How it works: each step asks for one real action in the 3D atom lab — finding the three sub-atomic particles in a helium atom, sorting them by mass, running Rutherford's gold foil experiment (most particles pass straight through; about 1 in 8000 is deflected), tracing the Thomson, Rutherford and Chadwick discoveries, counting helium's charges (+1 +1 −1 −1 = 0), and sorting true facts from false ones. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The Workbook's drawing tasks (labelling a diagram, drawing the Thomson and Rutherford models, completing the gold foil diagram) are turned into tap-and-sort tasks with the same content.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-5-1 "The structure of the atom" (Science 8, Unit 5)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= atom lab things ================= */
+const THINGS={
+  proton:  {emoji:'🔴', name:{en:'Proton — positive charge (+)',vi:'Proton — điện tích dương (+)'}, short:{en:'Proton (+)',vi:'Proton (+)'}, ring:0.55, labelY:1.0, fx:-3.2, fz:1.5, fr:5.0},
+  neutron: {emoji:'⚪', name:{en:'Neutron — no charge',vi:'Neutron — không có điện tích'}, short:{en:'Neutron (0)',vi:'Neutron (0)'}, ring:0.55, labelY:1.0, fx:-3.2, fz:1.5, fr:5.0},
+  electron:{emoji:'🔵', name:{en:'Electron — negative charge (−), moves around the nucleus',vi:'Electron — điện tích âm (−), chuyển động quanh hạt nhân (nucleus)'}, short:{en:'Electron (−)',vi:'Electron (−)'}, ring:0.5, labelY:0.95, fx:-3.2, fz:1.5, fr:5.4},
+  source:  {emoji:'🎯', name:{en:'Particle source — fires fast-moving particles',vi:'Nguồn hạt — bắn các hạt chuyển động nhanh'}, short:{en:'Particle source',vi:'Nguồn hạt'}, ring:0.6, labelY:1.3, fx:1.4, fz:1.2, fr:5.4},
+  foil:    {emoji:'🟨', name:{en:'Gold foil — very thin gold',vi:'Lá vàng — vàng rất mỏng'}, short:{en:'Gold foil',vi:'Lá vàng'}, ring:0.65, labelY:1.5, fx:1.9, fz:0.9, fr:5.0},
+  straight:{emoji:'➡️', name:{en:'A particle that passed straight through',vi:'Một hạt đi thẳng qua'}, short:{en:'Straight-through particle',vi:'Hạt đi thẳng qua'}, ring:0.45, labelY:0.8, fx:3.1, fz:0.9, fr:5.0},
+  deflected:{emoji:'↩️', name:{en:'A deflected particle — its direction changed',vi:'Một hạt bị lệch hướng (deflected) — hướng của nó đã đổi'}, short:{en:'Deflected particle',vi:'Hạt bị lệch hướng'}, ring:0.45, labelY:0.8, fx:2.7, fz:-0.5, fr:5.0},
+  detector:{emoji:'📟', name:{en:'Particle detector',vi:'Máy dò hạt'}, short:{en:'Detector',vi:'Máy dò'}, ring:0.6, labelY:1.3, fx:4.0, fz:2.3, fr:5.0},
+  thomson: {emoji:'🍮', name:{en:"Thomson's plum pudding model — late 1890s",vi:'Mô hình bánh pudding của Thomson — cuối thập niên 1890'}, short:{en:'Thomson model',vi:'Mô hình Thomson'}, ring:0.8, labelY:1.5, fx:-3.7, fz:-1.7, fr:5.4},
+  rutherford:{emoji:'🎯', name:{en:"Rutherford's model — a dense nucleus, 1911",vi:'Mô hình của Rutherford — một hạt nhân (nucleus) đặc, 1911'}, short:{en:'Rutherford model',vi:'Mô hình Rutherford'}, ring:0.7, labelY:1.3, fx:-1.2, fz:-1.9, fr:5.0},
+  chadwick:{emoji:'⚪', name:{en:'The neutron — Chadwick proved it exists, 1932',vi:'Neutron — Chadwick đã chứng minh nó tồn tại, 1932'}, short:{en:'Neutron (Chadwick, 1932)',vi:'Neutron (Chadwick, 1932)'}, ring:0.6, labelY:1.1, fx:0.6, fz:-1.7, fr:5.0},
+  cup1:    {emoji:'🥛', name:{en:'Cup of water 1 — Getting started',vi:'Cốc nước 1 — Khởi động'}, short:{en:'Cup 1',vi:'Cốc 1'}, ring:0.5, labelY:1.0, fx:4.6, fz:-1.4, fr:5.0},
+  cup2:    {emoji:'🥛', name:{en:'Cup of water 2 — Getting started',vi:'Cốc nước 2 — Khởi động'}, short:{en:'Cup 2',vi:'Cốc 2'}, ring:0.5, labelY:1.0, fx:4.6, fz:-1.4, fr:5.0},
+  cup3:    {emoji:'🥛', name:{en:'Cup of water 3 — Getting started',vi:'Cốc nước 3 — Khởi động'}, short:{en:'Cup 3',vi:'Cốc 3'}, ring:0.5, labelY:1.0, fx:4.6, fz:-1.4, fr:5.0}
+};
+const FOCUSORDER=['proton','neutron','electron','foil','deflected','thomson','rutherford','chadwick'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the atom lab',vi:'Trong phòng thí nghiệm nguyên tử'},
+  u1Brief:{en:'Tap a name to LOOK at a particle or model. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM một hạt hay mô hình. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Helium atom — the count',vi:'Nguyên tử helium — số đếm'},
+  u2Brief:{en:'What the helium atom on the stage is made of, as you find each part.',vi:'Nguyên tử helium trên sân khấu gồm những gì, khi con tìm thấy từng phần.'},
+  recProtons:{en:'Protons (+1 each)',vi:'Proton (+1 mỗi hạt)'},
+  recNeutrons:{en:'Neutrons (no charge)',vi:'Neutron (không điện tích)'},
+  recElectrons:{en:'Electrons (−1 each)',vi:'Electron (−1 mỗi hạt)'},
+  recCharge:{en:'Overall charge of helium',vi:'Điện tích tổng của helium'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your atom checklist.',vi:'Danh sách khám phá nguyên tử của con.'},
+  didSetup:{en:'Met the three sub-atomic particles',vi:'Đã gặp ba hạt hạ nguyên tử (sub-atomic particles)'},
+  didRun:{en:'Ran the gold foil experiment',vi:'Đã chạy thí nghiệm lá vàng'},
+  didSort:{en:'Checked the facts about atoms',vi:'Đã kiểm tra các sự thật về nguyên tử'},
+  didPlant:{en:'Compared the old and new atom models',vi:'Đã so sánh các mô hình nguyên tử cũ và mới'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binHeavy:{en:'HEAVY — the same mass',vi:'NẶNG — cùng khối lượng (mass)'},
+  binLight:{en:'ALMOST NO MASS',vi:'GẦN NHƯ KHÔNG CÓ KHỐI LƯỢNG'},
+  binTrue:{en:'TRUE ✓',vi:'ĐÚNG ✓'},
+  binFalse:{en:'FALSE ✗',vi:'SAI ✗'},
+  binPerm:{en:'IN THE NUCLEUS ◎',vi:'TRONG HẠT NHÂN (NUCLEUS) ◎'},
+  binNot:{en:'NOT IN THE NUCLEUS ○',vi:'KHÔNG Ở TRONG HẠT NHÂN ○'},
+  lookPaper:{en:'Look at the gold foil 🟨',vi:'Ngắm lá vàng 🟨'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 5.1',vi:'📝 Bài tập — Sách bài tập (Workbook) 5.1'},
+  exIntro:{en:'Workbook games for this lesson: ticking true statements and labelling the atom (Exercise 5.1A), comparing models (5.1B) and the gold foil experiment (5.1C). The Workbook drawing tasks are turned into tap-and-sort tasks here. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: đánh dấu các câu đúng và ghi nhãn nguyên tử (Bài tập 5.1A), so sánh các mô hình (5.1B) và thí nghiệm lá vàng (5.1C). Các bài vẽ của sách bài tập được chuyển thành bài chạm-và-phân-loại ở đây. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Tick the true statements (5.1A)',vi:'Bài tập 1 · Focus — Đánh dấu các câu đúng (5.1A)'},
+  ex1Inst:{en:'Tap the 3 statements that are correct. The other 3 are wrong — leave them alone.',vi:'Chạm vào 3 câu đúng. 3 câu còn lại sai — hãy để yên chúng.'},
+  ex2T:{en:'Exercise 2 · Practice — Label the atom (5.1A)',vi:'Bài tập 2 · Practice — Ghi nhãn nguyên tử (5.1A)'},
+  ex2Inst:{en:'Tap a label card, then tap IN THE NUCLEUS if that part sits in the centre of the atom, or NOT IN THE NUCLEUS if it does not. The white area around the nucleus is empty space.',vi:'Chạm vào một thẻ nhãn, rồi chạm TRONG HẠT NHÂN (IN THE NUCLEUS) nếu phần đó nằm ở trung tâm nguyên tử, hoặc KHÔNG Ở TRONG HẠT NHÂN nếu không phải. Vùng trắng quanh hạt nhân là khoảng trống (empty space).'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai'},
+  ex3Inst:{en:'Each sentence is about the models of the atom or the gold foil experiment. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về các mô hình nguyên tử hoặc thí nghiệm lá vàng. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'atom',vi:'nguyên tử'},
+  {en:'sub-atomic particles',vi:'các hạt hạ nguyên tử'},
+  {en:'protons',vi:'các proton'},
+  {en:'neutrons',vi:'các neutron'},
+  {en:'electrons',vi:'các electron'},
+  {en:'nucleus',vi:'hạt nhân nguyên tử'},
+  {en:'electrical charge',vi:'điện tích'},
+  {en:'electrostatic attraction',vi:'lực hút tĩnh điện'},
+  {en:'deflected',vi:'bị lệch hướng'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Three tiny particles',vi:'Ba hạt rất nhỏ'}, word:{en:'sub-atomic particles',vi:'các hạt hạ nguyên tử'},
+  q:{en:'Atoms are too small to see, and they are made of even smaller particles. Which three particles is a helium atom made of?',vi:'Nguyên tử (atoms) nhỏ đến mức không nhìn thấy được, và chúng được tạo thành từ những hạt còn nhỏ hơn. Nguyên tử helium được tạo thành từ ba hạt nào?'},
+  act:{en:'Tap the three particles of the helium atom on the stage: the red proton (+), the grey neutron and the blue electron (−) moving around them. (Getting started: the three cups of water on the right have nearly the same mass — each cup holds the same huge number of atoms.)',vi:'Chạm vào ba hạt của nguyên tử helium trên sân khấu: proton đỏ (+), neutron xám và electron xanh (−) chuyển động quanh chúng. (Khởi động: ba cốc nước bên phải có khối lượng gần như nhau — mỗi cốc chứa cùng một số nguyên tử khổng lồ.)'},
+  see:{en:'Each particle bounces and shows its name and its charge.',vi:'Mỗi hạt nảy lên và hiện tên cùng điện tích (electrical charge) của nó.'},
+  concl:[
+    {en:'Atoms are made of three kinds of sub-atomic particle (sub-atomic particles): protons (protons), neutrons (neutrons) and electrons (electrons).',vi:'Nguyên tử được tạo thành từ ba loại hạt hạ nguyên tử (sub-atomic particles): proton (protons), neutron (neutrons) và electron (electrons).'},
+    {en:'All the atoms of one element are the same. Different elements have different atoms. The word atom comes from a Greek word meaning “cannot be split”.',vi:'Mọi nguyên tử của cùng một nguyên tố đều giống nhau. Các nguyên tố khác nhau có nguyên tử khác nhau. Từ atom bắt nguồn từ một từ tiếng Hy Lạp nghĩa là “không thể tách ra”.'},
+    {en:'The protons and neutrons are packed closely together in the centre, forming the nucleus (nucleus) of the atom. The electrons move around the nucleus — do not mix up the nucleus of an atom with the nucleus of a cell.',vi:'Các proton và neutron xếp sát nhau ở trung tâm, tạo thành hạt nhân (nucleus) của nguyên tử. Các electron chuyển động quanh hạt nhân — đừng nhầm hạt nhân của nguyên tử với nhân của tế bào.'}]},
+ {tag:{en:'Heavy and almost weightless',vi:'Nặng và gần như không nặng'}, word:{en:'protons',vi:'các proton'},
+  q:{en:'The three particles do not weigh the same. Which ones are heavy, and which one has almost no mass?',vi:'Ba hạt không nặng bằng nhau. Những hạt nào nặng, và hạt nào gần như không có khối lượng (mass)?'},
+  act:{en:'Tap a card, then tap HEAVY — THE SAME MASS or ALMOST NO MASS. The cards name the two protons, the two neutrons and the two electrons of a helium atom.',vi:'Chạm vào một thẻ, rồi chạm NẶNG — CÙNG KHỐI LƯỢNG (HEAVY) hoặc GẦN NHƯ KHÔNG CÓ KHỐI LƯỢNG. Các thẻ nêu hai proton, hai neutron và hai electron của một nguyên tử helium.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Protons and neutrons have the same mass as each other, and much more mass than electrons.',vi:'Proton (protons) và neutron (neutrons) có cùng khối lượng (mass) với nhau, và nặng hơn electron rất nhiều.'},
+    {en:'Electrons have almost no mass at all.',vi:'Electron (electrons) gần như không có khối lượng.'},
+    {en:'There is a lot of empty space between the parts of an atom — space that is completely empty, with nothing in it at all.',vi:'Có rất nhiều khoảng trống (empty space) giữa các phần của nguyên tử — khoảng trống hoàn toàn rỗng, không có gì trong đó cả.'}]},
+ {tag:{en:'The gold foil experiment',vi:'Thí nghiệm lá vàng'}, word:{en:'deflected',vi:'bị lệch hướng'},
+  q:{en:"Rutherford fired fast-moving particles, smaller than an atom, at very thin gold foil. What happened to the particles?",vi:'Rutherford bắn các hạt chuyển động nhanh, nhỏ hơn nguyên tử, vào lá vàng rất mỏng. Điều gì đã xảy ra với các hạt?'},
+  act:{en:'Tap the particle source, then tap the gold foil, then tap the deflected particle — the rare one whose direction changed.',vi:'Chạm vào nguồn hạt, rồi chạm vào lá vàng (gold foil), rồi chạm vào hạt bị lệch hướng (deflected) — hạt hiếm hoi mà hướng của nó đã đổi.'},
+  see:{en:'Each part of the apparatus bounces and shows its name.',vi:'Mỗi phần của thiết bị nảy lên và hiện tên của nó.'},
+  concl:[
+    {en:'Most of the particles passed straight through the foil. Only a few — about 1 in 8000 — were deflected (deflected), their direction changed.',vi:'Hầu hết các hạt đi thẳng qua lá vàng. Chỉ một số ít — khoảng 1 trong 8000 — bị lệch hướng (deflected), tức hướng của chúng bị đổi.'},
+    {en:'From this, Rutherford worked out that gold atoms must be mostly empty space, with their particles packed into a dense nucleus (nucleus) at the centre.',vi:'Từ đó, Rutherford suy ra rằng nguyên tử vàng phần lớn là khoảng trống, với các hạt của chúng xếp vào một hạt nhân (nucleus) đặc ở trung tâm.'},
+    {en:'Rutherford discovered the proton in 1909 and the nucleus in 1911.',vi:'Rutherford khám phá ra proton vào năm 1909 và hạt nhân (nucleus) vào năm 1911.'}]},
+ {tag:{en:'Models change over time',vi:'Các mô hình thay đổi theo thời gian'}, word:{en:'electrons',vi:'các electron'},
+  q:{en:'The atom model we use today was built by several scientists, one discovery at a time. Who found what?',vi:'Mô hình nguyên tử ta dùng ngày nay do nhiều nhà khoa học xây nên, từng khám phá một. Ai đã tìm ra điều gì?'},
+  act:{en:"Tap the three discoveries on the stage in any order: Thomson's plum pudding model, Rutherford's nucleus model, and Chadwick's neutron.",vi:'Chạm vào ba khám phá trên sân khấu theo bất kỳ thứ tự nào: mô hình bánh pudding của Thomson, mô hình hạt nhân của Rutherford, và neutron của Chadwick.'},
+  see:{en:'Each model or particle bounces and shows who made it and when.',vi:'Mỗi mô hình hay hạt nảy lên và hiện ai tạo ra nó và khi nào.'},
+  concl:[
+    {en:'In the late 1890s, J. J. Thomson discovered the electron. In his plum pudding model, the electrons were scattered throughout positively charged matter, like fruit in a pudding.',vi:'Cuối thập niên 1890, J. J. Thomson khám phá ra electron. Trong mô hình bánh pudding của ông, các electron (electrons) rải khắp vật chất mang điện dương, như trái cây trong bánh pudding.'},
+    {en:"Thomson's student Ernest Rutherford, from New Zealand, discovered the proton (1909) and the nucleus (1911). His model put a dense, positively charged nucleus at the centre.",vi:'Học trò của Thomson, Ernest Rutherford, người New Zealand, khám phá ra proton (1909) và hạt nhân (nucleus) (1911). Mô hình của ông đặt một hạt nhân đặc, mang điện dương ở trung tâm.'},
+    {en:'In 1932 James Chadwick proved that neutrons (neutrons) exist. Scientists build the model together: they publish their work, others repeat it and check it for mistakes — that checking is peer review, and working together across countries is collaboration. Work continues today, for example at the Large Hadron Collider in Switzerland.',vi:'Năm 1932, James Chadwick chứng minh neutron (neutrons) tồn tại. Các nhà khoa học cùng nhau xây mô hình: họ công bố công trình của mình, người khác lặp lại và kiểm tra lỗi — việc kiểm tra đó là phản biện đồng nghiệp (peer review), và làm việc cùng nhau xuyên quốc gia là hợp tác (collaboration). Công việc vẫn tiếp diễn ngày nay, ví dụ tại Máy gia tốc hạt lớn (Large Hadron Collider) ở Thụy Sĩ.'}]},
+ {tag:{en:'Charges that cancel out',vi:'Các điện tích triệt tiêu nhau'}, word:{en:'electrical charge',vi:'điện tích'},
+  q:{en:'A proton has a charge of +1 and an electron a charge of −1 — exactly the same size. A helium atom has 2 protons and 2 electrons. What is its overall charge?',vi:'Một proton có điện tích (electrical charge) +1 và một electron có điện tích −1 — đúng bằng nhau về độ lớn. Một nguyên tử helium có 2 proton và 2 electron. Điện tích tổng của nó là bao nhiêu?'},
+  act:{en:'Tap the protons (red, +) in the nucleus, then tap the electrons (blue, −) moving around it, to count the charges of the helium atom.',vi:'Chạm vào các proton (đỏ, +) trong hạt nhân (nucleus), rồi chạm vào các electron (xanh, −) chuyển động quanh nó, để đếm điện tích của nguyên tử helium.'},
+  see:{en:'The evidence line adds the charges up: +1 +1 −1 −1.',vi:'Dòng căn cứ cộng các điện tích lại: +1 +1 −1 −1.'},
+  concl:[
+    {en:'Protons have a positive electrical charge (electrical charge), electrons have a negative charge, and neutrons have no charge at all.',vi:'Proton có điện tích (electrical charge) dương, electron có điện tích âm, và neutron không có điện tích nào cả.'},
+    {en:'Helium: +1 +1 −1 −1 = 0. The overall charge of the helium atom is zero — the charges cancel out exactly.',vi:'Helium: +1 +1 −1 −1 = 0. Điện tích tổng của nguyên tử helium bằng không — các điện tích triệt tiêu nhau đúng hết.'},
+    {en:'Opposite charges attract. The electrostatic attraction (electrostatic attraction) between the positive protons and the negative electrons is what holds each atom together.',vi:'Các điện tích trái dấu hút nhau. Lực hút tĩnh điện (electrostatic attraction) giữa proton dương và electron âm chính là thứ giữ mỗi nguyên tử gắn kết với nhau.'}]},
+ {tag:{en:'Check the facts',vi:'Kiểm tra các sự thật'}, word:{en:'nucleus',vi:'hạt nhân'},
+  q:{en:'Can you sort the true facts about atoms from the false ones?',vi:'Con có phân loại được các sự thật đúng về nguyên tử và các câu sai không?'},
+  act:{en:'Tap a card, then tap TRUE or FALSE.',vi:'Chạm vào một thẻ, rồi chạm ĐÚNG (TRUE) hoặc SAI (FALSE).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'The nucleus (nucleus) at the centre holds the protons and neutrons; the electrons move around it, across a lot of empty space.',vi:'Hạt nhân (nucleus) ở trung tâm giữ các proton và neutron; các electron chuyển động quanh nó, qua rất nhiều khoảng trống.'},
+    {en:'I can describe the structure of the atom.',vi:'Con mô tả được cấu trúc (structure) của nguyên tử.'},
+    {en:'I can list the particles found in an atom.',vi:'Con liệt kê được các hạt có trong một nguyên tử.'},
+    {en:'I can describe some of the properties of the particles found in an atom.',vi:'Con mô tả được một số tính chất của các hạt có trong nguyên tử.'},
+    {en:'I can describe some of the discoveries that have helped to create the model of the atom that is used today.',vi:'Con mô tả được một số khám phá đã giúp tạo nên mô hình nguyên tử được dùng ngày nay.'}]}
+];
+const PARTS=[
+ {id:'m_proton',emoji:'🔴',en:'Proton — in the nucleus',vi:'Proton — trong hạt nhân (nucleus)',ans:'heavy'},
+ {id:'m_neutron',emoji:'⚪',en:'Neutron — in the nucleus',vi:'Neutron — trong hạt nhân (nucleus)',ans:'heavy'},
+ {id:'m_electron',emoji:'🔵',en:'Electron — moves around the nucleus',vi:'Electron — chuyển động quanh hạt nhân',ans:'light'},
+ {id:'m_proton2',emoji:'🔴',en:'The second proton in helium',vi:'Proton thứ hai trong helium',ans:'heavy'},
+ {id:'m_neutron2',emoji:'⚪',en:'The second neutron in helium',vi:'Neutron thứ hai trong helium',ans:'heavy'},
+ {id:'m_electron2',emoji:'🔵',en:'The second electron in helium',vi:'Electron thứ hai trong helium',ans:'light'}
+];
+const PARTS_ORDER=mixOrder(PARTS,c=>c.ans,2);
+const FACTS=[
+ {id:'f_charge',emoji:'➕',en:'Protons have a positive electrical charge',vi:'Proton có điện tích (electrical charge) dương',ans:'true'},
+ {id:'f_einnucl',emoji:'🔵',en:'Electrons are found inside the nucleus',vi:'Electron được tìm thấy bên trong hạt nhân (nucleus)',ans:'false'},
+ {id:'f_neut0',emoji:'⚪',en:'Neutrons have no electrical charge',vi:'Neutron không có điện tích (electrical charge)',ans:'true'},
+ {id:'f_heavy',emoji:'⚖️',en:'Electrons have much more mass than protons',vi:'Electron có khối lượng lớn hơn proton rất nhiều',ans:'false'},
+ {id:'f_empty',emoji:'🕳️',en:'An atom is mostly empty space',vi:'Một nguyên tử phần lớn là khoảng trống',ans:'true'},
+ {id:'f_hecharge',emoji:'🔋',en:'A helium atom has an overall charge of +2',vi:'Một nguyên tử helium có điện tích tổng là +2',ans:'false'}
+];
+const FACTS_ORDER=mixOrder(FACTS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'Which particle has a positive electrical charge?',vi:'Hạt nào có điện tích (electrical charge) dương?'},
+  o:[{en:'The electron',vi:'Electron'},{en:'The proton',vi:'Proton'},{en:'The neutron',vi:'Neutron'}],a:1,
+  e:{en:'Protons are positive, electrons are negative, and neutrons have no charge.',vi:'Proton dương, electron âm, và neutron (neutrons) không có điện tích.'}},
+ {q:{en:'A helium atom has 2 protons (+1 each) and 2 electrons (−1 each). What is its overall charge?',vi:'Một nguyên tử helium có 2 proton (+1 mỗi hạt) và 2 electron (−1 mỗi hạt). Điện tích tổng của nó là bao nhiêu?'},
+  o:[{en:'+2',vi:'+2'},{en:'−2',vi:'−2'},{en:'Zero — the charges cancel out',vi:'Bằng không — các điện tích triệt tiêu nhau'}],a:2,
+  e:{en:'+1 +1 −1 −1 = 0. The negative charge of one electron is exactly the same size as the positive charge of one proton.',vi:'+1 +1 −1 −1 = 0. Điện tích âm của một electron đúng bằng điện tích dương của một proton về độ lớn.'}},
+ {q:{en:"In Rutherford's gold foil experiment, what happened to most of the particles?",vi:'Trong thí nghiệm lá vàng của Rutherford, điều gì đã xảy ra với hầu hết các hạt?'},
+  o:[{en:'They passed straight through the foil',vi:'Chúng đi thẳng qua lá vàng'},{en:'They all bounced straight back',vi:'Tất cả chúng bật thẳng trở lại'},{en:'They all stopped inside the foil',vi:'Tất cả chúng dừng lại trong lá vàng'}],a:0,
+  e:{en:'Most passed straight through; only about 1 in 8000 was deflected. That told Rutherford that atoms are mostly empty space with a dense nucleus at the centre.',vi:'Hầu hết đi thẳng qua; chỉ khoảng 1 trong 8000 hạt bị lệch hướng (deflected). Điều đó cho Rutherford biết nguyên tử phần lớn là khoảng trống với một hạt nhân (nucleus) đặc ở trung tâm.'}},
+ {q:{en:'Who proved that neutrons exist, and when?',vi:'Ai đã chứng minh neutron (neutrons) tồn tại, và khi nào?'},
+  o:[{en:'J. J. Thomson, in the late 1890s',vi:'J. J. Thomson, cuối thập niên 1890'},{en:'James Chadwick, in 1932',vi:'James Chadwick, năm 1932'},{en:'Ernest Rutherford, in 1909',vi:'Ernest Rutherford, năm 1909'}],a:1,
+  e:{en:'Chadwick proved neutrons exist in 1932. Thomson discovered the electron in the late 1890s, and Rutherford discovered the proton in 1909 and the nucleus in 1911.',vi:'Chadwick chứng minh neutron tồn tại năm 1932. Thomson khám phá electron cuối thập niên 1890, và Rutherford khám phá proton năm 1909 và hạt nhân (nucleus) năm 1911.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_lessmass',emoji:'⚖️',en:'Electrons have less mass than protons do',vi:'Electron có khối lượng nhỏ hơn proton',keyw:true},
+ {id:'e_protneg',emoji:'➖',en:'Protons have a negative electrical charge',vi:'Proton có điện tích (electrical charge) âm',keyw:false},
+ {id:'e_elecneg',emoji:'➖',en:'Electrons have a negative electrical charge',vi:'Electron có điện tích (electrical charge) âm',keyw:true},
+ {id:'e_neutcharge',emoji:'⚡',en:'Neutrons have an electrical charge',vi:'Neutron có điện tích (electrical charge)',keyw:false},
+ {id:'e_neutheavy',emoji:'⚖️',en:'Neutrons have more mass than electrons do',vi:'Neutron có khối lượng lớn hơn electron',keyw:true},
+ {id:'e_elecnucl',emoji:'◎',en:'Electrons are found in the nucleus of the atom',vi:'Electron được tìm thấy trong hạt nhân (nucleus) của nguyên tử',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_proton',emoji:'🔴',en:'Proton — one of the particles packed in the centre',vi:'Proton — một trong các hạt xếp ở trung tâm',ans:'innucleus'},
+ {id:'x_electron',emoji:'🔵',en:'Electron — moves around the centre',vi:'Electron — chuyển động quanh trung tâm',ans:'outside'},
+ {id:'x_neutron',emoji:'⚪',en:'Neutron — one of the particles packed in the centre',vi:'Neutron — một trong các hạt xếp ở trung tâm',ans:'innucleus'},
+ {id:'x_space',emoji:'🕳️',en:'Empty space — the white area around the centre',vi:'Khoảng trống — vùng trắng quanh trung tâm',ans:'outside'},
+ {id:'x_nucleus',emoji:'◎',en:'The nucleus itself — the whole central cluster',vi:'Chính hạt nhân (nucleus) — toàn bộ cụm ở trung tâm',ans:'innucleus'},
+ {id:'x_electron2',emoji:'🔵',en:'The second electron — also moves around the centre',vi:'Electron thứ hai — cũng chuyển động quanh trung tâm',ans:'outside'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:"In Thomson's plum pudding model, the electrons were",vi:'Trong mô hình bánh pudding của Thomson, các electron'},
+  wrong:1,
+  opts:[{en:'scattered throughout the atom',vi:'rải khắp nguyên tử (scattered throughout)'},{en:'packed into a tiny nucleus',vi:'xếp vào một hạt nhân (nucleus) rất nhỏ'}],
+  e:{en:"Thomson's electrons were scattered throughout positively charged matter, like fruit in a pudding. There was no nucleus in his model — cross out “packed into a tiny nucleus”.",vi:'Electron của Thomson rải khắp vật chất mang điện dương, như trái cây trong bánh pudding. Mô hình của ông không có hạt nhân (nucleus) — hãy gạch bỏ “xếp vào một hạt nhân rất nhỏ”.'}},
+ {pre:{en:"Rutherford's gold foil results showed that atoms are",vi:'Kết quả lá vàng của Rutherford cho thấy nguyên tử'},
+  wrong:0,
+  opts:[{en:'solid all the way through',vi:'đặc ruột từ đầu đến cuối (solid)'},{en:'mostly empty space',vi:'phần lớn là khoảng trống (empty space)'}],
+  e:{en:'Most particles passed straight through, so atoms must be mostly empty space. Cross out “solid all the way through”.',vi:'Hầu hết các hạt đi thẳng qua, nên nguyên tử phần lớn là khoảng trống (empty space). Hãy gạch bỏ “đặc ruột từ đầu đến cuối”.'}},
+ {pre:{en:'In 1932, Chadwick proved that',vi:'Năm 1932, Chadwick đã chứng minh rằng'},
+  wrong:1,
+  opts:[{en:'neutrons exist',vi:'neutron (neutrons) tồn tại'},{en:'electrons exist',vi:'electron (electrons) tồn tại'}],
+  e:{en:'Chadwick proved neutrons exist in 1932. The electron was Thomson’s discovery, in the late 1890s — cross out “electrons exist”.',vi:'Chadwick chứng minh neutron tồn tại năm 1932. Electron là khám phá của Thomson, cuối thập niên 1890 — hãy gạch bỏ “electron tồn tại”.'}},
+ {pre:{en:'In the gold foil experiment, most of the fired particles',vi:'Trong thí nghiệm lá vàng, hầu hết các hạt được bắn ra'},
+  wrong:0,
+  opts:[{en:'bounced straight back off the foil',vi:'bật thẳng trở lại khỏi lá vàng'},{en:'passed straight through the foil',vi:'đi thẳng qua lá vàng (passed straight through)'}],
+  e:{en:'Most particles passed straight through; only about 1 in 8000 was deflected. Cross out “bounced straight back”.',vi:'Hầu hết các hạt đi thẳng qua; chỉ khoảng 1 trong 8000 hạt bị lệch hướng (deflected). Hãy gạch bỏ “bật thẳng trở lại”.'}},
+ {pre:{en:'The overall charge of a helium atom (2 protons, 2 electrons) is',vi:'Điện tích tổng của một nguyên tử helium (2 proton, 2 electron) là'},
+  wrong:0,
+  opts:[{en:'+2',vi:'+2'},{en:'zero, because the charges cancel out',vi:'bằng không, vì các điện tích triệt tiêu nhau'}],
+  e:{en:'+1 +1 −1 −1 = 0. The charges cancel out exactly, so cross out “+2”.',vi:'+1 +1 −1 −1 = 0. Các điện tích triệt tiêu nhau đúng hết, nên hãy gạch bỏ “+2”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 3 + 6 + 5 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-5-1';
+const SUMKEY='camb:sum:sci8-5-1';
+const BOT_CODE='sci8-5.1';
+let FOUND={proton:false,neutron:false,electron:false,source:false,foil:false,defl:false,thom:false,ruth:false,chad:false,charge:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fProton:false, fNeutron:false, fElectron:false,
+  s2correct:new Set(), s2sel:null,
+  s3source:false, s3foil:false, s3defl:false,
+  s4thom:false, s4ruth:false, s4chad:false,
+  s5p:false, s5e:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fProton&&T.fNeutron&&T.fElectron;
+  if(i===1) return T.s2correct.size>=5;
+  if(i===2) return T.s3source&&T.s3foil&&T.s3defl;
+  if(i===3) return T.s4thom&&T.s4ruth&&T.s4chad;
+  if(i===4) return T.s5p&&T.s5e;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Particles found: proton '+(T.fProton?'✓':'…')+' · neutron '+(T.fNeutron?'✓':'…')+' · electron '+(T.fElectron?'✓':'…')+'. Tap them in the helium atom!',
+                     'Hạt đã tìm: proton '+(T.fProton?'✓':'…')+' · neutron '+(T.fNeutron?'✓':'…')+' · electron '+(T.fElectron?'✓':'…')+'. Hãy chạm vào chúng trong nguyên tử helium!');
+  if(i===1){
+    const c=T.s2sel? PARTS.find(x=>x.id===T.s2sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap HEAVY or ALMOST NO MASS.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm NẶNG (HEAVY) hoặc GẦN NHƯ KHÔNG CÓ KHỐI LƯỢNG.');
+    return B('Cards right: '+T.s2correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s2correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===2) return B('Gold foil experiment: source '+(T.s3source?'✓':'…')+' · gold foil '+(T.s3foil?'✓':'…')+' · deflected particle '+(T.s3defl?'✓':'…')+'.',
+                     'Thí nghiệm lá vàng: nguồn hạt '+(T.s3source?'✓':'…')+' · lá vàng '+(T.s3foil?'✓':'…')+' · hạt bị lệch hướng (deflected) '+(T.s3defl?'✓':'…')+'.');
+  if(i===3) return B('Discoveries found: Thomson — electron, late 1890s '+(T.s4thom?'✓':'…')+' · Rutherford — proton 1909, nucleus 1911 '+(T.s4ruth?'✓':'…')+' · Chadwick — neutron, 1932 '+(T.s4chad?'✓':'…')+'.',
+                     'Khám phá đã tìm: Thomson — electron, cuối thập niên 1890 '+(T.s4thom?'✓':'…')+' · Rutherford — proton 1909, hạt nhân (nucleus) 1911 '+(T.s4ruth?'✓':'…')+' · Chadwick — neutron, 1932 '+(T.s4chad?'✓':'…')+'.');
+  if(i===4) return B('Charges counted: protons +1 +1 '+(T.s5p?'✓':'…')+' · electrons −1 −1 '+(T.s5e?'✓':'…')+(T.s5p&&T.s5e?' · Total: +1 +1 −1 −1 = 0.':''),
+                     'Điện tích đã đếm: proton +1 +1 '+(T.s5p?'✓':'…')+' · electron −1 −1 '+(T.s5e?'✓':'…')+(T.s5p&&T.s5e?' · Tổng: +1 +1 −1 −1 = 0.':''));
+  if(i===5){
+    const c=T.s6sel? FACTS.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap TRUE or FALSE.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm ĐÚNG (TRUE) hoặc SAI (FALSE).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔴',label:{en:'Proton — positive (+)',vi:'Proton — dương (+)'},got:T.fProton},
+      {emoji:'⚪',label:{en:'Neutron — no charge',vi:'Neutron — không điện tích'},got:T.fNeutron},
+      {emoji:'🔵',label:{en:'Electron — negative (−)',vi:'Electron — âm (−)'},got:T.fElectron}
+    ]);
+  }else if(curStep===1){
+    buildSort(box,PARTS_ORDER,
+      [{key:'heavy',label:STR.binHeavy,cls:'living'},{key:'light',label:STR.binLight,cls:'nonliving'}],
+      T.s2correct,()=>T.s2sel,v=>{T.s2sel=v;},null,onSortPlaced);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🎯',label:{en:'Particle source',vi:'Nguồn hạt'},got:T.s3source},
+      {emoji:'🟨',label:{en:'Gold foil',vi:'Lá vàng'},got:T.s3foil},
+      {emoji:'↩️',label:{en:'Deflected particle — 1 in 8000',vi:'Hạt bị lệch hướng — 1 trong 8000'},got:T.s3defl}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🍮',label:{en:'Thomson — electron, late 1890s',vi:'Thomson — electron, cuối thập niên 1890'},got:T.s4thom},
+      {emoji:'🎯',label:{en:'Rutherford — proton 1909 · nucleus 1911',vi:'Rutherford — proton 1909 · hạt nhân 1911'},got:T.s4ruth},
+      {emoji:'⚪',label:{en:'Chadwick — neutron, 1932',vi:'Chadwick — neutron, 1932'},got:T.s4chad}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🔴',label:{en:'Protons: +1 +1 = +2',vi:'Proton: +1 +1 = +2'},got:T.s5p},
+      {emoji:'🔵',label:{en:'Electrons: −1 −1 = −2',vi:'Electron: −1 −1 = −2'},got:T.s5e},
+      {emoji:'⚖️',label:{en:'Total: 0',vi:'Tổng: 0'},got:T.s5p&&T.s5e}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,FACTS_ORDER,
+      [{key:'true',label:STR.binTrue,cls:'living'},{key:'false',label:STR.binFalse,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('proton'); bounceThing('proton'); setTimeout(()=>{ focusVisual('electron'); bounceThing('electron'); },900); }
+  else if(i===1){ demoSort(PARTS,T.s2correct); }
+  else if(i===2){ focusThing('source'); setTimeout(()=>focusThing('deflected'),900); }
+  else if(i===3){ focusThing('thomson'); setTimeout(()=>focusThing('chadwick'),900); }
+  else if(i===4){ focusThing('proton'); setTimeout(()=>focusThing('electron'),900); }
+  else if(i===5){ demoSort(FACTS,T.s6correct); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recProtons)+'</span><b>'+(FOUND.proton?'2':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recNeutrons)+'</span><b>'+(FOUND.neutron?'2':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recElectrons)+'</span><b>'+(FOUND.electron?'2':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recCharge)+'</span><b>'+(FOUND.charge?'0':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(2),label:STR.didRun},
+    {got:doneSteps.has(3),label:STR.didPlant},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function chargeBars(sign){
+  const g=new THREE.Group();
+  const mat=stdMat(0xffffff,0.5);
+  if(sign==='plus'){
+    const a=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.045,0.02),mat); g.add(a);
+    const b=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.16,0.02),mat); g.add(b);
+  }else if(sign==='minus'){
+    const a=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.045,0.02),mat); g.add(a);
+  }
+  g.position.set(0,0,0.24);
+  return g;
+}
+function buildParticle(color,x,z,sign,s){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.21*(s||1),12,9),stdMat(color,0.55)));
+  ball.position.y=0.24*(s||1); g.add(ball);
+  const bars=chargeBars(sign); bars.position.set(0,0.24*(s||1),0.2*(s||1)); g.add(bars);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildSource(){
+  const g=new THREE.Group();
+  const box=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.55,0.55),stdMat(0x39424e,0.6)));
+  box.position.y=0.32; g.add(box);
+  const nozzle=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.34,10),stdMat(0xf2b134,0.5));
+  nozzle.rotation.z=Math.PI/2; nozzle.position.set(0.42,0.36,0); g.add(nozzle);
+  const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.12,8),stdMat(0x27313a,0.7));
+  leg.position.y=0.02; g.add(leg);
+  g.position.set(0.4,0,2.1); g.userData.baseY=0;
+  return g;
+}
+function buildFoil(){
+  const g=new THREE.Group();
+  [-0.42,0.42].forEach(z=>{
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,1.25,8),stdMat(0x6b5636,0.7));
+    post.position.set(0,0.62,z); g.add(post);
+  });
+  const sheet=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.03,1.05,0.78),stdMat(0xe8b93c,0.35)));
+  sheet.position.y=0.68; g.add(sheet);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.06,1.0),stdMat(0x8a6844,0.9));
+  base.position.y=0.03; g.add(base);
+  g.position.set(1.9,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildDetector(){
+  const g=new THREE.Group();
+  const screen=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.08,1.0,0.9),stdMat(0xbfd9ea,0.4)));
+  screen.position.y=0.6; g.add(screen);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.2,8),stdMat(0x39424e,0.7));
+  post.position.y=0.05; g.add(post);
+  [[-0.2,0.15],[0.25,-0.2],[0.05,0.3]].forEach(p=>{
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(0.035,7,6),stdMat(0xffb400,0.5));
+    dot.position.set(-0.06,0.6+p[0],p[1]); g.add(dot);
+  });
+  g.position.set(4.0,0,2.3); g.userData.baseY=0;
+  return g;
+}
+function buildThomson(){
+  const g=new THREE.Group();
+  const pud=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.52,16,12),
+    new THREE.MeshStandardMaterial({color:0xe8a0b4,roughness:0.7,transparent:true,opacity:0.75})));
+  pud.position.y=0.55; g.add(pud);
+  [[0.2,0.7,0.3],[-0.25,0.45,-0.2],[0.05,0.35,0.35],[-0.1,0.75,-0.3],[0.3,0.4,-0.15],[-0.3,0.6,0.2]].forEach(p=>{
+    const e=new THREE.Mesh(new THREE.SphereGeometry(0.075,8,6),stdMat(0x2456c8,0.5));
+    e.position.set(p[0],p[1],p[2]); g.add(e);
+  });
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.6,0.07,18),stdMat(0x8a6844,0.9));
+  plate.position.y=0.03; g.add(plate);
+  g.position.set(-3.7,0,-1.7); g.userData.baseY=0;
+  return g;
+}
+function buildRutherford(){
+  const g=new THREE.Group();
+  const nuc=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2,12,9),stdMat(0xe8b93c,0.4)));
+  nuc.position.y=0.55; g.add(nuc);
+  const orbit=new THREE.Mesh(new THREE.TorusGeometry(0.52,0.018,8,36),stdMat(0x2456c8,0.5));
+  orbit.position.y=0.55; orbit.rotation.x=Math.PI/2.4; g.add(orbit);
+  const e=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,6),stdMat(0x2456c8,0.5));
+  e.position.set(0.45,0.72,0.2); g.add(e);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,0.36,8),stdMat(0x39424e,0.7));
+  post.position.y=0.18; g.add(post);
+  g.position.set(-1.2,0,-1.9); g.userData.baseY=0;
+  return g;
+}
+function buildCup(x,z){
+  const g=new THREE.Group();
+  const cup=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.15,0.42,14,1,true),
+    new THREE.MeshStandardMaterial({color:0xdfe9f2,roughness:0.35,transparent:true,opacity:0.65,side:THREE.DoubleSide})));
+  cup.position.y=0.21; g.add(cup);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.03,14),stdMat(0x3fa7d6,0.3));
+  water.position.y=0.36; g.add(water);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.03,14),stdMat(0xb9c9d8,0.6));
+  bottom.position.y=0.02; g.add(bottom);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildTree(x,z,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.09*s,0.13*s,0.9*s,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.45*s; g.add(trunk);
+  [[0,1.25,0,0.55],[0.3,1.05,0.1,0.4],[-0.28,1.08,-0.08,0.42]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(p[3]*s,10,8),stdMat(0x4e9e4e,0.9));
+    blob.position.set(p[0]*s,p[1]*s,p[2]*s); g.add(blob);
+  });
+  g.position.set(x,0,z);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xe6eef7);
+  scene3.fog=new THREE.Fog(0xe6eef7,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0xb9c9d8,0.9));
+  bench.position.set(0.8,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xd7e2ec,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xf2f6fa,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  /* helium atom dressing: translucent nucleus sphere + electron orbit ring */
+  const nucSphere=new THREE.Mesh(new THREE.SphereGeometry(0.48,18,14),
+    new THREE.MeshStandardMaterial({color:0xffd9a0,roughness:0.4,transparent:true,opacity:0.28}));
+  nucSphere.position.set(-3.2,0.26,1.6); scene3.add(nucSphere);
+  const orbitRing=new THREE.Mesh(new THREE.TorusGeometry(1.25,0.02,8,48),stdMat(0x2456c8,0.5));
+  orbitRing.position.set(-3.2,0.26,1.6); orbitRing.rotation.x=Math.PI/2.3; scene3.add(orbitRing);
+  /* gold foil beam path dots */
+  [[1.2,0.9],[2.6,0.9],[3.4,0.9]].forEach(p=>{
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.035,7,6),stdMat(0x7a4fd0,0.5));
+    d.position.set(p[0],0.68,p[1]); scene3.add(d);
+  });
+  const bent=new THREE.Mesh(new THREE.SphereGeometry(0.035,7,6),stdMat(0x7a4fd0,0.5));
+  bent.position.set(2.35,0.68,0.25); scene3.add(bent);
+  scene3.add(buildTree(-4.9,-2.9,0.85));
+  scene3.add(buildTree(2.2,3.2,0.8));
+  reg('proton',buildParticle(0xd23c2a,-3.62,1.18,'plus',1));
+  reg('neutron',buildParticle(0x9aa7b4,-2.78,2.02,'none',1));
+  reg('electron',buildParticle(0x2456c8,-2.05,0.85,'minus',0.85));
+  reg('source',buildSource());
+  reg('foil',buildFoil());
+  reg('straight',buildParticle(0x7a4fd0,3.1,0.9,'none',0.55));
+  reg('deflected',buildParticle(0x7a4fd0,2.7,-0.5,'none',0.55));
+  reg('detector',buildDetector());
+  reg('thomson',buildThomson());
+  reg('rutherford',buildRutherford());
+  reg('chadwick',buildParticle(0x9aa7b4,0.6,-1.7,'none',1.5));
+  reg('cup1',buildCup(4.3,-1.9));
+  reg('cup2',buildCup(5.0,-1.5));
+  reg('cup3',buildCup(4.6,-0.7));
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.5); p.position.set(0,0.26,0); addProxy('proton',p,G.proton); }
+  { const p=sphProxy(0.5); p.position.set(0,0.26,0); addProxy('neutron',p,G.neutron); }
+  { const p=sphProxy(0.48); p.position.set(0,0.22,0); addProxy('electron',p,G.electron); }
+  { const p=sphProxy(0.55); p.position.set(0,0.35,0); addProxy('source',p,G.source); }
+  { const p=sphProxy(0.6); p.position.set(0,0.65,0); addProxy('foil',p,G.foil); }
+  { const p=sphProxy(0.45); p.position.set(0,0.15,0); addProxy('straight',p,G.straight); }
+  { const p=sphProxy(0.45); p.position.set(0,0.15,0); addProxy('deflected',p,G.deflected); }
+  { const p=sphProxy(0.58); p.position.set(0,0.6,0); addProxy('detector',p,G.detector); }
+  { const p=sphProxy(0.72); p.position.set(0,0.55,0); addProxy('thomson',p,G.thomson); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('rutherford',p,G.rutherford); }
+  { const p=sphProxy(0.58); p.position.set(0,0.36,0); addProxy('chadwick',p,G.chadwick); }
+  { const p=sphProxy(0.48); p.position.set(0,0.22,0); addProxy('cup1',p,G.cup1); }
+  { const p=sphProxy(0.48); p.position.set(0,0.22,0); addProxy('cup2',p,G.cup2); }
+  { const p=sphProxy(0.48); p.position.set(0,0.22,0); addProxy('cup3',p,G.cup3); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['proton','neutron','electron'],
+  [],
+  ['source','foil','deflected'],
+  ['thomson','rutherford','chadwick'],
+  ['proton','electron'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='proton'){ T.fProton=true; FOUND.proton=true; }
+    if(id==='neutron'){ T.fNeutron=true; FOUND.neutron=true; }
+    if(id==='electron'){ T.fElectron=true; FOUND.electron=true; }
+  }else if(curStep===2){
+    if(id==='source'){ T.s3source=true; FOUND.source=true; }
+    if(id==='foil'){ T.s3foil=true; FOUND.foil=true; }
+    if(id==='deflected'){ T.s3defl=true; FOUND.defl=true; }
+  }else if(curStep===3){
+    if(id==='thomson'){ T.s4thom=true; FOUND.thom=true; }
+    if(id==='rutherford'){ T.s4ruth=true; FOUND.ruth=true; }
+    if(id==='chadwick'){ T.s4chad=true; FOUND.chad=true; }
+  }else if(curStep===4){
+    if(id==='proton'){ T.s5p=true; }
+    if(id==='electron'){ T.s5e=true; }
+    if(T.s5p&&T.s5e) FOUND.charge=true;
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — tick the true statements */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=3);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=3);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — label the atom */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='innucleus'?'◎':'○')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('innucleus');
+$('ex2BinNot').onclick=()=>ex2Place('outside');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.proton=false; FOUND.neutron=false; FOUND.electron=false; }
+  if(step===1){ PARTS.forEach(c=>SORTED.delete(c.id)); }
+  if(step===2){ FOUND.source=false; FOUND.foil=false; FOUND.defl=false; }
+  if(step===3){ FOUND.thom=false; FOUND.ruth=false; FOUND.chad=false; }
+  if(step===4){ FOUND.charge=false; }
+  if(step===5){ FACTS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='innucleus'||s.exAns.a2[id]==='outside')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fProton=!!FOUND.proton; t.fNeutron=!!FOUND.neutron; t.fElectron=!!FOUND.electron; }
+  else if(i===1){ PARTS.forEach(c=>{ if(SORTED.has(c.id)) t.s2correct.add(c.id); }); }
+  else if(i===2){ t.s3source=!!FOUND.source; t.s3foil=!!FOUND.foil; t.s3defl=!!FOUND.defl; }
+  else if(i===3){ t.s4thom=!!FOUND.thom; t.s4ruth=!!FOUND.ruth; t.s4chad=!!FOUND.chad; }
+  else if(i===4){ if(FOUND.charge){ t.s5p=true; t.s5e=true; } }
+  else if(i===5){ FACTS.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-5-1',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

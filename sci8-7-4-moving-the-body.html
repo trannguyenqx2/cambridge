@@ -1,0 +1,1369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>7.4 Moving the body — Vận động cơ thể · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="7.4 Moving the body" data-vi="7.4 Vận động cơ thể (Moving the body)">7.4 Moving the body</span>
+    <span class="eqchip i18n" data-en="Unit 7 · Diet and growth" data-vi="Bài 7 · Chế độ ăn và tăng trưởng (Diet and growth)">Unit 7 · Diet and growth</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do joints and muscles move the body?" data-vi="Khớp (joints) và cơ (muscles) làm cơ thể vận động như thế nào?">How do joints and muscles move the body?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Skeleton and joints" data-vi="Bộ xương (skeleton) và khớp (joints)">Skeleton and joints</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Two kinds of joint" data-vi="Hai loại khớp (joints)">Two kinds of joint</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Muscles pull on bones" data-vi="Cơ (muscles) kéo xương">Muscles pull on bones</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Antagonistic pairs move the arm" data-vi="Cặp cơ đối kháng (antagonistic) vận động cánh tay">Antagonistic pairs move the arm</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the bones, joints and muscles!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào xương, khớp và cơ!">🖱 Drag to look around · Scroll to zoom · Tap the bones, joints and muscles!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 7 Diet and growth · Section 7.4. The body-lab scene in this lesson is a simulation — the models are not to scale." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 7 Chế độ ăn và tăng trưởng (Diet and growth) · Mục 7.4. Cảnh phòng thực hành cơ thể trong bài này là mô phỏng — các mô hình không theo tỉ lệ thật.">Cambridge Lower Secondary Science 8 · Unit 7 Diet and growth · Section 7.4. The body-lab scene in this lesson is a simulation — the models are not to scale.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 7 Diet and growth, section 7.4, pages 249–259; Workbook 8 (ISBN 9781108742856), pages 153–159. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 7 Diet and growth (Chế độ ăn và tăng trưởng), mục 7.4, trang 249–259; Sách bài tập 8 (ISBN 9781108742856), trang 153–159. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 7 Diet and growth, section 7.4, pages 249–259; Workbook 8 (ISBN 9781108742856), pages 153–159. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn about hinge joints and ball-and-socket joints; find out how a pair of muscles moves the arm at the elbow. Key words: antagonistic muscles, ball-and-socket joints, biceps, contraction, exoskeleton, hinge joints, joints, muscles, relax, skeleton, tendons, triceps." data-vi="Mục tiêu: tìm hiểu về khớp bản lề (hinge joints) và khớp cầu (ball-and-socket joints); tìm ra cách một cặp cơ vận động cánh tay tại khuỷu. Từ khóa: antagonistic muscles (cơ đối kháng), ball-and-socket joints (khớp cầu), biceps (cơ nhị đầu), contraction (co cơ), exoskeleton (bộ xương ngoài), hinge joints (khớp bản lề), joints (khớp), muscles (cơ), relax (giãn ra), skeleton (bộ xương), tendons (gân), triceps (cơ tam đầu).">Objectives: learn about hinge joints and ball-and-socket joints; find out how a pair of muscles moves the arm at the elbow. Key words: antagonistic muscles, ball-and-socket joints, biceps, contraction, exoskeleton, hinge joints, joints, muscles, relax, skeleton, tendons, triceps.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D body-lab stage — sorting protection bones from movement bones (the book’s Getting started), identifying hinge and ball-and-socket joints (Activity 7.4.1), naming the three arm bones, bending the elbow with the biceps while feeling the muscle work (Activity 7.4.2), straightening it with the triceps, and testing the book’s model arm (the Think like a scientist investigation) at all four hooks. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done. Three book items were adapted or left out: the model-arm forces (12 N, 6 N, 4 N and 3 N at 10, 20, 30 and 40 cm for one fixed load) are the simulation’s own readings, worked out from moments — the book gives the method and the hook spacing but no results, so no book number was invented; the Workbook 7.4A finger readings could not be recovered exactly from the extracted scale pictures, so the Focus exercise uses self-checking scale-reading cards in the same style instead of Arun’s own table; and the Workbook 7.4C task of writing your own full investigation plan and results chart is an open writing task that cannot be machine-checked, so only its testable-hypothesis choice is practised here. The unit Check your progress questions and the Mars project belong to the whole of Unit 7, not to section 7.4, and are not included." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên sân khấu phòng thực hành cơ thể 3D — phân biệt xương bảo vệ và xương vận động (phần Khởi động của sách), nhận biết khớp bản lề (hinge) và khớp cầu (ball-and-socket) (Hoạt động 7.4.1), gọi tên ba xương của cánh tay, gập khuỷu bằng cơ nhị đầu (biceps) trong khi cảm nhận cơ làm việc (Hoạt động 7.4.2), duỗi thẳng bằng cơ tam đầu (triceps), và kiểm chứng cánh tay mô hình của sách (bài thực hành Tư duy như nhà khoa học) ở cả bốn móc. Bài học tự kiểm tra hành động đó (dòng tối ‘Căn cứ’), và đáp án chỉ mở khi hành động đã hoàn thành. ‘Xem cách làm’ chỉ trình diễn — không bao giờ được tính là đã làm. Ba nội dung của sách được điều chỉnh hoặc không đưa vào: các lực của cánh tay mô hình (12 N, 6 N, 4 N và 3 N ở 10, 20, 30 và 40 cm cho một tải cố định) là số đo của chính mô phỏng, tính ra từ mô-men (moments) — sách cho phương pháp và khoảng cách các móc nhưng không cho kết quả, nên không bịa ra số nào của sách; các số đọc bằng ngón tay trong Sách bài tập 7.4A không khôi phục chính xác được từ các hình thang đo đã trích, nên bài Focus dùng các thẻ đọc thang đo tự kiểm chứng theo cùng phong cách thay cho bảng của chính Arun; và nhiệm vụ viết kế hoạch thực hành và biểu đồ kết quả đầy đủ của Sách bài tập 7.4C là bài viết mở không thể chấm tự động, nên ở đây chỉ luyện phần chọn giả thuyết có thể kiểm chứng của nó. Các câu hỏi Check your progress của cả bài và dự án Sao Hỏa thuộc về toàn bộ Bài 7, không thuộc mục 7.4, nên không đưa vào.">How it works: each step asks for one real action on the 3D body-lab stage — sorting protection bones from movement bones (the book’s Getting started), identifying hinge and ball-and-socket joints (Activity 7.4.1), naming the three arm bones, bending the elbow with the biceps while feeling the muscle work (Activity 7.4.2), straightening it with the triceps, and testing the book’s model arm (the Think like a scientist investigation) at all four hooks. The lesson checks the action itself (the dark ‘Show me’ line), and the answer stays locked until the action is done. ‘Show me how’ only demonstrates — it never counts as done. Three book items were adapted or left out: the model-arm forces (12 N, 6 N, 4 N and 3 N at 10, 20, 30 and 40 cm for one fixed load) are the simulation’s own readings, worked out from moments — the book gives the method and the hook spacing but no results, so no book number was invented; the Workbook 7.4A finger readings could not be recovered exactly from the extracted scale pictures, so the Focus exercise uses self-checking scale-reading cards in the same style instead of Arun’s own table; and the Workbook 7.4C task of writing your own full investigation plan and results chart is an open writing task that cannot be machine-checked, so only its testable-hypothesis choice is practised here. The unit Check your progress questions and the Mars project belong to the whole of Unit 7, not to section 7.4, and are not included.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-7-4 "Moving the body" (Science 8, Unit 7)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= body things ================= */
+const THINGS={
+  skull:   {emoji:'💀', name:{en:'Skull (cranium) — protects the brain',vi:'Hộp sọ (skull / cranium) — bảo vệ não'}, short:{en:'Skull · cranium',vi:'Hộp sọ'}, ring:0.6, labelY:1.05, fx:-5.6, fz:-1.9, fr:4.6},
+  ribs:    {emoji:'🦴', name:{en:'Ribs — protect the heart and lungs',vi:'Xương sườn (ribs) — bảo vệ tim và phổi'}, short:{en:'Ribs',vi:'Xương sườn'}, ring:0.7, labelY:1.25, fx:-3.7, fz:-2.0, fr:4.8},
+  femur:   {emoji:'🦴', name:{en:'Femur — the long leg bone, important for movement',vi:'Xương đùi (femur) — xương chân dài, quan trọng cho vận động'}, short:{en:'Femur',vi:'Xương đùi'}, ring:0.65, labelY:0.85, fx:-1.7, fz:-1.9, fr:4.6},
+  pelvis:  {emoji:'🦴', name:{en:'Pelvis — the hip bones of the skeleton',vi:'Xương chậu (pelvis) — các xương hông của bộ xương'}, short:{en:'Pelvis',vi:'Xương chậu'}, ring:0.6, labelY:0.9, fx:0.3, fz:-2.0, fr:4.6},
+  beetle:  {emoji:'🪲', name:{en:'A beetle — its hard skeleton is on the outside (an exoskeleton)',vi:'Một con bọ — bộ xương cứng của nó ở bên ngoài (exoskeleton)'}, short:{en:'Beetle · exoskeleton',vi:'Bọ · xương ngoài'}, ring:0.55, labelY:0.75, fx:2.2, fz:-1.9, fr:4.4},
+  shoulder:{emoji:'⚪', name:{en:'Shoulder joint — a ball-and-socket joint',vi:'Khớp vai (shoulder joint) — khớp cầu (ball-and-socket joint)'}, short:{en:'Shoulder · ball-and-socket',vi:'Vai · khớp cầu'}, ring:0.6, labelY:1.15, fx:-5.6, fz:0.1, fr:4.6},
+  elbow:   {emoji:'🚪', name:{en:'Elbow joint — a hinge joint',vi:'Khớp khuỷu (elbow joint) — khớp bản lề (hinge joint)'}, short:{en:'Elbow · hinge',vi:'Khuỷu · bản lề'}, ring:0.6, labelY:1.05, fx:-3.7, fz:0.1, fr:4.6},
+  hip:     {emoji:'⚪', name:{en:'Hip joint — a ball-and-socket joint',vi:'Khớp hông (hip joint) — khớp cầu (ball-and-socket joint)'}, short:{en:'Hip · ball-and-socket',vi:'Hông · khớp cầu'}, ring:0.6, labelY:1.15, fx:-1.8, fz:0.1, fr:4.6},
+  knee:    {emoji:'🚪', name:{en:'Knee joint — a hinge joint',vi:'Khớp gối (knee joint) — khớp bản lề (hinge joint)'}, short:{en:'Knee · hinge',vi:'Gối · bản lề'}, ring:0.6, labelY:1.05, fx:0.1, fz:0.1, fr:4.6},
+  humerus: {emoji:'🦴', name:{en:'Humerus — the upper arm bone',vi:'Xương cánh tay (humerus) — xương của phần trên cánh tay'}, short:{en:'Humerus',vi:'Xương cánh tay'}, ring:0.6, labelY:0.9, fx:2.2, fz:0.1, fr:4.6},
+  radius:  {emoji:'🦴', name:{en:'Radius — one of the two forearm bones',vi:'Xương quay (radius) — một trong hai xương cẳng tay'}, short:{en:'Radius',vi:'Xương quay'}, ring:0.55, labelY:0.85, fx:4.0, fz:0.1, fr:4.6},
+  ulna:    {emoji:'🦴', name:{en:'Ulna — the other forearm bone',vi:'Xương trụ (ulna) — xương còn lại của cẳng tay'}, short:{en:'Ulna',vi:'Xương trụ'}, ring:0.55, labelY:0.85, fx:5.7, fz:0.1, fr:4.6},
+  hook1:   {emoji:'🪝', name:{en:'Hook 1 — 10 cm from the elbow pivot',vi:'Móc 1 (hook 1) — cách trục khuỷu 10 cm'}, short:{en:'Hook 1 · 10 cm',vi:'Móc 1 · 10 cm'}, ring:0.5, labelY:0.95, fx:-5.6, fz:2.3, fr:4.4},
+  hook2:   {emoji:'🪝', name:{en:'Hook 2 — 20 cm from the elbow pivot',vi:'Móc 2 (hook 2) — cách trục khuỷu 20 cm'}, short:{en:'Hook 2 · 20 cm',vi:'Móc 2 · 20 cm'}, ring:0.5, labelY:0.95, fx:-4.0, fz:2.3, fr:4.4},
+  hook3:   {emoji:'🪝', name:{en:'Hook 3 — 30 cm from the elbow pivot',vi:'Móc 3 (hook 3) — cách trục khuỷu 30 cm'}, short:{en:'Hook 3 · 30 cm',vi:'Móc 3 · 30 cm'}, ring:0.5, labelY:0.95, fx:-2.4, fz:2.3, fr:4.4},
+  hook4:   {emoji:'🪝', name:{en:'Hook 4 — 40 cm from the elbow pivot',vi:'Móc 4 (hook 4) — cách trục khuỷu 40 cm'}, short:{en:'Hook 4 · 40 cm',vi:'Móc 4 · 40 cm'}, ring:0.5, labelY:0.95, fx:-0.8, fz:2.3, fr:4.4},
+  newton:  {emoji:'📏', name:{en:'Newton meter — it measures the pulling force, in newtons (N)',vi:'Lực kế (newton meter) — đo lực kéo, tính bằng niu-tơn (N)'}, short:{en:'Newton meter',vi:'Lực kế'}, ring:0.55, labelY:1.0, fx:0.7, fz:2.3, fr:4.4},
+  load:    {emoji:'🏋️', name:{en:'Masses on a hanger — the load the model arm must lift',vi:'Các quả nặng trên móc treo (masses) — tải mà cánh tay mô hình phải nâng'}, short:{en:'Masses · the load',vi:'Quả nặng · tải'}, ring:0.55, labelY:0.9, fx:2.1, fz:2.3, fr:4.4},
+  biceps:  {emoji:'💪', name:{en:'Biceps — the muscle at the front of the upper arm; it bends the elbow',vi:'Cơ nhị đầu (biceps) — cơ ở mặt trước cánh tay trên; nó gập khuỷu'}, short:{en:'Biceps',vi:'Cơ nhị đầu'}, ring:0.6, labelY:1.05, fx:3.9, fz:2.2, fr:4.6},
+  triceps: {emoji:'💪', name:{en:'Triceps — the muscle at the back of the upper arm; it straightens the elbow',vi:'Cơ tam đầu (triceps) — cơ ở mặt sau cánh tay trên; nó duỗi thẳng khuỷu'}, short:{en:'Triceps',vi:'Cơ tam đầu'}, ring:0.6, labelY:1.05, fx:5.6, fz:2.2, fr:4.6}
+};
+const FOCUSORDER=['skull','ribs','shoulder','elbow','humerus','biceps','triceps','hook1'];
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'In the body lab',vi:'Trong phòng thực hành cơ thể'},
+  u1Brief:{en:'Tap a name to LOOK at the object. Looking is not doing — to do a step, tap the object itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Model-arm readings',vi:'Số đo của cánh tay mô hình'},
+  u2Brief:{en:'The force needed to hold the model radius level, for the same load, as you test each hook. The newton meter in this simulation plays the part of the biceps.',vi:'Lực cần để giữ xương quay mô hình nằm ngang, với cùng một tải, khi con thử từng móc. Lực kế (newton meter) trong mô phỏng này đóng vai cơ nhị đầu (biceps).'},
+  recH1:{en:'Hook 1 — 10 cm from the pivot: force',vi:'Móc 1 — cách trục 10 cm: lực'},
+  recH2:{en:'Hook 2 — 20 cm from the pivot: force',vi:'Móc 2 — cách trục 20 cm: lực'},
+  recH3:{en:'Hook 3 — 30 cm from the pivot: force',vi:'Móc 3 — cách trục 30 cm: lực'},
+  recH4:{en:'Hook 4 — 40 cm from the pivot: force',vi:'Móc 4 — cách trục 40 cm: lực'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your body-work checklist.',vi:'Danh sách thực hành về cơ thể của con.'},
+  didSetup:{en:'Sorted protection bones from movement bones',vi:'Đã phân biệt xương bảo vệ và xương vận động'},
+  didRun:{en:'Identified hinge and ball-and-socket joints',vi:'Đã nhận biết khớp bản lề (hinge) và khớp cầu (ball-and-socket)'},
+  didSort:{en:'Tested all four hooks on the model arm',vi:'Đã thử cả bốn móc trên cánh tay mô hình'},
+  didPlant:{en:'Bent and straightened the arm with its muscles',vi:'Đã gập và duỗi cánh tay bằng các cơ của nó'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPerm:{en:'BENDS THE KNEE 🦵',vi:'GẬP GỐI (bends the knee) 🦵'},
+  binNot:{en:'STRAIGHTENS THE KNEE 🦿',vi:'DUỖI GỐI (straightens the knee) 🦿'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 7.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 7.4'},
+  exIntro:{en:'Workbook games for this lesson: reading a newton meter scale (Exercise 7.4A), antagonistic muscles in the leg (7.4B) and choosing a testable hypothesis about bones (7.4C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: đọc thang đo của lực kế (Bài tập 7.4A), các cơ đối kháng (antagonistic muscles) ở chân (7.4B) và chọn một giả thuyết về xương có thể kiểm chứng (7.4C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Reading a newton meter scale (7.4A)',vi:'Bài tập 1 · Focus — Đọc thang đo của lực kế (newton meter) (7.4A)'},
+  ex1Inst:{en:'Arun pulls a newton meter with one finger and reads the scale, in newtons (N). Tap the 4 cards where the reading correctly matches where the pointer stopped.',vi:'Arun kéo một lực kế (newton meter) bằng một ngón tay và đọc thang đo, tính bằng niu-tơn (N). Chạm vào 4 thẻ mà số đọc khớp đúng với vị trí kim đã dừng.'},
+  ex2T:{en:'Exercise 2 · Practice — Antagonistic muscles in the leg (7.4B)',vi:'Bài tập 2 · Practice — Các cơ đối kháng (antagonistic muscles) ở chân (7.4B)'},
+  ex2Inst:{en:'The knee is a hinge joint, worked by an antagonistic pair in the leg — just like the elbow in the arm. Tap a card, then tap BENDS THE KNEE or STRAIGHTENS THE KNEE to say what the leg muscles are doing.',vi:'Gối là một khớp bản lề (hinge joint), được vận hành bởi một cặp cơ đối kháng ở chân — giống như khuỷu ở cánh tay. Chạm vào một thẻ, rồi chạm GẬP GỐI hoặc DUỖI GỐI để nói các cơ chân đang làm gì.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (7.4C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (7.4C)'},
+  ex3Inst:{en:'Each sentence is about muscles, tendons and the arm — or about which hypothesis the straw-breaking rig can test. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về cơ (muscles), gân (tendons) và cánh tay — hoặc về giả thuyết nào mà bộ thí nghiệm bẻ ống hút có thể kiểm chứng. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'skeleton',vi:'bộ xương'},
+  {en:'joints',vi:'khớp'},
+  {en:'hinge joints',vi:'khớp bản lề'},
+  {en:'ball-and-socket joints',vi:'khớp cầu'},
+  {en:'muscles',vi:'cơ'},
+  {en:'contraction',vi:'sự co cơ'},
+  {en:'tendons',vi:'gân'},
+  {en:'biceps',vi:'cơ nhị đầu'},
+  {en:'triceps',vi:'cơ tam đầu'},
+  {en:'antagonistic muscles',vi:'cơ đối kháng'},
+  {en:'exoskeleton',vi:'bộ xương ngoài'},
+  {en:'relax',vi:'giãn ra'}
+];
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Protect and move',vi:'Bảo vệ và vận động'}, word:{en:'skeleton',vi:'bộ xương'},
+  q:{en:'Getting started: animals’ bodies are supported by a skeleton. Some bones protect parts of the body — and some bones are important in movement. Can you sort them out?',vi:'Khởi động: cơ thể động vật được nâng đỡ bởi một bộ xương (skeleton). Một số xương bảo vệ các bộ phận của cơ thể — và một số xương quan trọng trong vận động. Con phân biệt được không?'},
+  act:{en:'Tap the skull and the ribs — two bones that protect — then tap the femur, a bone that is important for movement.',vi:'Chạm vào hộp sọ (skull) và xương sườn (ribs) — hai xương làm nhiệm vụ bảo vệ — rồi chạm vào xương đùi (femur), một xương quan trọng cho vận động.'},
+  see:{en:'Each bone bounces and shows its name and its job.',vi:'Mỗi xương nảy lên và hiện tên cùng nhiệm vụ của nó.'},
+  concl:[
+    {en:'Your skeleton (skeleton) is inside your body and is made of bones. Some bones protect: the skull (cranium) protects the brain, and the ribs protect the heart and lungs.',vi:'Bộ xương (skeleton) của con nằm bên trong cơ thể và làm bằng xương. Một số xương bảo vệ: hộp sọ (skull / cranium) bảo vệ não, và xương sườn (ribs) bảo vệ tim và phổi.'},
+    {en:'Other bones are important in movement — the femur is the long bone of the leg, worked at the hip and knee joints when you walk and run.',vi:'Các xương khác quan trọng trong vận động — xương đùi (femur) là xương dài của chân, hoạt động ở khớp hông và khớp gối khi con đi và chạy.'},
+    {en:'Bones are hard and strong and contain a lot of calcium, and they contain living cells — so a diet needs calcium, and protein too, to build strong bones. Insects and other arthropods are different: their skeleton is on the outside of the body — an exoskeleton (exoskeleton).',vi:'Xương cứng và chắc, chứa nhiều canxi (calcium), và chứa các tế bào sống — nên chế độ ăn cần canxi, và cả chất đạm (protein), để xây xương chắc khỏe. Côn trùng và các động vật chân khớp khác thì khác: bộ xương của chúng nằm ở bên ngoài cơ thể — một bộ xương ngoài (exoskeleton).'}]},
+ {tag:{en:'Two kinds of joint',vi:'Hai loại khớp'}, word:{en:'hinge joints',vi:'khớp bản lề'},
+  q:{en:'Activity 7.4.1: bones cannot bend, so movement can only happen where two bones meet — at a joint. There are two kinds of joint to find on the stage. Can you identify them?',vi:'Hoạt động 7.4.1: xương không thể cong, nên vận động chỉ xảy ra ở nơi hai xương gặp nhau — tại một khớp (joint). Có hai loại khớp cần tìm trên sân khấu. Con nhận biết được không?'},
+  act:{en:'Tap two hinge joints — the elbow and the knee — then tap two ball-and-socket joints — the shoulder and the hip.',vi:'Chạm vào hai khớp bản lề (hinge joints) — khuỷu và gối — rồi chạm vào hai khớp cầu (ball-and-socket joints) — vai và hông.'},
+  see:{en:'Each joint model bounces: hinge joints swing back and forth in one direction, ball-and-socket joints can move in a complete circle.',vi:'Mỗi mô hình khớp nảy lên: khớp bản lề đu qua lại theo một hướng, khớp cầu có thể chuyển động theo một vòng tròn đầy đủ.'},
+  concl:[
+    {en:'A joint (joint) is a place where two bones meet. Movement in the skeleton can only take place at joints, because bones themselves cannot bend.',vi:'Một khớp (joint) là nơi hai xương gặp nhau. Vận động trong bộ xương chỉ có thể xảy ra tại các khớp, vì bản thân xương không thể cong.'},
+    {en:'Hinge joints (hinge joints) work like the hinges on a door: they let the bones move back and forth in one direction. The elbow and the knee are hinge joints.',vi:'Khớp bản lề (hinge joints) hoạt động như bản lề của một cánh cửa: chúng cho xương chuyển động qua lại theo một hướng. Khuỷu và gối là khớp bản lề.'},
+    {en:'At ball-and-socket joints (ball-and-socket joints), the end of one bone is shaped like a ball, and it fits into a cup, or socket, in the other bone — so the bones can move in a complete circle. The shoulder and the hip are ball-and-socket joints.',vi:'Ở khớp cầu (ball-and-socket joints), đầu của một xương có hình như quả cầu, và nó khớp vào một ổ lõm (socket) trong xương còn lại — nên xương có thể chuyển động theo vòng tròn đầy đủ. Vai và hông là khớp cầu.'}]},
+ {tag:{en:'Bones of the arm',vi:'Các xương của cánh tay'}, word:{en:'humerus',vi:'xương cánh tay'},
+  q:{en:'The arm has several joints — shoulder, elbow, wrist and the finger joints — and three main bones. On an X-ray of the arm, can you pick out the three bones?',vi:'Cánh tay có nhiều khớp — vai, khuỷu, cổ tay và các khớp ngón tay — và ba xương chính. Trên ảnh X-quang của cánh tay, con chỉ ra được ba xương đó không?'},
+  act:{en:'Tap the humerus in the upper arm, then tap the two forearm bones: the radius and the ulna.',vi:'Chạm vào xương cánh tay (humerus) ở phần trên cánh tay, rồi chạm vào hai xương cẳng tay: xương quay (radius) và xương trụ (ulna).'},
+  see:{en:'Each arm bone bounces and shows its name.',vi:'Mỗi xương cánh tay nảy lên và hiện tên của nó.'},
+  concl:[
+    {en:'The upper arm bone is the humerus (humerus). It meets the scapula (shoulder blade) at the shoulder — a ball-and-socket joint.',vi:'Xương của phần trên cánh tay là xương cánh tay (humerus). Nó gặp xương bả vai (scapula) tại vai — một khớp cầu (ball-and-socket joint).'},
+    {en:'The forearm has two bones side by side: the radius (radius) and the ulna (ulna).',vi:'Cẳng tay có hai xương nằm cạnh nhau: xương quay (radius) và xương trụ (ulna).'},
+    {en:'The humerus meets the radius and ulna at the elbow — a hinge joint. There are more joints at the wrist, and many small hinge joints in the fingers.',vi:'Xương cánh tay (humerus) gặp xương quay (radius) và xương trụ (ulna) tại khuỷu — một khớp bản lề (hinge joint). Còn có thêm các khớp ở cổ tay, và nhiều khớp bản lề nhỏ ở các ngón tay.'}]},
+ {tag:{en:'Bend the elbow',vi:'Gập khuỷu'}, word:{en:'biceps',vi:'cơ nhị đầu'},
+  q:{en:'Bones and joints cannot move themselves — muscles move them. Think about bending your own arm at the elbow, and feel your upper arm as you do it (Activity 7.4.2). Which muscle does the work?',vi:'Xương và khớp không tự chuyển động được — cơ (muscles) làm chúng chuyển động. Hãy nghĩ về việc gập cánh tay của chính con ở khuỷu, và sờ phần trên cánh tay khi làm vậy (Hoạt động 7.4.2). Cơ nào làm việc đó?'},
+  act:{en:'Tap the biceps, at the front of the upper arm, to make it contract.',vi:'Chạm vào cơ nhị đầu (biceps), ở mặt trước của phần trên cánh tay, để làm nó co lại (contract).'},
+  see:{en:'The biceps gets shorter and thicker, and pulls the radius upwards — the elbow bends.',vi:'Cơ nhị đầu ngắn lại và dày lên, và kéo xương quay (radius) lên trên — khuỷu gập lại.'},
+  concl:[
+    {en:'Muscles (muscles) are made of specialised cells that can make themselves shorter. That shortening is called contraction (contraction). Contracting uses energy, released from glucose by respiration.',vi:'Cơ (muscles) làm bằng các tế bào chuyên biệt có thể tự làm mình ngắn lại. Sự ngắn lại đó gọi là co cơ (contraction). Co cơ dùng năng lượng, được giải phóng từ glucose (glucose) bằng hô hấp (respiration).'},
+    {en:'Muscles are attached to bones by tough cords called tendons (tendons), which are not stretchy. When a muscle contracts, it pulls on its tendon, and the tendon pulls on the bone.',vi:'Cơ gắn vào xương bằng các dây dai gọi là gân (tendons), vốn không co giãn. Khi một cơ co lại, nó kéo gân của nó, và gân kéo xương.'},
+    {en:'To bend the arm, the brain sends an electrical impulse to the biceps (biceps). The biceps contracts and pulls the radius up, so the elbow bends — while the triceps relaxes. The biceps is fixed to the scapula at one end (by two tendons — that is why it is called bi-ceps) and to the radius at the other end.',vi:'Để gập cánh tay, não gửi một xung điện tới cơ nhị đầu (biceps). Cơ nhị đầu co lại và kéo xương quay (radius) lên, nên khuỷu gập lại — trong khi cơ tam đầu (triceps) giãn ra (relaxes). Cơ nhị đầu bám vào xương bả vai (scapula) ở một đầu (bằng hai gân — đó là lý do nó được gọi là bi-ceps, nhị đầu) và vào xương quay ở đầu còn lại.'}]},
+ {tag:{en:'Straighten the elbow',vi:'Duỗi thẳng khuỷu'}, word:{en:'triceps',vi:'cơ tam đầu'},
+  q:{en:'Now straighten the arm again. The biceps cannot push it straight — muscles can only pull. So which muscle does this job?',vi:'Giờ hãy duỗi thẳng cánh tay trở lại. Cơ nhị đầu không thể đẩy nó thẳng ra — cơ chỉ có thể kéo. Vậy cơ nào làm việc này?'},
+  act:{en:'Tap the triceps, at the back of the upper arm, to make it contract.',vi:'Chạm vào cơ tam đầu (triceps), ở mặt sau của phần trên cánh tay, để làm nó co lại (contract).'},
+  see:{en:'The triceps gets shorter and pulls the ulna downwards — the elbow straightens, and the biceps relaxes.',vi:'Cơ tam đầu ngắn lại và kéo xương trụ (ulna) xuống dưới — khuỷu duỗi thẳng, và cơ nhị đầu giãn ra (relaxes).'},
+  concl:[
+    {en:'Muscles can only pull — they make a force by contracting (getting shorter), never by pushing. A muscle that is not contracting relaxes (relaxes).',vi:'Cơ chỉ có thể kéo — chúng tạo lực bằng cách co lại (ngắn lại), không bao giờ bằng cách đẩy. Một cơ không co thì giãn ra (relaxes).'},
+    {en:'To straighten the arm, the triceps (triceps) contracts and the biceps relaxes. The contracting triceps pulls on its tendon, so the ulna moves downwards. The triceps is attached to the scapula and the humerus at one end, and to the ulna at the other — and it has three tendons at the top, which is why it is called tri-ceps.',vi:'Để duỗi thẳng cánh tay, cơ tam đầu (triceps) co lại và cơ nhị đầu giãn ra. Cơ tam đầu đang co kéo gân của nó, nên xương trụ (ulna) chuyển động xuống dưới. Cơ tam đầu bám vào xương bả vai (scapula) và xương cánh tay (humerus) ở một đầu, và vào xương trụ ở đầu còn lại — và nó có ba gân ở phía trên, đó là lý do nó được gọi là tri-ceps, tam đầu.'},
+    {en:'The biceps and triceps work as a team: two muscles that work together like this, moving the bones at a joint in opposite directions, are called antagonistic muscles (antagonistic muscles).',vi:'Cơ nhị đầu và cơ tam đầu làm việc như một đội: hai cơ làm việc cùng nhau như vậy, làm xương tại một khớp chuyển động theo hai hướng ngược nhau, được gọi là cơ đối kháng (antagonistic muscles).'}]},
+ {tag:{en:'The model arm',vi:'Cánh tay mô hình'}, word:{en:'antagonistic muscles',vi:'cơ đối kháng'},
+  q:{en:'Think like a scientist: a model arm tests how the force from the biceps changes with the place where it is attached to the radius. The newton meter plays the part of the biceps, the hooks are spaced 10 cm apart along the model radius, and the same masses hang as the load. What happens to the force?',vi:'Tư duy như nhà khoa học: một cánh tay mô hình kiểm chứng lực từ cơ nhị đầu thay đổi thế nào theo vị trí nó bám vào xương quay. Lực kế (newton meter) đóng vai cơ nhị đầu, các móc cách nhau 10 cm dọc theo xương quay mô hình, và cùng các quả nặng treo làm tải. Lực sẽ thế nào?'},
+  act:{en:'Tap each hook in turn — hook 1, hook 2, hook 3 and hook 4 — to attach the newton meter there and read the force needed to hold the model radius level.',vi:'Chạm vào từng móc theo lượt — móc 1, móc 2, móc 3 và móc 4 — để gắn lực kế vào đó và đọc lực cần để giữ xương quay mô hình nằm ngang.'},
+  see:{en:'Each hook shows its force reading: the further the hook is from the elbow pivot, the smaller the force needed.',vi:'Mỗi móc hiện số đọc lực của nó: móc càng xa trục khuỷu, lực cần càng nhỏ.'},
+  concl:[
+    {en:'With the same load, the force needed fell as the newton meter was attached further from the elbow joint: 12 N at hook 1 (10 cm), 6 N at hook 2 (20 cm), 4 N at hook 3 (30 cm) and 3 N at hook 4 (40 cm). A pull further from the pivot has a bigger turning effect (moment), so a smaller force can balance the same load. Adding more masses would need a bigger force at every hook.',vi:'Với cùng một tải, lực cần giảm khi lực kế được gắn xa khớp khuỷu hơn: 12 N ở móc 1 (10 cm), 6 N ở móc 2 (20 cm), 4 N ở móc 3 (30 cm) và 3 N ở móc 4 (40 cm). Một lực kéo ở xa trục quay hơn có tác dụng quay (moment) lớn hơn, nên một lực nhỏ hơn cũng cân bằng được cùng một tải. Thêm quả nặng sẽ cần lực lớn hơn ở mọi móc.'},
+    {en:'The real biceps is attached very close to the elbow — the hook 1 position. That is not the position needing the smallest force, but it is the position a real muscle needs: muscles can make very strong forces, yet they can only shorten by a small amount — and a small shortening close to the joint swings the forearm a long way.',vi:'Cơ nhị đầu (biceps) thật bám rất gần khuỷu — vị trí của móc 1. Đó không phải vị trí cần lực nhỏ nhất, nhưng là vị trí một cơ thật cần: cơ có thể tạo lực rất mạnh, nhưng chúng chỉ có thể ngắn lại một lượng nhỏ — và một sự ngắn lại nhỏ ở gần khớp sẽ làm cẳng tay đu được một quãng dài.'},
+    {en:'I can name the bones in the arm.',vi:'Con gọi tên được các xương trong cánh tay.'},
+    {en:'I can identify some hinge joints and ball-and-socket joints in the body.',vi:'Con nhận biết được một số khớp bản lề (hinge joints) và khớp cầu (ball-and-socket joints) trong cơ thể.'},
+    {en:'I can describe how muscles produce a force when they contract.',vi:'Con mô tả được cách cơ (muscles) tạo ra lực khi chúng co lại (contract).'},
+    {en:'I can explain how the biceps and triceps work as antagonistic muscles to move the arm at the elbow.',vi:'Con giải thích được cách cơ nhị đầu (biceps) và cơ tam đầu (triceps) làm việc như cơ đối kháng (antagonistic muscles) để vận động cánh tay tại khuỷu.'}]}
+];
+const QUIZ=[
+ {q:{en:'What is a joint?',vi:'Khớp (joint) là gì?'},
+  o:[{en:'A tough cord that joins a muscle to a bone',vi:'Một dây dai nối cơ với xương'},{en:'A place where two bones meet',vi:'Nơi hai xương gặp nhau'},{en:'A muscle that can push bones apart',vi:'Một cơ có thể đẩy các xương ra xa nhau'}],a:1,
+  e:{en:'Bones cannot bend, so movement in the skeleton can only happen at joints — the places where two bones meet.',vi:'Xương không thể cong, nên vận động trong bộ xương chỉ có thể xảy ra tại các khớp (joints) — những nơi hai xương gặp nhau.'}},
+ {q:{en:'Which of these is a hinge joint?',vi:'Khớp nào sau đây là khớp bản lề (hinge joint)?'},
+  o:[{en:'The elbow',vi:'Khuỷu (elbow)'},{en:'The shoulder',vi:'Vai (shoulder)'},{en:'The hip',vi:'Hông (hip)'}],a:0,
+  e:{en:'The elbow works like a door hinge, moving back and forth in one direction. The shoulder and the hip are ball-and-socket joints.',vi:'Khuỷu hoạt động như bản lề cửa, chuyển động qua lại theo một hướng. Vai và hông là khớp cầu (ball-and-socket joints).'}},
+ {q:{en:'To bend the arm at the elbow…',vi:'Để gập cánh tay tại khuỷu…'},
+  o:[{en:'The triceps contracts and the biceps relaxes',vi:'Cơ tam đầu (triceps) co lại và cơ nhị đầu (biceps) giãn ra'},{en:'Both muscles push together',vi:'Cả hai cơ cùng đẩy'},{en:'The biceps contracts and the triceps relaxes',vi:'Cơ nhị đầu (biceps) co lại và cơ tam đầu (triceps) giãn ra'}],a:2,
+  e:{en:'The contracting biceps pulls on the radius and lifts the forearm, while the triceps relaxes. To straighten the arm again, the pair swap jobs.',vi:'Cơ nhị đầu (biceps) đang co kéo xương quay (radius) và nâng cẳng tay lên, trong khi cơ tam đầu (triceps) giãn ra. Để duỗi thẳng cánh tay trở lại, cặp cơ đổi việc cho nhau.'}},
+ {q:{en:'Why are two muscles needed to move a bone at a joint and then back again?',vi:'Vì sao cần hai cơ để làm một xương chuyển động tại một khớp rồi quay trở lại?'},
+  o:[{en:'Because one muscle is not strong enough on its own',vi:'Vì một cơ tự nó không đủ mạnh'},{en:'Because muscles can only pull — they cannot push',vi:'Vì cơ chỉ có thể kéo — chúng không thể đẩy'},{en:'Because tendons stretch too easily',vi:'Vì gân (tendons) co giãn quá dễ dàng'}],a:1,
+  e:{en:'A muscle makes a force only by contracting — getting shorter and pulling. It cannot push a bone back, so an antagonistic partner must pull it the other way.',vi:'Một cơ chỉ tạo lực bằng cách co lại — ngắn lại và kéo. Nó không thể đẩy một xương trở lại, nên một cơ đối kháng (antagonistic) phải kéo nó theo hướng ngược lại.'}}
+];
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_p28',emoji:'👉',en:'Pointer stops at 28 → the reading is 28 N',vi:'Kim dừng ở 28 → số đọc là 28 N',keyw:true},
+ {id:'e_p34',emoji:'👉',en:'Pointer stops at 34 → the reading is 43 N',vi:'Kim dừng ở 34 → số đọc là 43 N',keyw:false},
+ {id:'e_p12',emoji:'👉',en:'Pointer stops at 12 → the reading is 12 N',vi:'Kim dừng ở 12 → số đọc là 12 N',keyw:true},
+ {id:'e_p25',emoji:'👉',en:'Pointer stops at 25 → the reading is 52 N',vi:'Kim dừng ở 25 → số đọc là 52 N',keyw:false},
+ {id:'e_p45',emoji:'👉',en:'Pointer stops at 45 → the reading is 45 N',vi:'Kim dừng ở 45 → số đọc là 45 N',keyw:true},
+ {id:'e_p17',emoji:'👉',en:'Pointer stops at 17 → the reading is 71 N',vi:'Kim dừng ở 17 → số đọc là 71 N',keyw:false},
+ {id:'e_p08',emoji:'👉',en:'Pointer stops at 8 → the reading is 8 N',vi:'Kim dừng ở 8 → số đọc là 8 N',keyw:true},
+ {id:'e_p40',emoji:'👉',en:'Pointer stops at 40 → the reading is 4 N',vi:'Kim dừng ở 40 → số đọc là 4 N',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_kick',emoji:'⚽',en:'Kicking a ball forwards — the lower leg swings forwards until it is straight',vi:'Đá một quả bóng về phía trước — cẳng chân đu về phía trước tới khi thẳng',ans:'straighten'},
+ {id:'x_crouch',emoji:'🧎',en:'Crouching down low — the lower leg folds back under the thigh',vi:'Ngồi xổm xuống thấp — cẳng chân gập lại phía dưới đùi',ans:'bend'},
+ {id:'x_stand',emoji:'🧍',en:'Standing up from a chair — the folded leg unfolds until it is straight',vi:'Đứng dậy từ ghế — cái chân đang gập mở ra tới khi thẳng',ans:'straighten'},
+ {id:'x_heel',emoji:'🦶',en:'Pulling your heel back towards you — the lower leg folds at the knee',vi:'Kéo gót chân về phía mình — cẳng chân gập lại ở gối',ans:'bend'},
+ {id:'x_step',emoji:'🪜',en:'Pushing up onto a step until the leg is straight and holds your weight',vi:'Đẩy người lên một bậc tới khi chân thẳng và đỡ được sức nặng của con',ans:'straighten'},
+ {id:'x_fold',emoji:'🪑',en:'Sitting and folding your lower leg back under the chair',vi:'Ngồi và gập cẳng chân lại phía dưới ghế',ans:'bend'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Muscles make a force only by pulling — they cannot',vi:'Cơ chỉ tạo lực bằng cách kéo — chúng không thể'},
+  wrong:1,
+  opts:[{en:'contract (get shorter)',vi:'co lại (ngắn lại) (contract)'},{en:'push',vi:'đẩy (push)'}],
+  e:{en:'Muscles can only pull, by contracting. They cannot push — cross out “push”.',vi:'Cơ chỉ có thể kéo, bằng cách co lại. Chúng không thể đẩy — hãy gạch bỏ “đẩy”.'}},
+ {pre:{en:'The biceps is attached to the scapula at one end, and at the other end to the',vi:'Cơ nhị đầu (biceps) bám vào xương bả vai (scapula) ở một đầu, và ở đầu còn lại vào'},
+  wrong:1,
+  opts:[{en:'radius',vi:'xương quay (radius)'},{en:'ulna',vi:'xương trụ (ulna)'}],
+  e:{en:'The biceps pulls on the radius to bend the elbow — it is the triceps that attaches to the ulna. Cross out “ulna”.',vi:'Cơ nhị đầu kéo xương quay (radius) để gập khuỷu — chính cơ tam đầu mới bám vào xương trụ. Hãy gạch bỏ “xương trụ (ulna)”.'}},
+ {pre:{en:'To straighten the arm at the elbow, the triceps',vi:'Để duỗi thẳng cánh tay tại khuỷu, cơ tam đầu (triceps)'},
+  wrong:1,
+  opts:[{en:'contracts and the biceps relaxes',vi:'co lại và cơ nhị đầu (biceps) giãn ra'},{en:'relaxes and the biceps contracts',vi:'giãn ra và cơ nhị đầu (biceps) co lại'}],
+  e:{en:'Straightening needs the triceps to contract and pull the ulna down, while the biceps relaxes. Cross out “relaxes and the biceps contracts”.',vi:'Duỗi thẳng cần cơ tam đầu co lại và kéo xương trụ (ulna) xuống, trong khi cơ nhị đầu giãn ra. Hãy gạch bỏ “giãn ra và cơ nhị đầu co lại”.'}},
+ {pre:{en:'Tendons join muscles to bones, and tendons are',vi:'Gân (tendons) nối cơ với xương, và gân thì'},
+  wrong:0,
+  opts:[{en:'stretchy, so they soak up the pull',vi:'co giãn, nên chúng hấp thụ lực kéo'},{en:'not stretchy, so the pull reaches the bone',vi:'không co giãn, nên lực kéo truyền tới xương'}],
+  e:{en:'Tendons are not stretchy — if they stretched, the muscle’s pull would not move the bone. Cross out “stretchy”.',vi:'Gân (tendons) không co giãn — nếu chúng co giãn, lực kéo của cơ sẽ không làm xương chuyển động. Hãy gạch bỏ “co giãn”.'}},
+ {pre:{en:'The straw-breaking rig CAN test the hypothesis that',vi:'Bộ thí nghiệm bẻ ống hút CÓ THỂ kiểm chứng giả thuyết rằng'},
+  wrong:1,
+  opts:[{en:'long bones break more easily than short bones',vi:'xương dài dễ gãy hơn xương ngắn'},{en:'people who eat plenty of calcium have stronger bones',vi:'người ăn nhiều canxi (calcium) có xương chắc khỏe hơn'}],
+  e:{en:'With straws you can change the length (or thickness) and measure the breaking force — but straws cannot test what people eat. Cross out the calcium hypothesis.',vi:'Với ống hút, con có thể thay đổi chiều dài (hoặc độ dày) và đo lực làm gãy — nhưng ống hút không thể kiểm chứng chuyện con người ăn gì. Hãy gạch bỏ giả thuyết về canxi (calcium).'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-7-4';
+const SUMKEY='camb:sum:sci8-7-4';
+const BOT_CODE='sci8-7.4';
+let FOUND={skull:false,ribs:false,femur:false,elbow:false,knee:false,shoulder:false,hip:false,hum:false,rad:false,ulna:false,biceps:false,triceps:false,h1:false,h2:false,h3:false,h4:false};
+function newTrack(){return {
+  fSkull:false, fRibs:false, fFemur:false,
+  s2elbow:false, s2knee:false, s2shoulder:false, s2hip:false,
+  s3hum:false, s3rad:false, s3ulna:false,
+  s4biceps:false,
+  s5triceps:false,
+  s6h1:false, s6h2:false, s6h3:false, s6h4:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fSkull&&T.fRibs&&T.fFemur;
+  if(i===1) return T.s2elbow&&T.s2knee&&T.s2shoulder&&T.s2hip;
+  if(i===2) return T.s3hum&&T.s3rad&&T.s3ulna;
+  if(i===3) return T.s4biceps;
+  if(i===4) return T.s5triceps;
+  if(i===5) return T.s6h1&&T.s6h2&&T.s6h3&&T.s6h4;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Bones tapped: skull — protects the brain '+(T.fSkull?'✓':'…')+' · ribs — protect the heart and lungs '+(T.fRibs?'✓':'…')+' · femur — important for movement '+(T.fFemur?'✓':'…')+'. Tap the bones on the stage!',
+                     'Xương đã chạm: hộp sọ — bảo vệ não '+(T.fSkull?'✓':'…')+' · xương sườn — bảo vệ tim và phổi '+(T.fRibs?'✓':'…')+' · xương đùi — quan trọng cho vận động '+(T.fFemur?'✓':'…')+'. Hãy chạm vào các xương trên sân khấu!');
+  if(i===1) return B('Joints identified: elbow — hinge '+(T.s2elbow?'✓':'…')+' · knee — hinge '+(T.s2knee?'✓':'…')+' · shoulder — ball-and-socket '+(T.s2shoulder?'✓':'…')+' · hip — ball-and-socket '+(T.s2hip?'✓':'…')+'.',
+                     'Khớp đã nhận biết: khuỷu — bản lề '+(T.s2elbow?'✓':'…')+' · gối — bản lề '+(T.s2knee?'✓':'…')+' · vai — khớp cầu '+(T.s2shoulder?'✓':'…')+' · hông — khớp cầu '+(T.s2hip?'✓':'…')+'.');
+  if(i===2) return B('Arm bones tapped: humerus — upper arm '+(T.s3hum?'✓':'…')+' · radius — forearm '+(T.s3rad?'✓':'…')+' · ulna — forearm '+(T.s3ulna?'✓':'…')+'.',
+                     'Xương cánh tay đã chạm: xương cánh tay (humerus) — phần trên cánh tay '+(T.s3hum?'✓':'…')+' · xương quay (radius) — cẳng tay '+(T.s3rad?'✓':'…')+' · xương trụ (ulna) — cẳng tay '+(T.s3ulna?'✓':'…')+'.');
+  if(i===3) return B('Biceps tapped '+(T.s4biceps?'✓ — it contracted, got shorter, and pulled the radius up: the elbow bent.':'… — tap the biceps so it contracts and bends the elbow.'),
+                     'Đã chạm cơ nhị đầu (biceps) '+(T.s4biceps?'✓ — nó đã co lại, ngắn lại, và kéo xương quay lên: khuỷu đã gập.':'… — hãy chạm vào cơ nhị đầu để nó co lại và gập khuỷu.'));
+  if(i===4) return B('Triceps tapped '+(T.s5triceps?'✓ — it contracted and pulled the ulna down: the elbow straightened, and the biceps relaxed.':'… — tap the triceps so it contracts and straightens the elbow.'),
+                     'Đã chạm cơ tam đầu (triceps) '+(T.s5triceps?'✓ — nó đã co lại và kéo xương trụ xuống: khuỷu đã duỗi thẳng, và cơ nhị đầu đã giãn ra.':'… — hãy chạm vào cơ tam đầu để nó co lại và duỗi thẳng khuỷu.'));
+  if(i===5) return B('Model-arm readings, same load: hook 1 (10 cm) '+(T.s6h1?'12 N ✓':'…')+' · hook 2 (20 cm) '+(T.s6h2?'6 N ✓':'…')+' · hook 3 (30 cm) '+(T.s6h3?'4 N ✓':'…')+' · hook 4 (40 cm) '+(T.s6h4?'3 N ✓':'…')+'. The force falls as the hook moves further from the pivot.',
+                     'Số đo cánh tay mô hình, cùng một tải: móc 1 (10 cm) '+(T.s6h1?'12 N ✓':'…')+' · móc 2 (20 cm) '+(T.s6h2?'6 N ✓':'…')+' · móc 3 (30 cm) '+(T.s6h3?'4 N ✓':'…')+' · móc 4 (40 cm) '+(T.s6h4?'3 N ✓':'…')+'. Lực giảm khi móc ở xa trục quay hơn.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'💀',label:{en:'Skull — protects the brain',vi:'Hộp sọ — bảo vệ não'},got:T.fSkull},
+      {emoji:'🦴',label:{en:'Ribs — protect heart and lungs',vi:'Xương sườn — bảo vệ tim và phổi'},got:T.fRibs},
+      {emoji:'🦴',label:{en:'Femur — for movement',vi:'Xương đùi — cho vận động'},got:T.fFemur}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🚪',label:{en:'Elbow — hinge joint',vi:'Khuỷu — khớp bản lề'},got:T.s2elbow},
+      {emoji:'🚪',label:{en:'Knee — hinge joint',vi:'Gối — khớp bản lề'},got:T.s2knee},
+      {emoji:'⚪',label:{en:'Shoulder — ball-and-socket',vi:'Vai — khớp cầu'},got:T.s2shoulder},
+      {emoji:'⚪',label:{en:'Hip — ball-and-socket',vi:'Hông — khớp cầu'},got:T.s2hip}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🦴',label:{en:'Humerus — upper arm',vi:'Xương cánh tay — phần trên'},got:T.s3hum},
+      {emoji:'🦴',label:{en:'Radius — forearm',vi:'Xương quay — cẳng tay'},got:T.s3rad},
+      {emoji:'🦴',label:{en:'Ulna — forearm',vi:'Xương trụ — cẳng tay'},got:T.s3ulna}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'💪',label:{en:'Biceps contracts — elbow bends',vi:'Cơ nhị đầu co — khuỷu gập'},got:T.s4biceps}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'💪',label:{en:'Triceps contracts — elbow straightens',vi:'Cơ tam đầu co — khuỷu duỗi'},got:T.s5triceps}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🪝',label:{en:'Hook 1 · 10 cm → 12 N',vi:'Móc 1 · 10 cm → 12 N'},got:T.s6h1},
+      {emoji:'🪝',label:{en:'Hook 2 · 20 cm → 6 N',vi:'Móc 2 · 20 cm → 6 N'},got:T.s6h2},
+      {emoji:'🪝',label:{en:'Hook 3 · 30 cm → 4 N',vi:'Móc 3 · 30 cm → 4 N'},got:T.s6h3},
+      {emoji:'🪝',label:{en:'Hook 4 · 40 cm → 3 N',vi:'Móc 4 · 40 cm → 3 N'},got:T.s6h4}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('skull'); bounceThing('skull'); setTimeout(()=>{ focusVisual('ribs'); bounceThing('ribs'); },900); }
+  else if(i===1){ focusThing('elbow'); setTimeout(()=>focusThing('shoulder'),900); }
+  else if(i===2){ focusThing('humerus'); setTimeout(()=>focusThing('radius'),900); }
+  else if(i===3){ focusThing('biceps'); }
+  else if(i===4){ focusThing('triceps'); }
+  else if(i===5){ focusThing('hook1'); setTimeout(()=>focusThing('hook4'),900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recH1)+'</span><b>'+(FOUND.h1?'12 N':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recH2)+'</span><b>'+(FOUND.h2?'6 N':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recH3)+'</span><b>'+(FOUND.h3?'4 N':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recH4)+'</span><b>'+(FOUND.h4?'3 N':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(1),label:STR.didRun},
+    {got:doneSteps.has(4),label:STR.didPlant},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let pondMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildBodySkull(x,z){
+  const g=new THREE.Group();
+  const cranium=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.42,18,14),stdMat(0xf2ead8,0.7)));
+  cranium.position.y=0.62; cranium.scale.set(0.9,1.05,0.95); g.add(cranium);
+  const jaw=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.24,0.4),stdMat(0xe6dcc4,0.8));
+  jaw.position.set(0,0.22,0.08); g.add(jaw);
+  [-0.15,0.15].forEach(dx=>{
+    const eye=new THREE.Mesh(new THREE.SphereGeometry(0.085,8,8),stdMat(0x2b2f36,0.6));
+    eye.position.set(dx,0.62,0.36); g.add(eye);
+  });
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.46,0.08,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyRibs(x,z){
+  const g=new THREE.Group();
+  const spine=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,1.05,8),stdMat(0xf2ead8,0.8));
+  spine.position.set(0,0.6,-0.18); g.add(spine);
+  [0.95,0.68,0.42].forEach((y,k)=>{
+    const rib=new THREE.Mesh(new THREE.TorusGeometry(0.34-k*0.03,0.045,8,22),stdMat(0xf2ead8,0.8));
+    rib.rotation.x=Math.PI/2; rib.position.y=y; g.add(rib);
+  });
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.48,0.08,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyBone(x,z,len,rotY){
+  const g=new THREE.Group();
+  const shaft=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.075,len,10),stdMat(0xf2ead8,0.8)));
+  shaft.rotation.z=Math.PI/2; shaft.position.y=0.22; g.add(shaft);
+  [-len/2,len/2].forEach(dx=>{
+    [-0.07,0.07].forEach(dz=>{
+      const knob=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),stdMat(0xf2ead8,0.8));
+      knob.position.set(dx,0.22,dz); g.add(knob);
+    });
+  });
+  const base=new THREE.Mesh(new THREE.BoxGeometry(len+0.35,0.07,0.5),stdMat(0xb08954,0.85));
+  base.position.y=0.035; g.add(base);
+  g.position.set(x,0,z); g.rotation.y=rotY; g.userData.baseY=0;
+  return g;
+}
+function buildBodyPelvis(x,z){
+  const g=new THREE.Group();
+  [-0.22,0.22].forEach(dx=>{
+    const wing=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.26,12,10),stdMat(0xf2ead8,0.8)));
+    wing.scale.set(1,0.85,0.45); wing.position.set(dx,0.5,0); g.add(wing);
+  });
+  const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.18,0.2),stdMat(0xe6dcc4,0.8));
+  bridge.position.y=0.42; g.add(bridge);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.48,0.08,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyBeetle(x,z){
+  const g=new THREE.Group();
+  const shell=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10),stdMat(0x3a2c20,0.55)));
+  shell.scale.set(1.15,0.55,0.85); shell.position.y=0.26; g.add(shell);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.15,10,8),stdMat(0x241a12,0.6));
+  head.position.set(0.38,0.2,0); g.add(head);
+  [-0.25,0,0.25].forEach(dx=>{
+    [-1,1].forEach(s=>{
+      const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.34,6),stdMat(0x241a12,0.7));
+      leg.position.set(dx,0.1,s*0.3); leg.rotation.x=s*0.9; g.add(leg);
+    });
+  });
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.06,16),stdMat(0x5d7a4a,0.9));
+  base.position.y=0.03; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyBallSocket(x,z){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,0.55,8),stdMat(0x7f8c99,0.7)));
+  post.position.y=0.28; g.add(post);
+  const cup=new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10,0,Math.PI*2,0,Math.PI/2),stdMat(0xe6dcc4,0.8));
+  cup.rotation.x=Math.PI; cup.position.set(-0.12,0.78,0); g.add(cup);
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.21,14,10),stdMat(0xf2ead8,0.75)));
+  ball.position.set(-0.12,0.72,0); g.add(ball);
+  const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.55,8),stdMat(0xf2ead8,0.8));
+  arm.rotation.z=1.0; arm.position.set(0.22,0.55,0); g.add(arm);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.46,0.08,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyHinge(x,z){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,0.5,8),stdMat(0x7f8c99,0.7)));
+  post.position.y=0.25; g.add(post);
+  const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.16,14),stdMat(0xb08954,0.7));
+  disc.rotation.x=Math.PI/2; disc.position.y=0.68; g.add(disc);
+  const upper=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.55,8),stdMat(0xf2ead8,0.8));
+  upper.rotation.z=0.5; upper.position.set(-0.14,0.85,0); g.add(upper);
+  const lower=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.55,8),stdMat(0xf2ead8,0.8));
+  lower.rotation.z=-0.9; lower.position.set(0.16,0.5,0); g.add(lower);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.46,0.08,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyMuscle(x,z,bellyScale){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,0.42,8),stdMat(0x7f8c99,0.7)));
+  post.position.y=0.21; g.add(post);
+  const bone=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.95,8),stdMat(0xf2ead8,0.8));
+  bone.rotation.z=Math.PI/2; bone.position.y=0.62; g.add(bone);
+  const belly=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10),stdMat(0xc0392b,0.75)));
+  belly.scale.set(bellyScale,0.72,0.72); belly.position.set(-0.08,0.78,0); g.add(belly);
+  [-0.42,0.3].forEach(dx=>{
+    const tendon=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.3,6),stdMat(0xf7f3e8,0.7));
+    tendon.rotation.z=Math.PI/2; tendon.position.set(dx,0.66,0); g.add(tendon);
+  });
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.48,0.08,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyHook(x,z){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.62,8),stdMat(0x7f8c99,0.7)));
+  post.position.y=0.31; g.add(post);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.14,0.035,8,18),stdMat(0xd9930d,0.5));
+  ring.position.y=0.72; g.add(ring);
+  const beam=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.07,0.3),stdMat(0xb08954,0.85));
+  beam.position.y=0.06; g.add(beam);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyNewton(x,z){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.22,0.72,0.12),stdMat(0xe8edf2,0.6)));
+  body.position.y=0.55; g.add(body);
+  const dial=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.05,16),stdMat(0x2b3a4a,0.6));
+  dial.rotation.x=Math.PI/2; dial.position.set(0,0.68,0.08); g.add(dial);
+  const needle=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.11,0.02),stdMat(0xc0392b,0.5));
+  needle.position.set(0.03,0.7,0.11); needle.rotation.z=-0.6; g.add(needle);
+  const hook=new THREE.Mesh(new THREE.TorusGeometry(0.07,0.02,6,12),stdMat(0x7f8c99,0.5));
+  hook.position.y=0.14; g.add(hook);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.1,8),stdMat(0x7f8c99,0.7));
+  post.position.y=0.05; g.add(post);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyLoad(x,z){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.05,0.55,8),stdMat(0x7f8c99,0.7)));
+  post.position.y=0.5; g.add(post);
+  [0.34,0.22,0.1].forEach((y,k)=>{
+    const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.24-k*0.03,0.24-k*0.03,0.09,16),stdMat(0x44586e,0.6));
+    disc.position.y=y; g.add(disc);
+  });
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.4,0.07,16),stdMat(0x7f8c99,0.7));
+  base.position.y=0.035; g.add(base);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildBodyTree(x,z,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.06*s,0.09*s,0.7*s,7),stdMat(0x6e4f30,0.95));
+  trunk.position.y=0.35*s; g.add(trunk);
+  const top=new THREE.Mesh(new THREE.ConeGeometry(0.34*s,0.9*s,9),stdMat(0x2e7d46,0.9));
+  top.position.y=1.1*s; g.add(top);
+  g.position.set(x,0,z);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0x22384f);
+  scene3.fog=new THREE.Fog(0x22384f,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x5a6c84,0.9));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.35); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0x51606e,0.95));
+  ground.position.set(0.8,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  pondMat=new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.55,side:THREE.DoubleSide,depthWrite:false});
+  const benchRing=new THREE.Mesh(new THREE.RingGeometry(1.15,1.3,44),pondMat);
+  benchRing.rotation.x=-Math.PI/2; benchRing.position.set(0.2,0.03,2.3); scene3.add(benchRing);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x182635,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0x22384f,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  scene3.add(buildBodyTree(-5.2,-3.1,1.1));
+  scene3.add(buildBodyTree(6.4,-3.0,0.9));
+  reg('skull',buildBodySkull(-5.6,-1.9));
+  reg('ribs',buildBodyRibs(-3.7,-2.0));
+  reg('femur',buildBodyBone(-1.7,-1.9,0.95,0.15));
+  reg('pelvis',buildBodyPelvis(0.3,-2.0));
+  reg('beetle',buildBodyBeetle(2.2,-1.9));
+  reg('shoulder',buildBodyBallSocket(-5.6,0.1));
+  reg('elbow',buildBodyHinge(-3.7,0.1));
+  reg('hip',buildBodyBallSocket(-1.8,0.1));
+  reg('knee',buildBodyHinge(0.1,0.1));
+  reg('humerus',buildBodyBone(2.2,0.1,0.85,-0.1));
+  reg('radius',buildBodyBone(4.0,0.1,0.65,0.1));
+  reg('ulna',buildBodyBone(5.7,0.1,0.65,-0.12));
+  reg('hook1',buildBodyHook(-5.6,2.3));
+  reg('hook2',buildBodyHook(-4.0,2.3));
+  reg('hook3',buildBodyHook(-2.4,2.3));
+  reg('hook4',buildBodyHook(-0.8,2.3));
+  reg('newton',buildBodyNewton(0.7,2.3));
+  reg('load',buildBodyLoad(2.1,2.3));
+  reg('biceps',buildBodyMuscle(3.9,2.2,1.35));
+  reg('triceps',buildBodyMuscle(5.6,2.2,1.7));
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('skull',p,G.skull); }
+  { const p=sphProxy(0.72); p.position.set(0,0.6,0); addProxy('ribs',p,G.ribs); }
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('femur',p,G.femur); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('pelvis',p,G.pelvis); }
+  { const p=sphProxy(0.5); p.position.set(0,0.3,0); addProxy('beetle',p,G.beetle); }
+  { const p=sphProxy(0.62); p.position.set(0,0.7,0); addProxy('shoulder',p,G.shoulder); }
+  { const p=sphProxy(0.6); p.position.set(0,0.65,0); addProxy('elbow',p,G.elbow); }
+  { const p=sphProxy(0.62); p.position.set(0,0.7,0); addProxy('hip',p,G.hip); }
+  { const p=sphProxy(0.6); p.position.set(0,0.65,0); addProxy('knee',p,G.knee); }
+  { const p=sphProxy(0.58); p.position.set(0,0.3,0); addProxy('humerus',p,G.humerus); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('radius',p,G.radius); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('ulna',p,G.ulna); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('hook1',p,G.hook1); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('hook2',p,G.hook2); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('hook3',p,G.hook3); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('hook4',p,G.hook4); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('newton',p,G.newton); }
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('load',p,G.load); }
+  { const p=sphProxy(0.6); p.position.set(0,0.6,0); addProxy('biceps',p,G.biceps); }
+  { const p=sphProxy(0.6); p.position.set(0,0.6,0); addProxy('triceps',p,G.triceps); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['skull','ribs','femur'],
+  ['elbow','knee','shoulder','hip'],
+  ['humerus','radius','ulna'],
+  ['biceps'],
+  ['triceps'],
+  ['hook1','hook2','hook3','hook4']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='skull'){ T.fSkull=true; FOUND.skull=true; }
+    if(id==='ribs'){ T.fRibs=true; FOUND.ribs=true; }
+    if(id==='femur'){ T.fFemur=true; FOUND.femur=true; }
+  }else if(curStep===1){
+    if(id==='elbow'){ T.s2elbow=true; FOUND.elbow=true; }
+    if(id==='knee'){ T.s2knee=true; FOUND.knee=true; }
+    if(id==='shoulder'){ T.s2shoulder=true; FOUND.shoulder=true; }
+    if(id==='hip'){ T.s2hip=true; FOUND.hip=true; }
+  }else if(curStep===2){
+    if(id==='humerus'){ T.s3hum=true; FOUND.hum=true; }
+    if(id==='radius'){ T.s3rad=true; FOUND.rad=true; }
+    if(id==='ulna'){ T.s3ulna=true; FOUND.ulna=true; }
+  }else if(curStep===3){
+    if(id==='biceps'){ T.s4biceps=true; FOUND.biceps=true; }
+  }else if(curStep===4){
+    if(id==='triceps'){ T.s5triceps=true; FOUND.triceps=true; }
+  }else if(curStep===5){
+    if(id==='hook1'){ T.s6h1=true; FOUND.h1=true; }
+    if(id==='hook2'){ T.s6h2=true; FOUND.h2=true; }
+    if(id==='hook3'){ T.s6h3=true; FOUND.h3=true; }
+    if(id==='hook4'){ T.s6h4=true; FOUND.h4=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(pondMat) pondMat.color.setHSL(0.09,0.62,0.5+Math.sin(now*0.0016)*0.04);
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — correct scale readings */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — bends or straightens the knee */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='bend'?'🦵':'🦿')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('bend');
+$('ex2BinNot').onclick=()=>ex2Place('straighten');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.skull=false; FOUND.ribs=false; FOUND.femur=false; }
+  if(step===1){ FOUND.elbow=false; FOUND.knee=false; FOUND.shoulder=false; FOUND.hip=false; }
+  if(step===2){ FOUND.hum=false; FOUND.rad=false; FOUND.ulna=false; }
+  if(step===3){ FOUND.biceps=false; }
+  if(step===4){ FOUND.triceps=false; }
+  if(step===5){ FOUND.h1=false; FOUND.h2=false; FOUND.h3=false; FOUND.h4=false; }
+}
+function extraSave(){
+  return {found:FOUND, exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='bend'||s.exAns.a2[id]==='straighten')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fSkull=!!FOUND.skull; t.fRibs=!!FOUND.ribs; t.fFemur=!!FOUND.femur; }
+  else if(i===1){ t.s2elbow=!!FOUND.elbow; t.s2knee=!!FOUND.knee; t.s2shoulder=!!FOUND.shoulder; t.s2hip=!!FOUND.hip; }
+  else if(i===2){ t.s3hum=!!FOUND.hum; t.s3rad=!!FOUND.rad; t.s3ulna=!!FOUND.ulna; }
+  else if(i===3){ t.s4biceps=!!FOUND.biceps; }
+  else if(i===4){ t.s5triceps=!!FOUND.triceps; }
+  else if(i===5){ t.s6h1=!!FOUND.h1; t.s6h2=!!FOUND.h2; t.s6h3=!!FOUND.h3; t.s6h4=!!FOUND.h4; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-7-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

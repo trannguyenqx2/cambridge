@@ -1,0 +1,1379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.2 Refraction — Sự khúc xạ ánh sáng · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="6.2 Refraction" data-vi="6.2 Sự khúc xạ ánh sáng (Refraction)">6.2 Refraction</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Light" data-vi="Bài 6 · Ánh sáng (Light)">Unit 6 · Light</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why does light bend when it passes into water or glass?" data-vi="Vì sao ánh sáng bị bẻ cong (bent) khi đi vào nước (water) hoặc thủy tinh (glass)?">Why does light bend when it passes into water or glass?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Light changes speed" data-vi="Ánh sáng thay đổi tốc độ (speed)">Light changes speed</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="The ray changes direction" data-vi="Tia sáng (ray) thay đổi hướng">The ray changes direction</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Towards or away from the normal" data-vi="Hướng về phía pháp tuyến (normal) hoặc ra xa pháp tuyến">Towards or away from the normal</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Things look distorted or shifted" data-vi="Vật trông bị méo mó (distorted) hoặc bị dịch chuyển">Things look distorted or shifted</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the optics bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn quang học!">🖱 Drag to look around · Scroll to zoom · Tap things on the optics bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.2. The optics bench in this lesson is a simulation — the rays, angles and speeds shown are the ones described in the book." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 6 Ánh sáng (Light) · Mục 6.2. Bàn quang học trong bài này là mô phỏng — các tia, góc và tốc độ hiển thị là những giá trị được mô tả trong sách.">Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.2. The optics bench in this lesson is a simulation — the rays, angles and speeds shown are the ones described in the book.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.2, pages 192–198; Workbook 8 (ISBN 9781108742856), pages 114–117. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 6 Light (Ánh sáng), mục 6.2, trang 192–198; Sách bài tập 8 (ISBN 9781108742856), trang 114–117. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.2, pages 192–198; Workbook 8 (ISBN 9781108742856), pages 114–117. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: describe how light is refracted at the boundary between air and glass or air and water; describe how light changes speed when it passes between different substances; draw ray diagrams to show how light is refracted. Key words: angle of refraction, away from the normal, bent, distorted, lenses, medium, refraction, towards the normal." data-vi="Mục tiêu: mô tả ánh sáng bị khúc xạ (refraction) thế nào ở ranh giới giữa không khí với thủy tinh hoặc không khí với nước; mô tả ánh sáng thay đổi tốc độ (speed) thế nào khi đi giữa các chất khác nhau; vẽ sơ đồ tia (ray diagrams) để cho thấy ánh sáng bị khúc xạ. Từ khóa: angle of refraction (góc khúc xạ), away from the normal (ra xa pháp tuyến), bent (bị bẻ cong), distorted (méo mó), lenses (thấu kính), medium (môi trường), refraction (khúc xạ), towards the normal (về phía pháp tuyến).">Objectives: describe how light is refracted at the boundary between air and glass or air and water; describe how light changes speed when it passes between different substances; draw ray diagrams to show how light is refracted. Key words: angle of refraction, away from the normal, bent, distorted, lenses, medium, refraction, towards the normal.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D optics bench — spotting the distorted views, comparing the book's speeds of light in air (300 000 km/s), water (225 000 km/s) and glass (200 000 km/s), drawing ray diagrams into and out of denser media, testing the book's appearing-coin and broken-pencil effects, and sorting journeys by whether light slows down or speeds up. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The ray diagrams use fixed angles (incidence 40°; refraction 25° in glass, 29° in water) so the screen always matches the text, in the spirit of the book's ray-box and glass-block investigation, where learners measure the angles for themselves." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn quang học 3D — nhận ra các hình ảnh bị méo mó, so sánh tốc độ ánh sáng của sách trong không khí (300 000 km/s), nước (225 000 km/s) và thủy tinh (200 000 km/s), vẽ sơ đồ tia đi vào và đi ra khỏi môi trường đặc hơn, thử các hiệu ứng đồng xu xuất hiện và bút chì gãy của sách, và phân loại các hành trình theo việc ánh sáng chậm lại hay nhanh lên. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Các sơ đồ tia dùng góc cố định (góc tới 40°; góc khúc xạ 25° trong thủy tinh, 29° trong nước) để màn hình luôn khớp với lời giải thích, theo tinh thần thí nghiệm hộp tia và khối thủy tinh của sách, nơi học sinh tự đo các góc.">How it works: each step asks for one real action on the 3D optics bench. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinTowards"></button>
+        <button class="binbtn nonliving" id="ex2BinAway"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-6-2 "Refraction" (Science 8, Unit 6)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= optics bench things ================= */
+const THINGS={
+  pencilglass:{emoji:'✏️', name:{en:'Glass of water with a pencil',vi:'Cốc nước có một cây bút chì'}, short:{en:'Glass of water',vi:'Cốc nước'}, ring:0.6, labelY:1.5, fx:-3.5, fz:1.6, fr:5.0},
+  window:  {emoji:'🌧️', name:{en:'Wet window covered in drops',vi:'Cửa sổ ướt phủ đầy giọt nước'}, short:{en:'Wet window',vi:'Cửa sổ ướt'}, ring:0.8, labelY:2.2, fx:-4.2, fz:-2.7, fr:5.6},
+  raybox:  {emoji:'🔦', name:{en:'Ray box — light travelling in air',vi:'Hộp tia (ray box) — ánh sáng đi trong không khí'}, short:{en:'Ray box · air',vi:'Hộp tia · không khí'}, ring:0.6, labelY:1.1, fx:-2.2, fz:-2.0, fr:5.0},
+  tank:    {emoji:'🫧', name:{en:'Tank of water',vi:'Bể nước (water tank)'}, short:{en:'Water tank',vi:'Bể nước'}, ring:0.75, labelY:1.5, fx:1.4, fz:-2.0, fr:5.2},
+  block:   {emoji:'🧊', name:{en:'Glass block on paper',vi:'Khối thủy tinh (glass block) trên giấy'}, short:{en:'Glass block',vi:'Khối thủy tinh'}, ring:0.7, labelY:1.0, fx:-0.7, fz:0.8, fr:5.0},
+  coin:    {emoji:'🪙', name:{en:'Cup with a coin at the bottom',vi:'Cái cốc có một đồng xu ở đáy'}, short:{en:'Cup and coin',vi:'Cốc và đồng xu'}, ring:0.6, labelY:1.2, fx:2.7, fz:0.6, fr:5.0},
+  fish:    {emoji:'🐠', name:{en:'Fish in a bowl of water',vi:'Con cá trong chậu nước'}, short:{en:'Fish in a bowl',vi:'Cá trong chậu'}, ring:0.6, labelY:1.2, fx:3.9, fz:-2.2, fr:4.8},
+  oilglass:{emoji:'🫗', name:{en:'Glass with water and a layer of oil',vi:'Cốc có nước và một lớp dầu'}, short:{en:'Water + oil glass',vi:'Cốc nước + dầu'}, ring:0.6, labelY:1.5, fx:4.4, fz:-0.6, fr:5.0},
+  lens:    {emoji:'📷', name:{en:'Camera lens',vi:'Thấu kính (lens) của máy ảnh'}, short:{en:'Lens',vi:'Thấu kính'}, ring:0.65, labelY:1.4, fx:1.2, fz:2.2, fr:5.0},
+  plant:   {emoji:'🪴', name:{en:'Potted plant (just a plant)',vi:'Chậu cây (chỉ là một chậu cây)'}, short:{en:'Plant',vi:'Chậu cây'}, ring:0.55, labelY:1.1, fx:-4.5, fz:0.2, fr:5.0}
+};
+const FOCUSORDER=['pencilglass','window','raybox','tank','block','coin','fish','lens'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the optics bench',vi:'Trên bàn quang học'},
+  u1Brief:{en:'Tap a name to LOOK at the object. Looking is not doing — to do a step, tap the object itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Speed of light record',vi:'Bản ghi tốc độ ánh sáng (speed of light)'},
+  u2Brief:{en:'The book’s speeds of light in each medium, and one measured angle, as you find them.',vi:'Tốc độ ánh sáng của sách trong mỗi môi trường (medium), và một góc đo được, khi con tìm thấy chúng.'},
+  recAir:{en:'Air — speed of light',vi:'Không khí — tốc độ ánh sáng'},
+  recWater:{en:'Water — speed of light',vi:'Nước — tốc độ ánh sáng'},
+  recGlass:{en:'Glass — speed of light',vi:'Thủy tinh — tốc độ ánh sáng'},
+  recBend:{en:'Ray into glass at 40° — angle of refraction',vi:'Tia vào thủy tinh ở 40° — góc khúc xạ (angle of refraction)'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your optics-bench checklist.',vi:'Danh sách thực hành trên bàn quang học của con.'},
+  didViews:{en:'Spotted the distorted views',vi:'Đã nhận ra các hình ảnh bị méo mó (distorted)'},
+  didTowards:{en:'Drew rays bending towards the normal',vi:'Đã vẽ các tia bẻ cong về phía pháp tuyến (normal)'},
+  didEffects:{en:'Found the coin, fish and lens effects',vi:'Đã tìm các hiệu ứng đồng xu, cá và thấu kính (lens)'},
+  didSort:{en:'Sorted journeys by change of speed',vi:'Đã phân loại các hành trình theo sự thay đổi tốc độ'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binSlow:{en:'SLOWS DOWN 🐢',vi:'CHẬM LẠI 🐢 (slows down)'},
+  binFast:{en:'SPEEDS UP 🐇',vi:'NHANH LÊN 🐇 (speeds up)'},
+  binTowards:{en:'TOWARDS THE NORMAL',vi:'VỀ PHÍA PHÁP TUYẾN (towards the normal)'},
+  binAway:{en:'AWAY FROM THE NORMAL',vi:'RA XA PHÁP TUYẾN (away from the normal)'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.2',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.2'},
+  exIntro:{en:'Workbook games for this lesson: what causes refraction (Exercise 6.2A), predicting refraction (Exercise 6.2B) and ray diagrams (Exercise 6.2C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: nguyên nhân của khúc xạ (refraction) (Bài tập 6.2A), dự đoán khúc xạ (Bài tập 6.2B) và sơ đồ tia (Bài tập 6.2C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Causes of refraction (6.2A)',vi:'Bài tập 1 · Focus — Nguyên nhân của khúc xạ (6.2A)'},
+  ex1Inst:{en:'Tap the 4 cards that are correct: what a medium is, and what happens to the speed of light at each boundary.',vi:'Chạm vào 4 thẻ đúng: môi trường (medium) là gì, và tốc độ ánh sáng thay đổi thế nào ở mỗi ranh giới.'},
+  ex2T:{en:'Exercise 2 · Practice — Predicting refraction (6.2B)',vi:'Bài tập 2 · Practice — Dự đoán khúc xạ (6.2B)'},
+  ex2Inst:{en:'Each card shows a ray crossing a boundary. Tap a card, then tap TOWARDS THE NORMAL if the ray bends that way, or AWAY FROM THE NORMAL if it bends that way. Remember: slowing down bends towards; speeding up bends away.',vi:'Mỗi thẻ cho thấy một tia đi qua một ranh giới. Chạm vào một thẻ, rồi chạm VỀ PHÍA PHÁP TUYẾN (TOWARDS THE NORMAL) nếu tia bẻ cong theo hướng đó, hoặc RA XA PHÁP TUYẾN (AWAY FROM THE NORMAL) nếu tia bẻ cong theo hướng đó. Hãy nhớ: chậm lại thì bẻ cong về phía pháp tuyến; nhanh lên thì bẻ cong ra xa.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (6.2C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (6.2C)'},
+  ex3Inst:{en:'Each sentence is about a refraction ray diagram. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về một sơ đồ tia khúc xạ (refraction ray diagram). Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'refraction',vi:'sự khúc xạ'},
+  {en:'medium',vi:'môi trường truyền sáng'},
+  {en:'distorted',vi:'méo mó'},
+  {en:'normal',vi:'pháp tuyến'},
+  {en:'angle of refraction',vi:'góc khúc xạ'},
+  {en:'angle of incidence',vi:'góc tới'},
+  {en:'bent',vi:'bị bẻ cong'},
+  {en:'lenses',vi:'các thấu kính'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Distorted views',vi:'Hình ảnh bị méo mó'}, word:{en:'refraction',vi:'sự khúc xạ'},
+  q:{en:'Why can you not see clearly when you look through a glass of water, or through a wet window?',vi:'Vì sao con không nhìn rõ được khi nhìn qua một cốc nước, hoặc qua một cửa sổ ướt?'},
+  act:{en:'Tap the glass of water with the pencil in it, then tap the wet window covered in drops.',vi:'Chạm vào cốc nước có cây bút chì trong đó, rồi chạm vào cửa sổ ướt phủ đầy giọt nước.'},
+  see:{en:'The pencil looks broken where it enters the water, and the view through the drops is blurred.',vi:'Cây bút chì trông như bị gãy ở chỗ nó đi vào nước, và cảnh nhìn qua các giọt nước bị mờ đi.'},
+  concl:[
+    {en:'The view through the glass of water looks distorted (distorted) — changed, and less clear.',vi:'Cảnh nhìn qua cốc nước trông bị méo mó (distorted) — bị thay đổi, và kém rõ nét hơn.'},
+    {en:'The view is distorted because the light coming to your eyes is refracted — bent — as it passes through the water and the glass.',vi:'Cảnh bị méo mó vì ánh sáng đi tới mắt con bị khúc xạ (refracted) — bị bẻ cong — khi nó đi qua nước và thủy tinh.'},
+    {en:'Any material that light travels through is called a medium (medium). Air, water and glass are each a medium for light.',vi:'Bất kỳ chất nào ánh sáng đi qua đều được gọi là một môi trường (medium). Không khí, nước và thủy tinh đều là môi trường cho ánh sáng.'}]},
+ {tag:{en:'Light changes speed',vi:'Ánh sáng thay đổi tốc độ'}, word:{en:'medium',vi:'môi trường'},
+  q:{en:'Light travels very fast. Does it travel at the same speed in every medium?',vi:'Ánh sáng đi rất nhanh. Nó có đi với cùng một tốc độ trong mọi môi trường (medium) không?'},
+  act:{en:'Tap the ray box (light in air), then the water tank, then the glass block, to read the speed of light in each medium.',vi:'Chạm vào hộp tia (ray box) (ánh sáng trong không khí), rồi bể nước, rồi khối thủy tinh (glass block), để đọc tốc độ ánh sáng trong mỗi môi trường.'},
+  see:{en:'Three speeds appear: 300 000 km/s in air, 225 000 km/s in water and 200 000 km/s in glass.',vi:'Ba tốc độ hiện ra: 300 000 km/s trong không khí, 225 000 km/s trong nước và 200 000 km/s trong thủy tinh.'},
+  concl:[
+    {en:'Light is fastest in air: 300 000 kilometres per second.',vi:'Ánh sáng nhanh nhất trong không khí: 300 000 kilômét mỗi giây.'},
+    {en:'In water light slows to 225 000 km/s, and in glass it is slower still: 200 000 km/s.',vi:'Trong nước ánh sáng chậm lại còn 225 000 km/s, và trong thủy tinh còn chậm hơn nữa: 200 000 km/s.'},
+    {en:'A change of speed can make light change direction — just as a roller skate that rolls onto grass slows down and swings you round.',vi:'Sự thay đổi tốc độ có thể làm ánh sáng thay đổi hướng — giống như một bánh patin lăn lên cỏ thì chậm lại và làm con xoay vòng.'}]},
+ {tag:{en:'Bending towards the normal',vi:'Bẻ cong về phía pháp tuyến'}, word:{en:'normal',vi:'pháp tuyến'},
+  q:{en:'A ray of light passes from air into glass or into water. Which way does it bend?',vi:'Một tia sáng đi từ không khí vào thủy tinh hoặc vào nước. Nó bẻ cong theo hướng nào?'},
+  act:{en:'Tap the glass block, then the water tank. Each tap draws the ray diagram for that boundary, like the class ray-box investigation in the book.',vi:'Chạm vào khối thủy tinh (glass block), rồi bể nước. Mỗi lần chạm vẽ sơ đồ tia (ray diagram) cho ranh giới đó, giống thí nghiệm hộp tia (ray box) trên lớp trong sách.'},
+  see:{en:'Each diagram shows the incident ray, the dashed normal, and the refracted ray bending closer to the normal. Glass: incidence 40°, refraction 25°. Water: incidence 40°, refraction 29°.',vi:'Mỗi sơ đồ cho thấy tia tới (incident ray), pháp tuyến (normal) nét đứt, và tia khúc xạ (refracted ray) bẻ cong lại gần pháp tuyến hơn. Thủy tinh: góc tới 40°, góc khúc xạ 25°. Nước: góc tới 40°, góc khúc xạ 29°.'},
+  concl:[
+    {en:'Entering glass or water, light slows down — and the ray bends towards the normal (towards the normal). The refracted ray is closer to the normal than the incident ray’s straight-on path.',vi:'Khi vào thủy tinh hoặc nước, ánh sáng chậm lại — và tia bẻ cong về phía pháp tuyến (towards the normal). Tia khúc xạ (refracted ray) gần pháp tuyến hơn đường đi thẳng của tia tới.'},
+    {en:'So the angle of incidence is greater than the angle of refraction. Both angles are measured from the normal — the line drawn at right angles to the surface.',vi:'Nên góc tới (angle of incidence) lớn hơn góc khúc xạ (angle of refraction). Cả hai góc đều được đo từ pháp tuyến (normal) — đường thẳng vẽ vuông góc với mặt phân cách.'},
+    {en:'In the book’s investigation, a ray box shines a ray into a glass block and the angles are measured with a protractor — the same pattern every time.',vi:'Trong thí nghiệm của sách, một hộp tia (ray box) chiếu một tia vào khối thủy tinh (glass block) và các góc được đo bằng thước đo góc (protractor) — lần nào cũng cùng một quy luật.'}]},
+ {tag:{en:'Bending away from the normal',vi:'Bẻ cong ra xa pháp tuyến'}, word:{en:'angle of refraction',vi:'góc khúc xạ'},
+  q:{en:'Now the ray travels the other way — out of water into air. Which way does it bend now, and why can a hidden coin suddenly be seen?',vi:'Giờ tia đi theo hướng ngược lại — ra khỏi nước vào không khí. Giờ nó bẻ cong theo hướng nào, và vì sao một đồng xu đang bị khuất bỗng nhiên nhìn thấy được?'},
+  act:{en:'Tap the cup to pour in water until the coin at the bottom comes into view. Then tap the fish bowl to see where the fish appears to be.',vi:'Chạm vào cái cốc để đổ nước vào cho tới khi đồng xu ở đáy hiện ra trong tầm nhìn. Rồi chạm vào chậu cá để xem con cá trông như ở vị trí nào.'},
+  see:{en:'The coin appears, raised up nearer the surface. The fish also looks higher — closer to the surface — than it really is.',vi:'Đồng xu xuất hiện, được nâng lên gần mặt nước hơn. Con cá cũng trông cao hơn — gần mặt nước hơn — so với vị trí thật của nó.'},
+  concl:[
+    {en:'Leaving water or glass for air, light speeds up — and the ray bends away from the normal (away from the normal). Now the angle of refraction is greater than the angle of incidence.',vi:'Khi rời nước hoặc thủy tinh để vào không khí, ánh sáng nhanh lên — và tia bẻ cong ra xa pháp tuyến (away from the normal). Giờ góc khúc xạ (angle of refraction) lớn hơn góc tới (angle of incidence).'},
+    {en:'Rays from the coin bend away from the normal as they leave the water. Your eye follows them back in straight lines, so the coin appears raised — that is why it comes into view.',vi:'Các tia từ đồng xu bẻ cong ra xa pháp tuyến (normal) khi chúng rời khỏi nước. Mắt con lần theo chúng ngược lại theo đường thẳng, nên đồng xu trông như được nâng lên — đó là lý do nó hiện ra trong tầm nhìn.'},
+    {en:'Objects under water always look closer to the surface than they really are, for the same reason.',vi:'Các vật dưới nước luôn trông gần mặt nước hơn vị trí thật của chúng, vì cùng một lý do đó.'}]},
+ {tag:{en:'Refraction in everyday life',vi:'Khúc xạ trong đời sống hằng ngày'}, word:{en:'lenses',vi:'các thấu kính'},
+  q:{en:'Refraction can be a nuisance — but it can also be very useful. Where do we meet each kind?',vi:'Khúc xạ (refraction) có thể gây phiền — nhưng nó cũng rất hữu ích. Ta gặp mỗi loại ở đâu?'},
+  act:{en:'Tap the glass with water and a layer of oil to look at the pencil again. Then tap the camera lens.',vi:'Chạm vào cốc có nước và một lớp dầu để nhìn lại cây bút chì. Rồi chạm vào thấu kính (lens) của máy ảnh.'},
+  see:{en:'The pencil now looks broken in two places — at the oil surface and at the water surface. The lens bends light in a planned way to focus a photograph.',vi:'Giờ cây bút chì trông như bị gãy ở hai chỗ — ở mặt dầu và ở mặt nước. Thấu kính (lens) bẻ cong ánh sáng theo cách đã định để hội tụ một bức ảnh.'},
+  concl:[
+    {en:'With oil floating on water, the pencil looks broken twice, because light bends by different amounts in oil and in water — so light must travel at different speeds in oil and in water.',vi:'Khi dầu nổi trên nước, cây bút chì trông như bị gãy hai lần, vì ánh sáng bẻ cong với mức độ khác nhau trong dầu và trong nước — nên ánh sáng phải đi với tốc độ khác nhau trong dầu và trong nước.'},
+    {en:'On a wet window, every drop bends light a different way, so the view blurs — wipers clear the drops so the glass alone refracts light in one steady way.',vi:'Trên cửa sổ ướt, mỗi giọt nước bẻ cong ánh sáng một kiểu khác nhau, nên cảnh bị mờ — cần gạt nước lau sạch các giọt để riêng thủy tinh khúc xạ (refracts) ánh sáng theo một cách ổn định.'},
+    {en:'Lenses (lenses) are curved pieces of glass made to refract light in a known way. They are used in our eyes, in cameras and in the glasses people wear to see clearly.',vi:'Thấu kính (lenses) là những miếng thủy tinh cong được làm ra để khúc xạ ánh sáng theo một cách đã biết trước. Chúng được dùng trong mắt ta, trong máy ảnh và trong kính mắt mà mọi người đeo để nhìn rõ.'}]},
+ {tag:{en:'Slows down or speeds up?',vi:'Chậm lại hay nhanh lên?'}, word:{en:'bent',vi:'bị bẻ cong'},
+  q:{en:'You know the speeds now. Can you predict what light does on each of these journeys?',vi:'Giờ con đã biết các tốc độ. Con có dự đoán được ánh sáng làm gì trên mỗi hành trình này không?'},
+  act:{en:'Each card shows light passing from one medium to another, with its speeds. Tap a card, then tap SLOWS DOWN or SPEEDS UP.',vi:'Mỗi thẻ cho thấy ánh sáng đi từ môi trường (medium) này sang môi trường khác, kèm các tốc độ của nó. Chạm vào một thẻ, rồi chạm CHẬM LẠI (SLOWS DOWN) hoặc NHANH LÊN (SPEEDS UP).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Refraction (refraction) is the change in direction of light as it passes from one medium to another, caused by its change in speed.',vi:'Khúc xạ (refraction) là sự thay đổi hướng của ánh sáng khi nó đi từ môi trường (medium) này sang môi trường khác, gây ra bởi sự thay đổi tốc độ (speed) của nó.'},
+    {en:'Slowing down — into water or glass — bends a ray towards the normal. Speeding up — out into air — bends it away from the normal.',vi:'Chậm lại — đi vào nước hoặc thủy tinh — làm tia bẻ cong về phía pháp tuyến (normal). Nhanh lên — đi ra vào không khí — làm tia bẻ cong ra xa pháp tuyến.'},
+    {en:'I can describe how light changes speed between air and either water or glass.',vi:'Con mô tả được ánh sáng thay đổi tốc độ (speed) thế nào giữa không khí với nước hoặc với thủy tinh.'},
+    {en:'I can recall that a change in speed can make a light ray change direction.',vi:'Con nhớ được rằng sự thay đổi tốc độ có thể làm một tia sáng thay đổi hướng.'},
+    {en:'I can recall which way light bends going from air into glass or water, and which way going from glass or water into air.',vi:'Con nhớ được ánh sáng bẻ cong theo hướng nào khi đi từ không khí vào thủy tinh hoặc nước, và theo hướng nào khi đi từ thủy tinh hoặc nước vào không khí.'}]}
+];
+const JOURNEYS=[
+ {id:'j_airglass',emoji:'🧊',en:'Air (300 000 km/s) → glass (200 000 km/s)',vi:'Không khí (300 000 km/s) → thủy tinh (200 000 km/s)',ans:'slows'},
+ {id:'j_glassair',emoji:'💨',en:'Glass (200 000 km/s) → air (300 000 km/s)',vi:'Thủy tinh (200 000 km/s) → không khí (300 000 km/s)',ans:'speeds'},
+ {id:'j_airwater',emoji:'💧',en:'Air (300 000 km/s) → water (225 000 km/s)',vi:'Không khí (300 000 km/s) → nước (225 000 km/s)',ans:'slows'},
+ {id:'j_waterglass',emoji:'🔷',en:'Water (225 000 km/s) → glass (200 000 km/s)',vi:'Nước (225 000 km/s) → thủy tinh (200 000 km/s)',ans:'slows'},
+ {id:'j_glasswater',emoji:'🌊',en:'Glass (200 000 km/s) → water (225 000 km/s)',vi:'Thủy tinh (200 000 km/s) → nước (225 000 km/s)',ans:'speeds'},
+ {id:'j_waterair',emoji:'☁️',en:'Water (225 000 km/s) → air (300 000 km/s)',vi:'Nước (225 000 km/s) → không khí (300 000 km/s)',ans:'speeds'}
+];
+const JOURNEYS_ORDER=mixOrder(JOURNEYS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'What causes refraction?',vi:'Điều gì gây ra khúc xạ (refraction)?'},
+  o:[{en:'Light reflecting off a shiny surface',vi:'Ánh sáng phản xạ (reflecting) khỏi một bề mặt bóng'},{en:'Light changing speed as it passes from one medium to another, so it changes direction',vi:'Ánh sáng thay đổi tốc độ (speed) khi đi từ môi trường (medium) này sang môi trường khác, nên nó thay đổi hướng'},{en:'Light being blocked by an opaque object',vi:'Ánh sáng bị một vật đục chắn lại'}],a:1,
+  e:{en:'Refraction is the change in direction of light on passing from one medium to another, because of the change in speed.',vi:'Khúc xạ (refraction) là sự thay đổi hướng của ánh sáng khi đi từ môi trường (medium) này sang môi trường khác, vì tốc độ (speed) thay đổi.'}},
+ {q:{en:'A ray of light passes from air into glass. What happens to it?',vi:'Một tia sáng đi từ không khí vào thủy tinh (glass). Điều gì xảy ra với nó?'},
+  o:[{en:'It slows down and bends towards the normal',vi:'Nó chậm lại và bẻ cong về phía pháp tuyến (normal)'},{en:'It speeds up and bends away from the normal',vi:'Nó nhanh lên và bẻ cong ra xa pháp tuyến (normal)'},{en:'It stops at the surface',vi:'Nó dừng lại ở bề mặt'}],a:0,
+  e:{en:'Light travels more slowly in glass (200 000 km/s) than in air (300 000 km/s). Slowing down bends the ray towards the normal.',vi:'Ánh sáng đi chậm hơn trong thủy tinh (glass) (200 000 km/s) so với trong không khí (300 000 km/s). Chậm lại làm tia bẻ cong về phía pháp tuyến (normal).'}},
+ {q:{en:'The speed of light in water is 225 000 km/s and in glass 200 000 km/s. A ray passing from water into glass will…',vi:'Tốc độ ánh sáng trong nước là 225 000 km/s và trong thủy tinh là 200 000 km/s. Một tia đi từ nước vào thủy tinh (glass) sẽ…'},
+  o:[{en:'speed up and bend away from the normal',vi:'nhanh lên và bẻ cong ra xa pháp tuyến (normal)'},{en:'slow down and bend towards the normal',vi:'chậm lại và bẻ cong về phía pháp tuyến (normal)'},{en:'keep exactly the same direction',vi:'giữ nguyên đúng hướng cũ'}],a:1,
+  e:{en:'200 000 is less than 225 000, so the light slows down entering glass — and slowing down bends a ray towards the normal.',vi:'200 000 nhỏ hơn 225 000, nên ánh sáng chậm lại khi vào thủy tinh (glass) — và chậm lại làm tia bẻ cong về phía pháp tuyến (normal).'}},
+ {q:{en:'A coin at the bottom of an empty cup is just out of sight. Pouring water into the cup makes the coin visible because…',vi:'Một đồng xu ở đáy một cái cốc rỗng vừa khuất khỏi tầm nhìn. Đổ nước vào cốc làm đồng xu nhìn thấy được vì…'},
+  o:[{en:'the water lifts the coin up to the surface',vi:'nước nâng đồng xu lên mặt nước'},{en:'the coin floats to the top of the water',vi:'đồng xu nổi lên trên mặt nước'},{en:'light from the coin bends away from the normal as it leaves the water, so the coin appears raised',vi:'ánh sáng từ đồng xu bẻ cong ra xa pháp tuyến (normal) khi rời khỏi nước, nên đồng xu trông như được nâng lên'}],a:2,
+  e:{en:'Leaving water, light speeds up and bends away from the normal. Your eye traces the rays straight back, so the coin appears higher than it really is.',vi:'Khi rời khỏi nước, ánh sáng nhanh lên và bẻ cong ra xa pháp tuyến (normal). Mắt con lần theo các tia ngược lại theo đường thẳng, nên đồng xu trông cao hơn vị trí thật của nó.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_medium',emoji:'💡',en:'A medium is a material that light can pass through, such as air, water or glass',vi:'Môi trường (medium) là một chất mà ánh sáng có thể đi qua, như không khí, nước hoặc thủy tinh',keyw:true},
+ {id:'e_normdef',emoji:'📐',en:'A medium is the line drawn at right angles to a surface',vi:'Môi trường (medium) là đường thẳng vẽ vuông góc với một bề mặt',keyw:false},
+ {id:'e_airwater',emoji:'💧',en:'When light passes from air into water, it slows down',vi:'Khi ánh sáng đi từ không khí vào nước, nó chậm lại',keyw:true},
+ {id:'e_glassair',emoji:'💨',en:'When light passes from glass into air, it slows down',vi:'Khi ánh sáng đi từ thủy tinh vào không khí, nó chậm lại',keyw:false},
+ {id:'e_waterglass',emoji:'🔷',en:'When light passes from water into glass, it slows down',vi:'Khi ánh sáng đi từ nước vào thủy tinh (glass), nó chậm lại',keyw:true},
+ {id:'e_shape',emoji:'🔺',en:'Refraction is caused by a change in the shape of the object',vi:'Khúc xạ (refraction) là do sự thay đổi hình dạng (shape) của vật gây ra',keyw:false},
+ {id:'e_def',emoji:'↪️',en:'Refraction is a change in the direction of light, caused by a change in speed',vi:'Khúc xạ (refraction) là sự thay đổi hướng của ánh sáng, do sự thay đổi tốc độ (speed) gây ra',keyw:true},
+ {id:'e_fastglass',emoji:'🏎️',en:'Light travels fastest in glass',vi:'Ánh sáng đi nhanh nhất trong thủy tinh (glass)',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'b_airwater',emoji:'💧',en:'A ray passes from air into water',vi:'Một tia đi từ không khí vào nước',ans:'towards'},
+ {id:'b_glassair',emoji:'💨',en:'A ray passes from glass into air',vi:'Một tia đi từ thủy tinh (glass) vào không khí',ans:'away'},
+ {id:'b_airglass',emoji:'🧊',en:'A ray passes from air into glass',vi:'Một tia đi từ không khí vào thủy tinh (glass)',ans:'towards'},
+ {id:'b_waterair',emoji:'☁️',en:'A ray passes from water into air',vi:'Một tia đi từ nước vào không khí',ans:'away'},
+ {id:'b_waterglass',emoji:'🔷',en:'A ray passes from water into glass',vi:'Một tia đi từ nước vào thủy tinh (glass)',ans:'towards'},
+ {id:'b_glasswater',emoji:'🌊',en:'A ray passes from glass into water',vi:'Một tia đi từ thủy tinh (glass) vào nước',ans:'away'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'When light passes from air into glass, the refracted ray bends',vi:'Khi ánh sáng đi từ không khí vào thủy tinh (glass), tia khúc xạ bẻ cong'},
+  wrong:1,
+  opts:[{en:'towards the normal',vi:'về phía pháp tuyến (towards the normal)'},{en:'away from the normal',vi:'ra xa pháp tuyến (away from the normal)'}],
+  e:{en:'Entering glass, light slows down, so the refracted ray bends towards the normal. Cross out “away from the normal”.',vi:'Khi vào thủy tinh (glass), ánh sáng chậm lại, nên tia khúc xạ bẻ cong về phía pháp tuyến (normal). Hãy gạch bỏ “ra xa pháp tuyến”.'}},
+ {pre:{en:'The angles of incidence and refraction are both measured from',vi:'Góc tới (angle of incidence) và góc khúc xạ (angle of refraction) đều được đo từ'},
+  wrong:1,
+  opts:[{en:'the normal',vi:'pháp tuyến (the normal)'},{en:'the surface of the glass',vi:'bề mặt của thủy tinh'}],
+  e:{en:'Both angles are measured from the normal — the line at right angles to the surface. Cross out “the surface of the glass”.',vi:'Cả hai góc đều được đo từ pháp tuyến (normal) — đường thẳng vuông góc với bề mặt. Hãy gạch bỏ “bề mặt của thủy tinh”.'}},
+ {pre:{en:'When light speeds up at a boundary, the angle of refraction is',vi:'Khi ánh sáng nhanh lên ở một ranh giới, góc khúc xạ (angle of refraction) thì'},
+  wrong:0,
+  opts:[{en:'smaller than the angle of incidence',vi:'nhỏ hơn góc tới (angle of incidence)'},{en:'greater than the angle of incidence',vi:'lớn hơn góc tới (angle of incidence)'}],
+  e:{en:'Speeding up bends the ray away from the normal, so the angle of refraction is the greater one. Cross out “smaller than the angle of incidence”.',vi:'Nhanh lên làm tia bẻ cong ra xa pháp tuyến (normal), nên góc khúc xạ (angle of refraction) là góc lớn hơn. Hãy gạch bỏ “nhỏ hơn góc tới”.'}},
+ {pre:{en:'A ray that meets the glass along the normal, with an angle of incidence of zero,',vi:'Một tia gặp thủy tinh dọc theo pháp tuyến (normal), với góc tới (angle of incidence) bằng không,'},
+  wrong:0,
+  opts:[{en:'bends towards the normal',vi:'bẻ cong về phía pháp tuyến (normal)'},{en:'continues in a straight line',vi:'tiếp tục đi thẳng'}],
+  e:{en:'Travelling along the normal, the whole ray slows at the same moment, so there is no bend — it goes straight on. Cross out “bends towards the normal”.',vi:'Đi dọc theo pháp tuyến (normal), toàn bộ tia chậm lại cùng một lúc, nên không có sự bẻ cong — nó đi thẳng. Hãy gạch bỏ “bẻ cong về phía pháp tuyến”.'}},
+ {pre:{en:'Each drop of water on a window refracts light',vi:'Mỗi giọt nước trên cửa sổ khúc xạ (refracts) ánh sáng'},
+  wrong:0,
+  opts:[{en:'in the same direction as every other drop',vi:'theo cùng một hướng như mọi giọt khác'},{en:'in a different direction, so the view is blurred',vi:'theo một hướng khác, nên cảnh bị mờ'}],
+  e:{en:'Drops point every which way, so each one refracts light in a different direction and the view blurs. Cross out “in the same direction as every other drop”.',vi:'Các giọt hướng đủ mọi phía, nên mỗi giọt khúc xạ ánh sáng theo một hướng khác nhau và cảnh bị mờ. Hãy gạch bỏ “theo cùng một hướng như mọi giọt khác”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-6-2';
+const SUMKEY='camb:sum:sci8-6-2';
+const BOT_CODE='sci8-6.2';
+let FOUND={pencil:false,window:false,air:false,water:false,glass:false,bend:false,coin:false,fish:false,oil:false,lens:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fPencil:false, fWindow:false,
+  s2air:false, s2water:false, s2glass:false,
+  s3block:false, s3tank:false,
+  s4coin:false, s4fish:false,
+  s5oil:false, s5lens:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fPencil&&T.fWindow;
+  if(i===1) return T.s2air&&T.s2water&&T.s2glass;
+  if(i===2) return T.s3block&&T.s3tank;
+  if(i===3) return T.s4coin&&T.s4fish;
+  if(i===4) return T.s5oil&&T.s5lens;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Pencil glass — pencil looks broken '+(T.fPencil?'✓':'…')+' · wet window — view blurred '+(T.fWindow?'✓':'…')+'. Tap both objects on the stage!',
+                     'Cốc có bút chì — bút chì trông bị gãy '+(T.fPencil?'✓':'…')+' · cửa sổ ướt — cảnh bị mờ '+(T.fWindow?'✓':'…')+'. Hãy chạm vào cả hai vật trên sân khấu!');
+  if(i===1) return B('Speeds read: air 300 000 km/s '+(T.s2air?'✓':'…')+' · water 225 000 km/s '+(T.s2water?'✓':'…')+' · glass 200 000 km/s '+(T.s2glass?'✓':'…')+'.',
+                     'Tốc độ đã đọc: không khí 300 000 km/s '+(T.s2air?'✓':'…')+' · nước 225 000 km/s '+(T.s2water?'✓':'…')+' · thủy tinh 200 000 km/s '+(T.s2glass?'✓':'…')+'.');
+  if(i===2) return B('Ray diagrams drawn: glass block (40° → 25°) '+(T.s3block?'✓':'…')+' · water tank (40° → 29°) '+(T.s3tank?'✓':'…')+'. Both rays bend towards the normal.',
+                     'Sơ đồ tia đã vẽ: khối thủy tinh (40° → 25°) '+(T.s3block?'✓':'…')+' · bể nước (40° → 29°) '+(T.s3tank?'✓':'…')+'. Cả hai tia đều bẻ cong về phía pháp tuyến (normal).');
+  if(i===3) return B('Coin appears when water is poured in '+(T.s4coin?'✓':'…')+' · fish looks raised in its bowl '+(T.s4fish?'✓':'…')+'.',
+                     'Đồng xu xuất hiện khi đổ nước vào '+(T.s4coin?'✓':'…')+' · con cá trông được nâng lên trong chậu của nó '+(T.s4fish?'✓':'…')+'.');
+  if(i===4) return B('Pencil in water + oil — broken twice '+(T.s5oil?'✓':'…')+' · camera lens — bends light to focus '+(T.s5lens?'✓':'…')+'.',
+                     'Bút chì trong nước + dầu — bị gãy hai lần '+(T.s5oil?'✓':'…')+' · thấu kính (lens) máy ảnh — bẻ cong ánh sáng để hội tụ '+(T.s5lens?'✓':'…')+'.');
+  if(i===5){
+    const c=T.s6sel? JOURNEYS.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap SLOWS DOWN or SPEEDS UP.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm CHẬM LẠI (SLOWS DOWN) hoặc NHANH LÊN (SPEEDS UP).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'✏️',label:{en:'Pencil glass — looks broken',vi:'Cốc có bút chì — trông bị gãy'},got:T.fPencil},
+      {emoji:'🌧️',label:{en:'Wet window — view blurred',vi:'Cửa sổ ướt — cảnh bị mờ'},got:T.fWindow}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔦',label:{en:'Air — 300 000 km/s',vi:'Không khí — 300 000 km/s'},got:T.s2air},
+      {emoji:'🫧',label:{en:'Water — 225 000 km/s',vi:'Nước — 225 000 km/s'},got:T.s2water},
+      {emoji:'🧊',label:{en:'Glass — 200 000 km/s',vi:'Thủy tinh — 200 000 km/s'},got:T.s2glass}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'Glass block — 40° bends to 25°',vi:'Khối thủy tinh — 40° bẻ cong thành 25°'},got:T.s3block},
+      {emoji:'🫧',label:{en:'Water tank — 40° bends to 29°',vi:'Bể nước — 40° bẻ cong thành 29°'},got:T.s3tank}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🪙',label:{en:'Coin — appears, raised up',vi:'Đồng xu — xuất hiện, được nâng lên'},got:T.s4coin},
+      {emoji:'🐠',label:{en:'Fish — looks closer to the surface',vi:'Cá — trông gần mặt nước hơn'},got:T.s4fish}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🫗',label:{en:'Water + oil — pencil broken twice',vi:'Nước + dầu — bút chì gãy hai lần'},got:T.s5oil},
+      {emoji:'📷',label:{en:'Lens — focuses a photograph',vi:'Thấu kính — hội tụ một bức ảnh'},got:T.s5lens}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,JOURNEYS_ORDER,
+      [{key:'slows',label:STR.binSlow,cls:'living'},{key:'speeds',label:STR.binFast,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('pencilglass'); bounceThing('pencilglass'); setTimeout(()=>{ focusVisual('window'); bounceThing('window'); },900); }
+  else if(i===1){ focusThing('raybox'); setTimeout(()=>focusThing('block'),900); }
+  else if(i===2){ focusThing('block'); setTimeout(()=>focusThing('tank'),900); }
+  else if(i===3){ focusThing('coin'); setTimeout(()=>focusThing('fish'),900); }
+  else if(i===4){ focusThing('oilglass'); setTimeout(()=>focusThing('lens'),900); }
+  else if(i===5){ demoSort(JOURNEYS,T.s6correct); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recAir)+'</span><b>'+(FOUND.air?'300 000 km/s':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recWater)+'</span><b>'+(FOUND.water?'225 000 km/s':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recGlass)+'</span><b>'+(FOUND.glass?'200 000 km/s':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recBend)+'</span><b>'+(FOUND.bend?'25°':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didViews},
+    {got:doneSteps.has(2),label:STR.didTowards},
+    {got:doneSteps.has(4),label:STR.didEffects},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let rayBlockG=null, rayTankG=null, coinGhost=null, tankWaterMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.4, th:0.14, ph:1.06, tx:0.2, ty:0.9, tz:-0.2};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function glassMat(color,op){ return new THREE.MeshStandardMaterial({color:color,roughness:0.15,transparent:true,opacity:op}); }
+function beamBetween(x1,y1,z1,x2,y2,z2,color,r){
+  const a=new THREE.Vector3(x1,y1,z1), b=new THREE.Vector3(x2,y2,z2);
+  const len=a.distanceTo(b);
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,6),new THREE.MeshBasicMaterial({color:color}));
+  m.position.copy(a).add(b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());
+  return m;
+}
+function buildPencilGlass(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.38,0.95,18,1,true),glassMat(0xdff2fb,0.3));
+  glass.position.y=0.48; g.add(glass);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,0.05,18),glassMat(0xdff2fb,0.4));
+  bottom.position.y=0.03; g.add(bottom);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.39,0.36,0.68,18),glassMat(0x3fa7d6,0.55));
+  water.position.y=0.4; g.add(water);
+  const pencil=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.25,8),stdMat(0xf2b134,0.6));
+  pencil.position.set(0.18,0.62,0); pencil.rotation.z=0.5; g.add(pencil);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.045,0.14,8),stdMat(0xe8d9b0,0.6));
+  tip.position.set(-0.13,0.14,0); tip.rotation.z=0.5+Math.PI; g.add(tip);
+  g.position.set(-3.5,0,1.6); g.userData.baseY=0;
+  return g;
+}
+function buildWindow(){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.09,0.7,8),stdMat(0x8a6844,0.95));
+  post.position.y=0.35; g.add(post);
+  const frame=new THREE.Group();
+  const fm=stdMat(0x5b7a99,0.8);
+  [[0,1.95,1.7,0.09],[0,0.95,1.7,0.09]].forEach(p=>{
+    const bar=new THREE.Mesh(new THREE.BoxGeometry(p[2],0.09,0.07),fm);
+    bar.position.set(p[0],p[1],0); frame.add(bar);
+  });
+  [[-0.82,1.45],[0.82,1.45],[0,1.45]].forEach(p=>{
+    const bar=new THREE.Mesh(new THREE.BoxGeometry(0.09,1.05,0.07),fm);
+    bar.position.set(p[0],p[1],0); frame.add(bar);
+  });
+  const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.6,0.96),glassMat(0xcfe8f7,0.35));
+  pane.position.set(0,1.45,0); frame.add(pane);
+  for(let k=0;k<9;k++){
+    const drop=new THREE.Mesh(new THREE.SphereGeometry(0.045+((k*7)%3)*0.012,8,6),glassMat(0x2f8fd0,0.85));
+    drop.position.set(-0.65+((k*37)%13)/10,1.1+((k*53)%7)/10,0.05);
+    drop.scale.z=0.6; frame.add(drop);
+  }
+  g.add(frame);
+  g.position.set(-4.2,0,-2.7); g.rotation.y=0.5; g.userData.baseY=0;
+  return g;
+}
+function buildRayBox(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.42,0.45),stdMat(0x39424e,0.6)));
+  body.position.y=0.24; g.add(body);
+  const slit=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.2,0.05),stdMat(0xffe9a0,0.4));
+  slit.position.set(0.32,0.24,0); g.add(slit);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(0.07,8,6),new THREE.MeshBasicMaterial({color:0xffdf6b}));
+  glow.position.set(0.38,0.24,0); g.add(glow);
+  g.add(beamBetween(0.4,0.24,0,1.15,0.24,0,0xffe066,0.018));
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.05,0.55),stdMat(0x22303e,0.7));
+  base.position.y=0.03; g.add(base);
+  g.position.set(-2.2,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildTank(){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.08,1.1),stdMat(0x5b7a99,0.7));
+  base.position.y=0.04; g.add(base);
+  const walls=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.95,1.0),glassMat(0xdff2fb,0.22));
+  walls.position.y=0.55; g.add(walls);
+  tankWaterMat=glassMat(0x3fa7d6,0.5);
+  const water=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.66,0.9),tankWaterMat);
+  water.position.y=0.42; g.add(water);
+  [[-0.35,0.2],[0.3,-0.25],[0.05,0.32]].forEach(p=>{
+    const weed=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.03,0.4,6),stdMat(0x3f9e4d,0.8));
+    weed.position.set(p[0],0.28,p[1]); g.add(weed);
+  });
+  g.position.set(1.4,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildBlock(){
+  const g=new THREE.Group();
+  const paper=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.04,1.4),stdMat(0xffffff,0.9));
+  paper.position.y=0.02; paper.receiveShadow=true; g.add(paper);
+  const block=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.5,0.85),glassMat(0xbfe0f5,0.4));
+  block.position.y=0.29; g.add(block);
+  const edge=new THREE.Mesh(new THREE.BoxGeometry(1.52,0.03,0.87),glassMat(0x8fc7ee,0.5));
+  edge.position.y=0.55; g.add(edge);
+  g.position.set(-0.7,0,0.8); g.userData.baseY=0;
+  return g;
+}
+function buildCoinCup(){
+  const g=new THREE.Group();
+  const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.33,0.6,16,1,true),stdMat(0xd8542e,0.55));
+  cup.position.y=0.3; g.add(cup);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.33,0.33,0.05,16),stdMat(0xb03a20,0.6));
+  bottom.position.y=0.03; g.add(bottom);
+  const coinM=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.03,16),stdMat(0xf2c230,0.35)));
+  coinM.position.set(0,0.08,0); g.add(coinM);
+  g.position.set(2.7,0,0.6); g.userData.baseY=0;
+  return g;
+}
+function buildFishBowl(){
+  const g=new THREE.Group();
+  const bowl=new THREE.Mesh(new THREE.SphereGeometry(0.46,16,12),glassMat(0xdff2fb,0.28));
+  bowl.position.y=0.48; bowl.scale.y=0.9; g.add(bowl);
+  const water=new THREE.Mesh(new THREE.SphereGeometry(0.42,14,10),glassMat(0x3fa7d6,0.45));
+  water.position.y=0.44; water.scale.y=0.82; g.add(water);
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.1,14),stdMat(0x8a6844,0.9));
+  stand.position.y=0.05; g.add(stand);
+  g.position.set(3.9,0,-2.2); g.userData.baseY=0;
+  return g;
+}
+function buildFish(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.17,11,8),stdMat(0xf08a4b,0.5)));
+  body.scale.set(1.7,0.8,0.55); body.position.y=0.45; g.add(body);
+  const tail=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.2,4),stdMat(0xd96f32,0.55));
+  tail.rotation.z=Math.PI/2; tail.position.set(-0.34,0.45,0); tail.scale.z=0.4; g.add(tail);
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(0.026,6,5),stdMat(0x1c2733,0.5));
+  eye.position.set(0.2,0.5,0.08); g.add(eye);
+  const eye2=eye.clone(); eye2.position.z=-0.08; g.add(eye2);
+  g.position.set(3.9,0,-2.2); g.userData.baseY=0;
+  return g;
+}
+function buildOilGlass(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.38,0.95,18,1,true),glassMat(0xdff2fb,0.3));
+  glass.position.y=0.48; g.add(glass);
+  const bottom=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,0.05,18),glassMat(0xdff2fb,0.4));
+  bottom.position.y=0.03; g.add(bottom);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.39,0.36,0.42,18),glassMat(0x3fa7d6,0.55));
+  water.position.y=0.26; g.add(water);
+  const oil=new THREE.Mesh(new THREE.CylinderGeometry(0.39,0.39,0.26,18),glassMat(0xf2c230,0.55));
+  oil.position.y=0.6; g.add(oil);
+  const pencil=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.25,8),stdMat(0x3d7bd6,0.6));
+  pencil.position.set(0.18,0.62,0); pencil.rotation.z=0.5; g.add(pencil);
+  g.position.set(4.4,0,-0.6); g.userData.baseY=0;
+  return g;
+}
+function buildLens(){
+  const g=new THREE.Group();
+  const camBody=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.55,0.3),stdMat(0x27313a,0.6)));
+  camBody.position.set(-0.25,0.55,0); g.add(camBody);
+  const barrel=new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.23,0.3,16),stdMat(0x39434c,0.55));
+  barrel.rotation.x=Math.PI/2; barrel.position.set(-0.25,0.55,0.28); g.add(barrel);
+  const glassL=new THREE.Mesh(new THREE.SphereGeometry(0.17,14,10),glassMat(0x7fc4ee,0.65));
+  glassL.position.set(-0.25,0.55,0.42); glassL.scale.z=0.45; g.add(glassL);
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.3,8),stdMat(0x5b7186,0.7));
+  stand.position.set(-0.25,0.15,0); g.add(stand);
+  const magStand=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.05,0.75,8),stdMat(0x8a6844,0.8));
+  magStand.position.set(0.55,0.38,0); g.add(magStand);
+  const magLens=new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10),glassMat(0xbfe0f5,0.5));
+  magLens.position.set(0.55,0.85,0); magLens.scale.x=0.22; g.add(magLens);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.025,8,22),stdMat(0xb03a3a,0.6));
+  rim.position.set(0.55,0.85,0); rim.rotation.y=Math.PI/2; g.add(rim);
+  g.position.set(1.2,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildPlant(){
+  const g=new THREE.Group();
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.2,0.4,12),stdMat(0xc96f3b,0.8)));
+  pot.position.y=0.2; g.add(pot);
+  [[0,0.72,0,0.3],[0.2,0.58,0.08,0.2],[-0.19,0.6,-0.06,0.21]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(p[3],9,7),stdMat(0x4e9e4e,0.9));
+    blob.position.set(p[0],p[1],p[2]); g.add(blob);
+  });
+  g.position.set(-4.5,0,0.2); g.userData.baseY=0;
+  return g;
+}
+function buildTree(x,z,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.09*s,0.13*s,0.9*s,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.45*s; g.add(trunk);
+  [[0,1.25,0,0.55],[0.3,1.05,0.1,0.4],[-0.28,1.08,-0.08,0.42]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(p[3]*s,10,8),stdMat(0x4e9e4e,0.9));
+    blob.position.set(p[0]*s,p[1]*s,p[2]*s); g.add(blob);
+  });
+  g.position.set(x,0,z);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xe4f1f8);
+  scene3.fog=new THREE.Fog(0xe4f1f8,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0xd7dee6,0.95));
+  bench.position.set(0.4,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xcfe0c8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xeef5fa,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  scene3.add(buildTree(-5.3,-3.1,1.1));
+  scene3.add(buildTree(5.6,2.9,0.9));
+  reg('pencilglass',buildPencilGlass());
+  reg('window',buildWindow());
+  reg('raybox',buildRayBox());
+  reg('tank',buildTank());
+  reg('block',buildBlock());
+  reg('coin',buildCoinCup());
+  scene3.add(buildFishBowl());
+  reg('fish',buildFish());
+  reg('oilglass',buildOilGlass());
+  reg('lens',buildLens());
+  reg('plant',buildPlant());
+  /* ray diagram for the glass block (step 3): incident ray, normal, refracted ray */
+  rayBlockG=new THREE.Group();
+  rayBlockG.add(beamBetween(-2.0,2.3,0.8,-0.9,0.56,0.8,0xffb400,0.022));
+  rayBlockG.add(beamBetween(-0.9,0.56,0.8,-0.76,0.06,0.8,0xffb400,0.022));
+  rayBlockG.add(beamBetween(-0.9,1.7,0.8,-0.9,0.0,0.8,0x5b7186,0.012));
+  rayBlockG.visible=false; scene3.add(rayBlockG);
+  /* ray diagram for the water tank (step 3) */
+  rayTankG=new THREE.Group();
+  rayTankG.add(beamBetween(0.05,2.35,-2.0,1.18,0.78,-2.0,0xffb400,0.022));
+  rayTankG.add(beamBetween(1.18,0.78,-2.0,1.36,0.1,-2.0,0xffb400,0.022));
+  rayTankG.add(beamBetween(1.18,1.75,-2.0,1.18,0.05,-2.0,0x5b7186,0.012));
+  rayTankG.visible=false; scene3.add(rayTankG);
+  /* the coin's apparent (raised) position, shown on step 4 */
+  coinGhost=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.03,16),
+    new THREE.MeshBasicMaterial({color:0xffe27a,transparent:true,opacity:0.75}));
+  coinGhost.position.set(2.7,0.52,0.6); coinGhost.visible=false; scene3.add(coinGhost);
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('pencilglass',p,G.pencilglass); }
+  { const p=sphProxy(0.75); p.position.set(0,1.45,0); addProxy('window',p,G.window); }
+  { const p=sphProxy(0.55); p.position.set(0,0.28,0); addProxy('raybox',p,G.raybox); }
+  { const p=sphProxy(0.72); p.position.set(0,0.55,0); addProxy('tank',p,G.tank); }
+  { const p=sphProxy(0.62); p.position.set(0,0.32,0); addProxy('block',p,G.block); }
+  { const p=sphProxy(0.55); p.position.set(0,0.32,0); addProxy('coin',p,G.coin); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('fish',p,G.fish); }
+  { const p=sphProxy(0.58); p.position.set(0,0.55,0); addProxy('oilglass',p,G.oilglass); }
+  { const p=sphProxy(0.62); p.position.set(0,0.6,0); addProxy('lens',p,G.lens); }
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('plant',p,G.plant); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['pencilglass','window'],
+  ['raybox','tank','block'],
+  ['block','tank'],
+  ['coin','fish'],
+  ['oilglass','lens'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='pencilglass'){ T.fPencil=true; FOUND.pencil=true; }
+    if(id==='window'){ T.fWindow=true; FOUND.window=true; }
+  }else if(curStep===1){
+    if(id==='raybox'){ T.s2air=true; FOUND.air=true; }
+    if(id==='tank'){ T.s2water=true; FOUND.water=true; }
+    if(id==='block'){ T.s2glass=true; FOUND.glass=true; }
+  }else if(curStep===2){
+    if(id==='block'){ T.s3block=true; FOUND.bend=true; }
+    if(id==='tank'){ T.s3tank=true; }
+  }else if(curStep===3){
+    if(id==='coin'){ T.s4coin=true; FOUND.coin=true; }
+    if(id==='fish'){ T.s4fish=true; FOUND.fish=true; }
+  }else if(curStep===4){
+    if(id==='oilglass'){ T.s5oil=true; FOUND.oil=true; }
+    if(id==='lens'){ T.s5lens=true; FOUND.lens=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All bench objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. The ray diagrams
+     and the coin's apparent position follow the collected evidence. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(tankWaterMat) tankWaterMat.color.setHSL(0.55,0.62,0.5+Math.sin(now*0.0016)*0.04);
+  if(rayBlockG) rayBlockG.visible=!!T.s3block;
+  if(rayTankG) rayTankG.visible=!!T.s3tank;
+  if(coinGhost) coinGhost.visible=!!FOUND.coin;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — tap the correct statements */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — towards or away from the normal */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinTowards').innerHTML=bi(STR.binTowards);
+  $('ex2BinAway').innerHTML=bi(STR.binAway);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='towards'?'↪':'↩')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinTowards').onclick=()=>ex2Place('towards');
+$('ex2BinAway').onclick=()=>ex2Place('away');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.pencil=false; FOUND.window=false; }
+  if(step===1){ FOUND.air=false; FOUND.water=false; FOUND.glass=false; }
+  if(step===2){ FOUND.bend=false; }
+  if(step===3){ FOUND.coin=false; FOUND.fish=false; }
+  if(step===4){ FOUND.oil=false; FOUND.lens=false; }
+  if(step===5){ JOURNEYS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='towards'||s.exAns.a2[id]==='away')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fPencil=!!FOUND.pencil; t.fWindow=!!FOUND.window; }
+  else if(i===1){ t.s2air=true; t.s2water=true; t.s2glass=true; }
+  else if(i===2){ t.s3block=true; t.s3tank=true; }
+  else if(i===3){ t.s4coin=!!FOUND.coin; t.s4fish=!!FOUND.fish; }
+  else if(i===4){ t.s5oil=!!FOUND.oil; t.s5lens=!!FOUND.lens; }
+  else if(i===5){ JOURNEYS.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-6-2',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

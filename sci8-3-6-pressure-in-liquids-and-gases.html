@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.6 Pressure in liquids and gases — Áp suất trong chất lỏng và chất khí · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+.binbtn.up{background:#c2410c}
+.binbtn.down{background:#2563eb}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.wordopt.picked{border-color:var(--acc);background:#eef6ff}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="3.6 Pressure in liquids and gases" data-vi="3.6 Áp suất trong chất lỏng và chất khí">3.6 Pressure in liquids and gases</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What makes pressure in liquids and gases?" data-vi="Điều gì tạo ra áp suất (pressure) trong chất lỏng và chất khí?">What makes pressure in liquids and gases?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Particles collide" data-vi="Hạt va chạm (collide)">Particles collide</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Pressure" data-vi="Áp suất (pressure)">Pressure</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Depth and altitude" data-vi="Độ sâu (depth) và độ cao (altitude)">Depth and altitude</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Heat changes it" data-vi="Nhiệt làm nó thay đổi">Heat changes it</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the tank, balloon, flags and cooker!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào bể nước, bóng bay, các lá cờ và nồi áp suất!">🖱 Drag to look around · Scroll to zoom · Tap the tank, balloon, flags and cooker!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="trkRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.6. The bench, tank and mountain in this lesson are simulations." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 3 Lực và năng lượng · Mục 3.6. Bàn thí nghiệm, bể nước và ngọn núi trong bài này là mô phỏng.">Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.6. The bench, tank and mountain in this lesson are simulations.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.6, pages 100–107; Workbook 8 (ISBN 9781108742856), pages 60–63. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 3 Forces and energy (Lực và năng lượng), mục 3.6, trang 100–107; Sách bài tập 8 (ISBN 9781108742856), trang 60–63. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.6, pages 100–107; Workbook 8 (ISBN 9781108742856), pages 60–63. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: recall how particles move in liquids and gases; understand how particle movement causes pressure in liquids and gases; predict how changes in liquids and gases affect the pressure. Key words: altitude, atmospheric pressure, collide, container, depth, sea level." data-vi="Mục tiêu: nhớ lại cách các hạt chuyển động trong chất lỏng và chất khí; hiểu cách chuyển động của hạt gây ra áp suất (pressure) trong chất lỏng và chất khí; dự đoán các thay đổi trong chất lỏng và chất khí ảnh hưởng tới áp suất thế nào. Từ khóa: altitude (độ cao), atmospheric pressure (áp suất khí quyển), collide (va chạm), container (vật chứa), depth (độ sâu), sea level (mực nước biển).">Objectives: recall how particles move in liquids and gases; understand how particle movement causes pressure in liquids and gases; predict how changes in liquids and gases affect the pressure. Key words: altitude, atmospheric pressure, collide, container, depth, sea level.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — opening the holes of the book's bottle investigation (the jets fly further from the deepest hole), pumping air particles into a balloon, visiting three altitudes, and heating a sealed pressure cooker. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The final step sorts everyday changes — more air, heating, cooling, squeezing — into pressure rising or falling, which also covers the book's warm-bottle-into-the-fridge activity: cooled air presses less, so the bottle is pushed inwards." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn 3D — mở các lỗ của thí nghiệm chai nước trong sách (tia nước từ lỗ sâu nhất phun xa nhất), bơm thêm hạt không khí vào bóng bay, ghé thăm ba độ cao, và đun một nồi áp suất kín. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. Nút 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Bước cuối sắp xếp các thay đổi thường ngày — thêm khí, đun nóng, làm lạnh, ép nén — vào nhóm áp suất tăng hay giảm, bao gồm cả hoạt động chai ấm cho vào tủ lạnh trong sách: không khí lạnh ép yếu hơn nên chai bị ép lõm vào.">How it works: each step asks for one real action on the 3D bench — opening the holes of the book's bottle investigation (the jets fly further from the deepest hole), pumping air particles into a balloon, visiting three altitudes, and heating a sealed pressure cooker. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. The final step sorts everyday changes — more air, heating, cooling, squeezing — into pressure rising or falling, which also covers the book's warm-bottle-into-the-fridge activity: cooled air presses less, so the bottle is pushed inwards.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div id="ex1List"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinTrue"></button>
+        <button class="binbtn nonliving" id="ex2BinFalse"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-3-6 "Pressure in liquids and gases" (Science 8, Unit 3)
+   Loaded between camb-engine.js and camb-bridge.js. Everything here is
+   the lesson's own data and behaviour, following the sci1-1-1 archetype
+   shape on the shared engine (see migration/engine/API.md). ENGINE v2:
+   the exercises panel is registered here as a content module, together
+   with the renderMirrors / clearMirrors hooks.
+   ===================================================================== */
+
+/* ================= bench objects ================= */
+const OBJS={
+  tank:    {emoji:'🛢️', name:{en:'Water tank',vi:'Bể nước (tank)'},        short:{en:'Water tank',vi:'Bể nước'},   ring:1.5,  labelY:2.95, fx:-3.6, fz:-1.0, fr:6.6},
+  holetop: {emoji:'🔵', name:{en:'Top hole',vi:'Lỗ trên cùng (top hole)'},  short:{en:'Top hole',vi:'Lỗ trên'},     ring:0.42, labelY:0.5,  fx:-3.6, fz:0.2,  fr:4.8},
+  holemid: {emoji:'🔵', name:{en:'Middle hole',vi:'Lỗ giữa (middle hole)'},short:{en:'Middle hole',vi:'Lỗ giữa'},  ring:0.42, labelY:0.5,  fx:-3.6, fz:0.2,  fr:4.8},
+  holebot: {emoji:'🔵', name:{en:'Bottom hole',vi:'Lỗ dưới cùng (bottom hole)'}, short:{en:'Bottom hole',vi:'Lỗ dưới'}, ring:0.42, labelY:0.5, fx:-3.6, fz:0.2, fr:4.8},
+  balloon: {emoji:'🎈', name:{en:'Balloon',vi:'Bóng bay (balloon)'},        short:{en:'Balloon',vi:'Bóng bay'},     ring:0.95, labelY:1.5,  fx:0.2,  fz:-1.2, fr:5.2},
+  pump:    {emoji:'💨', name:{en:'Air pump',vi:'Bơm hơi (pump)'},         short:{en:'Pump',vi:'Bơm'},             ring:0.55, labelY:1.15, fx:1.6,  fz:-0.4, fr:4.8},
+  sealevel:{emoji:'🌊', name:{en:'Sea level sign',vi:'Biển mực nước biển (sea level)'}, short:{en:'Sea level',vi:'Mực nước biển'}, ring:0.5, labelY:1.05, fx:2.5, fz:-0.5, fr:5.4},
+  hill:    {emoji:'🚩', name:{en:'Hill flag',vi:'Cờ trên đồi (hill flag)'}, short:{en:'Hill',vi:'Đồi'},             ring:0.5,  labelY:1.05, fx:3.4,  fz:-1.5, fr:5.6},
+  summit:  {emoji:'🏔️', name:{en:'Mountain top flag',vi:'Cờ đỉnh núi (summit flag)'}, short:{en:'Top',vi:'Đỉnh núi'}, ring:0.5, labelY:1.05, fx:4.3, fz:-2.2, fr:6.2},
+  mountain:{emoji:'⛰️', name:{en:'Mountain',vi:'Ngọn núi (mountain)'},     short:{en:'Mountain',vi:'Núi'},         ring:1.7,  labelY:3.6,  fx:3.6,  fz:-2.4, fr:7.6},
+  cooker:  {emoji:'🍲', name:{en:'Pressure cooker',vi:'Nồi áp suất (pressure cooker)'}, short:{en:'Cooker',vi:'Nồi áp suất'}, ring:0.85, labelY:1.95, fx:-1.8, fz:1.8, fr:5.0},
+  burner:  {emoji:'🔥', name:{en:'Burner',vi:'Bếp đun (burner)'},          short:{en:'Burner',vi:'Bếp'},           ring:0.6,  labelY:0.65, fx:-1.8, fz:1.8,  fr:4.6},
+  can:     {emoji:'🥫', name:{en:'Crushed can',vi:'Lon bị bẹp (crushed can)'}, short:{en:'Crushed can',vi:'Lon bẹp'}, ring:0.5, labelY:1.05, fx:0.9, fz:2.0,  fr:4.8}
+};
+const FOCUSORDER=['tank','balloon','pump','sealevel','summit','cooker','can'];
+const HOLEIDS=['holetop','holemid','holebot'];
+const FLAGIDS=['sealevel','hill','summit'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to count, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn được tính, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'Pressure tracker',vi:'Bảng theo dõi áp suất'},
+  u2Brief:{en:'Your evidence so far in this step and lesson.',vi:'Căn cứ con đã thu thập trong bước này và cả bài.'},
+  trkHoles:{en:'Holes opened',vi:'Lỗ đã mở'},
+  trkPump:{en:'Pump pushes',vi:'Lượt bơm'},
+  trkFlags:{en:'Altitudes visited',vi:'Độ cao đã ghé'},
+  trkHeat:{en:'Heat level',vi:'Mức nhiệt'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your investigation checklist.',vi:'Danh sách kiểm tra thí nghiệm của con.'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  foundLiquid:{en:'I explored a liquid',vi:'Con đã khám phá một chất lỏng (liquid)'},
+  foundGas:{en:'I explored a gas',vi:'Con đã khám phá một chất khí (gas)'},
+  foundHoles:{en:'I opened all three holes',vi:'Con đã mở cả ba lỗ'},
+  foundPump:{en:'I pumped the balloon full',vi:'Con đã bơm căng bóng bay'},
+  foundAlt:{en:'I visited three altitudes',vi:'Con đã ghé ba độ cao (altitude)'},
+  foundHeat:{en:'I heated the sealed cooker',vi:'Con đã đun nồi kín'},
+  binUp:{en:'PRESSURE RISES ⬆',vi:'ÁP SUẤT TĂNG ⬆'},
+  binDown:{en:'PRESSURE FALLS ⬇',vi:'ÁP SUẤT GIẢM ⬇'},
+  binTrue:{en:'TRUE ✓',vi:'ĐÚNG ✓'},
+  binFalse:{en:'FALSE ✗',vi:'SAI ✗'},
+  lookCooker:{en:'Look at the cooker 🍲',vi:'Ngắm nồi áp suất 🍲'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.6',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.6'},
+  exIntro:{en:'Workbook exercises for this lesson. They do not change your steps — do them any time after the steps!',vi:'Các bài tập kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 3.6A · Focus — Trends in pressure 1',vi:'Bài tập 3.6A · Focus — Xu hướng áp suất 1'},
+  ex1Inst:{en:'In each sentence, tap the CORRECT word.',vi:'Trong mỗi câu, chạm vào từ ĐÚNG.'},
+  ex2T:{en:'Exercise 3.6B · Practice — Pressure on a fish',vi:'Bài tập 3.6B · Practice — Áp suất lên một con cá'},
+  ex2Inst:{en:'A fish rests in deep water and the water is still. Tap a card, then tap TRUE or FALSE.',vi:'Một con cá đứng yên trong nước sâu và nước không chuyển động. Chạm vào một thẻ, rồi chạm ĐÚNG (TRUE) hoặc SAI (FALSE).'},
+  ex3T:{en:'Exercise 3.6C · Challenge — Cross out the wrong word',vi:'Bài tập 3.6C · Challenge — Gạch bỏ từ sai'},
+  ex3Inst:{en:'In each sentence, tap the WRONG word to cross it out.',vi:'Trong mỗi câu, chạm vào từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'altitude',vi:'độ cao'},
+  {en:'atmospheric pressure',vi:'áp suất khí quyển'},
+  {en:'collide',vi:'va chạm'},
+  {en:'container',vi:'vật chứa'},
+  {en:'depth',vi:'độ sâu'},
+  {en:'sea level',vi:'mực nước biển'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Particles in liquids and gases',vi:'Hạt trong chất lỏng và chất khí'}, word:{en:'collide',vi:'va chạm'},
+  q:{en:'How are the particles arranged in a liquid — and in a gas?',vi:'Các hạt sắp xếp thế nào trong chất lỏng (liquid) — và trong chất khí (gas)?'},
+  act:{en:'Tap the water tank to explore a liquid. Then tap the balloon to explore a gas.',vi:'Chạm vào bể nước để khám phá một chất lỏng (liquid). Sau đó chạm vào bóng bay để khám phá một chất khí (gas).'},
+  see:{en:'Inside each container (container) you see its particles: close together in the liquid, far apart in the gas.',vi:'Bên trong mỗi vật chứa (container) con thấy các hạt của nó: sát nhau trong chất lỏng, cách xa nhau trong chất khí.'},
+  concl:[
+    {en:'In a liquid the particles are close together and can slide past each other.',vi:'Trong chất lỏng (liquid), các hạt ở sát nhau và có thể trượt qua nhau.'},
+    {en:'In a gas the particles are far apart and move randomly in every direction.',vi:'Trong chất khí (gas), các hạt ở cách xa nhau và chuyển động ngẫu nhiên theo mọi hướng.'}]},
+ {tag:{en:'Pressure and depth in a liquid',vi:'Áp suất và độ sâu trong chất lỏng'}, word:{en:'depth',vi:'độ sâu'},
+  q:{en:'Does water press harder near the surface — or deeper down?',vi:'Nước ép mạnh hơn gần mặt nước — hay ở sâu hơn?'},
+  act:{en:'This is the bottle investigation from the book, built big: tap all three holes in the side of the tank — top, middle and bottom.',vi:'Đây là thí nghiệm chai nước trong sách, phóng to: chạm vào cả ba lỗ ở thành bể — trên, giữa và dưới.'},
+  see:{en:'A jet of water shoots out of each hole. Compare how far each jet flies!',vi:'Một tia nước phun ra từ mỗi lỗ. Hãy so sánh xem tia nào bay xa hơn!'},
+  concl:[
+    {en:'The deepest hole gives the strongest jet — pressure in a liquid increases with depth (depth).',vi:'Lỗ sâu nhất cho tia nước mạnh nhất — áp suất (pressure) trong chất lỏng tăng theo độ sâu (depth).'},
+    {en:'Deeper liquid has more liquid above it; its weight pushes the particles harder, in all directions.',vi:'Chất lỏng ở sâu có nhiều chất lỏng phía trên hơn; trọng lượng của nó đẩy các hạt mạnh hơn, theo mọi hướng.'},
+    {en:'That is why a dam wall is thickest at the bottom, where the pressure is greatest.',vi:'Đó là lý do tường đập dày nhất ở đáy, nơi áp suất lớn nhất.'}]},
+ {tag:{en:'What causes pressure in a gas?',vi:'Điều gì gây áp suất trong chất khí?'}, word:{en:'container',vi:'vật chứa'},
+  q:{en:'Why does a balloon push outwards when you blow it up?',vi:'Vì sao bóng bay phồng ra khi ta thổi vào?'},
+  act:{en:'Tap the air pump three times. Each push adds more air particles inside the balloon.',vi:'Chạm vào bơm hơi ba lần. Mỗi lần bơm thêm nhiều hạt không khí vào trong bóng bay.'},
+  see:{en:'The balloon grows, and you can see more and more particles moving inside it.',vi:'Bóng bay to dần, và con thấy ngày càng nhiều hạt chuyển động bên trong nó.'},
+  concl:[
+    {en:'Gas particles move randomly and collide (collide) with the walls of their container (container).',vi:'Các hạt khí chuyển động ngẫu nhiên và va chạm (collide) vào thành của vật chứa (container).'},
+    {en:'Each collision pushes a tiny bit on the wall. More particles mean more collisions — and more pressure.',vi:'Mỗi lần va chạm đẩy thành một chút. Càng nhiều hạt thì càng nhiều va chạm — và áp suất càng lớn.'},
+    {en:'That is also what holds a pumped-up tyre firm enough to carry a car.',vi:'Đó cũng là điều giữ cho lốp đã bơm căng đủ cứng để đỡ một chiếc ô tô.'}]},
+ {tag:{en:'Atmospheric pressure and altitude',vi:'Áp suất khí quyển và độ cao'}, word:{en:'altitude',vi:'độ cao'},
+  q:{en:'Where is the pressure of the air greatest — and where is it least?',vi:'Áp suất của không khí lớn nhất ở đâu — và nhỏ nhất ở đâu?'},
+  act:{en:'Visit all three stops on the mountain: tap the sea level sign, then the hill flag, then the flag at the very top.',vi:'Ghé cả ba điểm trên núi: chạm vào biển mực nước biển (sea level), rồi cờ trên đồi, rồi lá cờ ở đỉnh cao nhất.'},
+  see:{en:'At each stop a pressure bar shows how much air is pressing there.',vi:'Ở mỗi điểm, một cột áp suất cho thấy không khí ở đó ép mạnh thế nào.'},
+  concl:[
+    {en:'Air pressure is greatest at sea level (sea level), where the atmosphere is deepest.',vi:'Áp suất không khí lớn nhất ở mực nước biển (sea level), nơi khí quyển sâu nhất.'},
+    {en:'Higher up — at greater altitude (altitude) — there is less air above you and the air particles are more spread out, so atmospheric pressure (atmospheric pressure) is lower.',vi:'Càng lên cao — độ cao (altitude) càng lớn — càng ít không khí phía trên và các hạt khí càng thưa hơn, nên áp suất khí quyển (atmospheric pressure) càng nhỏ.'},
+    {en:'If the air is pumped out of a can, the outside air pressure crushes it — like the flat can on the bench.',vi:'Nếu hút hết không khí khỏi một cái lon, áp suất không khí bên ngoài sẽ ép bẹp nó — như cái lon bẹp trên bàn.'}]},
+ {tag:{en:'Heat and gas pressure',vi:'Nhiệt và áp suất khí'}, word:{en:'collide',vi:'va chạm'},
+  q:{en:'What happens to the pressure of a gas when it gets hotter?',vi:'Áp suất của một chất khí thay đổi thế nào khi nó nóng lên?'},
+  act:{en:'Tap the burner under the sealed pressure cooker three times to heat the gas inside, level by level.',vi:'Chạm vào bếp dưới nồi áp suất kín ba lần để đun nóng khí bên trong, từng mức một.'},
+  see:{en:'The flame grows and more steam escapes from the valve as the cooker heats up.',vi:'Ngọn lửa lớn dần và hơi nước thoát ra từ van nhiều hơn khi nồi nóng lên.'},
+  concl:[
+    {en:'When a gas gets hotter, its particles move faster.',vi:'Khi một chất khí nóng lên, các hạt của nó chuyển động nhanh hơn.'},
+    {en:'Faster particles collide harder and more often, so the pressure of the gas rises.',vi:'Các hạt nhanh hơn va chạm (collide) mạnh hơn và thường xuyên hơn, nên áp suất của khí tăng lên.'},
+    {en:'A pressure cooker uses this: steam trapped by the sealed lid reaches high pressure and cooks food faster.',vi:'Nồi áp suất dùng chính điều này: hơi nước bị nắp kín giữ lại đạt áp suất cao và nấu thức ăn nhanh hơn.'}]},
+ {tag:{en:'Predict the pressure change',vi:'Dự đoán thay đổi áp suất'}, word:{en:'pressure',vi:'áp suất'},
+  q:{en:'Can you predict whether the pressure rises or falls in each case?',vi:'Con dự đoán được áp suất tăng hay giảm trong từng trường hợp không?'},
+  act:{en:'Tap a card, then tap PRESSURE RISES or PRESSURE FALLS.',vi:'Chạm vào một thẻ, rồi chạm ÁP SUẤT TĂNG (PRESSURE RISES) hoặc ÁP SUẤT GIẢM (PRESSURE FALLS).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'I can understand what causes pressure in a liquid.',vi:'Con hiểu điều gì gây ra áp suất (pressure) trong chất lỏng.'},
+    {en:'I can understand how pressure changes with depth in a liquid.',vi:'Con hiểu áp suất thay đổi theo độ sâu (depth) trong chất lỏng thế nào.'},
+    {en:'I can understand what causes pressure in a gas.',vi:'Con hiểu điều gì gây ra áp suất trong chất khí.'},
+    {en:'I can understand how altitude affects atmospheric pressure.',vi:'Con hiểu độ cao (altitude) ảnh hưởng tới áp suất khí quyển (atmospheric pressure) thế nào.'},
+    {en:'I can understand how the quantity of gas in a container affects the pressure.',vi:'Con hiểu lượng khí trong một vật chứa (container) ảnh hưởng tới áp suất thế nào.'},
+    {en:'I can understand how the temperature of a gas in a closed container affects the pressure.',vi:'Con hiểu nhiệt độ của khí trong vật chứa kín ảnh hưởng tới áp suất thế nào.'}]}
+];
+const CARDS6=[
+ {id:'s_moreair',emoji:'🎈',en:'More air is pumped into a tyre',vi:'Bơm thêm không khí vào một cái lốp',ans:'up'},
+ {id:'s_hotball',emoji:'🏀',en:'A sealed ball gets warmer on a hot day',vi:'Một quả bóng kín nóng lên vào ngày nóng',ans:'up'},
+ {id:'s_coldballoon',emoji:'❄️',en:'A sealed balloon is cooled',vi:'Một bóng bay kín bị làm lạnh',ans:'down'},
+ {id:'s_squeeze',emoji:'🧴',en:'Air in a sealed bottle is squeezed into a smaller space',vi:'Không khí trong chai kín bị ép vào khoảng nhỏ hơn',ans:'up'},
+ {id:'s_coolbottle',emoji:'🧊',en:'Warm air in a sealed bottle cools in a fridge',vi:'Không khí ấm trong chai kín lạnh đi trong tủ lạnh',ans:'down'},
+ {id:'s_letout',emoji:'💨',en:'Some air is let out of a balloon',vi:'Một ít không khí được thả ra khỏi bóng bay',ans:'down'}
+];
+const CARDS6_ORDER=mixOrder(CARDS6,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'Why does pressure in a liquid increase with depth?',vi:'Vì sao áp suất trong chất lỏng tăng theo độ sâu (depth)?'},
+  o:[{en:'There is less liquid above you',vi:'Có ít chất lỏng phía trên hơn'},{en:'The liquid gets colder',vi:'Chất lỏng lạnh hơn'},{en:'There is more liquid above you, and its weight pushes down',vi:'Có nhiều chất lỏng phía trên hơn, và trọng lượng của nó ép xuống'}],a:2,
+  e:{en:'Deeper down, more liquid sits above that point. The weight of that liquid pushes on the particles below, so the pressure is greater.',vi:'Ở sâu hơn, có nhiều chất lỏng nằm phía trên điểm đó hơn. Trọng lượng của chất lỏng đó ép lên các hạt bên dưới, nên áp suất lớn hơn.'}},
+ {q:{en:'What causes the pressure of a gas inside a container?',vi:'Điều gì gây ra áp suất của chất khí bên trong một vật chứa (container)?'},
+  o:[{en:'Particles colliding with the walls of the container',vi:'Các hạt va chạm (collide) vào thành của vật chứa'},{en:'Particles standing still at the bottom',vi:'Các hạt đứng yên ở đáy'},{en:'The colour of the container',vi:'Màu của vật chứa'}],a:0,
+  e:{en:'Gas particles move randomly in all directions. Every time one hits a wall it pushes a tiny bit — millions of these pushes make the pressure.',vi:'Các hạt khí chuyển động ngẫu nhiên theo mọi hướng. Mỗi lần một hạt chạm vào thành, nó đẩy một chút — hàng triệu cú đẩy như vậy tạo nên áp suất.'}},
+ {q:{en:'Where is atmospheric pressure greatest?',vi:'Áp suất khí quyển (atmospheric pressure) lớn nhất ở đâu?'},
+  o:[{en:'At the top of a high mountain',vi:'Trên đỉnh một ngọn núi cao'},{en:'At sea level',vi:'Ở mực nước biển (sea level)'},{en:'High above the clouds',vi:'Cao trên những đám mây'}],a:1,
+  e:{en:'At sea level the atmosphere is at its deepest, so the most air sits above you and presses hardest. Higher up, at greater altitude, the pressure is lower.',vi:'Ở mực nước biển, khí quyển sâu nhất, nên có nhiều không khí nhất nằm phía trên và ép mạnh nhất. Càng lên cao, độ cao (altitude) càng lớn, áp suất càng nhỏ.'}},
+ {q:{en:'A sealed gas bottle is heated. What happens to the pressure inside?',vi:'Một chai khí kín được đun nóng. Áp suất bên trong thay đổi thế nào?'},
+  o:[{en:'It falls to zero',vi:'Nó giảm xuống không'},{en:'It stays exactly the same',vi:'Nó giữ nguyên y như cũ'},{en:'It rises, because the particles move faster and collide harder',vi:'Nó tăng, vì các hạt chuyển động nhanh hơn và va chạm mạnh hơn'}],a:2,
+  e:{en:'Heating a gas makes its particles move faster. They collide with the walls harder and more often, so the pressure inside the sealed bottle rises.',vi:'Đun nóng một chất khí làm các hạt của nó chuyển động nhanh hơn. Chúng va chạm vào thành mạnh hơn và thường xuyên hơn, nên áp suất bên trong chai kín tăng lên.'}}
+];
+
+/* ================= workbook exercises (add-on; never gates the steps) ================= */
+const EX1=[
+ {pre:{en:'As you go deeper in a liquid, the pressure',vi:'Khi đi sâu hơn trong một chất lỏng, áp suất'},correct:0,
+  opts:[{en:'increases',vi:'tăng (increases)'},{en:'decreases',vi:'giảm (decreases)'}],
+  e:{en:'Pressure in a liquid increases with depth — more liquid above pushes down.',vi:'Áp suất trong chất lỏng tăng theo độ sâu (depth) — nhiều chất lỏng phía trên ép xuống hơn.'}},
+ {pre:{en:'Air pressure is largest',vi:'Áp suất không khí lớn nhất'},correct:0,
+  opts:[{en:'at sea level',vi:'ở mực nước biển (sea level)'},{en:'at the top of a mountain',vi:'trên đỉnh núi'}],
+  e:{en:'Atmospheric pressure is highest at sea level, where the atmosphere is deepest.',vi:'Áp suất khí quyển (atmospheric pressure) cao nhất ở mực nước biển (sea level), nơi khí quyển sâu nhất.'}},
+ {pre:{en:'A car tyre warms up as the car moves. The pressure of the air inside',vi:'Lốp xe nóng lên khi xe chạy. Áp suất của không khí bên trong'},correct:1,
+  opts:[{en:'decreases',vi:'giảm (decreases)'},{en:'increases',vi:'tăng (increases)'}],
+  e:{en:'Warmer air particles move faster and collide harder, so the pressure in the tyre increases.',vi:'Các hạt không khí ấm hơn chuyển động nhanh hơn và va chạm (collide) mạnh hơn, nên áp suất trong lốp tăng.'}},
+ {pre:{en:'A sealed bottle of air is squeezed into a smaller volume. The pressure inside',vi:'Một chai không khí kín bị ép vào thể tích nhỏ hơn. Áp suất bên trong'},correct:1,
+  opts:[{en:'decreases',vi:'giảm (decreases)'},{en:'increases',vi:'tăng (increases)'}],
+  e:{en:'The same particles in a smaller space collide with the walls more often, so the pressure increases.',vi:'Cùng những hạt đó trong khoảng nhỏ hơn sẽ va chạm vào thành thường xuyên hơn, nên áp suất tăng.'}}
+];
+const EX2=[
+ {id:'p_above',emoji:'⬇️',en:'Water presses on the fish from above',vi:'Nước ép lên con cá từ phía trên',ans:'true'},
+ {id:'p_side',emoji:'➡️',en:'Water presses on the fish from the side',vi:'Nước ép lên con cá từ phía bên',ans:'true'},
+ {id:'p_below',emoji:'⬆️',en:'Water presses on the fish from below',vi:'Nước ép lên con cá từ phía dưới',ans:'true'},
+ {id:'p_onlyabove',emoji:'🚫',en:'Water presses only from above',vi:'Nước chỉ ép từ phía trên',ans:'false'},
+ {id:'p_equal',emoji:'⚖️',en:'The pressure at one depth is equal in all directions',vi:'Áp suất ở một độ sâu bằng nhau theo mọi hướng',ans:'true'},
+ {id:'p_samedepth',emoji:'📏',en:'Pressure is the same at every depth',vi:'Áp suất như nhau ở mọi độ sâu',ans:'false'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
+const EX3=[
+ {pre:{en:'A cooled balloon gets smaller because its particles move more',vi:'Một bóng bay bị làm lạnh nhỏ lại vì các hạt của nó chuyển động'},wrong:1,
+  opts:[{en:'slowly',vi:'chậm (slowly)'},{en:'quickly',vi:'nhanh (quickly)'}],
+  e:{en:'Cooling slows gas particles down. They collide less strongly, the pressure falls and the balloon shrinks.',vi:'Làm lạnh khiến các hạt khí chậm lại. Chúng va chạm (collide) yếu hơn, áp suất giảm và bóng bay co lại.'}},
+ {pre:{en:'Cooling a gas makes its pressure',vi:'Làm lạnh một chất khí khiến áp suất của nó'},wrong:1,
+  opts:[{en:'fall',vi:'giảm (fall)'},{en:'rise',vi:'tăng (rise)'}],
+  e:{en:'Cooler particles move slower and collide more gently, so the pressure falls.',vi:'Các hạt lạnh hơn chuyển động chậm hơn và va chạm nhẹ hơn, nên áp suất giảm.'}},
+ {pre:{en:'At a higher altitude, atmospheric pressure is',vi:'Ở độ cao (altitude) lớn hơn, áp suất khí quyển'},wrong:0,
+  opts:[{en:'higher',vi:'cao hơn (higher)'},{en:'lower',vi:'thấp hơn (lower)'}],
+  e:{en:'Higher up there is less air above you, so atmospheric pressure is lower — cross out “higher”.',vi:'Càng lên cao càng ít không khí phía trên, nên áp suất khí quyển (atmospheric pressure) thấp hơn — hãy gạch bỏ “higher”.'}},
+ {pre:{en:'As an aeroplane comes down to land, the air pressure outside',vi:'Khi máy bay hạ xuống để đáp, áp suất không khí bên ngoài'},wrong:1,
+  opts:[{en:'increases',vi:'tăng (increases)'},{en:'decreases',vi:'giảm (decreases)'}],
+  e:{en:'Coming down means lower altitude and more air above, so the outside pressure increases — cross out “decreases”.',vi:'Hạ xuống nghĩa là độ cao (altitude) nhỏ hơn và nhiều không khí phía trên hơn, nên áp suất bên ngoài tăng — hãy gạch bỏ “decreases”.'}},
+ {pre:{en:'Tyre gas warms from −50 °C to 25 °C after landing. Its pressure',vi:'Khí trong lốp ấm lên từ −50 °C tới 25 °C sau khi đáp. Áp suất của nó'},wrong:0,
+  opts:[{en:'falls',vi:'giảm (falls)'},{en:'rises',vi:'tăng (rises)'}],
+  e:{en:'Warmer particles move faster and collide harder, so the pressure in the tyres rises — cross out “falls”.',vi:'Các hạt ấm hơn chuyển động nhanh hơn và va chạm mạnh hơn, nên áp suất trong lốp tăng — hãy gạch bỏ “falls”.'}}
+];
+const EX_TOTAL=EX1.length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1ANS={}, EX2ANS={}, EX3ANS={}; /* exercises: the learner's current (unsubmitted) answers — content-owned */
+let EX1_ORD=EX1.map(()=>fyIdx(2));   /* per-sentence word-option display order */
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + lesson-owned state ================= */
+const KEY='camb:sci8-3-6';
+const SUMKEY='camb:sum:sci8-3-6';
+const BOT_CODE='sci8-3.6';
+let FOUND={liquid:false,gas:false,holes:false,pumped:false,alt:false,heated:false};
+let SORTED=new Set();
+/* per-step attempt track (persisted per step by the engine, rule 10) */
+function newTrack(){return {
+  fLiquid:false, fGas:false,
+  s2holes:new Set(),
+  s3pumps:0,
+  s4flags:new Set(),
+  s5heat:0,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+
+function checkStep(i){
+  if(i===0) return T.fLiquid&&T.fGas;
+  if(i===1) return T.s2holes.size>=3;
+  if(i===2) return T.s3pumps>=3;
+  if(i===3) return T.s4flags.size>=3;
+  if(i===4) return T.s5heat>=3;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0){
+    return B('You explored: a liquid '+(T.fLiquid?'✓':'…')+' · a gas '+(T.fGas?'✓':'…')+'. Tap the tank and the balloon!',
+             'Con đã khám phá: một chất lỏng (liquid) '+(T.fLiquid?'✓':'…')+' · một chất khí (gas) '+(T.fGas?'✓':'…')+'. Hãy chạm vào bể nước và bóng bay!');
+  }
+  if(i===1){
+    const names={holetop:'top',holemid:'middle',holebot:'bottom'};
+    const got=HOLEIDS.map(h=>names[h]+' '+(T.s2holes.has(h)?'✓':'…')).join(' · ');
+    return B('Holes opened: '+got+'. The bottom jet flies furthest!',
+             'Lỗ đã mở: '+got+'. Tia nước ở lỗ dưới cùng bay xa nhất!');
+  }
+  if(i===2){
+    return B('Pump pushes: '+Math.min(T.s3pumps,3)+' of 3. Particles inside the balloon: '+(4+T.s3pumps*4)+'.',
+             'Lượt bơm: '+Math.min(T.s3pumps,3)+' / 3. Số hạt trong bóng bay: '+(4+T.s3pumps*4)+'.');
+  }
+  if(i===3){
+    const names={sealevel:'sea level',hill:'hill',summit:'top'};
+    const got=FLAGIDS.map(f=>names[f]+' '+(T.s4flags.has(f)?'✓':'…')).join(' · ');
+    return B('Altitudes visited: '+got+'. Pressure is greatest at sea level.',
+             'Độ cao đã ghé: '+got+'. Áp suất lớn nhất ở mực nước biển (sea level).');
+  }
+  if(i===4){
+    return B('Heat level: '+Math.min(T.s5heat,3)+' of 3. '+(T.s5heat>=3?'The steam is escaping fast — the pressure is high!':'The cooker is warming up…'),
+             'Mức nhiệt: '+Math.min(T.s5heat,3)+' / 3. '+(T.s5heat>=3?'Hơi nước đang thoát ra nhanh — áp suất đang cao!':'Nồi đang nóng dần lên…'));
+  }
+  if(i===5){
+    const c=T.s6sel? CARDS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked the card “'+c.en+'”. Does the pressure rise or fall?','Con đã chọn thẻ “'+c.vi+'”. Áp suất tăng hay giảm?');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'💧',label:{en:'A liquid — the tank',vi:'Một chất lỏng — bể nước'},got:T.fLiquid},
+      {emoji:'🎈',label:{en:'A gas — the balloon',vi:'Một chất khí — bóng bay'},got:T.fGas}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔵',label:{en:'Top hole',vi:'Lỗ trên'},got:T.s2holes.has('holetop')},
+      {emoji:'🔵',label:{en:'Middle hole',vi:'Lỗ giữa'},got:T.s2holes.has('holemid')},
+      {emoji:'🔵',label:{en:'Bottom hole',vi:'Lỗ dưới'},got:T.s2holes.has('holebot')}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'💨',label:{en:'Pump pushes: '+Math.min(T.s3pumps,3)+' / 3',vi:'Lượt bơm: '+Math.min(T.s3pumps,3)+' / 3'},got:T.s3pumps>=3},
+      {emoji:'🎈',label:{en:'Particles inside: '+(4+T.s3pumps*4),vi:'Số hạt bên trong: '+(4+T.s3pumps*4)},got:T.s3pumps>=1}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🌊',label:{en:'Sea level',vi:'Mực nước biển (sea level)'},got:T.s4flags.has('sealevel')},
+      {emoji:'🚩',label:{en:'Hill',vi:'Đồi'},got:T.s4flags.has('hill')},
+      {emoji:'🏔️',label:{en:'Mountain top',vi:'Đỉnh núi'},got:T.s4flags.has('summit')}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🔥',label:{en:'Heat level: '+Math.min(T.s5heat,3)+' / 3',vi:'Mức nhiệt: '+Math.min(T.s5heat,3)+' / 3'},got:T.s5heat>=3},
+      {emoji:'♨️',label:{en:'Steam at the valve',vi:'Hơi nước ở van'},got:T.s5heat>=2}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookCooker);
+    b.onclick=()=>focusObj('cooker');
+    box.appendChild(b);
+  }else if(curStep===5){
+    buildSort(box,CARDS6_ORDER,
+      [{key:'up',label:STR.binUp,cls:'up'},{key:'down',label:STR.binDown,cls:'down'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('tank'); bounceObj('tank'); setTimeout(()=>{ focusVisual('balloon'); bounceObj('balloon'); },900); }
+  else if(i===1){ focusObj('holebot'); demoJetT=0.001; addAnim(1.4,f=>{ demoJetT=f; },()=>{ demoJetT=0; }); }
+  else if(i===2){ focusObj('pump'); addAnim(0.9,f=>{ pumpArmT=Math.sin(f*Math.PI); },()=>{ pumpArmT=0; }); }
+  else if(i===3){ focusObj('sealevel'); setTimeout(()=>focusObj('hill'),800); setTimeout(()=>focusObj('summit'),1600); }
+  else if(i===4){ focusObj('burner'); addAnim(1.2,f=>{ flameDemoT=f; },()=>{ flameDemoT=0; }); }
+  else if(i===5){
+    const c=CARDS6.find(x=>!T.s6correct.has(x.id));
+    if(c){
+      const el=$('card_'+c.id);
+      if(el){ el.style.outline='4px solid #f2762e'; setTimeout(()=>{el.style.outline='';},1400); }
+      const bin=document.querySelector('.binbtn.'+c.ans);
+      if(bin){ bin.style.outline='4px solid #f2762e'; setTimeout(()=>{bin.style.outline='';},1400); }
+    }
+  }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=OBJS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusObj(id);
+    row.appendChild(b);
+  });
+}
+function renderTracker(){
+  const rows=[
+    {label:STR.trkHoles, val:T.s2holes.size+' / 3'},
+    {label:STR.trkPump, val:Math.min(T.s3pumps,3)+' / 3'},
+    {label:STR.trkFlags, val:T.s4flags.size+' / 3'},
+    {label:STR.trkHeat, val:Math.min(T.s5heat,3)+' / 3'}
+  ];
+  $('trkRows').innerHTML=rows.map(r=>'<div class="grprow"><span>'+biInl(r.label)+'</span><b>'+r.val+'</b></div>').join('');
+}
+function renderFound(){
+  const items=[
+    {got:FOUND.liquid||doneSteps.has(0),label:STR.foundLiquid},
+    {got:FOUND.gas||doneSteps.has(0),label:STR.foundGas},
+    {got:FOUND.holes||doneSteps.has(1),label:STR.foundHoles},
+    {got:FOUND.pumped||doneSteps.has(2),label:STR.foundPump},
+    {got:FOUND.alt||doneSteps.has(3),label:STR.foundAlt},
+    {got:FOUND.heated||doneSteps.has(4),label:STR.foundHeat}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];   /* Mechanics v2: raycasts test ONLY these generous invisible proxies */
+let lastRW=0, lastRH=0;
+let jetMeshes={}, balloonGrp=null, balloonSkin=null, gasDots=[], liqDots=[];
+let flameMesh=null, steamDots=[], pumpLever=null;
+let demoJetT=0, flameDemoT=0, pumpArmT=0;
+const ORB={r:9.6, th:0.14, ph:1.08, tx:0.2, ty:0.6, tz:0};
+const TANKPOS={x:-3.6,z:-1.2};
+const HOLEY={holetop:1.85,holemid:1.25,holebot:0.65};
+const JETLEN={holetop:0.8,holemid:1.5,holebot:2.3};
+const FLAGPOS={sealevel:{x:2.5,y:0,z:-0.5},hill:{x:3.35,y:0.95,z:-1.5},summit:{x:4.25,y:2.15,z:-2.3}};
+function regObj(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildTank(){
+  const g=new THREE.Group();
+  const frame=stdMat(0x5b7186,0.6);
+  [[-0.85,-0.7],[0.85,-0.7],[-0.85,0.7],[0.85,0.7]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.35,0.09),frame);
+    leg.position.set(p[0],0.17,p[1]); g.add(leg);
+  });
+  const wallMat=new THREE.MeshStandardMaterial({color:0xbfe3f5,transparent:true,opacity:0.35,roughness:0.15,metalness:0.05});
+  const walls=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.8,2.2,1.5),wallMat));
+  walls.position.y=1.45; g.add(walls);
+  const water=new THREE.Mesh(new THREE.BoxGeometry(1.66,2.0,1.36),new THREE.MeshStandardMaterial({color:0x2f8fd0,transparent:true,opacity:0.72,roughness:0.3}));
+  water.position.y=1.35; g.add(water);
+  const rim=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.9,0.09,1.6),frame));
+  rim.position.y=2.58; g.add(rim);
+  /* liquid particles: close together, in a loose grid inside the water */
+  for(let ix=0;ix<4;ix++) for(let iy=0;iy<4;iy++) for(let iz=0;iz<3;iz++){
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),stdMat(0xdff3ff,0.4));
+    d.position.set(-0.6+ix*0.4,0.65+iy*0.45,-0.45+iz*0.45);
+    d.userData.ph=ix*1.3+iy*0.7+iz*1.9;
+    liqDots.push(d); g.add(d);
+  }
+  g.position.set(TANKPOS.x,0,TANKPOS.z); g.userData.baseY=0;
+  return g;
+}
+function buildHole(id){
+  const g=new THREE.Group();
+  const disc=new THREE.Mesh(new THREE.CircleGeometry(0.11,20),stdMat(0x14324f,0.4));
+  disc.position.set(0,0,0.78); g.add(disc);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.03,8,20),stdMat(0xf2762e,0.5));
+  ring.position.set(0,0,0.78); g.add(ring);
+  const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.05,1,8),new THREE.MeshStandardMaterial({color:0x7cc4ee,transparent:true,opacity:0.75,roughness:0.25}));
+  jet.rotation.x=Math.PI/2;
+  jet.visible=false; g.add(jet);
+  jetMeshes[id]=jet;
+  g.position.set(TANKPOS.x,HOLEY[id],TANKPOS.z); g.userData.baseY=HOLEY[id];
+  return g;
+}
+function buildBalloon(){
+  const g=new THREE.Group();
+  balloonGrp=new THREE.Group();
+  balloonSkin=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.72,20,16),new THREE.MeshStandardMaterial({color:0xe84a7f,transparent:true,opacity:0.55,roughness:0.35})));
+  balloonSkin.position.y=0.35; balloonGrp.add(balloonSkin);
+  const knot=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.16,10),stdMat(0xc23368,0.5));
+  knot.position.y=-0.42; knot.rotation.x=Math.PI; balloonGrp.add(knot);
+  /* gas particles: far apart, moving randomly — positions randomised deterministically */
+  for(let k=0;k<16;k++){
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.055,8,6),stdMat(0xffffff,0.4));
+    const a=k*2.39996, rr=0.18+((k*37)%40)/100, yy=((k*53)%70)/100-0.1;
+    d.position.set(Math.cos(a)*rr,yy,Math.sin(a)*rr);
+    d.userData.ph=k*1.71;
+    gasDots.push(d); balloonGrp.add(d);
+  }
+  balloonGrp.position.y=1.55; g.add(balloonGrp);
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,0.85,10),stdMat(0x5b7186,0.6));
+  stand.position.y=0.42; g.add(stand);
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.07,16),stdMat(0x44586e,0.6));
+  base.position.y=0.035; g.add(base);
+  g.position.set(0.2,0,-1.3); g.userData.baseY=0;
+  return g;
+}
+function buildPump(){
+  const g=new THREE.Group();
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.1,0.34),stdMat(0x37474f,0.6)));
+  base.position.y=0.05; g.add(base);
+  const barrel=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.55,12),stdMat(0xd9930d,0.5)));
+  barrel.rotation.z=Math.PI/2.4; barrel.position.set(-0.05,0.32,0); g.add(barrel);
+  pumpLever=new THREE.Group(); pumpLever.position.set(0.18,0.52,0);
+  const handle=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.5,8),stdMat(0x8a5a2b,0.8));
+  handle.rotation.z=Math.PI/2; pumpLever.add(handle);
+  const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.34,8),stdMat(0x90a4ae,0.5));
+  rod.position.y=-0.17; pumpLever.add(rod);
+  g.add(pumpLever);
+  const hose=new THREE.Mesh(new THREE.TorusGeometry(0.42,0.03,8,20,Math.PI*0.9),stdMat(0x263238,0.7));
+  hose.position.set(-0.55,0.28,0); hose.rotation.z=1.9; g.add(hose);
+  g.position.set(1.6,0,-0.4); g.rotation.y=-0.5; g.userData.baseY=0;
+  return g;
+}
+function buildMountain(){
+  const g=new THREE.Group();
+  const cone=shadowed(new THREE.Mesh(new THREE.ConeGeometry(1.9,3.1,7),stdMat(0x8d99a6,0.95)));
+  cone.position.y=1.55; g.add(cone);
+  const snow=new THREE.Mesh(new THREE.ConeGeometry(0.62,1.0,7),stdMat(0xffffff,0.6));
+  snow.position.y=2.62; g.add(snow);
+  [[-1.2,0.5],[1.3,0.4],[-0.6,0.9]].forEach(p=>{
+    const t=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.45,7),stdMat(0x2e8b3a,0.9));
+    t.position.set(p[0],0.22,p[1]); g.add(t);
+  });
+  g.position.set(3.7,0,-2.5); g.userData.baseY=0;
+  return g;
+}
+function buildFlag(id,col){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.95,8),stdMat(0x5b7186,0.6));
+  pole.position.y=0.47; g.add(pole);
+  const cloth=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.26,0.03),stdMat(col,0.6));
+  cloth.position.set(0.23,0.8,0); g.add(cloth);
+  const p=FLAGPOS[id];
+  g.position.set(p.x,p.y,p.z); g.userData.baseY=p.y;
+  return g;
+}
+function buildSeaSign(){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.8,8),stdMat(0x8a5a2b,0.85));
+  post.position.y=0.4; g.add(post);
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.34,0.05),stdMat(0x0b76d1,0.5)));
+  board.position.y=0.85; g.add(board);
+  const wave=new THREE.Mesh(new THREE.TorusGeometry(0.16,0.035,8,18,Math.PI),stdMat(0xffffff,0.4));
+  wave.position.set(0,0.82,0.04); g.add(wave);
+  const p=FLAGPOS.sealevel;
+  g.position.set(p.x,p.y,p.z); g.userData.baseY=0;
+  return g;
+}
+function buildCooker(){
+  const g=new THREE.Group();
+  const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.52,0.46,0.72,20),stdMat(0xb0bec5,0.35)));
+  pot.position.y=0.62; g.add(pot);
+  const lid=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.54,0.52,0.1,20),stdMat(0x78909c,0.35)));
+  lid.position.y=1.02; g.add(lid);
+  const weight=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.09,0.16,10),stdMat(0x37474f,0.5));
+  weight.position.y=1.15; g.add(weight);
+  [-0.62,0.62].forEach(dx=>{
+    const h=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.028,8,16),stdMat(0x37474f,0.5));
+    h.position.set(dx,0.72,0); g.add(h);
+  });
+  for(let k=0;k<6;k++){
+    const s=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:0.55,roughness:0.4}));
+    s.position.set(0.1,1.25,0);
+    s.userData.ph=k*1.13;
+    steamDots.push(s); g.add(s);
+  }
+  g.position.set(-1.8,0,1.65); g.userData.baseY=0;
+  return g;
+}
+function buildBurner(){
+  const g=new THREE.Group();
+  const ringB=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.14,20),stdMat(0x263238,0.6)));
+  ringB.position.y=0.07; g.add(ringB);
+  flameMesh=new THREE.Mesh(new THREE.ConeGeometry(0.2,0.5,12),new THREE.MeshBasicMaterial({color:0xff8c42,transparent:true,opacity:0.85}));
+  flameMesh.position.y=0.36; flameMesh.visible=false; g.add(flameMesh);
+  g.position.set(-1.8,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function buildCan(){
+  const g=new THREE.Group();
+  const can=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,0.42,14),stdMat(0x90a4ae,0.4)));
+  can.position.y=0.21; can.scale.set(1,0.72,0.82); can.rotation.z=0.16; g.add(can);
+  const top=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.19,0.03,14),stdMat(0x607d8b,0.4));
+  top.position.y=0.38; top.rotation.z=0.16; g.add(top);
+  g.position.set(0.9,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xcfeeff);
+  scene3.fog=new THREE.Fog(0xcfeeff,17,32);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8fbf7f,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,7,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=22; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x9ec98f,1));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.02; ground.receiveShadow=true; scene3.add(ground);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(11,0.06,3.4),stdMat(0xd9c08a,1));
+  bench.position.set(-0.6,0.0,1.2); bench.receiveShadow=true; scene3.add(bench);
+  /* sea strip by the mountain */
+  const sea=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.2),stdMat(0x3fa7d6,0.4));
+  sea.rotation.x=-Math.PI/2; sea.position.set(2.6,0.005,0.6); sea.receiveShadow=true; scene3.add(sea);
+  /* pressure bars at the three altitudes (heights set in the render loop) */
+  regObj('tank',buildTank());
+  HOLEIDS.forEach(id=>regObj(id,buildHole(id)));
+  regObj('balloon',buildBalloon());
+  regObj('pump',buildPump());
+  regObj('mountain',buildMountain());
+  regObj('sealevel',buildSeaSign());
+  regObj('hill',buildFlag('hill',0xf2762e));
+  regObj('summit',buildFlag('summit',0xd23c2a));
+  regObj('cooker',buildCooker());
+  regObj('burner',buildBurner());
+  regObj('can',buildCan());
+  /* Mechanics v2: generous invisible hit proxies for every tap target.
+     The tank proxy is a flat box at the BACK of the tank so the hole
+     proxies on its front face stay in front of it and raycast first. */
+  { const p=new THREE.Mesh(new THREE.BoxGeometry(1.8,2.3,0.5),proxyMat()); p.position.set(0,1.45,-0.5); addProxy('tank',p,G.tank); }
+  HOLEIDS.forEach(id=>{ const p=sphProxy(0.42); p.position.set(0,0,0.55); addProxy(id,p,G[id]); });
+  { const p=sphProxy(0.92); p.position.set(0,1.55,0); addProxy('balloon',p,G.balloon); }
+  { const p=sphProxy(0.58); p.position.set(0,0.32,0); addProxy('pump',p,G.pump); }
+  { const p=sphProxy(0.95); p.position.set(0,1.5,0); addProxy('mountain',p,G.mountain); }
+  { const p=sphProxy(0.52); p.position.set(0,0.55,0); addProxy('sealevel',p,G.sealevel); }
+  { const p=sphProxy(0.52); p.position.set(0,0.55,0); addProxy('hill',p,G.hill); }
+  { const p=sphProxy(0.52); p.position.set(0,0.55,0); addProxy('summit',p,G.summit); }
+  { const p=sphProxy(0.62); p.position.set(0,0.85,0); addProxy('cooker',p,G.cooker); }
+  { const p=discProxy(0.55,0.1); addProxy('burner',p,G.burner); }
+  { const p=sphProxy(0.5); p.position.set(0,0.25,0); addProxy('can',p,G.can); }
+  /* highlight ring */
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  /* pointer: orbit on drag, tap (small movement) = click a thing */
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(13,Math.max(4,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function objPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=OBJS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=OBJS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=objPos(id);
+    ringMesh.position.set(p.x,0.045+(g_baseY(id)),p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function g_baseY(id){ const g=G[id]; return g? (g.userData.baseY||0) : 0; }
+function focusObj(id){
+  focusVisual(id);
+  const t=OBJS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceObj(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+/* Mechanics v2 tap scoping: a scene tap may ONLY ever affect the current step.
+   Each step has an explicit target set; a tap on anything else is inert for
+   evidence and counts toward the anti-guess mistake counter (rule 2). */
+const STEP_TARGETS=[
+  ['tank','balloon'],                 /* step 1: a liquid and a gas */
+  ['holetop','holemid','holebot'],    /* step 2: the bottle-investigation holes */
+  ['pump'],                           /* step 3: pump air into the balloon */
+  ['sealevel','hill','summit'],       /* step 4: three altitudes */
+  ['burner'],                         /* step 5: heat the sealed cooker */
+  []                                  /* step 6: card sort — no scene targets */
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }        /* read gate: scene is inert until Start */
+  if(!OBJS[id]) return;
+  focusVisual(id);
+  if(id!=='burner') bounceObj(id);
+  sceneClick(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0) addMistake();
+}
+function sceneClick(id){
+  if(curStep===0){
+    if(id==='tank'){ T.fLiquid=true; FOUND.liquid=true; }
+    else if(id==='balloon'){ T.fGas=true; FOUND.gas=true; }
+    if(T.fLiquid&&T.fGas){ FOUND.liquid=true; FOUND.gas=true; }
+    saveProg(); renderFound(); renderStepExtra();
+  }else if(curStep===1){
+    if(HOLEIDS.indexOf(id)>=0){
+      T.s2holes.add(id);
+      if(T.s2holes.size>=3) FOUND.holes=true;
+      saveProg(); renderFound(); renderStepExtra();
+    }
+  }else if(curStep===2){
+    if(id==='pump'){
+      T.s3pumps=Math.min(3,T.s3pumps+1);
+      pumpArmT=1; addAnim(0.7,f=>{ pumpArmT=Math.sin(f*Math.PI); },()=>{ pumpArmT=0; });
+      if(T.s3pumps>=3) FOUND.pumped=true;
+      saveProg(); renderFound(); renderStepExtra();
+    }
+  }else if(curStep===3){
+    if(FLAGIDS.indexOf(id)>=0){
+      T.s4flags.add(id);
+      if(T.s4flags.size>=3) FOUND.alt=true;
+      saveProg(); renderFound(); renderStepExtra();
+    }
+  }else if(curStep===4){
+    if(id==='burner'){
+      T.s5heat=Math.min(3,T.s5heat+1);
+      if(T.s5heat>=3) FOUND.heated=true;
+      saveProg(); renderFound(); renderStepExtra();
+    }
+  }
+  refreshEvidence();
+}
+function applyStepStart(i){
+  /* deterministic start state: visuals derive from T in the render loop,
+     so nothing step-specific needs resetting here beyond the demo timers */
+  demoJetT=0; flameDemoT=0;
+}
+/* ================= render loop ================= */
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now(), t=now*0.001;
+  /* holes + jets: jet length grows with depth; demo shows the bottom jet */
+  HOLEIDS.forEach(id=>{
+    const jet=jetMeshes[id]; if(!jet) return;
+    const open=T.s2holes.has(id)||(id==='holebot'&&demoJetT>0&&demoJetT<1);
+    jet.visible=!!open;
+    if(open){
+      const len=JETLEN[id];
+      jet.scale.set(1,len,1);
+      jet.position.set(0,0,0.78+len/2);
+    }
+  });
+  /* liquid particles jiggle gently in place */
+  liqDots.forEach(d=>{ d.position.x+=Math.sin(t*2+d.userData.ph)*0.0006; });
+  /* balloon grows with pumps; its gas particles drift randomly */
+  if(balloonGrp){
+    const s=1+Math.min(T.s3pumps,3)*0.16;
+    balloonGrp.scale.set(s,s,s);
+    gasDots.forEach((d,k)=>{
+      d.visible=k<4+Math.min(T.s3pumps,3)*4;
+      d.position.x+=Math.sin(t*1.7+d.userData.ph)*0.0016;
+      d.position.y+=Math.cos(t*1.3+d.userData.ph*2)*0.0016;
+    });
+  }
+  if(pumpLever) pumpLever.rotation.z=-pumpArmT*0.5;
+  /* flame + steam follow the heat level */
+  const heat=Math.max(Math.min(T.s5heat,3), flameDemoT>0&&flameDemoT<1?1:0);
+  if(flameMesh){
+    flameMesh.visible=heat>0;
+    if(heat>0){ const fs=0.6+heat*0.35+Math.sin(t*22)*0.06; flameMesh.scale.set(fs,fs,fs); }
+  }
+  steamDots.forEach((d,k)=>{
+    const cyc=((t*0.35+k/6)%1);
+    d.visible=heat>=2;
+    if(heat>=2){
+      d.position.set(0.1+Math.sin(cyc*5+k)*0.08,1.22+cyc*0.7,Math.cos(cyc*4+k)*0.06);
+      d.material.opacity=0.55*(1-cyc);
+      const ss=0.7+cyc*1.1; d.scale.set(ss,ss,ss);
+    }
+  });
+  /* label + ring follow */
+  if(lastFocus&&OBJS[lastFocus]){
+    const p=objPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+OBJS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= ENGINE v2 — exercises panel module =================
+   The panel is a registered content module; the engine owns the rules
+   (submit / retake / best score / summary). No feedback before Submit. */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — choose the correct word in each sentence */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=EX1.length);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  const list1=$('ex1List'); list1.innerHTML='';
+  EX1.forEach((s1,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s1.pre)+' ';
+    (EX1_ORD[si]||s1.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s1.opts[oi];
+      let cls='wordopt';
+      if(EX1ANS[si]===oi) cls+=' picked';
+      if(exRevealed&&oi===s1.correct) cls+=' rightmark';
+      if(exRevealed&&EX1ANS[si]===oi&&oi!==s1.correct) cls+=' crossed';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX1DONE.has(si)? '✓ ' : '')+bi(s1.e);
+      row.appendChild(ex);
+    }
+    list1.appendChild(row);
+  });
+  list1.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX1ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 2 · Practice — pressure on a fish: sort the statements TRUE / FALSE */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinTrue').innerHTML=bi(STR.binTrue);
+  $('ex2BinFalse').innerHTML=bi(STR.binFalse);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='true'?'✓':'✗')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,Object.keys(EX1ANS).length+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinTrue').onclick=()=>ex2Place('true');
+$('ex2BinFalse').onclick=()=>ex2Place('false');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.map((s1,si)=>si).filter(si=>EX1ANS[si]===EX1[si].correct));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1ANS={}; EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
+  EX1_ORD=EX1.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+/* ENGINE v2 hook: buildSort side effects for the step-6 sort, passed per placement. */
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+/* ENGINE v2 hooks: this lesson's console mirror set + its per-step
+   evidence-mirror clearing lines for the anti-guess wipe. */
+function renderMirrors(){ renderTracker(); renderFound(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.liquid=false; FOUND.gas=false; }
+  if(step===1){ FOUND.holes=false; }
+  if(step===2){ FOUND.pumped=false; }
+  if(step===3){ FOUND.alt=false; }
+  if(step===4){ FOUND.heated=false; }
+  if(step===5){ CARDS6.forEach(c=>SORTED.delete(c.id)); }
+}
+
+/* ================= MIGRATION — persistence hooks + registration ================= */
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{a1:EX1ANS,a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX1.length));
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(s.exAns.a1&&typeof s.exAns.a1==='object') Object.keys(s.exAns.a1).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX1.length&&(s.exAns.a1[k]===0||s.exAns.a1[k]===1)) EX1ANS[si]=s.exAns.a1[k]; });
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='true'||s.exAns.a2[id]==='false')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    /* migrate an old instant-feedback save: its earned DONE sets become the answers, already revealed */
+    EX1.forEach((s1,si)=>{ if(EX1DONE.has(si)) EX1ANS[si]=s1.correct; });
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+/* MIGRATION (rule 10): seed a DONE step's track for old saves that carry
+   no trk — rebuilt from this lesson's own persisted mirrors; steps whose
+   evidence was never persisted separately are restored to the completed
+   state a done step by definition passed. */
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fLiquid=!!FOUND.liquid; t.fGas=!!FOUND.gas; }
+  else if(i===1){ HOLEIDS.forEach(h=>t.s2holes.add(h)); }
+  else if(i===2){ t.s3pumps=3; }
+  else if(i===3){ FLAGIDS.forEach(f=>t.s4flags.add(f)); }
+  else if(i===4){ t.s5heat=3; }
+  else if(i===5){ CARDS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-3-6',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  /* ENGINE v2 registrations */
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

@@ -1,0 +1,1328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.3 Making rainbows — Tạo cầu vồng · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="6.3 Making rainbows" data-vi="6.3 Tạo cầu vồng (Making rainbows)">6.3 Making rainbows</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Light" data-vi="Bài 6 · Ánh sáng (Light)">Unit 6 · Light</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How can white light be split into a rainbow of colours?" data-vi="Làm sao ánh sáng trắng (white light) có thể tách thành một cầu vồng nhiều màu?">How can white light be split into a rainbow of colours?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="White light" data-vi="Ánh sáng trắng (white light)">White light</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="A triangular prism" data-vi="Một lăng kính (prism) hình tam giác">A triangular prism</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Each colour refracts by a different angle" data-vi="Mỗi màu bị khúc xạ (refracted) một góc khác nhau">Each colour refracts by a different angle</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="A spectrum of seven colours" data-vi="Một quang phổ (spectrum) gồm bảy màu">A spectrum of seven colours</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the light bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm ánh sáng!">🖱 Drag to look around · Scroll to zoom · Tap things on the light bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.3. The light bench in this lesson is a simulation — the ray box is a model light source, and you should never look directly at a real bright light or the Sun." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 6 Ánh sáng (Light) · Mục 6.3. Bàn thí nghiệm ánh sáng trong bài này là mô phỏng — hộp tia sáng là một nguồn sáng mô hình, và ngoài đời con không bao giờ được nhìn thẳng vào một nguồn sáng chói hay Mặt Trời.">Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.3. The light bench in this lesson is a simulation — never look directly at a real bright light or the Sun.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.3, pages 199–203; Workbook 8 (ISBN 9781108742856), pages 118–121. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 6 Ánh sáng (Light), mục 6.3, trang 199–203; Sách bài tập 8 (ISBN 9781108742856), trang 118–121. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.3, pages 199–203; Workbook 8 (ISBN 9781108742856), pages 118–121. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn how white light is made from many colours; discover how dispersion of white light can be done with a prism; recall the colours of white light in the correct order. Key words: dispersion, prism, spectrum, triangular." data-vi="Mục tiêu: học cách ánh sáng trắng (white light) được tạo thành từ nhiều màu; khám phá cách tán sắc (dispersion) ánh sáng trắng bằng một lăng kính (prism); nhớ các màu của ánh sáng trắng theo đúng thứ tự. Từ khóa: dispersion (tán sắc), prism (lăng kính), spectrum (quang phổ), triangular (hình tam giác).">Objectives: learn how white light is made from many colours; discover how dispersion of white light can be done with a prism; recall the colours of white light in the correct order. Key words: dispersion, prism, spectrum, triangular.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D light bench — checking the three conditions for a rainbow, setting up Newton's prism experiment, tapping the seven spectrum colours in order (red to violet, ROY G. BIV), identifying violet as the most refracted colour and red as the least, repeating the book's screen-moving practical, and sorting the conditions that help a rainbow form. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Safety, from the book's practical: never put your eye closer than about half a metre to a real prism, because the refracted light is very bright; and never look at the Sun." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn thí nghiệm ánh sáng 3D — kiểm tra ba điều kiện của một cầu vồng, lắp thí nghiệm lăng kính (prism) của Newton, chạm bảy màu quang phổ (spectrum) theo thứ tự (đỏ tới tím, ROY G. BIV), xác định tím là màu bị khúc xạ nhiều nhất và đỏ là ít nhất, lặp lại bài thực hành di chuyển màn của sách, và phân loại các điều kiện giúp cầu vồng hình thành. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. An toàn, theo bài thực hành của sách: không bao giờ để mắt gần một lăng kính thật hơn khoảng nửa mét, vì ánh sáng khúc xạ rất chói; và không bao giờ nhìn vào Mặt Trời.">How it works: each step asks for one real action on the 3D light bench. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-6-3 "Making rainbows" (Science 8, Unit 6)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= light-bench things ================= */
+const THINGS={
+  sun:     {emoji:'☀️', name:{en:'The Sun — shining brightly',vi:'Mặt Trời — đang chiếu sáng'}, short:{en:'Sun',vi:'Mặt Trời'}, ring:0.7, labelY:3.1, fx:-4.4, fz:-2.4, fr:6.0},
+  moon:    {emoji:'🌙', name:{en:'The Moon — night time',vi:'Mặt Trăng — ban đêm'}, short:{en:'Moon',vi:'Mặt Trăng'}, ring:0.6, labelY:2.9, fx:6.0, fz:-2.5, fr:6.0},
+  rain:    {emoji:'🌧️', name:{en:'Rain cloud — drops of water in the air',vi:'Mây mưa — những giọt nước (drops of water) trong không khí'}, short:{en:'Rain drops',vi:'Giọt mưa'}, ring:0.8, labelY:2.6, fx:-3.1, fz:1.3, fr:5.4},
+  observer:{emoji:'🧍', name:{en:'Observer — the Sun is behind them',vi:'Người quan sát — Mặt Trời ở phía sau họ'}, short:{en:'Observer',vi:'Người quan sát'}, ring:0.55, labelY:1.9, fx:-1.2, fz:2.4, fr:5.0},
+  raybox:  {emoji:'🔦', name:{en:'Ray box — gives a ray of white light',vi:'Hộp tia sáng (ray box) — cho một tia ánh sáng trắng (white light)'}, short:{en:'Ray box',vi:'Hộp tia sáng'}, ring:0.6, labelY:1.05, fx:-3.4, fz:-1.3, fr:5.0},
+  prism:   {emoji:'🔺', name:{en:'Triangular glass prism',vi:'Lăng kính thủy tinh (prism) hình tam giác (triangular)'}, short:{en:'Prism',vi:'Lăng kính'}, ring:0.7, labelY:1.5, fx:0, fz:-1.2, fr:5.0},
+  screen:  {emoji:'⬜', name:{en:'White screen',vi:'Màn trắng (screen)'}, short:{en:'Screen',vi:'Màn trắng'}, ring:0.8, labelY:3.0, fx:3.0, fz:-1.2, fr:5.6},
+  eye:     {emoji:'👁️', name:{en:'Eye position — look into the refracted rays',vi:'Vị trí mắt — nhìn vào các tia khúc xạ (refracted rays)'}, short:{en:'Eye position',vi:'Vị trí mắt'}, ring:0.55, labelY:1.6, fx:4.6, fz:1.9, fr:5.0},
+  cred:    {emoji:'🔴', name:{en:'Red — refracted through the smallest angle',vi:'Đỏ (red) — bị khúc xạ một góc nhỏ nhất'}, short:{en:'Red',vi:'Đỏ'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2},
+  corange: {emoji:'🟠', name:{en:'Orange',vi:'Cam (orange)'}, short:{en:'Orange',vi:'Cam'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2},
+  cyellow: {emoji:'🟡', name:{en:'Yellow',vi:'Vàng (yellow)'}, short:{en:'Yellow',vi:'Vàng'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2},
+  cgreen:  {emoji:'🟢', name:{en:'Green',vi:'Lục (green)'}, short:{en:'Green',vi:'Lục'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2},
+  cblue:   {emoji:'🔵', name:{en:'Blue',vi:'Lam (blue)'}, short:{en:'Blue',vi:'Lam'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2},
+  cindigo: {emoji:'🟣', name:{en:'Indigo',vi:'Chàm (indigo)'}, short:{en:'Indigo',vi:'Chàm'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2},
+  cviolet: {emoji:'🟪', name:{en:'Violet — refracted through the largest angle',vi:'Tím (violet) — bị khúc xạ một góc lớn nhất'}, short:{en:'Violet',vi:'Tím'}, ring:0.3, labelY:0.34, fx:2.2, fz:-1.2, fr:4.2}
+};
+const FOCUSORDER=['sun','rain','observer','raybox','prism','screen','eye','cviolet'];
+const COLOURSEQ=['cred','corange','cyellow','cgreen','cblue','cindigo','cviolet'];
+const COLOURHEX={cred:0xe23b2e,corange:0xf08a1d,cyellow:0xf2d024,cgreen:0x37b24d,cblue:0x2f7fd0,cindigo:0x4b3f9e,cviolet:0x8e44ad};
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the light bench',vi:'Trên bàn thí nghiệm ánh sáng'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Spectrum record',vi:'Sổ ghi quang phổ'},
+  u2Brief:{en:'What you have found out about the spectrum, as you find it.',vi:'Những điều con đã tìm ra về quang phổ (spectrum), khi con tìm thấy chúng.'},
+  recCols:{en:'Colours placed in order',vi:'Số màu đã xếp đúng thứ tự'},
+  recRed:{en:'Red — angle of refraction',vi:'Đỏ (red) — góc khúc xạ'},
+  recViolet:{en:'Violet — angle of refraction',vi:'Tím (violet) — góc khúc xạ'},
+  recScreen:{en:'Screen positions tried',vi:'Số vị trí màn đã thử'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your practical-work checklist.',vi:'Danh sách thực hành của con.'},
+  didSetup:{en:'Checked what a rainbow needs',vi:'Đã kiểm tra cầu vồng cần những gì'},
+  didRun:{en:'Set up Newton’s prism experiment',vi:'Đã lắp thí nghiệm lăng kính (prism) của Newton'},
+  didSort:{en:'Sorted what helps a rainbow form',vi:'Đã phân loại điều gì giúp cầu vồng hình thành'},
+  didPlant:{en:'Moved the screen and looked into the rays',vi:'Đã di chuyển màn và nhìn vào các tia sáng'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'HELPS MAKE A RAINBOW 🌈',vi:'GIÚP TẠO CẦU VỒNG 🌈'},
+  binMix:{en:'DOES NOT HELP',vi:'KHÔNG GIÚP ÍCH'},
+  binPerm:{en:'TRUE ✓',vi:'ĐÚNG ✓'},
+  binNot:{en:'FALSE ✗',vi:'SAI ✗'},
+  lookPaper:{en:'Look at the prism 🔺',vi:'Ngắm lăng kính 🔺'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.3'},
+  exIntro:{en:'Workbook games for this lesson: colours of the rainbow (Exercise 6.3A), making a spectrum (Exercises 6.3B and 6.3C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: các màu của cầu vồng (Bài tập 6.3A), tạo một quang phổ (spectrum) (Bài tập 6.3B và 6.3C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Colours of the rainbow (6.3A)',vi:'Bài tập 1 · Focus — Các màu của cầu vồng (6.3A)'},
+  ex1Inst:{en:'The Workbook list of rainbow colours runs: red, …, yellow, green, …, indigo, … — and its first question asks what name is given to the whole range of colours. Tap the 4 cards that complete the list and answer that question correctly.',vi:'Danh sách các màu cầu vồng trong sách bài tập chạy: đỏ (red), …, vàng (yellow), lục (green), …, chàm (indigo), … — và câu hỏi đầu tiên của nó hỏi tên gọi của toàn bộ dải màu. Chạm vào 4 thẻ hoàn thành đúng danh sách và trả lời đúng câu hỏi đó.'},
+  ex2T:{en:'Exercise 2 · Practice — Making a spectrum (6.3B)',vi:'Bài tập 2 · Practice — Tạo một quang phổ (6.3B)'},
+  ex2Inst:{en:'Each card says something about making a spectrum with the equipment labelled X in the Workbook ray diagram. Tap a card, then tap TRUE or FALSE.',vi:'Mỗi thẻ nói một điều về việc tạo quang phổ (spectrum) với thiết bị được ghi nhãn X trong sơ đồ tia của sách bài tập. Chạm vào một thẻ, rồi chạm ĐÚNG (TRUE) hoặc SAI (FALSE).'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai'},
+  ex3Inst:{en:'Each sentence is about dispersion and the spectrum. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về sự tán sắc (dispersion) và quang phổ (spectrum). Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'dispersion',vi:'tán sắc'},
+  {en:'prism',vi:'lăng kính'},
+  {en:'spectrum',vi:'quang phổ'},
+  {en:'triangular',vi:'hình tam giác'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started — a rainbow',vi:'Khởi động — cầu vồng'}, word:{en:'spectrum',vi:'quang phổ (spectrum)'},
+  q:{en:'The section starts with a group chat about rainbows. What three things must be in place for you to see one?',vi:'Mục này bắt đầu bằng một buổi thảo luận nhóm về cầu vồng. Cần có ba điều gì để con nhìn thấy một cầu vồng?'},
+  act:{en:'Tap the three things a rainbow needs on the stage: the shining Sun, the rain cloud (drops of water in the air), and the observer standing with the Sun behind them.',vi:'Chạm vào ba thứ một cầu vồng cần trên sân khấu: Mặt Trời đang chiếu sáng, mây mưa (những giọt nước — drops of water — trong không khí), và người quan sát đứng với Mặt Trời ở phía sau.'},
+  see:{en:'Each one bounces and shows its name. The Moon is a night-time decoy — a rainbow needs bright sunlight, not darkness.',vi:'Mỗi thứ nảy lên và hiện tên. Mặt Trăng là vật đánh lạc hướng của ban đêm — cầu vồng cần ánh nắng chói, không phải bóng tối.'},
+  concl:[
+    {en:'The Sun must be shining, to give bright light.',vi:'Mặt Trời phải chiếu sáng, để cho ánh sáng mạnh.'},
+    {en:'There must be rain, or small drops of water in the air — the drops do the splitting of the light.',vi:'Phải có mưa, hoặc những giọt nước (drops of water) nhỏ trong không khí — chính các giọt nước tách ánh sáng ra.'},
+    {en:'The Sun must be behind you, because the light is reflected back from inside the drops towards your eyes.',vi:'Mặt Trời phải ở phía sau con, vì ánh sáng được phản xạ (reflected) từ bên trong các giọt nước trở lại mắt con.'}]},
+ {tag:{en:'Newton’s prism experiment',vi:'Thí nghiệm lăng kính của Newton'}, word:{en:'prism',vi:'lăng kính (prism)'},
+  q:{en:'In 1666, Isaac Newton split sunlight using a block of glass shaped like a triangle. Can you set up the same experiment?',vi:'Năm 1666, Isaac Newton đã tách ánh sáng Mặt Trời bằng một khối thủy tinh hình tam giác. Con lắp được thí nghiệm tương tự không?'},
+  act:{en:'Tap the three pieces of equipment in any order: the ray box (it gives the white light), the triangular glass prism, and the white screen.',vi:'Chạm vào ba thiết bị theo thứ tự bất kỳ: hộp tia sáng (ray box) (nó cho ánh sáng trắng — white light), lăng kính thủy tinh (prism) hình tam giác (triangular), và màn trắng (screen).'},
+  see:{en:'White light travels from the ray box, through the prism, and spreads into colours on the screen.',vi:'Ánh sáng trắng đi từ hộp tia sáng, qua lăng kính, và trải thành các màu trên màn.'},
+  concl:[
+    {en:'White light is not a single colour — it is made from many colours mixed together.',vi:'Ánh sáng trắng (white light) không phải là một màu đơn — nó được tạo thành từ nhiều màu trộn với nhau.'},
+    {en:'The prism splits the white light into its colours and spreads them across the screen.',vi:'Lăng kính (prism) tách ánh sáng trắng thành các màu của nó và trải chúng ra khắp màn.'},
+    {en:'The range of colours you can see is called a spectrum (spectrum). The colours are not in separate stripes — each one merges into the next.',vi:'Dải màu con nhìn thấy được gọi là một quang phổ (spectrum). Các màu không nằm thành từng vạch riêng biệt — mỗi màu hòa dần vào màu tiếp theo.'}]},
+ {tag:{en:'The seven colours in order',vi:'Bảy màu theo đúng thứ tự'}, word:{en:'spectrum',vi:'quang phổ (spectrum)'},
+  q:{en:'The spectrum has seven colours, always in the same order. Can you tap them in order, starting from red?',vi:'Quang phổ (spectrum) có bảy màu, luôn theo cùng một thứ tự. Con chạm được chúng theo thứ tự, bắt đầu từ màu đỏ, không?'},
+  act:{en:'Tap the colour balls on the screen in the spectrum order: red first, then orange, yellow, green, blue, indigo, and violet last. A colour tapped out of order does not count.',vi:'Chạm vào các quả cầu màu trên màn theo thứ tự quang phổ: đỏ (red) trước, rồi cam (orange), vàng (yellow), lục (green), lam (blue), chàm (indigo), và tím (violet) cuối cùng. Chạm một màu sai thứ tự sẽ không được tính.'},
+  see:{en:'Each correct ball bounces and locks in. The evidence line counts how many are in place.',vi:'Mỗi quả cầu đúng nảy lên và được ghi nhận. Dòng căn cứ đếm số màu đã vào vị trí.'},
+  concl:[
+    {en:'The seven colours, in order, are: red, orange, yellow, green, blue, indigo, violet.',vi:'Bảy màu, theo thứ tự, là: đỏ (red), cam (orange), vàng (yellow), lục (green), lam (blue), chàm (indigo), tím (violet).'},
+    {en:'You can remember the order with the made-up name “ROY G. BIV” — one letter for each colour.',vi:'Con có thể nhớ thứ tự bằng cái tên bịa “ROY G. BIV” — mỗi chữ cái cho một màu.'},
+    {en:'Different people count slightly different numbers of colours (often five to seven), because the colours merge into one another with no sharp edges.',vi:'Mỗi người đếm số màu hơi khác nhau (thường từ năm tới bảy), vì các màu hòa vào nhau mà không có ranh giới sắc nét.'}]},
+ {tag:{en:'Dispersion — different angles',vi:'Tán sắc — các góc khác nhau'}, word:{en:'dispersion',vi:'tán sắc (dispersion)'},
+  q:{en:'Splitting light like this is called dispersion. It happens because each colour is refracted through a slightly different angle. Which two colours mark the extremes?',vi:'Việc tách ánh sáng như thế này được gọi là tán sắc (dispersion). Nó xảy ra vì mỗi màu bị khúc xạ (refracted) qua một góc hơi khác nhau. Hai màu nào đánh dấu hai cực?'},
+  act:{en:'Tap the violet ball — it is refracted through the largest angle. Then tap the red ball — it is refracted through the smallest angle.',vi:'Chạm vào quả cầu tím (violet) — nó bị khúc xạ qua góc lớn nhất. Rồi chạm vào quả cầu đỏ (red) — nó bị khúc xạ qua góc nhỏ nhất.'},
+  see:{en:'Violet bends the most as it leaves the prism; red bends the least. That is why violet ends up furthest from the white ray and red stays closest to it.',vi:'Tím bẻ cong nhiều nhất khi rời lăng kính; đỏ bẻ cong ít nhất. Đó là lý do tím ở xa tia trắng nhất còn đỏ ở gần nó nhất.'},
+  concl:[
+    {en:'Dispersion (dispersion) means splitting light into its different colours.',vi:'Tán sắc (dispersion) nghĩa là tách ánh sáng thành các màu khác nhau của nó.'},
+    {en:'Dispersion happens because of refraction: every colour in white light is refracted through a slightly different angle inside the prism.',vi:'Tán sắc xảy ra do khúc xạ (refraction): mọi màu trong ánh sáng trắng đều bị khúc xạ qua một góc hơi khác nhau bên trong lăng kính (prism).'},
+    {en:'Violet light is refracted through the largest angle, and red light through the smallest angle.',vi:'Ánh sáng tím (violet) bị khúc xạ qua góc lớn nhất, và ánh sáng đỏ (red) qua góc nhỏ nhất.'}]},
+ {tag:{en:'Practical — move the screen',vi:'Thực hành — di chuyển màn'}, word:{en:'triangular',vi:'hình tam giác (triangular)'},
+  q:{en:'In the book’s practical, learners use a ray box, a triangular prism and a screen in a darkened room — then move the screen, and later look into the rays. What changes?',vi:'Trong bài thực hành của sách, học sinh dùng một hộp tia sáng (ray box), một lăng kính (prism) hình tam giác và một màn trong phòng tối — rồi di chuyển màn, và sau đó nhìn vào các tia. Điều gì thay đổi?'},
+  act:{en:'Tap the screen once to move it closer to the prism. Tap the screen again to move it further away. Then tap the eye marker to stand about 2 metres away and look into the refracted rays.',vi:'Chạm vào màn một lần để đưa nó lại gần lăng kính hơn. Chạm vào màn lần nữa để đưa nó ra xa hơn. Rồi chạm vào dấu mắt để đứng cách khoảng 2 mét và nhìn vào các tia khúc xạ (refracted rays).'},
+  see:{en:'Closer: the spectrum is narrower and brighter, and the colours overlap more. Further: it is wider and more spread out, but dimmer. With no screen, your eye picks out one colour at a time as you move side to side.',vi:'Lại gần: quang phổ hẹp hơn và sáng hơn, và các màu chồng lên nhau nhiều hơn. Ra xa: nó rộng hơn và trải ra hơn, nhưng mờ hơn. Khi không có màn, mắt con chọn ra từng màu một khi con di chuyển sang hai bên.'},
+  concl:[
+    {en:'Moving the screen closer to the prism squeezes the colours together — the spectrum looks narrower and brighter.',vi:'Đưa màn lại gần lăng kính (prism) ép các màu sát vào nhau — quang phổ (spectrum) trông hẹp hơn và sáng hơn.'},
+    {en:'Moving the screen further away lets the rays spread for longer — the spectrum looks wider and more separated, but dimmer.',vi:'Đưa màn ra xa hơn để các tia có quãng đường trải ra dài hơn — quang phổ trông rộng hơn và tách ra hơn, nhưng mờ hơn.'},
+    {en:'Looking into the refracted rays (from a safe distance, never closer than about half a metre to a real prism) shows the colours one at a time as you move — pretty, but harder to compare than a screen, which shows them all at once.',vi:'Nhìn vào các tia khúc xạ (từ một khoảng cách an toàn, ngoài đời không bao giờ gần lăng kính thật hơn khoảng nửa mét) cho thấy các màu từng cái một khi con di chuyển — đẹp, nhưng khó so sánh hơn một màn, vốn cho thấy tất cả cùng lúc.'},
+    {en:'I can recall that white light is made from different colours of light.',vi:'Con nhớ được rằng ánh sáng trắng (white light) được tạo thành từ các màu ánh sáng khác nhau.'},
+    {en:'I can describe how to use a prism to produce dispersion of white light.',vi:'Con mô tả được cách dùng một lăng kính (prism) để tạo ra sự tán sắc (dispersion) của ánh sáng trắng.'},
+    {en:'I can list the seven colours in order starting from red.',vi:'Con liệt kê được bảy màu theo thứ tự bắt đầu từ đỏ (red).'}]},
+ {tag:{en:'What makes a rainbow?',vi:'Điều gì tạo nên cầu vồng?'}, word:{en:'dispersion',vi:'tán sắc (dispersion)'},
+  q:{en:'Outdoors there is no prism — drops of water do the job instead. Which things help a rainbow form, and which do not?',vi:'Ngoài trời không có lăng kính (prism) — thay vào đó các giọt nước làm công việc đó. Những điều nào giúp cầu vồng hình thành, và những điều nào không?'},
+  act:{en:'Each card names a condition or event. Tap a card, then tap HELPS MAKE A RAINBOW or DOES NOT HELP.',vi:'Mỗi thẻ nêu một điều kiện hay sự việc. Chạm vào một thẻ, rồi chạm GIÚP TẠO CẦU VỒNG (HELPS MAKE A RAINBOW) hoặc KHÔNG GIÚP ÍCH (DOES NOT HELP).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'A rainbow forms when drops of water in the air cause dispersion of sunlight — and the light is also reflected from inside the drops, back towards you.',vi:'Một cầu vồng hình thành khi các giọt nước (drops of water) trong không khí gây ra tán sắc (dispersion) của ánh nắng — và ánh sáng còn được phản xạ (reflected) từ bên trong các giọt, trở lại phía con.'},
+    {en:'So the recipe is: sunshine, water drops in the air, and the Sun behind you. Spray from a hosepipe on a sunny day can make a small rainbow in just the same way.',vi:'Vậy công thức là: nắng, giọt nước trong không khí, và Mặt Trời ở phía sau con. Tia nước từ vòi tưới vào một ngày nắng cũng có thể tạo một cầu vồng nhỏ theo đúng cách đó.'}]}
+];
+const CHEMS=[
+ {id:'c_sun',emoji:'☀️',en:'Bright sunshine — light for the drops to split',vi:'Nắng chói — ánh sáng để các giọt nước tách ra',ans:'persistent'},
+ {id:'c_drops',emoji:'💧',en:'Drops of water in the air — they disperse the light',vi:'Giọt nước (drops of water) trong không khí — chúng tán sắc ánh sáng',ans:'persistent'},
+ {id:'c_behind',emoji:'🧍',en:'The Sun behind the observer — drops reflect light back',vi:'Mặt Trời ở phía sau người quan sát — giọt nước phản xạ ánh sáng trở lại',ans:'persistent'},
+ {id:'c_drynight',emoji:'🌙',en:'A dry night with no rain and no sunshine',vi:'Một đêm khô ráo, không mưa và không nắng',ans:'breaksdown'},
+ {id:'c_front',emoji:'😎',en:'The Sun in front of the observer, shining in their eyes',vi:'Mặt Trời ở phía trước người quan sát, chiếu vào mắt họ',ans:'breaksdown'},
+ {id:'c_dark',emoji:'⬛',en:'Complete darkness — no light at all',vi:'Bóng tối hoàn toàn — không có chút ánh sáng nào',ans:'breaksdown'}
+];
+const CHEMS_ORDER=mixOrder(CHEMS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'What name is given to white light being split into different colours?',vi:'Tên gọi của việc ánh sáng trắng (white light) bị tách thành các màu khác nhau là gì?'},
+  o:[{en:'Refraction',vi:'Khúc xạ (refraction)'},{en:'Dispersion',vi:'Tán sắc (dispersion)'},{en:'Reflection',vi:'Phản xạ (reflection)'},{en:'Conduction',vi:'Dẫn nhiệt (conduction)'}],a:1,
+  e:{en:'Splitting white light into its colours is dispersion. It happens because each colour is refracted through a slightly different angle.',vi:'Tách ánh sáng trắng thành các màu của nó là tán sắc (dispersion). Nó xảy ra vì mỗi màu bị khúc xạ (refracted) qua một góc hơi khác nhau.'}},
+ {q:{en:'A glass block is used to separate white light into colours. Which piece of equipment is it?',vi:'Một khối thủy tinh được dùng để tách ánh sáng trắng thành các màu. Đó là thiết bị nào?'},
+  o:[{en:'A round glass cylinder',vi:'Một hình trụ thủy tinh tròn'},{en:'A square glass prism',vi:'Một lăng kính thủy tinh vuông'},{en:'A triangular glass prism',vi:'Một lăng kính thủy tinh hình tam giác (triangular glass prism)'},{en:'A hexagonal glass prism',vi:'Một lăng kính thủy tinh lục giác'}],a:2,
+  e:{en:'The block is a triangular prism — “triangular” means shaped like a triangle, like the one Newton used.',vi:'Khối đó là một lăng kính (prism) hình tam giác (triangular) — “triangular” nghĩa là có hình tam giác, như cái Newton đã dùng.'}},
+ {q:{en:'Which colour of light is refracted through the smallest angle in a prism?',vi:'Màu ánh sáng nào bị khúc xạ qua góc nhỏ nhất trong một lăng kính (prism)?'},
+  o:[{en:'Red',vi:'Đỏ (red)'},{en:'Violet',vi:'Tím (violet)'},{en:'Blue',vi:'Lam (blue)'},{en:'Green',vi:'Lục (green)'}],a:0,
+  e:{en:'Red is refracted the least, so it stays closest to the original direction of the white ray. Violet is refracted the most.',vi:'Đỏ (red) bị khúc xạ ít nhất, nên nó ở gần hướng ban đầu của tia trắng nhất. Tím (violet) bị khúc xạ nhiều nhất.'}},
+ {q:{en:'Why are drops of water needed for a rainbow to be seen?',vi:'Vì sao cần có giọt nước (drops of water) để nhìn thấy cầu vồng?'},
+  o:[{en:'The drops make the sunlight white',vi:'Các giọt làm ánh nắng thành màu trắng'},{en:'The drops cause dispersion of the light, and reflect it from inside themselves',vi:'Các giọt gây tán sắc (dispersion) ánh sáng, và phản xạ (reflect) nó từ bên trong chúng'},{en:'The drops block the Sun so it is not too bright',vi:'Các giọt che Mặt Trời để nó không quá chói'},{en:'The drops cool the air down',vi:'Các giọt làm mát không khí'}],a:1,
+  e:{en:'Each drop splits sunlight into colours (dispersion) and reflects the light inside itself, sending it back towards the observer — with the Sun behind them.',vi:'Mỗi giọt tách ánh nắng thành các màu (dispersion) và phản xạ ánh sáng bên trong nó, gửi nó trở lại phía người quan sát — với Mặt Trời ở phía sau họ.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_spectrum',emoji:'🌈',en:'Spectrum — the name for the whole range of colours',vi:'Quang phổ (spectrum) — tên gọi của toàn bộ dải màu',keyw:true},
+ {id:'e_section',emoji:'📄',en:'Section — the name for the whole range of colours',vi:'Mục (section) — tên gọi của toàn bộ dải màu',keyw:false},
+ {id:'e_orange',emoji:'🟠',en:'Orange — the missing colour between red and yellow',vi:'Cam (orange) — màu còn thiếu giữa đỏ và vàng',keyw:true},
+ {id:'e_vacuum',emoji:'🕳️',en:'Vacuum — the name for the whole range of colours',vi:'Chân không (vacuum) — tên gọi của toàn bộ dải màu',keyw:false},
+ {id:'e_blue',emoji:'🔵',en:'Blue — the missing colour between green and indigo',vi:'Lam (blue) — màu còn thiếu giữa lục và chàm',keyw:true},
+ {id:'e_yellow',emoji:'🟡',en:'Yellow — a colour already written in the list',vi:'Vàng (yellow) — một màu đã được viết sẵn trong danh sách',keyw:false},
+ {id:'e_violet',emoji:'🟣',en:'Violet — the missing colour after indigo, at the end',vi:'Tím (violet) — màu còn thiếu sau chàm, ở cuối danh sách',keyw:true},
+ {id:'e_reflection',emoji:'🪞',en:'Reflection — the missing colour between green and indigo',vi:'Phản xạ (reflection) — màu còn thiếu giữa lục và chàm',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_prism',emoji:'🔺',en:'In the ray diagram, X — the block the white light passes through — is a triangular prism.',vi:'Trong sơ đồ tia, X — khối mà ánh sáng trắng đi qua — là một lăng kính (prism) hình tam giác.',ans:'biased'},
+ {id:'x_redmost',emoji:'🔴',en:'Red light is refracted through the largest angle as it passes through X.',vi:'Ánh sáng đỏ (red) bị khúc xạ qua góc lớn nhất khi đi qua X.',ans:'independent'},
+ {id:'x_violet',emoji:'🟪',en:'Violet light is refracted the most as it passes through X.',vi:'Ánh sáng tím (violet) bị khúc xạ nhiều nhất khi đi qua X.',ans:'biased'},
+ {id:'x_spaces',emoji:'⬜',en:'On the screen, each colour is separated from the next one by a white space.',vi:'Trên màn, mỗi màu cách màu tiếp theo một khoảng trắng.',ans:'independent'},
+ {id:'x_white',emoji:'💡',en:'To get the complete rainbow effect, the light shining on the prism must be white light.',vi:'Để có hiệu ứng cầu vồng đầy đủ, ánh sáng chiếu vào lăng kính (prism) phải là ánh sáng trắng (white light).',ans:'biased'},
+ {id:'x_merge',emoji:'🎨',en:'On the screen, each colour merges into the next one with no space between them.',vi:'Trên màn, mỗi màu hòa dần vào màu tiếp theo mà không có khoảng cách giữa chúng.',ans:'biased'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Violet light passing through a prism is refracted through the',vi:'Ánh sáng tím (violet) đi qua một lăng kính (prism) bị khúc xạ qua'},
+  wrong:1,
+  opts:[{en:'largest angle',vi:'góc lớn nhất (largest angle)'},{en:'smallest angle',vi:'góc nhỏ nhất'}],
+  e:{en:'Violet is refracted through the largest angle of all the colours. Cross out “smallest angle”.',vi:'Tím (violet) bị khúc xạ qua góc lớn nhất trong tất cả các màu. Hãy gạch bỏ “góc nhỏ nhất”.'}},
+ {pre:{en:'Red light passing through a prism is refracted through the',vi:'Ánh sáng đỏ (red) đi qua một lăng kính (prism) bị khúc xạ qua'},
+  wrong:0,
+  opts:[{en:'largest angle',vi:'góc lớn nhất'},{en:'smallest angle',vi:'góc nhỏ nhất (smallest angle)'}],
+  e:{en:'Red is refracted through the smallest angle — it bends the least. Cross out “largest angle”.',vi:'Đỏ (red) bị khúc xạ qua góc nhỏ nhất — nó bẻ cong ít nhất. Hãy gạch bỏ “góc lớn nhất”.'}},
+ {pre:{en:'The range of colours that make up white light is called a',vi:'Dải màu tạo thành ánh sáng trắng (white light) được gọi là một'},
+  wrong:1,
+  opts:[{en:'spectrum',vi:'quang phổ (spectrum)'},{en:'reflection',vi:'phản xạ (reflection)'}],
+  e:{en:'The range of colours is a spectrum. Cross out “reflection”.',vi:'Dải màu là một quang phổ (spectrum). Hãy gạch bỏ “phản xạ (reflection)”.'}},
+ {pre:{en:'On a white screen, the colours of the spectrum',vi:'Trên một màn trắng, các màu của quang phổ (spectrum)'},
+  wrong:1,
+  opts:[{en:'merge into one another with no gaps',vi:'hòa vào nhau không có khoảng hở (merge)'},{en:'are separated by black spaces',vi:'bị ngăn cách bởi các khoảng đen'}],
+  e:{en:'The colours merge from one to another — there are no black or white spaces between them. Cross out “are separated by black spaces”.',vi:'Các màu hòa dần từ màu này sang màu khác — không có khoảng đen hay trắng nào giữa chúng. Hãy gạch bỏ “bị ngăn cách bởi các khoảng đen”.'}},
+ {pre:{en:'In the plastic of a prism, violet light travels more slowly than red light, so violet is refracted',vi:'Trong nhựa của một lăng kính (prism), ánh sáng tím (violet) truyền chậm hơn ánh sáng đỏ (red), nên tím bị khúc xạ'},
+  wrong:0,
+  opts:[{en:'less than red',vi:'ít hơn đỏ'},{en:'more than red',vi:'nhiều hơn đỏ (more)'}],
+  e:{en:'Violet travels slowest through the material and is refracted the most — more than red. Cross out “less than red”.',vi:'Tím (violet) truyền chậm nhất qua vật liệu và bị khúc xạ nhiều nhất — nhiều hơn đỏ. Hãy gạch bỏ “ít hơn đỏ”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-6-3';
+const SUMKEY='camb:sum:sci8-6-3';
+const BOT_CODE='sci8-6.3';
+let FOUND={sun:false,rain:false,obs:false,ray:false,prism:false,scr:false,col:0,redA:false,violetA:false,near:false,far:false,eye:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fSun:false, fRain:false, fObs:false,
+  s2ray:false, s2prism:false, s2screen:false,
+  s3n:0,
+  s4violet:false, s4red:false,
+  s5near:false, s5far:false, s5eye:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fSun&&T.fRain&&T.fObs;
+  if(i===1) return T.s2ray&&T.s2prism&&T.s2screen;
+  if(i===2) return T.s3n>=7;
+  if(i===3) return T.s4violet&&T.s4red;
+  if(i===4) return T.s5near&&T.s5far&&T.s5eye;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Rainbow needs: Sun shining '+(T.fSun?'✓':'…')+' · drops of water in the air '+(T.fRain?'✓':'…')+' · Sun behind the observer '+(T.fObs?'✓':'…')+'.',
+                     'Cầu vồng cần: Mặt Trời chiếu sáng '+(T.fSun?'✓':'…')+' · giọt nước trong không khí '+(T.fRain?'✓':'…')+' · Mặt Trời ở sau người quan sát '+(T.fObs?'✓':'…')+'.');
+  if(i===1) return B('Equipment set up: ray box '+(T.s2ray?'✓':'…')+' · triangular prism '+(T.s2prism?'✓':'…')+' · white screen '+(T.s2screen?'✓':'…')+'.',
+                     'Thiết bị đã lắp: hộp tia sáng (ray box) '+(T.s2ray?'✓':'…')+' · lăng kính (prism) hình tam giác '+(T.s2prism?'✓':'…')+' · màn trắng (screen) '+(T.s2screen?'✓':'…')+'.');
+  if(i===2) return B('Colours in order so far: '+T.s3n+' of 7 (red, orange, yellow, green, blue, indigo, violet).'+(T.s3n>0&&T.s3n<7?' Next: '+COLOURSEQ[T.s3n].replace('c','')+'.':''),
+                     'Số màu đúng thứ tự tới giờ: '+T.s3n+' / 7 (đỏ, cam, vàng, lục, lam, chàm, tím).'+(T.s3n>0&&T.s3n<7?' Tiếp theo: '+COLOURSEQ[T.s3n].replace('c','')+'.':''));
+  if(i===3) return B('Violet — largest angle '+(T.s4violet?'✓':'…')+' · red — smallest angle '+(T.s4red?'✓':'…')+'.',
+                     'Tím (violet) — góc lớn nhất '+(T.s4violet?'✓':'…')+' · đỏ (red) — góc nhỏ nhất '+(T.s4red?'✓':'…')+'.');
+  if(i===4) return B('Screen closer '+(T.s5near?'✓':'…')+' · screen further away '+(T.s5far?'✓':'…')+' · looked into the rays from about 2 m '+(T.s5eye?'✓':'…')+'.',
+                     'Màn lại gần hơn '+(T.s5near?'✓':'…')+' · màn ra xa hơn '+(T.s5far?'✓':'…')+' · đã nhìn vào các tia từ khoảng 2 m '+(T.s5eye?'✓':'…')+'.');
+  if(i===5){
+    const c=T.s6sel? CHEMS.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap HELPS MAKE A RAINBOW or DOES NOT HELP.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm GIÚP TẠO CẦU VỒNG (HELPS MAKE A RAINBOW) hoặc KHÔNG GIÚP ÍCH (DOES NOT HELP).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'☀️',label:{en:'Sun shining',vi:'Mặt Trời chiếu sáng'},got:T.fSun},
+      {emoji:'🌧️',label:{en:'Drops of water in the air',vi:'Giọt nước trong không khí'},got:T.fRain},
+      {emoji:'🧍',label:{en:'Sun behind the observer',vi:'Mặt Trời sau người quan sát'},got:T.fObs}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔦',label:{en:'Ray box — white light',vi:'Hộp tia sáng — ánh sáng trắng'},got:T.s2ray},
+      {emoji:'🔺',label:{en:'Triangular prism',vi:'Lăng kính hình tam giác'},got:T.s2prism},
+      {emoji:'⬜',label:{en:'White screen',vi:'Màn trắng'},got:T.s2screen}
+    ]);
+  }else if(curStep===2){
+    statPills(box,COLOURSEQ.map((id,k)=>({emoji:THINGS[id].emoji,label:THINGS[id].short,got:T.s3n>k})));
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🟪',label:{en:'Violet — largest angle',vi:'Tím — góc lớn nhất'},got:T.s4violet},
+      {emoji:'🔴',label:{en:'Red — smallest angle',vi:'Đỏ — góc nhỏ nhất'},got:T.s4red}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'⬜',label:{en:'Screen moved closer',vi:'Màn đã đưa lại gần'},got:T.s5near},
+      {emoji:'⬜',label:{en:'Screen moved further away',vi:'Màn đã đưa ra xa'},got:T.s5far},
+      {emoji:'👁️',label:{en:'Looked into the rays from ~2 m',vi:'Đã nhìn vào các tia từ ~2 m'},got:T.s5eye}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,CHEMS_ORDER,
+      [{key:'persistent',label:STR.binPure,cls:'living'},{key:'breaksdown',label:STR.binMix,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('sun'); bounceThing('sun'); setTimeout(()=>{ focusVisual('rain'); bounceThing('rain'); },900); }
+  else if(i===1){ focusThing('raybox'); setTimeout(()=>focusThing('prism'),900); }
+  else if(i===2){ focusThing('cred'); setTimeout(()=>focusThing('cviolet'),900); }
+  else if(i===3){ focusThing('cviolet'); setTimeout(()=>focusThing('cred'),900); }
+  else if(i===4){ focusThing('screen'); setTimeout(()=>focusThing('eye'),900); }
+  else if(i===5){ demoSort(CHEMS,T.s6correct); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recCols)+'</span><b>'+FOUND.col+' / 7</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recRed)+'</span><b>'+(FOUND.redA?'smallest':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recViolet)+'</span><b>'+(FOUND.violetA?'largest':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recScreen)+'</span><b>'+((FOUND.near?1:0)+(FOUND.far?1:0))+' / 2</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(1),label:STR.didRun},
+    {got:doneSteps.has(4),label:STR.didPlant},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildSun(){
+  const g=new THREE.Group();
+  const disc=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.42,14,10),stdMat(0xf6c90e,0.5)));
+  disc.position.y=2.7; g.add(disc);
+  for(let k=0;k<8;k++){
+    const ray=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.34,6),stdMat(0xf2a007,0.55));
+    const a=k*Math.PI/4;
+    ray.position.set(Math.cos(a)*0.62,2.7+Math.sin(a)*0.62,0);
+    ray.rotation.z=a-Math.PI/2; g.add(ray);
+  }
+  g.position.set(-4.4,0,-2.4); g.userData.baseY=0;
+  return g;
+}
+function buildMoon(){
+  const g=new THREE.Group();
+  const disc=new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10),stdMat(0xcfd6dd,0.85));
+  disc.position.y=2.5; g.add(disc);
+  const shade=new THREE.Mesh(new THREE.SphereGeometry(0.3,12,9),stdMat(0x9fb0bd,0.9));
+  shade.position.set(0.14,2.56,0.1); g.add(shade);
+  g.position.set(6.0,0,-2.5); g.userData.baseY=0;
+  return g;
+}
+function buildRain(){
+  const g=new THREE.Group();
+  [[0,2.15,0,0.52],[0.45,2.05,0.08,0.4],[-0.45,2.05,-0.05,0.42],[0.1,2.3,-0.1,0.38]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(p[3],10,8),stdMat(0x8fa5b5,0.9));
+    blob.scale.y=0.62; blob.position.set(p[0],p[1],p[2]); g.add(blob);
+  });
+  for(let k=0;k<7;k++){
+    const drop=new THREE.Mesh(new THREE.ConeGeometry(0.045,0.22,7),stdMat(0x3fa7d6,0.45));
+    drop.rotation.x=Math.PI; drop.position.set(-0.55+k*0.18,1.55-(k%3)*0.22,(k%2)*0.14-0.07); g.add(drop);
+  }
+  g.position.set(-3.1,0,1.3); g.userData.baseY=0;
+  return g;
+}
+function buildObserver(){
+  const g=new THREE.Group();
+  const legs=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.55,0.18),stdMat(0x39424e,0.8));
+  legs.position.y=0.28; g.add(legs);
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.6,0.24),stdMat(0x2f7fd0,0.8)));
+  body.position.y=0.85; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.17,10,8),stdMat(0xe8b98d,0.7));
+  head.position.y=1.36; g.add(head);
+  [-0.3,0.3].forEach(x=>{
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.5,7),stdMat(0x2f7fd0,0.8));
+    arm.position.set(x,0.85,0); arm.rotation.z=x>0?-0.25:0.25; g.add(arm);
+  });
+  /* a golden sun disc floats just behind the observer's head (the Sun behind them) */
+  const behind=new THREE.Mesh(new THREE.SphereGeometry(0.2,10,8),stdMat(0xf6c90e,0.5));
+  behind.position.set(0,1.5,-0.55); g.add(behind);
+  g.position.set(-1.2,0,2.4); g.userData.baseY=0;
+  return g;
+}
+function buildRayBox(){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.08,0.44),stdMat(0x39424e,0.7));
+  base.position.y=0.3; g.add(base);
+  const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.3,0.1),stdMat(0x39424e,0.7));
+  leg.position.y=0.15; g.add(leg);
+  const boxM=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.72,0.5,0.5),stdMat(0x27313a,0.6)));
+  boxM.position.y=0.6; g.add(boxM);
+  const slot=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.2,0.05),stdMat(0xf6e8b0,0.3));
+  slot.position.set(0.37,0.62,0); g.add(slot);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.09,8,6),stdMat(0xfff2b0,0.25));
+  bulb.position.set(0.1,0.62,0); g.add(bulb);
+  g.position.set(-3.4,0,-1.3); g.userData.baseY=0;
+  return g;
+}
+function buildPrism(){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.07,0.9),stdMat(0x39424e,0.7));
+  base.position.y=0.32; g.add(base);
+  const leg=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.32,0.12),stdMat(0x39424e,0.7));
+  leg.position.y=0.16; g.add(leg);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.52,0.52,0.95,3),
+    new THREE.MeshStandardMaterial({color:0xbfe0f5,roughness:0.15,transparent:true,opacity:0.45}));
+  glass.rotation.x=Math.PI/2; glass.rotation.y=0.5;
+  glass.position.y=0.85; g.add(glass);
+  const core=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.96,3),
+    new THREE.MeshStandardMaterial({color:0xeaf6ff,roughness:0.2,transparent:true,opacity:0.35}));
+  core.rotation.x=Math.PI/2; core.rotation.y=0.5;
+  core.position.y=0.85; g.add(core);
+  g.position.set(0,0,-1.2); g.userData.baseY=0;
+  return g;
+}
+function buildScreen(){
+  const g=new THREE.Group();
+  [-0.6,0.6].forEach(z=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.35,0.07),stdMat(0x39424e,0.7));
+    leg.position.set(0,0.17,z); g.add(leg);
+  });
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.07,2.75,1.15),stdMat(0xf7f5ee,0.55)));
+  board.position.y=1.68; g.add(board);
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(0.05,2.85,1.25),stdMat(0x8a6844,0.8));
+  frame.position.set(-0.03,1.68,0); g.add(frame);
+  g.position.set(3.1,0,-1.2); g.userData.baseY=0;
+  return g;
+}
+function buildEye(){
+  const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.85,8),stdMat(0x39424e,0.7));
+  pole.position.y=0.43; g.add(pole);
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10),stdMat(0xf7f5ee,0.4)));
+  ball.scale.z=0.75; ball.position.y=1.1; g.add(ball);
+  const iris=new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),stdMat(0x2f7fd0,0.4));
+  iris.position.set(-0.2,1.1,0.1); g.add(iris);
+  const pupil=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),stdMat(0x16202a,0.4));
+  pupil.position.set(-0.29,1.1,0.13); g.add(pupil);
+  g.position.set(4.6,0,1.9); g.userData.baseY=0;
+  return g;
+}
+function buildColourBall(id,y){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.13,12,9),
+    new THREE.MeshStandardMaterial({color:COLOURHEX[id],roughness:0.35,emissive:COLOURHEX[id],emissiveIntensity:0.25})));
+  g.add(ball);
+  g.position.set(2.0,y,-1.16); g.userData.baseY=y;
+  return g;
+}
+function buildTree(x,z,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.09*s,0.13*s,0.9*s,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.45*s; g.add(trunk);
+  [[0,1.25,0,0.55],[0.3,1.05,0.1,0.4],[-0.28,1.08,-0.08,0.42]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(p[3]*s,10,8),stdMat(0x4e9e4e,0.9));
+    blob.position.set(p[0]*s,p[1]*s,p[2]*s); g.add(blob);
+  });
+  g.position.set(x,0,z);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdcefe0);
+  scene3.fog=new THREE.Fog(0xdcefe0,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0x86bd62,0.95));
+  ground.position.set(0.8,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(7.6,0.14,2.1),stdMat(0xb9c4cc,0.7));
+  bench.position.set(-0.4,0.05,-1.22); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xcfe0c8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xeaf4e6,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  /* white ray from the ray box to the prism */
+  const beam=new THREE.Mesh(new THREE.BoxGeometry(2.95,0.05,0.06),
+    new THREE.MeshStandardMaterial({color:0xfff6cf,roughness:0.3,emissive:0xffedb5,emissiveIntensity:0.5}));
+  beam.position.set(-1.85,0.85,-1.22); scene3.add(beam);
+  /* the fanned spectrum between prism and screen */
+  COLOURSEQ.forEach((id,k)=>{
+    const endY=2.2-k*0.32, midY=(0.85+endY)/2;
+    const ray=new THREE.Mesh(new THREE.BoxGeometry(2.05,0.04,0.045),
+      new THREE.MeshStandardMaterial({color:COLOURHEX[id],roughness:0.35,emissive:COLOURHEX[id],emissiveIntensity:0.45}));
+    ray.position.set(1.0,midY,-1.16);
+    ray.rotation.z=Math.atan2(endY-0.85,2.0);
+    scene3.add(ray);
+  });
+  scene3.add(buildTree(-5.2,-2.8,1.1));
+  scene3.add(buildTree(3.4,3.1,0.9));
+  scene3.add(buildTree(-5.4,2.9,0.8));
+  reg('sun',buildSun());
+  reg('moon',buildMoon());
+  reg('rain',buildRain());
+  reg('observer',buildObserver());
+  reg('raybox',buildRayBox());
+  reg('prism',buildPrism());
+  reg('screen',buildScreen());
+  reg('eye',buildEye());
+  COLOURSEQ.forEach((id,k)=>{ reg(id,buildColourBall(id,2.2-k*0.32)); });
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.62); p.position.set(0,2.7,0); addProxy('sun',p,G.sun); }
+  { const p=sphProxy(0.55); p.position.set(0,2.5,0); addProxy('moon',p,G.moon); }
+  { const p=sphProxy(0.85); p.position.set(0,1.9,0); addProxy('rain',p,G.rain); }
+  { const p=sphProxy(0.55); p.position.set(0,0.85,0); addProxy('observer',p,G.observer); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('raybox',p,G.raybox); }
+  { const p=sphProxy(0.62); p.position.set(0,0.85,0); addProxy('prism',p,G.prism); }
+  { const p=sphProxy(0.85); p.position.set(0,1.68,0); addProxy('screen',p,G.screen); }
+  { const p=sphProxy(0.5); p.position.set(0,1.1,0); addProxy('eye',p,G.eye); }
+  COLOURSEQ.forEach(id=>{ const p=sphProxy(0.23); p.position.set(0,0,0); addProxy(id,p,G[id]); });
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['sun','rain','observer'],
+  ['raybox','prism','screen'],
+  COLOURSEQ.slice(),
+  ['cviolet','cred'],
+  ['screen','eye'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='sun'){ T.fSun=true; FOUND.sun=true; }
+    if(id==='rain'){ T.fRain=true; FOUND.rain=true; }
+    if(id==='observer'){ T.fObs=true; FOUND.obs=true; }
+  }else if(curStep===1){
+    if(id==='raybox'){ T.s2ray=true; FOUND.ray=true; }
+    if(id==='prism'){ T.s2prism=true; FOUND.prism=true; }
+    if(id==='screen'){ T.s2screen=true; FOUND.scr=true; }
+  }else if(curStep===2){
+    if(id!==COLOURSEQ[T.s3n]){ addMistake(); return; }
+    T.s3n+=1;
+    if(T.s3n>FOUND.col) FOUND.col=T.s3n;
+  }else if(curStep===3){
+    if(id==='cviolet'){ T.s4violet=true; FOUND.violetA=true; }
+    if(id==='cred'){ T.s4red=true; FOUND.redA=true; }
+  }else if(curStep===4){
+    if(id==='screen'){
+      if(!T.s5near){ T.s5near=true; FOUND.near=true; }
+      else if(!T.s5far){ T.s5far=true; FOUND.far=true; }
+    }
+    if(id==='eye'){ T.s5eye=true; FOUND.eye=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — complete the colour list */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — true or false */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='biased'?'✓ TRUE':'✗ FALSE')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('biased');
+$('ex2BinNot').onclick=()=>ex2Place('independent');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.sun=false; FOUND.rain=false; FOUND.obs=false; }
+  if(step===1){ FOUND.ray=false; FOUND.prism=false; FOUND.scr=false; }
+  if(step===2){ FOUND.col=0; }
+  if(step===3){ FOUND.redA=false; FOUND.violetA=false; }
+  if(step===4){ FOUND.near=false; FOUND.far=false; FOUND.eye=false; }
+  if(step===5){ CHEMS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='biased'||s.exAns.a2[id]==='independent')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fSun=!!FOUND.sun; t.fRain=!!FOUND.rain; t.fObs=!!FOUND.obs; }
+  else if(i===1){ t.s2ray=true; t.s2prism=true; t.s2screen=true; }
+  else if(i===2){ t.s3n=7; }
+  else if(i===3){ t.s4violet=true; t.s4red=true; }
+  else if(i===4){ t.s5near=true; t.s5far=true; t.s5eye=true; }
+  else if(i===5){ CHEMS.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-6-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

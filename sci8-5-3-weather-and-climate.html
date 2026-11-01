@@ -1,0 +1,1454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>5.3 Weather and Climate — Thời tiết và khí hậu · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="5.3 Weather and Climate" data-vi="5.3 Thời tiết và khí hậu">5.3 Weather and Climate</span>
+    <span class="eqchip i18n" data-en="Unit 5 · Materials and their structure" data-vi="Bài 5 · Vật liệu và cấu trúc của chúng (Materials and their structure)">Unit 5 · Materials and their structure</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How is today’s weather different from the climate of a place?" data-vi="Thời tiết hôm nay khác khí hậu của một nơi như thế nào?">How is today’s weather different from the climate of a place?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Measure the weather" data-vi="Đo thời tiết (weather)">Measure the weather</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Record it fairly, every day" data-vi="Ghi đo công bằng, mỗi ngày">Record it fairly, every day</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Spot the patterns" data-vi="Nhận ra các quy luật">Spot the patterns</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Average over 30+ years = climate" data-vi="Trung bình hơn 30 năm = khí hậu (climate)">Average over 30+ years = climate</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the instruments at the weather station!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các dụng cụ ở trạm thời tiết!">🖱 Drag to look around · Scroll to zoom · Tap the instruments at the weather station!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 5 Materials and their structure · Section 5.3. The weather station in this lesson is a simulation; the Reykjavik temperatures are the Workbook’s own table values." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 5 Vật liệu và cấu trúc của chúng (Materials and their structure) · Mục 5.3. Trạm thời tiết trong bài này là mô phỏng; các nhiệt độ Reykjavik là số liệu trong bảng của chính Sách bài tập.">Cambridge Lower Secondary Science 8 · Unit 5 Materials and their structure · Section 5.3. The weather station in this lesson is a simulation; the Reykjavik temperatures are the Workbook’s own table values.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 5 Materials and their structure, section 5.3, pages 160–165; Workbook 8 (ISBN 9781108742856), pages 97–102. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 5 Vật liệu và cấu trúc của chúng (Materials and their structure), mục 5.3, trang 160–165; Sách bài tập 8 (ISBN 9781108742856), trang 97–102. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 5 Materials and their structure, section 5.3, pages 160–165; Workbook 8 (ISBN 9781108742856), pages 97–102. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn the difference between weather and climate; make observations of the weather. Key words: atmosphere, climate, climatology, humidity, meteorology, statistics, visibility, weather." data-vi="Mục tiêu: học sự khác nhau giữa thời tiết (weather) và khí hậu (climate); quan sát thời tiết. Từ khóa: atmosphere (khí quyển), climate (khí hậu), climatology (khí hậu học), humidity (độ ẩm), meteorology (khí tượng học), statistics (số liệu thống kê), visibility (tầm nhìn), weather (thời tiết).">Objectives: learn the difference between weather and climate; make observations of the weather. Key words: atmosphere, climate, climatology, humidity, meteorology, statistics, visibility, weather.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action at the 3D weather station — finding the six features that describe the weather, setting up fair daily readings (shade, same time, results table), reading the Workbook's Reykjavik temperatures for 26 July (13 °C at 00.00, 16 °C at 06.00, 18 °C at 12.00, 19 °C at 18.00 — the book's own table values, with the week's maximum of 20 °C on 30 July), judging whether a weather source might be biased, sorting short-term weather from long-term climate, and visiting four climate zones. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật tại trạm thời tiết 3D — tìm sáu đặc điểm mô tả thời tiết, chuẩn bị cách ghi đo công bằng mỗi ngày (bóng râm, cùng giờ, bảng kết quả), đọc nhiệt độ Reykjavik của Sách bài tập cho ngày 26/7 (13 °C lúc 00.00, 16 °C lúc 06.00, 18 °C lúc 12.00, 19 °C lúc 18.00 — số liệu trong bảng của chính sách, với mức cao nhất tuần là 20 °C ngày 30/7), phán đoán một nguồn thông tin thời tiết có thể thiên vị hay không, phân loại thời tiết ngắn hạn với khí hậu dài hạn, và thăm bốn vùng khí hậu. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action at the 3D weather station — finding the six features that describe the weather, setting up fair daily readings (shade, same time, results table), reading the Workbook's Reykjavik temperatures for 26 July (13 °C at 00.00, 16 °C at 06.00, 18 °C at 12.00, 19 °C at 18.00 — the book's own table values, with the week's maximum of 20 °C on 30 July), judging whether a weather source might be biased, sorting short-term weather from long-term climate, and visiting four climate zones. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-5-3 "Weather and Climate" (Science 8, Unit 5)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= weather station things ================= */
+const THINGS={
+  thermometer:{emoji:'🌡️', name:{en:'Thermometer — measures temperature',vi:'Nhiệt kế — đo nhiệt độ (temperature)'}, short:{en:'Thermometer',vi:'Nhiệt kế'}, ring:0.6, labelY:1.5, fx:-4.6, fz:2.0, fr:5.0},
+  droplet:{emoji:'💧', name:{en:'Humidity sensor — water vapour in the air',vi:'Cảm biến độ ẩm (humidity) — hơi nước trong không khí'}, short:{en:'Humidity sensor',vi:'Cảm biến độ ẩm'}, ring:0.55, labelY:1.2, fx:-3.1, fz:2.3, fr:5.0},
+  raingauge:{emoji:'🌧️', name:{en:'Rain gauge — measures precipitation',vi:'Ống đo mưa — đo lượng mưa (precipitation)'}, short:{en:'Rain gauge',vi:'Ống đo mưa'}, ring:0.55, labelY:1.2, fx:-1.6, fz:2.0, fr:5.0},
+  cloud:{emoji:'☁️', name:{en:'Cloud — shows cloudiness',vi:'Mây — cho thấy độ mây (cloudiness)'}, short:{en:'Cloud',vi:'Mây'}, ring:0.8, labelY:0.8, fx:-4.9, fz:-3.0, fr:5.2},
+  binocs:{emoji:'🔭', name:{en:'Visibility post — how far can you see?',vi:'Cột tầm nhìn (visibility) — nhìn xa được bao nhiêu?'}, short:{en:'Visibility post',vi:'Cột tầm nhìn'}, ring:0.55, labelY:1.4, fx:1.4, fz:2.1, fr:5.0},
+  windsock:{emoji:'🎏', name:{en:'Windsock — shows the wind',vi:'Ống gió — cho thấy gió (wind)'}, short:{en:'Windsock',vi:'Ống gió'}, ring:0.55, labelY:1.9, fx:2.9, fz:2.0, fr:5.0},
+  rock:{emoji:'🪨', name:{en:'Rock',vi:'Hòn đá (rock)'}, short:{en:'Rock',vi:'Hòn đá'}, ring:0.6, labelY:0.8, fx:4.4, fz:2.4, fr:5.0},
+  shadetree:{emoji:'🌳', name:{en:'Shady tree — take temperature in the shade',vi:'Cây râm mát — đo nhiệt độ trong bóng râm'}, short:{en:'Shady tree',vi:'Cây râm mát'}, ring:0.95, labelY:2.2, fx:-4.6, fz:0.1, fr:5.4},
+  clock:{emoji:'🕐', name:{en:'Clock — read at the same time every day',vi:'Đồng hồ — đo vào cùng một giờ mỗi ngày'}, short:{en:'Clock',vi:'Đồng hồ'}, ring:0.55, labelY:1.5, fx:-3.0, fz:0.3, fr:5.0},
+  notebook:{emoji:'📓', name:{en:'Results table — record every reading',vi:'Bảng kết quả — ghi lại mọi số đo'}, short:{en:'Results table',vi:'Bảng kết quả'}, ring:0.6, labelY:1.1, fx:-1.4, fz:0.2, fr:5.0},
+  travel:{emoji:'🧳', name:{en:'Travel agent poster — selling holidays',vi:'Áp phích của đại lý du lịch — đang bán kỳ nghỉ'}, short:{en:'Travel poster',vi:'Áp phích du lịch'}, ring:0.6, labelY:1.5, fx:0.4, fz:0.3, fr:5.0},
+  metsvc:{emoji:'📡', name:{en:'National weather service — measures, sells nothing',vi:'Cơ quan thời tiết quốc gia — đo đạc, không bán gì'}, short:{en:'Weather service',vi:'Cơ quan thời tiết'}, ring:0.65, labelY:1.7, fx:2.0, fz:0.2, fr:5.0},
+  records:{emoji:'🗂️', name:{en:'Past weather records — years of data',vi:'Hồ sơ thời tiết cũ — số liệu nhiều năm'}, short:{en:'Past records',vi:'Hồ sơ cũ'}, ring:0.55, labelY:1.1, fx:4.2, fz:0.5, fr:5.0},
+  r0000:{emoji:'🌙', name:{en:'Reykjavik 26 July, 00.00 — 13 °C',vi:'Reykjavik 26/7, 00.00 — 13 °C'}, short:{en:'00.00 · 13 °C',vi:'00.00 · 13 °C'}, ring:0.5, labelY:1.3, fx:-5.0, fz:-2.0, fr:5.0},
+  r0600:{emoji:'🌅', name:{en:'Reykjavik 26 July, 06.00 — 16 °C',vi:'Reykjavik 26/7, 06.00 — 16 °C'}, short:{en:'06.00 · 16 °C',vi:'06.00 · 16 °C'}, ring:0.5, labelY:1.3, fx:-3.7, fz:-2.1, fr:5.0},
+  r1200:{emoji:'☀️', name:{en:'Reykjavik 26 July, 12.00 — 18 °C',vi:'Reykjavik 26/7, 12.00 — 18 °C'}, short:{en:'12.00 · 18 °C',vi:'12.00 · 18 °C'}, ring:0.5, labelY:1.3, fx:-2.4, fz:-2.0, fr:5.0},
+  r1800:{emoji:'🌇', name:{en:'Reykjavik 26 July, 18.00 — 19 °C',vi:'Reykjavik 26/7, 18.00 — 19 °C'}, short:{en:'18.00 · 19 °C',vi:'18.00 · 19 °C'}, ring:0.5, labelY:1.3, fx:-1.1, fz:-2.1, fr:5.0},
+  polar:{emoji:'🧊', name:{en:'Polar zone — very cold and dry all year',vi:'Vùng cực (polar) — rất lạnh và khô quanh năm'}, short:{en:'Polar zone',vi:'Vùng cực'}, ring:0.6, labelY:1.1, fx:0.5, fz:-2.0, fr:5.0},
+  arid:{emoji:'🌵', name:{en:'Arid zone — hot and dry all year',vi:'Vùng khô hạn (arid) — nóng và khô quanh năm'}, short:{en:'Arid zone',vi:'Vùng khô hạn'}, ring:0.6, labelY:1.2, fx:1.55, fz:-2.1, fr:5.0},
+  tropical:{emoji:'🌴', name:{en:'Tropical zone — hot and wet all year',vi:'Vùng nhiệt đới (tropical) — nóng và ẩm quanh năm'}, short:{en:'Tropical zone',vi:'Vùng nhiệt đới'}, ring:0.65, labelY:1.7, fx:3.5, fz:-2.0, fr:5.0},
+  medzone:{emoji:'🍊', name:{en:'Mediterranean zone — mild winters, hot dry summers',vi:'Vùng Địa Trung Hải (Mediterranean) — đông ôn hòa, hè nóng khô'}, short:{en:'Mediterranean zone',vi:'Vùng Địa Trung Hải'}, ring:0.6, labelY:1.5, fx:5.0, fz:-2.1, fr:5.0}
+};
+const FOCUSORDER=['thermometer','raingauge','windsock','cloud','shadetree','metsvc','polar','tropical'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'At the weather station',vi:'Ở trạm thời tiết'},
+  u1Brief:{en:'Tap a name to LOOK at that instrument or place. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM dụng cụ hay địa điểm đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Reykjavik, 26 July — the book’s readings',vi:'Reykjavik, 26/7 — số đo của sách'},
+  u2Brief:{en:'The Workbook’s temperature readings for one day in Reykjavik, Iceland, as you collect them.',vi:'Các số đo nhiệt độ trong Sách bài tập cho một ngày ở Reykjavik, Iceland, khi con thu thập chúng.'},
+  rec0000:{en:'00.00 — temperature',vi:'00.00 — nhiệt độ'},
+  rec0600:{en:'06.00 — temperature',vi:'06.00 — nhiệt độ'},
+  rec1200:{en:'12.00 — temperature',vi:'12.00 — nhiệt độ'},
+  rec1800:{en:'18.00 — temperature',vi:'18.00 — nhiệt độ'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your weather-watcher checklist.',vi:'Danh sách quan trắc thời tiết của con.'},
+  didSetup:{en:'Found the six weather features',vi:'Đã tìm sáu đặc điểm của thời tiết'},
+  didRun:{en:'Set up fair daily readings',vi:'Đã chuẩn bị cách đo công bằng mỗi ngày'},
+  didSort:{en:'Sorted weather from climate',vi:'Đã phân loại thời tiết và khí hậu'},
+  didPlant:{en:'Visited four climate zones',vi:'Đã thăm bốn vùng khí hậu'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'WEATHER — hours to days',vi:'THỜI TIẾT (WEATHER) — vài giờ tới vài ngày'},
+  binMix:{en:'CLIMATE — 30 years or more',vi:'KHÍ HẬU (CLIMATE) — từ 30 năm trở lên'},
+  binPerm:{en:'POLAR zone',vi:'Vùng CỰC (polar)'},
+  binNot:{en:'TROPICAL zone',vi:'Vùng NHIỆT ĐỚI (tropical)'},
+  lookPaper:{en:'Look at the windsock 🎏',vi:'Ngắm ống gió 🎏'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 5.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 5.3'},
+  exIntro:{en:'Workbook games for this lesson: words and meanings (Exercise 5.3A), polar or tropical (Exercise 5.3B) and the Reykjavik weather data (Exercise 5.3C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: từ và nghĩa (Bài tập 5.3A), vùng cực hay nhiệt đới (Bài tập 5.3B) và số liệu thời tiết Reykjavik (Bài tập 5.3C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Words and meanings (5.3A)',vi:'Bài tập 1 · Focus — Từ và nghĩa (5.3A)'},
+  ex1Inst:{en:'Tap the 4 cards that give a word and its CORRECT meaning.',vi:'Chạm vào 4 thẻ nêu một từ kèm nghĩa ĐÚNG của nó.'},
+  ex2T:{en:'Exercise 2 · Practice — Polar or tropical? (5.3B)',vi:'Bài tập 2 · Practice — Vùng cực hay nhiệt đới? (5.3B)'},
+  ex2Inst:{en:'Tap a card, then tap POLAR zone or TROPICAL zone — which zone does the card describe?',vi:'Chạm vào một thẻ, rồi chạm Vùng CỰC (POLAR) hoặc Vùng NHIỆT ĐỚI (TROPICAL) — thẻ mô tả vùng nào?'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (5.3C data)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (số liệu 5.3C)'},
+  ex3Inst:{en:'Each sentence uses the Workbook’s Reykjavik temperature table. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu dùng bảng nhiệt độ Reykjavik của Sách bài tập. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'atmosphere',vi:'khí quyển'},
+  {en:'climate',vi:'khí hậu'},
+  {en:'climatology',vi:'khí hậu học'},
+  {en:'humidity',vi:'độ ẩm'},
+  {en:'meteorology',vi:'khí tượng học'},
+  {en:'statistics',vi:'số liệu thống kê'},
+  {en:'visibility',vi:'tầm nhìn'},
+  {en:'weather',vi:'thời tiết'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'What is the weather?',vi:'Thời tiết là gì?'}, word:{en:'weather',vi:'thời tiết'},
+  q:{en:'Look out of the window: what is the weather like? Which six features, put together, describe the weather?',vi:'Nhìn ra cửa sổ: thời tiết thế nào? Sáu đặc điểm nào hợp lại mô tả thời tiết?'},
+  act:{en:'Tap the six weather features on the stage: the thermometer (temperature), the droplet sensor (humidity), the rain gauge (precipitation), the cloud (cloudiness), the visibility post and the windsock (wind).',vi:'Chạm vào sáu đặc điểm thời tiết trên sân khấu: nhiệt kế (nhiệt độ — temperature), cảm biến giọt nước (độ ẩm — humidity), ống đo mưa (lượng mưa — precipitation), đám mây (độ mây — cloudiness), cột tầm nhìn (visibility) và ống gió (gió — wind).'},
+  see:{en:'Each feature bounces and shows its name. Finding all six completes the step.',vi:'Mỗi đặc điểm nảy lên và hiện tên. Tìm đủ sáu là hoàn thành bước.'},
+  concl:[
+    {en:'Weather (weather) is the state of the atmosphere (atmosphere) and how it changes from minute to minute, hour to hour and day to day.',vi:'Thời tiết (weather) là trạng thái của khí quyển (atmosphere) và cách nó thay đổi theo từng phút, từng giờ và từng ngày.'},
+    {en:'When people describe the weather, they combine temperature, humidity, precipitation, cloudiness, visibility and wind.',vi:'Khi mô tả thời tiết, người ta kết hợp nhiệt độ (temperature), độ ẩm (humidity), lượng mưa (precipitation), độ mây (cloudiness), tầm nhìn (visibility) và gió (wind).'},
+    {en:'Countries measure the weather carefully so they can forecast what comes next and prepare for snowstorms or heat waves.',vi:'Các nước đo thời tiết cẩn thận để dự báo điều sắp tới và chuẩn bị cho bão tuyết hay đợt nắng nóng.'}]},
+ {tag:{en:'Fair readings, every day',vi:'Đo công bằng, mỗi ngày'}, word:{en:'meteorology',vi:'khí tượng học'},
+  q:{en:'Your group will record the weather for at least a week. How do you make each day’s readings fair to compare?',vi:'Nhóm của con sẽ ghi thời tiết trong ít nhất một tuần. Làm sao để số đo mỗi ngày so sánh được công bằng?'},
+  act:{en:'Tap the three fair-recording rules on the stage: the shady tree (temperature is taken in the shade), the clock (readings at the same time each day) and the results table (record every reading the same way).',vi:'Chạm vào ba quy tắc ghi đo công bằng trên sân khấu: cây râm mát (đo nhiệt độ trong bóng râm), đồng hồ (đo vào cùng một giờ mỗi ngày) và bảng kết quả (ghi mọi số đo theo cùng một cách).'},
+  see:{en:'Each rule bounces as you collect it. All three make the week’s readings comparable.',vi:'Mỗi quy tắc nảy lên khi con thu thập nó. Cả ba giúp số đo của cả tuần so sánh được với nhau.'},
+  concl:[
+    {en:'Readings must be taken at the same time each day, or the comparison is not fair — mornings and middays are naturally different.',vi:'Số đo phải được lấy vào cùng một giờ mỗi ngày, nếu không việc so sánh sẽ không công bằng — buổi sáng và buổi trưa vốn đã khác nhau.'},
+    {en:'Temperature is taken in the shade, with the thermometer bulb touching only air: in full sun the Sun would warm the thermometer itself, not just the air.',vi:'Nhiệt độ được đo trong bóng râm, với bầu nhiệt kế chỉ tiếp xúc với không khí: dưới nắng gắt, Mặt Trời sẽ làm nóng chính nhiệt kế chứ không chỉ không khí.'},
+    {en:'A prepared results table keeps a whole week of observations tidy and ready to turn into a graph. The study of weather is called meteorology (meteorology).',vi:'Một bảng kết quả chuẩn bị sẵn giữ cho cả tuần quan sát gọn gàng và sẵn sàng vẽ thành đồ thị. Ngành nghiên cứu thời tiết gọi là khí tượng học (meteorology).'}]},
+ {tag:{en:'One day in Reykjavik',vi:'Một ngày ở Reykjavik'}, word:{en:'statistics',vi:'số liệu thống kê'},
+  q:{en:'The Workbook table gives temperatures in Reykjavik, Iceland, every six hours. What pattern does one full day show?',vi:'Bảng trong Sách bài tập cho nhiệt độ ở Reykjavik, Iceland, mỗi sáu giờ. Một ngày trọn vẹn cho thấy quy luật gì?'},
+  act:{en:'Tap the four reading posts for 26 July in order: 00.00, 06.00, 12.00 and 18.00. Each post shows the book’s exact temperature for that time.',vi:'Chạm vào bốn cột số đo của ngày 26/7 theo thứ tự: 00.00, 06.00, 12.00 và 18.00. Mỗi cột hiện nhiệt độ chính xác của sách cho giờ đó.'},
+  see:{en:'The readings appear: 13 °C, 16 °C, 18 °C and 19 °C — the day warms up as it goes on.',vi:'Các số đo hiện ra: 13 °C, 16 °C, 18 °C và 19 °C — ngày ấm dần lên theo thời gian.'},
+  concl:[
+    {en:'On 26 July the temperature rose steadily through the day, from 13 °C at midnight to 19 °C by 18.00.',vi:'Ngày 26/7 nhiệt độ tăng đều trong ngày, từ 13 °C lúc nửa đêm tới 19 °C lúc 18.00.'},
+    {en:'Across the Workbook’s whole week the same daily rise-and-fall repeats, and the warmest reading of all is 20 °C (30 July, 18.00).',vi:'Trong cả tuần của Sách bài tập, quy luật tăng–giảm mỗi ngày lặp lại, và số đo ấm nhất là 20 °C (30/7, 18.00).'},
+    {en:'Heavy rain on 28 July (09.00–21.00) kept that day flatter: its readings only reached 16 °C, with no warm peak.',vi:'Mưa lớn ngày 28/7 (09.00–21.00) khiến ngày hôm đó phẳng hơn: số đo chỉ tới 16 °C, không có đỉnh ấm.'}]},
+ {tag:{en:'Can you trust the source?',vi:'Nguồn tin có đáng tin?'}, word:{en:'visibility',vi:'tầm nhìn'},
+  q:{en:'You are researching the weather in a place you want to visit. Which sources should you check — and which might be biased?',vi:'Con đang tìm hiểu thời tiết ở một nơi con muốn đến thăm. Nên kiểm tra những nguồn nào — và nguồn nào có thể thiên vị (biased)?'},
+  act:{en:'Tap the three sources on the stage: the travel agent’s poster, the national weather service dish, and the shelf of past weather records.',vi:'Chạm vào ba nguồn trên sân khấu: áp phích của đại lý du lịch, chảo của cơ quan thời tiết quốc gia, và kệ hồ sơ thời tiết cũ.'},
+  see:{en:'Each source bounces. Comparing all three shows why no single source should be trusted on its own.',vi:'Mỗi nguồn nảy lên. So sánh cả ba cho thấy vì sao không nên tin riêng một nguồn nào.'},
+  concl:[
+    {en:'Different sources rarely agree exactly: they measure in different places, at different times, and over different numbers of years.',vi:'Các nguồn khác nhau hiếm khi khớp nhau hoàn toàn: chúng đo ở những nơi khác nhau, vào những lúc khác nhau, và qua số năm khác nhau.'},
+    {en:'A travel agent may be biased (biased) — painting the best possible weather to persuade you to visit. A source selling nothing has nothing to gain from your choice.',vi:'Một đại lý du lịch có thể thiên vị (biased) — tô vẽ thời tiết đẹp nhất có thể để thuyết phục con đến thăm. Một nguồn không bán gì thì không được lợi gì từ lựa chọn của con.'},
+    {en:'The most reliable picture comes from comparing several sources, including past records over a few years, before deciding the best time to visit.',vi:'Bức tranh đáng tin nhất đến từ việc so sánh nhiều nguồn, kể cả hồ sơ cũ qua vài năm, trước khi quyết định thời điểm tốt nhất để đi.'}]},
+ {tag:{en:'Weather or climate?',vi:'Thời tiết hay khí hậu?'}, word:{en:'climate',vi:'khí hậu'},
+  q:{en:'A postcard says “hot and sunny today”; a guidebook says “hot, dry summers for as long as records go back”. Which is weather, and which is climate?',vi:'Một tấm bưu thiếp viết “hôm nay nóng và nắng”; một sách hướng dẫn viết “mùa hè nóng, khô từ lâu đời theo hồ sơ”. Cái nào là thời tiết, cái nào là khí hậu?'},
+  act:{en:'Each card describes a short moment or a long pattern. Tap a card, then tap WEATHER or CLIMATE.',vi:'Mỗi thẻ mô tả một khoảnh khắc ngắn hay một quy luật dài. Chạm vào một thẻ, rồi chạm THỜI TIẾT (WEATHER) hoặc KHÍ HẬU (CLIMATE).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Weather changes in minutes or hours and describes a short time; climate (climate) is the average weather of a place over a long time, usually more than 30 years.',vi:'Thời tiết thay đổi trong vài phút hay vài giờ và mô tả một khoảng thời gian ngắn; khí hậu (climate) là thời tiết trung bình của một nơi trong thời gian dài, thường hơn 30 năm.'},
+    {en:'Climate information uses statistics (statistics): the normal weather of a place, and the range of its extremes too.',vi:'Thông tin khí hậu dùng số liệu thống kê (statistics): thời tiết thông thường của một nơi, và cả khoảng các cực trị của nó.'},
+    {en:'Climate is shaped mainly by two factors — temperature and precipitation. The study of climate is called climatology (climatology).',vi:'Khí hậu được định hình chủ yếu bởi hai yếu tố — nhiệt độ (temperature) và lượng mưa (precipitation). Ngành nghiên cứu khí hậu gọi là khí hậu học (climatology).'}]},
+ {tag:{en:'Climate zones',vi:'Các vùng khí hậu'}, word:{en:'climatology',vi:'khí hậu học'},
+  q:{en:'Each zone of the world map has its own characteristic climate. What is the climate like in four of the zones?',vi:'Mỗi vùng trên bản đồ thế giới có khí hậu đặc trưng riêng. Khí hậu ở bốn vùng đó như thế nào?'},
+  act:{en:'Tap the four climate zones along the back of the stage: polar, arid, tropical and Mediterranean.',vi:'Chạm vào bốn vùng khí hậu dọc phía sau sân khấu: vùng cực (polar), vùng khô hạn (arid), vùng nhiệt đới (tropical) và vùng Địa Trung Hải (Mediterranean).'},
+  see:{en:'Each zone bounces and shows its name. Its description is in the Answer, once all four are visited.',vi:'Mỗi vùng nảy lên và hiện tên. Mô tả của nó nằm trong Đáp án, khi con đã thăm đủ bốn vùng.'},
+  concl:[
+    {en:'Polar: very cold and dry all year. Arid: hot and dry all year — countries such as Egypt and Saudi Arabia lie in this zone.',vi:'Vùng cực (polar): rất lạnh và khô quanh năm. Vùng khô hạn (arid): nóng và khô quanh năm — các nước như Ai Cập và Ả Rập Xê Út nằm trong vùng này.'},
+    {en:'Tropical: hot and wet all year — for example Brazil, Indonesia and Malaysia. Mediterranean: mild winters and hot, dry summers — also found far from the Mediterranean Sea, for example in parts of California and South Africa.',vi:'Vùng nhiệt đới (tropical): nóng và ẩm quanh năm — ví dụ Brazil, Indonesia và Malaysia. Vùng Địa Trung Hải (Mediterranean): mùa đông ôn hòa và mùa hè nóng, khô — cũng xuất hiện xa biển Địa Trung Hải, ví dụ ở một số vùng của California và Nam Phi.'},
+    {en:'Temperate zones have cold winters and mild summers, and mountain, tundra and taiga zones are very cold all year.',vi:'Vùng ôn đới (temperate) có mùa đông lạnh và mùa hè ôn hòa, còn vùng núi, đài nguyên (tundra) và taiga rất lạnh quanh năm.'},
+    {en:'I can explain the difference between weather and climate.',vi:'Con giải thích được sự khác nhau giữa thời tiết (weather) và khí hậu (climate).'},
+    {en:'I can make observations and take measurements of the weather.',vi:'Con quan sát và đo đạc được thời tiết.'}]}
+];
+const SORTCARDS=[
+ {id:'w_rain',emoji:'🌧️',en:'Rain is falling here this afternoon',vi:'Chiều nay ở đây đang mưa',ans:'weather'},
+ {id:'w_hot',emoji:'🌡️',en:'It is 31 °C and sunny today',vi:'Hôm nay trời 31 °C và nắng',ans:'weather'},
+ {id:'w_wind',emoji:'💨',en:'Strong wind is forecast for tonight',vi:'Đêm nay dự báo có gió mạnh',ans:'weather'},
+ {id:'c_average',emoji:'📊',en:'The average weather worked out over more than 30 years',vi:'Thời tiết trung bình tính qua hơn 30 năm',ans:'climate'},
+ {id:'c_winters',emoji:'❄️',en:'Winters here are usually cold and dry',vi:'Mùa đông ở đây thường lạnh và khô',ans:'climate'},
+ {id:'c_zone',emoji:'🌍',en:'This zone is hot and wet all year, on average',vi:'Vùng này trung bình nóng và ẩm quanh năm',ans:'climate'}
+];
+const SORT_ORDER=mixOrder(SORTCARDS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'What is the difference between weather and climate?',vi:'Thời tiết (weather) và khí hậu (climate) khác nhau thế nào?'},
+  o:[{en:'There is no difference — they mean the same thing',vi:'Không có gì khác — chúng cùng một nghĩa'},{en:'Weather is the short-term state of the atmosphere; climate is the average weather of a place over more than 30 years',vi:'Thời tiết là trạng thái ngắn hạn của khí quyển (atmosphere); khí hậu là thời tiết trung bình của một nơi qua hơn 30 năm'},{en:'Weather is only about rain; climate is only about temperature',vi:'Thời tiết chỉ nói về mưa; khí hậu chỉ nói về nhiệt độ'}],a:1,
+  e:{en:'Weather can change in minutes or hours. Climate is built from statistics gathered over many years — usually more than 30.',vi:'Thời tiết có thể thay đổi trong vài phút hay vài giờ. Khí hậu được xây từ số liệu thống kê (statistics) thu thập qua nhiều năm — thường hơn 30 năm.'}},
+ {q:{en:'Which list gives the features that together describe the weather?',vi:'Danh sách nào nêu các đặc điểm hợp lại mô tả thời tiết?'},
+  o:[{en:'Rocks, soil and rivers',vi:'Đá, đất và sông'},{en:'Day, month and year',vi:'Ngày, tháng và năm'},{en:'Temperature, humidity, precipitation, cloudiness, visibility and wind',vi:'Nhiệt độ (temperature), độ ẩm (humidity), lượng mưa (precipitation), độ mây (cloudiness), tầm nhìn (visibility) và gió (wind)'}],a:2,
+  e:{en:'Those six features are what people combine when they describe the weather — and what weather watchers measure every day.',vi:'Sáu đặc điểm đó là những gì người ta kết hợp khi mô tả thời tiết — và là những gì người quan trắc đo mỗi ngày.'}},
+ {q:{en:'Why should temperature readings always be taken in the shade, at the same time each day?',vi:'Vì sao số đo nhiệt độ luôn phải lấy trong bóng râm, vào cùng một giờ mỗi ngày?'},
+  o:[{en:'So the readings can be compared fairly — full sun would warm the thermometer itself, and different times of day are naturally warmer or cooler',vi:'Để các số đo so sánh được công bằng — nắng gắt sẽ làm nóng chính nhiệt kế, và các giờ khác nhau trong ngày vốn ấm hay mát khác nhau'},{en:'Because thermometers break in sunlight',vi:'Vì nhiệt kế sẽ hỏng dưới ánh nắng'},{en:'Because the shade is always the warmest place',vi:'Vì bóng râm luôn là nơi ấm nhất'}],a:0,
+  e:{en:'Fair comparisons need the same conditions every time: same place, same time, shade, and the bulb touching only air.',vi:'So sánh công bằng cần cùng điều kiện mỗi lần: cùng nơi, cùng giờ, bóng râm, và bầu nhiệt kế chỉ tiếp xúc với không khí.'}},
+ {q:{en:'Which description matches the Mediterranean climate?',vi:'Mô tả nào khớp với khí hậu Địa Trung Hải (Mediterranean)?'},
+  o:[{en:'Very cold and dry all year',vi:'Rất lạnh và khô quanh năm'},{en:'Mild winters and hot, dry summers',vi:'Mùa đông ôn hòa và mùa hè nóng, khô'},{en:'Hot and wet all year',vi:'Nóng và ẩm quanh năm'}],a:1,
+  e:{en:'In the book’s zone table, Mediterranean means mild winters with hot, dry summers — polar is very cold and dry, and tropical is hot and wet.',vi:'Trong bảng vùng của sách, Địa Trung Hải (Mediterranean) nghĩa là mùa đông ôn hòa với mùa hè nóng, khô — vùng cực rất lạnh và khô, còn vùng nhiệt đới nóng và ẩm.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_temp',emoji:'🌡️',en:'Temperature — how hot it is',vi:'Temperature — trời nóng tới mức nào',keyw:true},
+ {id:'e_meteo',emoji:'🛰️',en:'Meteorology — the study of climate',vi:'Meteorology — ngành nghiên cứu khí hậu',keyw:false},
+ {id:'e_hum',emoji:'💧',en:'Humidity — how much water vapour there is in the air',vi:'Humidity — lượng hơi nước có trong không khí',keyw:true},
+ {id:'e_atmo',emoji:'🌍',en:'Atmosphere — the water vapour high above the ground',vi:'Atmosphere — hơi nước ở trên cao',keyw:false},
+ {id:'e_precip',emoji:'🌧️',en:'Precipitation — rain, hail or snow that falls from clouds',vi:'Precipitation — mưa, mưa đá hay tuyết rơi từ mây',keyw:true},
+ {id:'e_weather',emoji:'📅',en:'Weather — the average weather of a place over 30 years',vi:'Weather — thời tiết trung bình của một nơi qua 30 năm',keyw:false},
+ {id:'e_vis',emoji:'🔭',en:'Visibility — how far you can see',vi:'Visibility — nhìn xa được bao nhiêu',keyw:true},
+ {id:'e_clim',emoji:'🔬',en:'Climatology — the study of the weather',vi:'Climatology — ngành nghiên cứu thời tiết',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_colddry',emoji:'🧊',en:'Very cold and dry all year',vi:'Rất lạnh và khô quanh năm',ans:'polar'},
+ {id:'x_hotwet',emoji:'🌦️',en:'Hot and wet all year',vi:'Nóng và ẩm quanh năm',ans:'tropical'},
+ {id:'x_ice',emoji:'❄️',en:'Ice and snow cover the ground for most of the year',vi:'Băng và tuyết phủ mặt đất hầu như quanh năm',ans:'polar'},
+ {id:'x_rainforest',emoji:'🌴',en:'Heavy rain falls often and plants grow fast all year',vi:'Mưa lớn rơi thường xuyên và cây cối mọc nhanh quanh năm',ans:'tropical'},
+ {id:'x_darkwinter',emoji:'🌌',en:'Winters are dark and bitterly cold',vi:'Mùa đông tối và lạnh buốt',ans:'polar'},
+ {id:'x_nowinter',emoji:'☀️',en:'There is no cold season — every month is hot',vi:'Không có mùa lạnh — tháng nào cũng nóng',ans:'tropical'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'On 26 July in Reykjavik the temperature climbed from 13 °C at 00.00 to',vi:'Ngày 26/7 ở Reykjavik nhiệt độ tăng từ 13 °C lúc 00.00 tới'},
+  wrong:1,
+  opts:[{en:'19 °C at 18.00',vi:'19 °C lúc 18.00'},{en:'9 °C at 18.00',vi:'9 °C lúc 18.00'}],
+  e:{en:'The table shows 13, 16, 18 and then 19 °C — the day warmed up. Cross out “9 °C at 18.00”.',vi:'Bảng cho thấy 13, 16, 18 rồi 19 °C — ngày đã ấm dần. Hãy gạch bỏ “9 °C lúc 18.00”.'}},
+ {pre:{en:'The highest temperature in the whole week’s table was',vi:'Nhiệt độ cao nhất trong bảng của cả tuần là'},
+  wrong:1,
+  opts:[{en:'20 °C',vi:'20 °C'},{en:'24 °C',vi:'24 °C'}],
+  e:{en:'The warmest reading is 20 °C, on 30 July at 18.00. No reading reaches 24 °C — cross out “24 °C”.',vi:'Số đo ấm nhất là 20 °C, ngày 30/7 lúc 18.00. Không số đo nào tới 24 °C — hãy gạch bỏ “24 °C”.'}},
+ {pre:{en:'The heavy rain on 28 July seems to have made that day’s temperatures',vi:'Mưa lớn ngày 28/7 dường như đã khiến nhiệt độ ngày hôm đó'},
+  wrong:0,
+  opts:[{en:'much higher than every other day',vi:'cao hơn hẳn mọi ngày khác'},{en:'lower, with no warm peak',vi:'thấp hơn, không có đỉnh ấm'}],
+  e:{en:'On 28 July the readings were 14, 16, 16, 16 °C — flatter and lower, with no 18–19 °C peak. Cross out “much higher than every other day”.',vi:'Ngày 28/7 các số đo là 14, 16, 16, 16 °C — phẳng hơn và thấp hơn, không có đỉnh 18–19 °C. Hãy gạch bỏ “cao hơn hẳn mọi ngày khác”.'}},
+ {pre:{en:'Weather readings can only be compared fairly when they are taken at',vi:'Số đo thời tiết chỉ so sánh công bằng được khi chúng được lấy vào'},
+  wrong:1,
+  opts:[{en:'the same time each day',vi:'cùng một giờ mỗi ngày'},{en:'a different time each day',vi:'một giờ khác nhau mỗi ngày'}],
+  e:{en:'Same time, same place, same method — that is what makes a comparison fair. Cross out “a different time each day”.',vi:'Cùng giờ, cùng nơi, cùng cách đo — đó là điều làm cho việc so sánh công bằng. Hãy gạch bỏ “một giờ khác nhau mỗi ngày”.'}},
+ {pre:{en:'The climate of a place is worked out from weather statistics gathered over',vi:'Khí hậu của một nơi được tính từ số liệu thống kê thời tiết thu thập qua'},
+  wrong:0,
+  opts:[{en:'one sunny afternoon',vi:'một buổi chiều nắng'},{en:'more than 30 years',vi:'hơn 30 năm'}],
+  e:{en:'Climate is the long-term average — usually more than 30 years of weather statistics. Cross out “one sunny afternoon”.',vi:'Khí hậu là trung bình dài hạn — thường là hơn 30 năm số liệu thống kê (statistics) thời tiết. Hãy gạch bỏ “một buổi chiều nắng”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-5-3';
+const SUMKEY='camb:sum:sci8-5-3';
+const BOT_CODE='sci8-5.3';
+let FOUND={temp:false,hum:false,precip:false,cloud:false,vis:false,wind:false,shade:false,clock:false,note:false,r0:false,r6:false,r12:false,r18:false,travel:false,met:false,records:false,polar:false,arid:false,trop:false,med:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fTemp:false, fHum:false, fPrecip:false, fCloud:false, fVis:false, fWind:false,
+  s2shade:false, s2clock:false, s2note:false,
+  s3r0:false, s3r6:false, s3r12:false, s3r18:false,
+  s4travel:false, s4met:false, s4records:false,
+  s5correct:new Set(), s5sel:null,
+  s6polar:false, s6arid:false, s6trop:false, s6med:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fTemp&&T.fHum&&T.fPrecip&&T.fCloud&&T.fVis&&T.fWind;
+  if(i===1) return T.s2shade&&T.s2clock&&T.s2note;
+  if(i===2) return T.s3r0&&T.s3r6&&T.s3r12&&T.s3r18;
+  if(i===3) return T.s4travel&&T.s4met&&T.s4records;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6polar&&T.s6arid&&T.s6trop&&T.s6med;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Weather features found: temperature '+(T.fTemp?'✓':'…')+' · humidity '+(T.fHum?'✓':'…')+' · precipitation '+(T.fPrecip?'✓':'…')+' · cloudiness '+(T.fCloud?'✓':'…')+' · visibility '+(T.fVis?'✓':'…')+' · wind '+(T.fWind?'✓':'…')+'.',
+                     'Đặc điểm thời tiết đã tìm: nhiệt độ '+(T.fTemp?'✓':'…')+' · độ ẩm (humidity) '+(T.fHum?'✓':'…')+' · lượng mưa (precipitation) '+(T.fPrecip?'✓':'…')+' · độ mây (cloudiness) '+(T.fCloud?'✓':'…')+' · tầm nhìn (visibility) '+(T.fVis?'✓':'…')+' · gió (wind) '+(T.fWind?'✓':'…')+'.');
+  if(i===1) return B('Fair-recording rules: shade '+(T.s2shade?'✓':'…')+' · same time daily '+(T.s2clock?'✓':'…')+' · results table '+(T.s2note?'✓':'…')+'.',
+                     'Quy tắc ghi đo công bằng: bóng râm '+(T.s2shade?'✓':'…')+' · cùng giờ mỗi ngày '+(T.s2clock?'✓':'…')+' · bảng kết quả '+(T.s2note?'✓':'…')+'.');
+  if(i===2) return B('Reykjavik 26 July readings: 00.00 → 13 °C '+(T.s3r0?'✓':'…')+' · 06.00 → 16 °C '+(T.s3r6?'✓':'…')+' · 12.00 → 18 °C '+(T.s3r12?'✓':'…')+' · 18.00 → 19 °C '+(T.s3r18?'✓':'…')+'.',
+                     'Số đo Reykjavik 26/7: 00.00 → 13 °C '+(T.s3r0?'✓':'…')+' · 06.00 → 16 °C '+(T.s3r6?'✓':'…')+' · 12.00 → 18 °C '+(T.s3r12?'✓':'…')+' · 18.00 → 19 °C '+(T.s3r18?'✓':'…')+'.');
+  if(i===3) return B('Sources checked: travel poster '+(T.s4travel?'✓':'…')+' · national weather service '+(T.s4met?'✓':'…')+' · past records '+(T.s4records?'✓':'…')+'.',
+                     'Nguồn đã kiểm tra: áp phích du lịch '+(T.s4travel?'✓':'…')+' · cơ quan thời tiết quốc gia '+(T.s4met?'✓':'…')+' · hồ sơ cũ '+(T.s4records?'✓':'…')+'.');
+  if(i===4){
+    const c=T.s5sel? SORTCARDS.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap WEATHER or CLIMATE.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm THỜI TIẾT (WEATHER) hoặc KHÍ HẬU (CLIMATE).');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5) return B('Climate zones visited: polar '+(T.s6polar?'✓':'…')+' · arid '+(T.s6arid?'✓':'…')+' · tropical '+(T.s6trop?'✓':'…')+' · Mediterranean '+(T.s6med?'✓':'…')+'.',
+                     'Vùng khí hậu đã thăm: vùng cực (polar) '+(T.s6polar?'✓':'…')+' · vùng khô hạn (arid) '+(T.s6arid?'✓':'…')+' · vùng nhiệt đới (tropical) '+(T.s6trop?'✓':'…')+' · Địa Trung Hải (Mediterranean) '+(T.s6med?'✓':'…')+'.');
+  return B('','');
+}
+
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🌡️',label:{en:'Temperature',vi:'Nhiệt độ'},got:T.fTemp},
+      {emoji:'💧',label:{en:'Humidity',vi:'Độ ẩm'},got:T.fHum},
+      {emoji:'🌧️',label:{en:'Precipitation',vi:'Lượng mưa'},got:T.fPrecip},
+      {emoji:'☁️',label:{en:'Cloudiness',vi:'Độ mây'},got:T.fCloud},
+      {emoji:'🔭',label:{en:'Visibility',vi:'Tầm nhìn'},got:T.fVis},
+      {emoji:'🎏',label:{en:'Wind',vi:'Gió'},got:T.fWind}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🌳',label:{en:'Measure in the shade',vi:'Đo trong bóng râm'},got:T.s2shade},
+      {emoji:'🕐',label:{en:'Same time every day',vi:'Cùng giờ mỗi ngày'},got:T.s2clock},
+      {emoji:'📓',label:{en:'Results table ready',vi:'Bảng kết quả sẵn sàng'},got:T.s2note}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🌙',label:{en:'00.00 — 13 °C',vi:'00.00 — 13 °C'},got:T.s3r0},
+      {emoji:'🌅',label:{en:'06.00 — 16 °C',vi:'06.00 — 16 °C'},got:T.s3r6},
+      {emoji:'☀️',label:{en:'12.00 — 18 °C',vi:'12.00 — 18 °C'},got:T.s3r12},
+      {emoji:'🌇',label:{en:'18.00 — 19 °C',vi:'18.00 — 19 °C'},got:T.s3r18}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🧳',label:{en:'Travel poster — may be biased',vi:'Áp phích du lịch — có thể thiên vị'},got:T.s4travel},
+      {emoji:'📡',label:{en:'Weather service — measures only',vi:'Cơ quan thời tiết — chỉ đo đạc'},got:T.s4met},
+      {emoji:'🗂️',label:{en:'Past records — years of data',vi:'Hồ sơ cũ — số liệu nhiều năm'},got:T.s4records}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,SORT_ORDER,
+      [{key:'weather',label:STR.binPure,cls:'living'},{key:'climate',label:STR.binMix,cls:'nonliving'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'Polar — very cold and dry',vi:'Vùng cực — rất lạnh và khô'},got:T.s6polar},
+      {emoji:'🌵',label:{en:'Arid — hot and dry',vi:'Vùng khô hạn — nóng và khô'},got:T.s6arid},
+      {emoji:'🌴',label:{en:'Tropical — hot and wet',vi:'Vùng nhiệt đới — nóng và ẩm'},got:T.s6trop},
+      {emoji:'🍊',label:{en:'Mediterranean — mild winters, hot dry summers',vi:'Địa Trung Hải — đông ôn hòa, hè nóng khô'},got:T.s6med}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('thermometer'); bounceThing('thermometer'); setTimeout(()=>{ focusVisual('windsock'); bounceThing('windsock'); },900); }
+  else if(i===1){ focusThing('shadetree'); setTimeout(()=>focusThing('clock'),900); }
+  else if(i===2){ focusThing('r0000'); setTimeout(()=>focusThing('r1800'),900); }
+  else if(i===3){ focusThing('travel'); setTimeout(()=>focusThing('records'),900); }
+  else if(i===4){ demoSort(SORTCARDS,T.s5correct); }
+  else if(i===5){ focusThing('polar'); setTimeout(()=>focusThing('tropical'),900); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.rec0000)+'</span><b>'+(FOUND.r0?'13 °C':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.rec0600)+'</span><b>'+(FOUND.r6?'16 °C':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.rec1200)+'</span><b>'+(FOUND.r12?'18 °C':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.rec1800)+'</span><b>'+(FOUND.r18?'19 °C':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(1),label:STR.didRun},
+    {got:doneSteps.has(4),label:STR.didSort},
+    {got:doneSteps.has(5),label:STR.didPlant}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function post(x,z,h,c){ const p=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,h,8),stdMat(c||0x8a6844,0.9)); p.position.set(x,h/2,z); return p; }
+function buildThermo(){
+  const g=new THREE.Group();
+  g.add(post(0,0,0.7));
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.34,0.85,0.08),stdMat(0xf5f0e6,0.6)));
+  board.position.y=1.05; g.add(board);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.6,8),stdMat(0xd23c2a,0.4));
+  tube.position.set(0,1.08,0.06); g.add(tube);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.1,9,7),stdMat(0xd23c2a,0.4));
+  bulb.position.set(0,0.72,0.06); g.add(bulb);
+  g.position.set(-4.6,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function buildDroplet(){
+  const g=new THREE.Group();
+  g.add(post(0,0,0.55));
+  const drop=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2,10,8),stdMat(0x3fa7d6,0.35)));
+  drop.scale.y=1.25; drop.position.y=0.95; g.add(drop);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.11,0.24,9),stdMat(0x3fa7d6,0.35));
+  tip.position.y=1.28; g.add(tip);
+  g.position.set(-3.1,0,2.3); g.userData.baseY=0;
+  return g;
+}
+function buildRainGauge(){
+  const g=new THREE.Group();
+  g.add(post(0,0,0.4));
+  const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.15,0.6,12),
+    new THREE.MeshStandardMaterial({color:0xbfe3f2,roughness:0.25,transparent:true,opacity:0.65}));
+  cup.position.y=0.75; g.add(cup);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.13,0.25,12),stdMat(0x3fa7d6,0.35));
+  water.position.y=0.6; g.add(water);
+  const funnel=new THREE.Mesh(new THREE.ConeGeometry(0.26,0.2,12,1,true),stdMat(0x8fb6d8,0.5));
+  funnel.position.y=1.12; g.add(funnel);
+  g.position.set(-1.6,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function buildCloud(){
+  const g=new THREE.Group();
+  [[0,0,0,0.42],[0.4,0.06,0.05,0.32],[-0.38,0.04,-0.04,0.3],[0.05,0.16,-0.02,0.3]].forEach(p=>{
+    const s=new THREE.Mesh(new THREE.SphereGeometry(p[3],10,8),stdMat(0xffffff,0.9));
+    s.scale.y=0.62; s.position.set(p[0],p[1],p[2]); g.add(s);
+  });
+  g.position.set(-4.9,2.4,-3.0); g.userData.baseY=2.4;
+  return g;
+}
+function buildBinocs(){
+  const g=new THREE.Group();
+  g.add(post(0,0,0.85));
+  [-0.11,0.11].forEach(dx=>{
+    const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.09,0.34,9),stdMat(0x39424e,0.55));
+    tube.rotation.x=Math.PI/2; tube.position.set(dx,1.0,0); g.add(tube);
+  });
+  const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.07,0.1),stdMat(0x39424e,0.55));
+  bridge.position.y=1.0; g.add(bridge);
+  g.position.set(1.4,0,2.1); g.userData.baseY=0;
+  return g;
+}
+function buildWindsock(){
+  const g=new THREE.Group();
+  g.add(post(0,0,1.7,0x64748b));
+  const sock=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.62,10),stdMat(0xf2762e,0.6));
+  sock.rotation.z=Math.PI/2-0.18; sock.position.set(0.36,1.62,0); g.add(sock);
+  const ring2=new THREE.Mesh(new THREE.TorusGeometry(0.16,0.025,7,14),stdMat(0xf5f0e6,0.6));
+  ring2.rotation.y=Math.PI/2; ring2.position.set(0.08,1.66,0); g.add(ring2);
+  g.position.set(2.9,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function buildRock(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.42,0),stdMat(0x8d99a6,0.95)));
+  r.position.y=0.3; r.scale.y=0.75; g.add(r);
+  g.position.set(4.4,0,2.4); g.userData.baseY=0;
+  return g;
+}
+function buildShadeTree(){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.19,1.3,9),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.65; g.add(trunk);
+  [[0,1.85,0,0.8],[0.45,1.55,0.15,0.58],[-0.42,1.6,-0.12,0.6]].forEach(p=>{
+    const blob=shadowed(new THREE.Mesh(new THREE.SphereGeometry(p[3],10,8),stdMat(0x3e8e3e,0.9)));
+    blob.position.set(p[0],p[1],p[2]); g.add(blob);
+  });
+  const mini=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.4,7),stdMat(0xd23c2a,0.4));
+  mini.position.set(0.28,0.35,0.22); g.add(mini);
+  g.position.set(-4.6,0,0.1); g.userData.baseY=0;
+  return g;
+}
+function buildClock(){
+  const g=new THREE.Group();
+  g.add(post(0,0,0.8));
+  const face=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.34,0.08,18),stdMat(0xf5f0e6,0.5));
+  face.rotation.x=Math.PI/2; face.position.y=1.2; g.add(face);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.035,8,20),stdMat(0x39424e,0.6));
+  rim.position.set(0,1.2,0.05); g.add(rim);
+  const h1=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.24,0.02),stdMat(0x22384f,0.5));
+  h1.position.set(0.05,1.28,0.06); h1.rotation.z=-0.7; g.add(h1);
+  const h2=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.17,0.02),stdMat(0x22384f,0.5));
+  h2.position.set(-0.04,1.16,0.06); h2.rotation.z=1.1; g.add(h2);
+  g.position.set(-3.0,0,0.3); g.userData.baseY=0;
+  return g;
+}
+function buildNotebook(){
+  const g=new THREE.Group();
+  const table=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.07,0.65),stdMat(0x8a6844,0.85)));
+  table.position.y=0.55; g.add(table);
+  [[-0.4,-0.25],[0.4,-0.25],[-0.4,0.25],[0.4,0.25]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.55,7),stdMat(0x6e5233,0.9));
+    leg.position.set(p[0],0.27,p[1]); g.add(leg);
+  });
+  const paper=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.03,0.42),stdMat(0xffffff,0.6));
+  paper.position.y=0.61; paper.rotation.y=0.25; g.add(paper);
+  const pencil=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.34,6),stdMat(0xf2c230,0.55));
+  pencil.rotation.z=Math.PI/2; pencil.rotation.y=0.4; pencil.position.set(0.05,0.65,0.05); g.add(pencil);
+  g.position.set(-1.4,0,0.2); g.userData.baseY=0;
+  return g;
+}
+function buildTravel(){
+  const g=new THREE.Group();
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.72,0.9,0.06),stdMat(0x3fa7d6,0.55)));
+  board.position.y=1.0; board.position.z=-0.18; g.add(board);
+  const sunM=new THREE.Mesh(new THREE.SphereGeometry(0.13,9,7),stdMat(0xf2c230,0.5));
+  sunM.position.set(-0.18,1.22,-0.13); g.add(sunM);
+  const caseM=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.4,0.22),stdMat(0xd8542e,0.6)));
+  caseM.position.set(0.12,0.2,0.18); g.add(caseM);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.11,0.025,7,12),stdMat(0x39424e,0.6));
+  handle.position.set(0.12,0.44,0.18); g.add(handle);
+  g.position.set(0.4,0,0.3); g.userData.baseY=0;
+  return g;
+}
+function buildMetSvc(){
+  const g=new THREE.Group();
+  const hut=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.8,0.55,0.6),stdMat(0xe8eef2,0.7)));
+  hut.position.y=0.28; g.add(hut);
+  g.add(post(0.15,-0.1,1.15,0x64748b));
+  const dish=new THREE.Mesh(new THREE.SphereGeometry(0.34,12,8,0,Math.PI*2,0,Math.PI/2.6),stdMat(0xbcd8f2,0.45));
+  dish.position.set(0.15,1.2,-0.1); dish.rotation.x=-0.7; dish.rotation.z=0.5; g.add(dish);
+  const mast=new THREE.Mesh(new THREE.SphereGeometry(0.05,7,6),stdMat(0xd23c2a,0.5));
+  mast.position.set(0.15,1.32,-0.1); g.add(mast);
+  g.position.set(2.0,0,0.2); g.userData.baseY=0;
+  return g;
+}
+function buildRecords(){
+  const g=new THREE.Group();
+  [[0,0.09,0,0xd8542e,0],[0.03,0.26,0.02,0x3d7bd6,0.35],[-0.02,0.43,0,0x3fa34d,-0.3]].forEach(p=>{
+    const book=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.15,0.45),stdMat(p[3],0.7)));
+    book.position.set(p[0],p[1],p[2]); book.rotation.y=p[4]; g.add(book);
+  });
+  g.position.set(4.2,0,0.5); g.userData.baseY=0;
+  return g;
+}
+function buildReadingPost(color,x,z){
+  const g=new THREE.Group();
+  g.add(post(0,0,0.65,0x64748b));
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.55,0.07),stdMat(color,0.6)));
+  board.position.y=1.0; g.add(board);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.36,8),stdMat(0xd23c2a,0.4));
+  tube.position.set(0.1,1.0,0.055); g.add(tube);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,6),stdMat(0xd23c2a,0.4));
+  bulb.position.set(0.1,0.78,0.055); g.add(bulb);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildPolar(){
+  const g=new THREE.Group();
+  const mound=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.55,11,8),stdMat(0xf4f9fc,0.85)));
+  mound.scale.y=0.55; mound.position.y=0.12; g.add(mound);
+  const block=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.22,0.3),stdMat(0xdceef7,0.7));
+  block.position.set(0.25,0.18,0.15); block.rotation.y=0.5; g.add(block);
+  g.position.set(0.5,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildArid(){
+  const g=new THREE.Group();
+  const dune=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.55,11,8),stdMat(0xe3c07a,0.95)));
+  dune.scale.y=0.45; dune.position.y=0.05; g.add(dune);
+  const cactus=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.1,0.6,9),stdMat(0x3e8e3e,0.8));
+  cactus.position.set(0.22,0.42,0.05); g.add(cactus);
+  const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.3,8),stdMat(0x3e8e3e,0.8));
+  arm.position.set(0.36,0.5,0.05); arm.rotation.z=0.5; g.add(arm);
+  g.position.set(1.55,0,-2.1); g.userData.baseY=0;
+  return g;
+}
+function buildTropical(){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.09,1.15,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.57; trunk.rotation.z=0.14; g.add(trunk);
+  for(let k=0;k<5;k++){
+    const frond=new THREE.Mesh(new THREE.BoxGeometry(0.72,0.03,0.16),stdMat(0x3fa34d,0.85));
+    const a=k/5*Math.PI*2;
+    frond.position.set(0.08+Math.cos(a)*0.3,1.22,Math.sin(a)*0.3);
+    frond.rotation.y=-a; frond.rotation.z=Math.cos(a)*0.35; g.add(frond);
+  }
+  [[-0.25,0.25],[0.3,0.3],[-0.1,0.42]].forEach(p=>{
+    const dropM=new THREE.Mesh(new THREE.SphereGeometry(0.045,7,6),stdMat(0x3fa7d6,0.4));
+    dropM.position.set(p[0],p[1],0.2); g.add(dropM);
+  });
+  g.position.set(3.5,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildMed(){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.1,0.75,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.37; g.add(trunk);
+  const crown=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.48,10,8),stdMat(0x4e9e4e,0.9)));
+  crown.position.y=1.05; g.add(crown);
+  [[0.3,1.2,0.25],[-0.28,1.05,0.3],[0.05,1.35,-0.3],[-0.15,0.85,-0.35]].forEach(p=>{
+    const orange=new THREE.Mesh(new THREE.SphereGeometry(0.075,8,6),stdMat(0xf2762e,0.55));
+    orange.position.set(p[0],p[1],p[2]); g.add(orange);
+  });
+  g.position.set(5.0,0,-2.1); g.userData.baseY=0;
+  return g;
+}
+function buildDecoTree(x,z,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.09*s,0.13*s,0.9*s,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.45*s; g.add(trunk);
+  const blob=new THREE.Mesh(new THREE.SphereGeometry(0.55*s,10,8),stdMat(0x69b84e,0.9));
+  blob.position.y=1.25*s; g.add(blob);
+  g.position.set(x,0,z);
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xd8ecf7);
+  scene3.fog=new THREE.Fog(0xd8ecf7,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0x86bd62,0.95));
+  ground.position.set(0.8,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xcfe0c8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8f3fb,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  const sunBall=new THREE.Mesh(new THREE.SphereGeometry(0.5,12,10),stdMat(0xf2c230,0.4));
+  sunBall.position.set(-6.2,4.6,-4.6); scene3.add(sunBall);
+  scene3.add(buildDecoTree(-6.0,-2.8,1.1));
+  scene3.add(buildDecoTree(6.6,3.0,0.85));
+  scene3.add(buildDecoTree(6.4,-3.0,0.95));
+  reg('thermometer',buildThermo());
+  reg('droplet',buildDroplet());
+  reg('raingauge',buildRainGauge());
+  reg('cloud',buildCloud());
+  reg('binocs',buildBinocs());
+  reg('windsock',buildWindsock());
+  reg('rock',buildRock());
+  reg('shadetree',buildShadeTree());
+  reg('clock',buildClock());
+  reg('notebook',buildNotebook());
+  reg('travel',buildTravel());
+  reg('metsvc',buildMetSvc());
+  reg('records',buildRecords());
+  reg('r0000',buildReadingPost(0x39424e,-5.0,-2.0));
+  reg('r0600',buildReadingPost(0xf2a65a,-3.7,-2.1));
+  reg('r1200',buildReadingPost(0xf2c230,-2.4,-2.0));
+  reg('r1800',buildReadingPost(0xf2762e,-1.1,-2.1));
+  reg('polar',buildPolar());
+  reg('arid',buildArid());
+  reg('tropical',buildTropical());
+  reg('medzone',buildMed());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.55); p.position.set(0,1.0,0); addProxy('thermometer',p,G.thermometer); }
+  { const p=sphProxy(0.5); p.position.set(0,0.9,0); addProxy('droplet',p,G.droplet); }
+  { const p=sphProxy(0.5); p.position.set(0,0.8,0); addProxy('raingauge',p,G.raingauge); }
+  { const p=sphProxy(0.68); p.position.set(0,0,0); addProxy('cloud',p,G.cloud); }
+  { const p=sphProxy(0.5); p.position.set(0,1.0,0); addProxy('binocs',p,G.binocs); }
+  { const p=sphProxy(0.55); p.position.set(0.15,1.55,0); addProxy('windsock',p,G.windsock); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('rock',p,G.rock); }
+  { const p=sphProxy(0.85); p.position.set(0,1.1,0); addProxy('shadetree',p,G.shadetree); }
+  { const p=sphProxy(0.5); p.position.set(0,1.15,0); addProxy('clock',p,G.clock); }
+  { const p=sphProxy(0.58); p.position.set(0,0.5,0); addProxy('notebook',p,G.notebook); }
+  { const p=sphProxy(0.58); p.position.set(0,0.85,0); addProxy('travel',p,G.travel); }
+  { const p=sphProxy(0.62); p.position.set(0,0.8,0); addProxy('metsvc',p,G.metsvc); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('records',p,G.records); }
+  { const p=sphProxy(0.48); p.position.set(0,0.95,0); addProxy('r0000',p,G.r0000); }
+  { const p=sphProxy(0.48); p.position.set(0,0.95,0); addProxy('r0600',p,G.r0600); }
+  { const p=sphProxy(0.48); p.position.set(0,0.95,0); addProxy('r1200',p,G.r1200); }
+  { const p=sphProxy(0.48); p.position.set(0,0.95,0); addProxy('r1800',p,G.r1800); }
+  { const p=sphProxy(0.58); p.position.set(0,0.3,0); addProxy('polar',p,G.polar); }
+  { const p=sphProxy(0.58); p.position.set(0,0.3,0); addProxy('arid',p,G.arid); }
+  { const p=sphProxy(0.6); p.position.set(0,0.8,0); addProxy('tropical',p,G.tropical); }
+  { const p=sphProxy(0.58); p.position.set(0,0.9,0); addProxy('medzone',p,G.medzone); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['thermometer','droplet','raingauge','cloud','binocs','windsock'],
+  ['shadetree','clock','notebook'],
+  ['r0000','r0600','r1200','r1800'],
+  ['travel','metsvc','records'],
+  [],
+  ['polar','arid','tropical','medzone']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='thermometer'){ T.fTemp=true; FOUND.temp=true; }
+    if(id==='droplet'){ T.fHum=true; FOUND.hum=true; }
+    if(id==='raingauge'){ T.fPrecip=true; FOUND.precip=true; }
+    if(id==='cloud'){ T.fCloud=true; FOUND.cloud=true; }
+    if(id==='binocs'){ T.fVis=true; FOUND.vis=true; }
+    if(id==='windsock'){ T.fWind=true; FOUND.wind=true; }
+  }else if(curStep===1){
+    if(id==='shadetree'){ T.s2shade=true; FOUND.shade=true; }
+    if(id==='clock'){ T.s2clock=true; FOUND.clock=true; }
+    if(id==='notebook'){ T.s2note=true; FOUND.note=true; }
+  }else if(curStep===2){
+    if(id==='r0000'){ T.s3r0=true; FOUND.r0=true; }
+    if(id==='r0600'){ T.s3r6=true; FOUND.r6=true; }
+    if(id==='r1200'){ T.s3r12=true; FOUND.r12=true; }
+    if(id==='r1800'){ T.s3r18=true; FOUND.r18=true; }
+  }else if(curStep===3){
+    if(id==='travel'){ T.s4travel=true; FOUND.travel=true; }
+    if(id==='metsvc'){ T.s4met=true; FOUND.met=true; }
+    if(id==='records'){ T.s4records=true; FOUND.records=true; }
+  }else if(curStep===5){
+    if(id==='polar'){ T.s6polar=true; FOUND.polar=true; }
+    if(id==='arid'){ T.s6arid=true; FOUND.arid=true; }
+    if(id==='tropical'){ T.s6trop=true; FOUND.trop=true; }
+    if(id==='medzone'){ T.s6med=true; FOUND.med=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(G.cloud) G.cloud.position.x=-4.9+Math.sin(now*0.0004)*0.35;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — words and meanings */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — polar or tropical */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='polar'?'🧊':'🌴')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('polar');
+$('ex2BinNot').onclick=()=>ex2Place('tropical');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.temp=false; FOUND.hum=false; FOUND.precip=false; FOUND.cloud=false; FOUND.vis=false; FOUND.wind=false; }
+  if(step===1){ FOUND.shade=false; FOUND.clock=false; FOUND.note=false; }
+  if(step===2){ FOUND.r0=false; FOUND.r6=false; FOUND.r12=false; FOUND.r18=false; }
+  if(step===3){ FOUND.travel=false; FOUND.met=false; FOUND.records=false; }
+  if(step===4){ SORTCARDS.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ FOUND.polar=false; FOUND.arid=false; FOUND.trop=false; FOUND.med=false; }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='polar'||s.exAns.a2[id]==='tropical')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fTemp=!!FOUND.temp; t.fHum=!!FOUND.hum; t.fPrecip=!!FOUND.precip; t.fCloud=!!FOUND.cloud; t.fVis=!!FOUND.vis; t.fWind=!!FOUND.wind; }
+  else if(i===1){ t.s2shade=true; t.s2clock=true; t.s2note=true; }
+  else if(i===2){ t.s3r0=!!FOUND.r0; t.s3r6=!!FOUND.r6; t.s3r12=!!FOUND.r12; t.s3r18=!!FOUND.r18; }
+  else if(i===3){ t.s4travel=true; t.s4met=true; t.s4records=true; }
+  else if(i===4){ SORTCARDS.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.s6polar=!!FOUND.polar; t.s6arid=!!FOUND.arid; t.s6trop=!!FOUND.trop; t.s6med=!!FOUND.med; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-5-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

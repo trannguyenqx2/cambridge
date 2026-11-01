@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.1 Reflection — Sự phản xạ ánh sáng · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="6.1 Reflection" data-vi="6.1 Sự phản xạ ánh sáng (Reflection)">6.1 Reflection</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Light" data-vi="Bài 6 · Ánh sáng (Light)">Unit 6 · Light</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How does light bounce off a flat mirror — and can we predict exactly where it goes?" data-vi="Ánh sáng dội lại từ một gương phẳng như thế nào — và ta có dự đoán chính xác nó đi đâu không?">How does light bounce off a flat mirror — and can we predict exactly where it goes?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Light travels in straight rays" data-vi="Ánh sáng đi theo tia thẳng (rays)">Light travels in straight rays</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="A ray hits the mirror" data-vi="Một tia tới gương (incident ray)">A ray hits the mirror</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Angles are measured from the normal" data-vi="Góc được đo từ pháp tuyến (normal)">Angles are measured from the normal</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Angle of reflection = angle of incidence" data-vi="Góc phản xạ (angle of reflection) = góc tới (angle of incidence)">Angle of reflection = angle of incidence</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the optics bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn quang học!">🖱 Drag to look around · Scroll to zoom · Tap things on the optics bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.1. The optics bench in this lesson is a simulation — the rays are drawn for you, and no real ray box is needed." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 6 Ánh sáng (Light) · Mục 6.1. Bàn quang học trong bài này là mô phỏng — các tia đã được vẽ sẵn, và không cần hộp tia (ray box) thật.">Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.1. The optics bench in this lesson is a simulation — the rays are drawn for you, and no real ray box is needed.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.1, pages 185–191; Workbook 8 (ISBN 9781108742856), pages 111–113. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 6 Light (Ánh sáng), mục 6.1, trang 185–191; Sách bài tập 8 (ISBN 9781108742856), trang 111–113. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.1, pages 185–191; Workbook 8 (ISBN 9781108742856), pages 111–113. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: describe how light is reflected from a plane surface; understand the law of reflection; be able to draw ray diagrams to show reflection of light. Key words: angle of incidence, angle of reflection, incident ray, law of reflection, normal, perpendicular, plane mirror, protractor, ray diagram, rays, reflection, set square." data-vi="Mục tiêu: mô tả cách ánh sáng phản xạ (reflection) từ một bề mặt phẳng; hiểu luật phản xạ (law of reflection); vẽ được sơ đồ tia (ray diagram) để biểu diễn sự phản xạ ánh sáng. Từ khóa: angle of incidence (góc tới), angle of reflection (góc phản xạ), incident ray (tia tới), law of reflection (luật phản xạ), normal (pháp tuyến), perpendicular (vuông góc), plane mirror (gương phẳng), protractor (thước đo góc), ray diagram (sơ đồ tia), rays (các tia), reflection (sự phản xạ), set square (ê-ke).">Objectives: describe how light is reflected from a plane surface; understand the law of reflection; be able to draw ray diagrams to show reflection of light. Key words: angle of incidence, angle of reflection, incident ray, law of reflection, normal, perpendicular, plane mirror, protractor, ray diagram, rays, reflection, set square.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D optics bench — meeting the lamp, the plane mirror and a spoon, naming the incident ray, the normal and the reflected ray, measuring a 40° ray diagram with a protractor, tracing how a driver sees a cyclist in a mirror, running the ray-box investigation at three angles (30°, 50° and 70°), and checking pairs of angles against the law of reflection. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Every angle in this lesson is measured from the normal, never from the mirror surface, and the investigation always gives the book's result: the angle of reflection equals the angle of incidence at every setting." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn quang học 3D — làm quen với đèn, gương phẳng (plane mirror) và một chiếc thìa, gọi tên tia tới (incident ray), pháp tuyến (normal) và tia phản xạ (reflected ray), đo một sơ đồ tia 40° bằng thước đo góc (protractor), truy vết cách tài xế nhìn thấy người đi xe đạp trong gương, chạy thí nghiệm hộp tia (ray box) ở ba góc (30°, 50° và 70°), và kiểm tra các cặp góc theo luật phản xạ (law of reflection). Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Mọi góc trong bài này đều được đo từ pháp tuyến (normal), không bao giờ từ bề mặt gương, và thí nghiệm luôn cho kết quả của sách: góc phản xạ (angle of reflection) bằng góc tới (angle of incidence) ở mọi lần đặt góc.">How it works: each step asks for one real action on the 3D optics bench. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinInc"></button>
+        <button class="binbtn nonliving" id="ex2BinRef"></button>
+        <button class="binbtn used" id="ex2BinNor"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-6-1 "Reflection" (Science 8, Unit 6)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= optics bench things ================= */
+const THINGS={
+  lamp:    {emoji:'💡', name:{en:'Lamp — a source of light',vi:'Đèn — một nguồn sáng'}, short:{en:'Lamp',vi:'Đèn'}, ring:0.55, labelY:1.5, fx:-4.6, fz:1.7, fr:5.0},
+  mirror:  {emoji:'🪞', name:{en:'Plane mirror — flat',vi:'Gương phẳng (plane mirror) — phẳng'}, short:{en:'Plane mirror',vi:'Gương phẳng'}, ring:0.65, labelY:1.5, fx:-2.7, fz:1.9, fr:5.0},
+  spoon:   {emoji:'🥄', name:{en:'Spoon — a curved shiny surface',vi:'Thìa — một bề mặt bóng cong'}, short:{en:'Spoon',vi:'Thìa'}, ring:0.55, labelY:1.0, fx:-0.9, fz:2.3, fr:5.0},
+  raybox:  {emoji:'🔦', name:{en:'Ray box — sends out one ray',vi:'Hộp tia (ray box) — phát ra một tia'}, short:{en:'Ray box',vi:'Hộp tia'}, ring:0.55, labelY:1.1, fx:0.7, fz:2.5, fr:5.0},
+  normalpost:{emoji:'┆', name:{en:'The normal — a dashed line',vi:'Pháp tuyến (normal) — một đường đứt nét'}, short:{en:'Normal',vi:'Pháp tuyến'}, ring:0.5, labelY:1.6, fx:2.3, fz:1.4, fr:5.0},
+  eye:     {emoji:'👁️', name:{en:'Eye — receives the reflected ray',vi:'Mắt — nhận tia phản xạ (reflected ray)'}, short:{en:'Eye',vi:'Mắt'}, ring:0.6, labelY:1.2, fx:4.1, fz:2.2, fr:5.0},
+  protractor:{emoji:'📐', name:{en:'Protractor — measures angles',vi:'Thước đo góc (protractor) — đo góc'}, short:{en:'Protractor',vi:'Thước đo góc'}, ring:0.6, labelY:0.8, fx:-3.8, fz:-0.7, fr:5.0},
+  pencil:  {emoji:'✏️', name:{en:'Pencil — draws the ray diagram',vi:'Bút chì — vẽ sơ đồ tia (ray diagram)'}, short:{en:'Pencil',vi:'Bút chì'}, ring:0.55, labelY:0.8, fx:-1.9, fz:-1.1, fr:5.0},
+  cyclist: {emoji:'🚴', name:{en:'Cyclist behind the car',vi:'Người đi xe đạp phía sau ô tô'}, short:{en:'Cyclist',vi:'Người đi xe đạp'}, ring:0.7, labelY:1.5, fx:0.1, fz:-1.3, fr:5.2},
+  carmirror:{emoji:'🚗', name:{en:"Car mirror — the driver's mirror",vi:'Gương ô tô — gương của tài xế'}, short:{en:'Car mirror',vi:'Gương ô tô'}, ring:0.6, labelY:1.3, fx:2.1, fz:-0.9, fr:5.0},
+  ray30:   {emoji:'🔆', name:{en:'Ray box set at i = 30°',vi:'Hộp tia đặt ở góc tới i = 30°'}, short:{en:'i = 30°',vi:'i = 30°'}, ring:0.5, labelY:1.0, fx:-4.4, fz:-2.7, fr:5.0},
+  ray50:   {emoji:'🔆', name:{en:'Ray box set at i = 50°',vi:'Hộp tia đặt ở góc tới i = 50°'}, short:{en:'i = 50°',vi:'i = 50°'}, ring:0.5, labelY:1.0, fx:-2.4, fz:-2.9, fr:5.0},
+  ray70:   {emoji:'🔆', name:{en:'Ray box set at i = 70°',vi:'Hộp tia đặt ở góc tới i = 70°'}, short:{en:'i = 70°',vi:'i = 70°'}, ring:0.5, labelY:1.0, fx:1.6, fz:-2.9, fr:5.0},
+  rock:    {emoji:'🪨', name:{en:'Rock',vi:'Hòn đá (rock)'}, short:{en:'Rock',vi:'Hòn đá'}, ring:0.6, labelY:0.8, fx:4.9, fz:-1.6, fr:5.0}
+};
+const FOCUSORDER=['lamp','mirror','spoon','raybox','normalpost','eye','protractor','cyclist'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the optics bench',vi:'Trên bàn quang học'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Angles I measured',vi:'Các góc con đã đo'},
+  u2Brief:{en:'The angles from your ray diagram and your ray-box investigation, as you measure them. All angles are measured from the normal.',vi:'Các góc từ sơ đồ tia của con và từ thí nghiệm hộp tia, khi con đo chúng. Mọi góc đều được đo từ pháp tuyến (normal).'},
+  recI:{en:'Ray diagram — angle of incidence i',vi:'Sơ đồ tia — góc tới (angle of incidence) i'},
+  recR:{en:'Ray diagram — angle of reflection r',vi:'Sơ đồ tia — góc phản xạ (angle of reflection) r'},
+  recSet:{en:'Investigation settings measured',vi:'Số lần đặt góc đã đo trong thí nghiệm'},
+  recLaw:{en:'Law of reflection',vi:'Luật phản xạ (law of reflection)'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your optics checklist.',vi:'Danh sách thực hành quang học của con.'},
+  didParts:{en:'Named the parts of a ray diagram',vi:'Đã gọi tên các phần của sơ đồ tia (ray diagram)'},
+  didMeas:{en:'Measured angles in the investigation',vi:'Đã đo các góc trong thí nghiệm'},
+  didDriver:{en:'Traced light to the driver’s eye',vi:'Đã truy vết ánh sáng tới mắt tài xế'},
+  didLaw:{en:'Checked angle pairs against the law',vi:'Đã kiểm tra các cặp góc theo luật'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binLaw:{en:'LAW HOLDS — r = i',vi:'ĐÚNG LUẬT — r = i'},
+  binBroken:{en:'LAW BROKEN — r ≠ i',vi:'SAI LUẬT — r khác i'},
+  binInc:{en:'INCIDENT RAY',vi:'TIA TỚI (INCIDENT RAY)'},
+  binRef:{en:'REFLECTED RAY',vi:'TIA PHẢN XẠ (REFLECTED RAY)'},
+  binNor:{en:'NORMAL',vi:'PHÁP TUYẾN (NORMAL)'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.1',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.1'},
+  exIntro:{en:'Workbook games for this lesson: making reflections (Exercise 6.1A), ray diagrams (Exercise 6.1B) and accurate ray diagrams (Exercise 6.1C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: tạo sự phản xạ (Bài tập 6.1A), sơ đồ tia (ray diagrams) (Bài tập 6.1B) và sơ đồ tia chính xác (Bài tập 6.1C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Making reflections (6.1A)',vi:'Bài tập 1 · Focus — Tạo sự phản xạ (6.1A)'},
+  ex1Inst:{en:'Tap the 3 cards that are TRUE about mirrors and reflection.',vi:'Chạm vào 3 thẻ ĐÚNG về gương và sự phản xạ (reflection).'},
+  ex2T:{en:'Exercise 2 · Practice — Name the parts of the ray diagram (6.1B)',vi:'Bài tập 2 · Practice — Gọi tên các phần của sơ đồ tia (6.1B)'},
+  ex2Inst:{en:'Tap a card, then tap the name it belongs to: INCIDENT RAY (arriving), REFLECTED RAY (leaving) or NORMAL (the dashed line at right angles).',vi:'Chạm vào một thẻ, rồi chạm tên của nó: TIA TỚI (INCIDENT RAY) (đi tới), TIA PHẢN XẠ (REFLECTED RAY) (đi ra) hoặc PHÁP TUYẾN (NORMAL) (đường đứt nét vuông góc).'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (6.1C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (6.1C)'},
+  ex3Inst:{en:'Each sentence is about reflection and ray diagrams. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về sự phản xạ (reflection) và sơ đồ tia (ray diagrams). Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'angle of incidence',vi:'góc tới'},
+  {en:'angle of reflection',vi:'góc phản xạ'},
+  {en:'incident ray',vi:'tia tới'},
+  {en:'law of reflection',vi:'luật phản xạ'},
+  {en:'normal',vi:'pháp tuyến'},
+  {en:'perpendicular',vi:'vuông góc'},
+  {en:'plane mirror',vi:'gương phẳng'},
+  {en:'protractor',vi:'thước đo góc'},
+  {en:'ray diagram',vi:'sơ đồ tia'},
+  {en:'rays',vi:'các tia'},
+  {en:'reflection',vi:'sự phản xạ'},
+  {en:'set square',vi:'ê-ke'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Straight lines, flat mirrors',vi:'Đường thẳng, gương phẳng'}, word:{en:'reflection',vi:'sự phản xạ'},
+  q:{en:'Getting started: does light travel in straight lines or in curved paths? And what sort of mirror gives a clear reflection?',vi:'Khởi động: ánh sáng đi theo đường thẳng hay đường cong? Và loại gương nào cho sự phản xạ (reflection) rõ nét?'},
+  act:{en:'Tap the lamp (a light source), the plane mirror, and the spoon on the bench.',vi:'Chạm vào đèn (một nguồn sáng), gương phẳng (plane mirror), và chiếc thìa trên bàn.'},
+  see:{en:'Each thing bounces and shows its name. Finding all three completes the step.',vi:'Mỗi vật nảy lên và hiện tên. Tìm đủ ba vật là hoàn thành bước.'},
+  concl:[
+    {en:'Light travels in straight lines, called rays (rays). When we draw a ray we use a ruler and add an arrowhead to show which way the light is going.',vi:'Ánh sáng đi theo đường thẳng, gọi là tia (rays). Khi vẽ một tia, ta dùng thước kẻ và thêm đầu mũi tên để chỉ hướng ánh sáng đang đi.'},
+    {en:'Evidence for straight lines: shadows have sharp edges, and light cannot bend around corners — that is why you cannot see a pencil hidden under a bed without help from a mirror.',vi:'Bằng chứng cho đường thẳng: bóng có cạnh sắc nét, và ánh sáng không bẻ cong quanh góc được — đó là lý do ta không nhìn thấy một cây bút chì khuất dưới gầm giường nếu không nhờ gương.'},
+    {en:'A plane mirror (plane mirror) is a flat mirror — “plane” means flat. A curved shiny surface, like the back of a spoon, still reflects light, but the reflection is distorted (stretched and squashed).',vi:'Một gương phẳng (plane mirror) là một gương mặt phẳng — “plane” nghĩa là phẳng. Một bề mặt bóng cong, như lưng thìa, vẫn phản xạ ánh sáng, nhưng hình phản xạ bị méo (bị kéo giãn và ép lại).'}]},
+ {tag:{en:'Parts of a ray diagram',vi:'Các phần của sơ đồ tia'}, word:{en:'incident ray',vi:'tia tới'},
+  q:{en:'A ray arrives at a mirror and bounces off. What are the arriving ray, the leaving ray, and the line at right angles to the mirror called?',vi:'Một tia đi tới gương và dội lại. Tia đi tới, tia đi ra, và đường vuông góc với gương được gọi là gì?'},
+  act:{en:'Tap the ray box (it sends the arriving ray), the dashed normal post (the line at right angles), and the eye (it receives the leaving ray).',vi:'Chạm vào hộp tia (ray box) (nó phát ra tia đi tới), cột pháp tuyến đứt nét (đường vuông góc), và con mắt (nó nhận tia đi ra).'},
+  see:{en:'The yellow ray runs from the ray box to the mirror point, and the leaving ray runs on to the eye.',vi:'Tia màu vàng chạy từ hộp tia tới điểm trên gương, và tia đi ra chạy tiếp tới con mắt.'},
+  concl:[
+    {en:'The ray arriving at a surface is the incident ray (incident ray). The ray that has been reflected — the one leaving the mirror — is the reflected ray.',vi:'Tia đi tới một bề mặt là tia tới (incident ray). Tia đã được phản xạ — tia rời khỏi gương — là tia phản xạ (reflected ray).'},
+    {en:'The normal (normal) is the line at right angles to the mirror, drawn where the incident ray meets the surface. “Normal” in physics and maths means perpendicular (perpendicular) — at right angles to something.',vi:'Pháp tuyến (normal) là đường vuông góc với gương, được vẽ tại nơi tia tới chạm bề mặt. “Normal” trong vật lý và toán học nghĩa là vuông góc (perpendicular) — tạo góc vuông với một vật nào đó.'},
+    {en:'On a ray diagram (ray diagram) the normal is usually drawn dashed, so nobody mixes it up with a light ray.',vi:'Trên sơ đồ tia (ray diagram), pháp tuyến thường được vẽ đứt nét, để không ai nhầm nó với một tia sáng.'}]},
+ {tag:{en:'Measure the angles',vi:'Đo các góc'}, word:{en:'angle of incidence',vi:'góc tới'},
+  q:{en:'In our ray diagram the incident ray meets the mirror at 40° from the normal. How do we build the diagram — and how big is the reflected angle?',vi:'Trong sơ đồ tia của ta, tia tới chạm gương ở 40° so với pháp tuyến. Ta xây sơ đồ thế nào — và góc phản xạ lớn bao nhiêu?'},
+  act:{en:'Tap the protractor (protractor) to draw the normal and measure the angle of incidence, i = 40°. Then tap the pencil to mark the same angle on the other side of the normal and draw the reflected ray.',vi:'Chạm vào thước đo góc (protractor) để vẽ pháp tuyến và đo góc tới (angle of incidence), i = 40°. Rồi chạm vào bút chì để đánh dấu cùng góc đó ở phía bên kia của pháp tuyến và vẽ tia phản xạ.'},
+  see:{en:'The protractor shows i = 40° between the incident ray and the normal. The pencil draws the reflected ray at r = 40° on the other side.',vi:'Thước đo góc cho thấy i = 40° giữa tia tới và pháp tuyến. Bút chì vẽ tia phản xạ ở r = 40° phía bên kia.'},
+  concl:[
+    {en:'To draw a ray diagram: draw the incident ray meeting the mirror; draw the normal with a protractor (protractor) or set square (set square) where the ray meets the surface; measure the angle between the incident ray and the normal.',vi:'Để vẽ một sơ đồ tia (ray diagram): vẽ tia tới chạm gương; vẽ pháp tuyến bằng thước đo góc (protractor) hoặc ê-ke (set square) tại nơi tia chạm bề mặt; đo góc giữa tia tới và pháp tuyến.'},
+    {en:'That angle is the angle of incidence (angle of incidence), i. Always measure angles from the normal — never from the mirror surface itself.',vi:'Góc đó là góc tới (angle of incidence), i. Luôn đo góc từ pháp tuyến — không bao giờ từ chính bề mặt gương.'},
+    {en:'Then measure out the same angle on the other side of the normal: that is the angle of reflection (angle of reflection), r. Here i = 40°, so r = 40° too. Do not forget the arrowhead on the reflected ray.',vi:'Rồi đo ra cùng một góc ở phía bên kia của pháp tuyến: đó là góc phản xạ (angle of reflection), r. Ở đây i = 40°, nên r cũng bằng 40°. Đừng quên đầu mũi tên trên tia phản xạ.'}]},
+ {tag:{en:'Seeing behind you',vi:'Nhìn thấy phía sau'}, word:{en:'reflected ray',vi:'tia phản xạ'},
+  q:{en:'A cyclist rides behind a car. The driver cannot turn round — so how does the driver see the cyclist?',vi:'Một người đi xe đạp chạy phía sau một ô tô. Tài xế không thể quay đầu lại — vậy tài xế nhìn thấy người đi xe đạp bằng cách nào?'},
+  act:{en:'Tap the cyclist, then tap the car mirror, to trace the light’s path.',vi:'Chạm vào người đi xe đạp, rồi chạm vào gương ô tô, để truy vết đường đi của ánh sáng.'},
+  see:{en:'Light from the cyclist hits the mirror as the incident ray, and the reflected ray travels on into the driver’s eye.',vi:'Ánh sáng từ người đi xe đạp tới gương như tia tới (incident ray), và tia phản xạ (reflected ray) đi tiếp vào mắt tài xế.'},
+  concl:[
+    {en:'Light from the Sun reflects off the cyclist and travels to the mirror. That arriving light is the incident ray (incident ray) on the mirror.',vi:'Ánh sáng từ Mặt Trời phản xạ khỏi người đi xe đạp và đi tới gương. Ánh sáng đi tới đó là tia tới (incident ray) trên gương.'},
+    {en:'The mirror reflects the ray into the driver’s eye — so the driver can see something that is behind the car, without turning round.',vi:'Gương phản xạ tia đó vào mắt tài xế — nên tài xế nhìn thấy được vật ở phía sau xe, mà không cần quay đầu lại.'},
+    {en:'Mirrors are used wherever we need to see round a corner or behind us: in cars, in shops, at dentists, and on bends in the road. Shiny surfaces that are not mirrors — polished metal, still water, glossy paint — reflect light too; what they share is a smooth, shiny surface.',vi:'Gương được dùng ở mọi nơi ta cần nhìn quanh một góc hay phía sau mình: trong ô tô, trong cửa hàng, ở nha sĩ, và ở các khúc cua trên đường. Các bề mặt bóng không phải gương — kim loại đánh bóng, mặt nước lặng, sơn bóng — cũng phản xạ ánh sáng; điểm chung của chúng là một bề mặt nhẵn và bóng.'}]},
+ {tag:{en:'Investigation: change the angle',vi:'Thí nghiệm: thay đổi góc'}, word:{en:'law of reflection',vi:'luật phản xạ'},
+  q:{en:'Now test it like the book’s ray-box investigation: shine a ray at a plane mirror at three different angles of incidence — 30°, 50° and 70°. What happens to the angle of reflection each time?',vi:'Giờ hãy kiểm tra như thí nghiệm hộp tia của sách: chiếu một tia vào gương phẳng ở ba góc tới khác nhau — 30°, 50° và 70°. Góc phản xạ thay đổi thế nào mỗi lần?'},
+  act:{en:'Tap each of the three ray boxes on the back bench: i = 30°, i = 50° and i = 70°. Each one fires its ray at the mirror and measures r.',vi:'Chạm vào từng hộp tia trong ba hộp tia trên bàn phía sau: i = 30°, i = 50° và i = 70°. Mỗi hộp bắn tia của nó vào gương và đo r.'},
+  see:{en:'Every result is the same pattern: r comes out equal to i — 30° and 30°, 50° and 50°, 70° and 70°.',vi:'Mọi kết quả đều theo cùng một quy luật: r luôn bằng i — 30° và 30°, 50° và 50°, 70° và 70°.'},
+  concl:[
+    {en:'Results: angle of incidence 30° → angle of reflection 30°; 50° → 50°; 70° → 70°. Recorded in a table with two columns (angle of incidence, angle of reflection, both in degrees), the pattern is exact.',vi:'Kết quả: góc tới (angle of incidence) 30° → góc phản xạ (angle of reflection) 30°; 50° → 50°; 70° → 70°. Ghi vào bảng hai cột (góc tới, góc phản xạ, cả hai theo độ), quy luật là chính xác.'},
+    {en:'In this investigation the independent variable is the angle of incidence (the one we choose and change), and the dependent variable is the angle of reflection (the one we measure). A graph with i on the x-axis gives a straight line through the origin.',vi:'Trong thí nghiệm này, biến độc lập là góc tới (angle of incidence) (góc ta chọn và thay đổi), và biến phụ thuộc là góc phản xạ (angle of reflection) (góc ta đo). Đồ thị với i trên trục x cho một đường thẳng qua gốc tọa độ.'},
+    {en:'This always happens, so it is a law — the law of reflection (law of reflection): the angle of reflection is equal to the angle of incidence. It is hard to be perfectly accurate: the ray has width, so judge its centre, mark ray positions with small pencil marks, and keep the mirror exactly on its marked line.',vi:'Điều này luôn xảy ra, nên nó là một luật — luật phản xạ (law of reflection): góc phản xạ bằng góc tới. Rất khó đo hoàn toàn chính xác: tia có độ rộng, nên hãy ước lượng tâm của nó, đánh dấu vị trí các tia bằng các dấu bút chì nhỏ, và giữ gương đúng trên đường đã đánh dấu của nó.'}]},
+ {tag:{en:'Check the law',vi:'Kiểm tra luật'}, word:{en:'law of reflection',vi:'luật phản xạ'},
+  q:{en:'Six measurements were written down after ray-box work. Which of them obey the law of reflection — and which must be mistakes?',vi:'Sáu phép đo được ghi lại sau khi làm với hộp tia. Những phép đo nào tuân theo luật phản xạ (law of reflection) — và những phép đo nào chắc chắn là sai?'},
+  act:{en:'Each card gives an angle of incidence i and an angle of reflection r. Tap a card, then tap LAW HOLDS or LAW BROKEN.',vi:'Mỗi thẻ cho một góc tới (angle of incidence) i và một góc phản xạ (angle of reflection) r. Chạm vào một thẻ, rồi chạm ĐÚNG LUẬT (LAW HOLDS) hoặc SAI LUẬT (LAW BROKEN).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'The law of reflection (law of reflection) says r = i, always. A card like i = 45°, r = 60° cannot be right — someone measured from the mirror surface, or misread the protractor.',vi:'Luật phản xạ (law of reflection) nói r = i, luôn luôn. Một thẻ như i = 45°, r = 60° không thể đúng — ai đó đã đo từ bề mặt gương, hoặc đọc sai thước đo góc (protractor).'},
+    {en:'Even a ray arriving along the normal itself (i = 0°) obeys the law: it reflects straight back along the normal, so r = 0°.',vi:'Ngay cả một tia đi tới dọc chính pháp tuyến (i = 0°) cũng tuân theo luật: nó phản xạ thẳng trở lại dọc pháp tuyến, nên r = 0°.'},
+    {en:'I can describe how light is reflected from a plane mirror.',vi:'Con mô tả được cách ánh sáng phản xạ từ một gương phẳng (plane mirror).'},
+    {en:'I can recall the law of reflection.',vi:'Con nhớ được luật phản xạ (law of reflection).'},
+    {en:'I can draw ray diagrams to show reflection of light from a plane mirror.',vi:'Con vẽ được sơ đồ tia (ray diagrams) để biểu diễn sự phản xạ ánh sáng từ một gương phẳng (plane mirror).'}]}
+];
+const PAIRS=[
+ {id:'p_30',emoji:'📐',en:'i = 30°, r = 30°',vi:'i = 30°, r = 30°',ans:'law'},
+ {id:'p_50bad',emoji:'📐',en:'i = 50°, r = 25°',vi:'i = 50°, r = 25°',ans:'broken'},
+ {id:'p_70',emoji:'📐',en:'i = 70°, r = 70°',vi:'i = 70°, r = 70°',ans:'law'},
+ {id:'p_0',emoji:'📐',en:'i = 0° (ray along the normal), r = 0°',vi:'i = 0° (tia dọc pháp tuyến), r = 0°',ans:'law'},
+ {id:'p_45bad',emoji:'📐',en:'i = 45°, r = 60°',vi:'i = 45°, r = 60°',ans:'broken'},
+ {id:'p_20',emoji:'📐',en:'i = 20°, r = 20°',vi:'i = 20°, r = 20°',ans:'law'}
+];
+const PAIRS_ORDER=mixOrder(PAIRS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'Which of these means the same as “plane mirror”?',vi:'Cụm nào dưới đây có cùng nghĩa với “plane mirror” (gương phẳng)?'},
+  o:[{en:'A curved mirror',vi:'Một gương cong'},{en:'A flat mirror',vi:'Một gương phẳng (flat mirror)'},{en:'A magnifying mirror',vi:'Một gương phóng đại'}],a:1,
+  e:{en:'“Plane” means flat, so a plane mirror is a flat mirror. A curved surface, like a spoon, gives a distorted reflection.',vi:'“Plane” nghĩa là phẳng, nên gương phẳng (plane mirror) là một gương mặt phẳng. Một bề mặt cong, như chiếc thìa, cho hình phản xạ bị méo.'}},
+ {q:{en:'A ray hits a plane mirror with an angle of incidence of 40°. What is the angle of reflection?',vi:'Một tia tới một gương phẳng với góc tới (angle of incidence) là 40°. Góc phản xạ (angle of reflection) là bao nhiêu?'},
+  o:[{en:'20°',vi:'20°'},{en:'80°',vi:'80°'},{en:'40°',vi:'40°'}],a:2,
+  e:{en:'The law of reflection says the angle of reflection equals the angle of incidence: r = i = 40°.',vi:'Luật phản xạ (law of reflection) nói góc phản xạ (angle of reflection) bằng góc tới (angle of incidence): r = i = 40°.'}},
+ {q:{en:'What is the normal in a ray diagram?',vi:'Pháp tuyến (normal) trong một sơ đồ tia (ray diagram) là gì?'},
+  o:[{en:'The line at right angles to the mirror, where the incident ray meets it',vi:'Đường vuông góc với gương, tại nơi tia tới (incident ray) chạm gương'},{en:'The ray of light arriving at the mirror',vi:'Tia sáng đi tới gương'},{en:'The surface of the mirror itself',vi:'Chính bề mặt của gương'}],a:0,
+  e:{en:'The normal is perpendicular to the mirror at the point where the ray meets it, and both angles are measured from it — it is usually drawn dashed.',vi:'Pháp tuyến (normal) vuông góc (perpendicular) với gương tại điểm tia chạm gương, và cả hai góc đều được đo từ nó — nó thường được vẽ đứt nét.'}},
+ {q:{en:'Sofia looks at a candle in a mirror. Which path does the light take to reach her eye?',vi:'Sofia nhìn một cây nến trong gương. Ánh sáng đi theo đường nào để tới mắt cô ấy?'},
+  o:[{en:'Candle → eye, directly',vi:'Nến → mắt, trực tiếp'},{en:'Candle → mirror → eye',vi:'Nến → gương → mắt'},{en:'Eye → mirror → candle',vi:'Mắt → gương → nến'}],a:1,
+  e:{en:'Light from the candle travels to the mirror as the incident ray, reflects off it, and the reflected ray travels into her eye.',vi:'Ánh sáng từ cây nến đi tới gương như tia tới (incident ray), phản xạ khỏi gương, và tia phản xạ (reflected ray) đi vào mắt cô ấy.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_flat',emoji:'🪞',en:'“Plane mirror” means a flat mirror',vi:'“Plane mirror” (gương phẳng) nghĩa là một gương mặt phẳng',keyw:true},
+ {id:'e_curved',emoji:'🥄',en:'“Plane mirror” means a curved mirror',vi:'“Plane mirror” (gương phẳng) nghĩa là một gương cong',keyw:false},
+ {id:'e_bounce',emoji:'🏀',en:'A bouncing ball is a good picture of light reflecting',vi:'Một quả bóng nảy lên là hình ảnh tốt của ánh sáng phản xạ',keyw:true},
+ {id:'e_slow',emoji:'🐌',en:'A ball slowing down is a good picture of light reflecting',vi:'Một quả bóng chậm dần là hình ảnh tốt của ánh sáng phản xạ',keyw:false},
+ {id:'e_normal',emoji:'┆',en:'The normal is at right angles (perpendicular) to the mirror',vi:'Pháp tuyến (normal) vuông góc (perpendicular) với gương',keyw:true},
+ {id:'e_fromsurf',emoji:'📏',en:'Angles are measured from the mirror surface itself',vi:'Các góc được đo từ chính bề mặt gương',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_arr',emoji:'➡️',en:'The ray of light arriving at a mirror',vi:'Tia sáng đi tới một gương',ans:'incident'},
+ {id:'x_leave',emoji:'↩️',en:'The ray of light leaving a mirror after it has been reflected',vi:'Tia sáng rời khỏi gương sau khi đã được phản xạ',ans:'reflected'},
+ {id:'x_dash',emoji:'┆',en:'The dashed line drawn at right angles to the mirror',vi:'Đường đứt nét được vẽ vuông góc với gương',ans:'normal'},
+ {id:'x_candle',emoji:'🕯️',en:'Light from Sofia’s candle travelling towards the mirror',vi:'Ánh sáng từ cây nến của Sofia đi về phía gương',ans:'incident'},
+ {id:'x_driver',emoji:'🚗',en:'Light travelling from the car mirror into the driver’s eye',vi:'Ánh sáng đi từ gương ô tô vào mắt tài xế',ans:'reflected'},
+ {id:'x_point',emoji:'📐',en:'The line drawn with a protractor or set square where the ray meets the mirror',vi:'Đường được vẽ bằng thước đo góc (protractor) hoặc ê-ke (set square) tại nơi tia chạm gương',ans:'normal'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
+const EX3=[
+ {pre:{en:'In a ray diagram, the angles of incidence and reflection are measured from the',vi:'Trong một sơ đồ tia (ray diagram), góc tới và góc phản xạ được đo từ'},
+  wrong:0,
+  opts:[{en:'mirror surface',vi:'bề mặt gương'},{en:'normal',vi:'pháp tuyến (normal)'}],
+  e:{en:'Both angles are measured from the normal, never from the mirror surface. Cross out “mirror surface”.',vi:'Cả hai góc đều được đo từ pháp tuyến (normal), không bao giờ từ bề mặt gương. Hãy gạch bỏ “bề mặt gương”.'}},
+ {pre:{en:'The angle of reflection is',vi:'Góc phản xạ (angle of reflection)'},
+  wrong:1,
+  opts:[{en:'equal to the angle of incidence',vi:'bằng góc tới (angle of incidence)'},{en:'twice the angle of incidence',vi:'gấp đôi góc tới'}],
+  e:{en:'The law of reflection says r = i — equal, not twice. Cross out “twice the angle of incidence”.',vi:'Luật phản xạ (law of reflection) nói r = i — bằng nhau, không phải gấp đôi. Hãy gạch bỏ “gấp đôi góc tới”.'}},
+ {pre:{en:'Light always travels in',vi:'Ánh sáng luôn đi theo'},
+  wrong:0,
+  opts:[{en:'curved paths',vi:'đường cong'},{en:'straight lines',vi:'đường thẳng (straight lines)'}],
+  e:{en:'Light travels in straight lines called rays — that is why shadows are sharp. Cross out “curved paths”.',vi:'Ánh sáng đi theo đường thẳng gọi là tia (rays) — đó là lý do bóng có cạnh sắc nét. Hãy gạch bỏ “đường cong”.'}},
+ {pre:{en:'A spoon’s shiny back is a curved surface, so the reflection you see in it is',vi:'Lưng bóng của một chiếc thìa là một bề mặt cong, nên hình phản xạ ta thấy trong nó'},
+  wrong:0,
+  opts:[{en:'clear and exactly like a plane mirror',vi:'rõ nét và y như trong gương phẳng (plane mirror)'},{en:'distorted',vi:'bị méo (distorted)'}],
+  e:{en:'Only a flat (plane) surface gives an undistorted reflection; a curved surface distorts it. Cross out “clear and exactly like a plane mirror”.',vi:'Chỉ một bề mặt phẳng (plane) mới cho hình phản xạ không méo; một bề mặt cong làm nó bị méo. Hãy gạch bỏ “rõ nét và y như trong gương phẳng”.'}},
+ {pre:{en:'A ray box is set so the angle of incidence is 60°. The angle of reflection will be',vi:'Một hộp tia được đặt sao cho góc tới (angle of incidence) là 60°. Góc phản xạ (angle of reflection) sẽ là'},
+  wrong:0,
+  opts:[{en:'30°',vi:'30°'},{en:'60°',vi:'60°'}],
+  e:{en:'r must equal i, so r = 60°. Cross out “30°”.',vi:'r phải bằng i, nên r = 60°. Hãy gạch bỏ “30°”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 3 + 6 + 5 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-6-1';
+const SUMKEY='camb:sum:sci8-6-1';
+const BOT_CODE='sci8-6.1';
+let FOUND={lamp:false,mirror:false,spoon:false,ray:false,norm:false,eye:false,prot:false,pencil:false,cyc:false,carmir:false,r30:false,r50:false,r70:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fLamp:false, fMirror:false, fSpoon:false,
+  s2ray:false, s2norm:false, s2eye:false,
+  s3prot:false, s3pencil:false,
+  s4cyc:false, s4mir:false,
+  s5r30:false, s5r50:false, s5r70:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fLamp&&T.fMirror&&T.fSpoon;
+  if(i===1) return T.s2ray&&T.s2norm&&T.s2eye;
+  if(i===2) return T.s3prot&&T.s3pencil;
+  if(i===3) return T.s4cyc&&T.s4mir;
+  if(i===4) return T.s5r30&&T.s5r50&&T.s5r70;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Found: lamp '+(T.fLamp?'✓':'…')+' · plane mirror '+(T.fMirror?'✓':'…')+' · spoon '+(T.fSpoon?'✓':'…')+'. Tap them on the bench!',
+                     'Đã tìm: đèn '+(T.fLamp?'✓':'…')+' · gương phẳng '+(T.fMirror?'✓':'…')+' · thìa '+(T.fSpoon?'✓':'…')+'. Hãy chạm vào chúng trên bàn!');
+  if(i===1) return B('Parts found: incident ray (ray box) '+(T.s2ray?'✓':'…')+' · normal '+(T.s2norm?'✓':'…')+' · reflected ray to the eye '+(T.s2eye?'✓':'…')+'.',
+                     'Phần đã tìm: tia tới (incident ray) (hộp tia) '+(T.s2ray?'✓':'…')+' · pháp tuyến (normal) '+(T.s2norm?'✓':'…')+' · tia phản xạ (reflected ray) tới mắt '+(T.s2eye?'✓':'…')+'.');
+  if(i===2) return B('Protractor: normal drawn, i = 40° measured '+(T.s3prot?'✓':'…')+' · pencil: reflected ray drawn at r = 40° '+(T.s3pencil?'✓':'…')+'.',
+                     'Thước đo góc: đã vẽ pháp tuyến, đã đo i = 40° '+(T.s3prot?'✓':'…')+' · bút chì: đã vẽ tia phản xạ ở r = 40° '+(T.s3pencil?'✓':'…')+'.');
+  if(i===3) return B('Cyclist tapped '+(T.s4cyc?'✓':'…')+' · car mirror tapped '+(T.s4mir?'✓':'…')+' — light path: cyclist → mirror → driver’s eye.',
+                     'Đã chạm người đi xe đạp '+(T.s4cyc?'✓':'…')+' · đã chạm gương ô tô '+(T.s4mir?'✓':'…')+' — đường đi của ánh sáng: người đi xe đạp → gương → mắt tài xế.');
+  if(i===4) return B('Settings measured: i = 30° → r = 30° '+(T.s5r30?'✓':'…')+' · i = 50° → r = 50° '+(T.s5r50?'✓':'…')+' · i = 70° → r = 70° '+(T.s5r70?'✓':'…')+'.',
+                     'Lần đặt góc đã đo: i = 30° → r = 30° '+(T.s5r30?'✓':'…')+' · i = 50° → r = 50° '+(T.s5r50?'✓':'…')+' · i = 70° → r = 70° '+(T.s5r70?'✓':'…')+'.');
+  if(i===5){
+    const c=T.s6sel? PAIRS.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap LAW HOLDS or LAW BROKEN.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm ĐÚNG LUẬT (LAW HOLDS) hoặc SAI LUẬT (LAW BROKEN).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'💡',label:{en:'Lamp — light source',vi:'Đèn — nguồn sáng'},got:T.fLamp},
+      {emoji:'🪞',label:{en:'Plane mirror — flat',vi:'Gương phẳng — phẳng'},got:T.fMirror},
+      {emoji:'🥄',label:{en:'Spoon — curved',vi:'Thìa — cong'},got:T.fSpoon}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔦',label:{en:'Incident ray — arriving',vi:'Tia tới — đi tới'},got:T.s2ray},
+      {emoji:'┆',label:{en:'Normal — at right angles',vi:'Pháp tuyến — vuông góc'},got:T.s2norm},
+      {emoji:'👁️',label:{en:'Reflected ray — to the eye',vi:'Tia phản xạ — tới mắt'},got:T.s2eye}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'📐',label:{en:'i = 40° from the normal',vi:'i = 40° từ pháp tuyến'},got:T.s3prot},
+      {emoji:'✏️',label:{en:'r = 40° — reflected ray drawn',vi:'r = 40° — đã vẽ tia phản xạ'},got:T.s3pencil}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🚴',label:{en:'Cyclist — light starts here',vi:'Người đi xe đạp — ánh sáng bắt đầu ở đây'},got:T.s4cyc},
+      {emoji:'🚗',label:{en:'Car mirror — reflects to the eye',vi:'Gương ô tô — phản xạ tới mắt'},got:T.s4mir}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🔆',label:{en:'i = 30° → r = 30°',vi:'i = 30° → r = 30°'},got:T.s5r30},
+      {emoji:'🔆',label:{en:'i = 50° → r = 50°',vi:'i = 50° → r = 50°'},got:T.s5r50},
+      {emoji:'🔆',label:{en:'i = 70° → r = 70°',vi:'i = 70° → r = 70°'},got:T.s5r70}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,PAIRS_ORDER,
+      [{key:'law',label:STR.binLaw,cls:'living'},{key:'broken',label:STR.binBroken,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('lamp'); bounceThing('lamp'); setTimeout(()=>{ focusVisual('mirror'); bounceThing('mirror'); },900); }
+  else if(i===1){ focusThing('raybox'); setTimeout(()=>focusThing('eye'),900); }
+  else if(i===2){ focusThing('protractor'); setTimeout(()=>focusThing('pencil'),900); }
+  else if(i===3){ focusThing('cyclist'); setTimeout(()=>focusThing('carmirror'),900); }
+  else if(i===4){ focusThing('ray30'); setTimeout(()=>focusThing('ray70'),900); }
+  else if(i===5){ demoSort(PAIRS,T.s6correct); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  const n=(FOUND.r30?1:0)+(FOUND.r50?1:0)+(FOUND.r70?1:0);
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recI)+'</span><b>'+(FOUND.prot?'40°':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recR)+'</span><b>'+(FOUND.pencil?'40°':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recSet)+'</span><b>'+n+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recLaw)+'</span><b>'+(doneSteps.has(4)?'r = i':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(1),label:STR.didParts},
+    {got:doneSteps.has(4),label:STR.didMeas},
+    {got:doneSteps.has(3),label:STR.didDriver},
+    {got:doneSteps.has(5),label:STR.didLaw}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let benchMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildLamp(){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.32,0.08,14),stdMat(0x39424e,0.6));
+  base.position.y=0.04; g.add(base);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.75,8),stdMat(0x39424e,0.6));
+  stem.position.y=0.42; g.add(stem);
+  const shade=new THREE.Mesh(new THREE.ConeGeometry(0.3,0.32,14,1,true),stdMat(0xf2b134,0.55));
+  shade.position.y=0.88; g.add(shade);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),
+    new THREE.MeshStandardMaterial({color:0xffe9a0,roughness:0.3,emissive:0xffc93c,emissiveIntensity:0.7}));
+  bulb.position.y=0.8; g.add(bulb);
+  g.position.set(-4.6,0,1.7); g.userData.baseY=0;
+  return g;
+}
+function buildPlaneMirror(){
+  const g=new THREE.Group();
+  const frame=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,1.25,0.07),stdMat(0x8a6844,0.8)));
+  frame.position.y=0.78; g.add(frame);
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(0.82,1.12,0.02),
+    new THREE.MeshStandardMaterial({color:0xcfe8f5,roughness:0.08,metalness:0.65}));
+  glass.position.set(0,0.78,0.045); g.add(glass);
+  [-0.3,0.3].forEach(x=>{
+    const foot=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.16,0.4),stdMat(0x6e5136,0.85));
+    foot.position.set(x,0.08,0); g.add(foot);
+  });
+  g.position.set(-2.7,0,1.9); g.rotation.y=0.35; g.userData.baseY=0;
+  return g;
+}
+function buildSpoon(){
+  const g=new THREE.Group();
+  const bowl=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10),
+    new THREE.MeshStandardMaterial({color:0xd9dee3,roughness:0.15,metalness:0.8})));
+  bowl.scale.set(1,0.35,1.25); bowl.position.y=0.12; g.add(bowl);
+  const handle=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.03,0.85),
+    new THREE.MeshStandardMaterial({color:0xc3c9cf,roughness:0.2,metalness:0.8}));
+  handle.position.set(0,0.1,0.72); g.add(handle);
+  g.position.set(-0.9,0,2.3); g.rotation.y=-0.5; g.userData.baseY=0;
+  return g;
+}
+function buildRayBoxAt(color,x,z){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.42,0.45),stdMat(0x39424e,0.55)));
+  body.position.y=0.21; g.add(body);
+  const top=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.07,0.36),stdMat(color,0.5));
+  top.position.y=0.45; g.add(top);
+  const slit=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.2,0.06),
+    new THREE.MeshStandardMaterial({color:0xffe9a0,roughness:0.3,emissive:0xffc93c,emissiveIntensity:0.8}));
+  slit.position.set(0.32,0.22,0); g.add(slit);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildNormalPost(){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,0.05,12),stdMat(0x39424e,0.6));
+  base.position.y=0.025; g.add(base);
+  for(let k=0;k<5;k++){
+    const seg=new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.028,0.17,7),stdMat(0xe2574c,0.55));
+    seg.position.y=0.16+k*0.24; g.add(seg);
+  }
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.14,8),stdMat(0xe2574c,0.55));
+  tip.position.y=1.42; g.add(tip);
+  g.position.set(2.3,0,1.4); g.userData.baseY=0;
+  return g;
+}
+function buildEye(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.32,14,11),stdMat(0xf7f7f2,0.35)));
+  ball.scale.set(1.25,0.8,0.6); ball.position.y=0.55; g.add(ball);
+  const iris=new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),stdMat(0x3d7bd6,0.35));
+  iris.position.set(0,0.57,0.17); iris.scale.z=0.5; g.add(iris);
+  const pupil=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),stdMat(0x14181d,0.35));
+  pupil.position.set(0,0.57,0.23); pupil.scale.z=0.5; g.add(pupil);
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.16,0.3,10),stdMat(0x39424e,0.6));
+  stand.position.y=0.15; g.add(stand);
+  g.position.set(4.1,0,2.2); g.rotation.y=-0.5; g.userData.baseY=0;
+  return g;
+}
+function buildProtractor(){
+  const g=new THREE.Group();
+  const disc=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.48,0.05,24,1,false,0,Math.PI),stdMat(0xf2d13c,0.5)));
+  disc.position.y=0.05; g.add(disc);
+  for(let k=0;k<=6;k++){
+    const a=k/6*Math.PI;
+    const tick=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.03,0.14),stdMat(0x39424e,0.6));
+    tick.position.set(Math.cos(a)*0.4,0.09,Math.sin(a)*0.4); tick.rotation.y=-a; g.add(tick);
+  }
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.3,7),stdMat(0x39424e,0.6));
+  post.position.y=0.2; g.add(post);
+  g.position.set(-3.8,0,-0.7); g.userData.baseY=0;
+  return g;
+}
+function buildPencil(){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.85,6),stdMat(0xf2b134,0.55));
+  body.rotation.z=Math.PI/2; body.rotation.y=0.5; body.position.y=0.09; g.add(body);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.2,8),stdMat(0xf0dcbc,0.6));
+  tip.rotation.z=-Math.PI/2; tip.rotation.y=0.5; tip.position.set(0.47,0.09,-0.22); g.add(tip);
+  const rubber=new THREE.Mesh(new THREE.CylinderGeometry(0.062,0.062,0.09,8),stdMat(0xe58bb1,0.6));
+  rubber.rotation.z=Math.PI/2; rubber.rotation.y=0.5; rubber.position.set(-0.46,0.09,0.22); g.add(rubber);
+  g.position.set(-1.9,0,-1.1); g.userData.baseY=0;
+  return g;
+}
+function buildCyclist(){
+  const g=new THREE.Group();
+  [-0.42,0.42].forEach(x=>{
+    const wheel=new THREE.Mesh(new THREE.TorusGeometry(0.26,0.03,8,20),stdMat(0x27313a,0.6));
+    wheel.position.set(x,0.26,0); g.add(wheel);
+  });
+  const bar=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.85,7),stdMat(0xd8542e,0.55));
+  bar.rotation.z=Math.PI/2-0.25; bar.position.set(0,0.45,0); g.add(bar);
+  const seat=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.05,0.14),stdMat(0x27313a,0.6));
+  seat.position.set(-0.28,0.62,0); g.add(seat);
+  const body=new THREE.Mesh(new THREE.SphereGeometry(0.17,10,8),stdMat(0x3d7bd6,0.65));
+  body.scale.set(1.3,0.85,0.8); body.position.set(-0.05,0.85,0); body.rotation.z=-0.4; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.11,9,7),stdMat(0xf0c8a0,0.6));
+  head.position.set(0.18,1.05,0); g.add(head);
+  const helmet=new THREE.Mesh(new THREE.SphereGeometry(0.12,9,6),stdMat(0xe2574c,0.55));
+  helmet.scale.y=0.6; helmet.position.set(0.18,1.12,0); g.add(helmet);
+  g.position.set(0.1,0,-1.3); g.userData.baseY=0;
+  return g;
+}
+function buildCarMirror(){
+  const g=new THREE.Group();
+  const door=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.9,0.75,0.1),stdMat(0x9db8cf,0.5)));
+  door.position.y=0.4; g.add(door);
+  const stalk=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.35,7),stdMat(0x27313a,0.6));
+  stalk.rotation.z=1.1; stalk.position.set(0.5,0.75,0); g.add(stalk);
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.34,0.06),stdMat(0x27313a,0.55));
+  frame.position.set(0.68,0.92,0); g.add(frame);
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.27,0.02),
+    new THREE.MeshStandardMaterial({color:0xcfe8f5,roughness:0.08,metalness:0.65}));
+  glass.position.set(0.68,0.92,0.04); g.add(glass);
+  g.position.set(2.1,0,-0.9); g.rotation.y=-0.3; g.userData.baseY=0;
+  return g;
+}
+function buildRock(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.42,0),stdMat(0x8d99a6,0.95)));
+  r.position.y=0.3; r.scale.y=0.75; g.add(r);
+  g.position.set(4.9,0,-1.6); g.userData.baseY=0;
+  return g;
+}
+function buildTree(x,z,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.09*s,0.13*s,0.9*s,8),stdMat(0x8a6844,0.95));
+  trunk.position.y=0.45*s; g.add(trunk);
+  [[0,1.25,0,0.55],[0.3,1.05,0.1,0.4],[-0.28,1.08,-0.08,0.42]].forEach(p=>{
+    const blob=new THREE.Mesh(new THREE.SphereGeometry(p[3]*s,10,8),stdMat(0x4e9e4e,0.9));
+    blob.position.set(p[0]*s,p[1]*s,p[2]*s); g.add(blob);
+  });
+  g.position.set(x,0,z);
+  return g;
+}
+function rayBar(x1,z1,x2,z2){
+  const dx=x2-x1, dz=z2-z1, len=Math.sqrt(dx*dx+dz*dz);
+  const m=new THREE.Mesh(new THREE.BoxGeometry(len,0.035,0.055),
+    new THREE.MeshStandardMaterial({color:0xffd23c,roughness:0.35,emissive:0xd9a400,emissiveIntensity:0.55}));
+  m.position.set((x1+x2)/2,0.5,(z1+z2)/2);
+  m.rotation.y=-Math.atan2(dz,dx);
+  return m;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xf3ecd9);
+  scene3.fog=new THREE.Fog(0xf3ecd9,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  benchMat=new THREE.MeshStandardMaterial({color:0xd8c49a,roughness:0.9});
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),benchMat);
+  bench.position.set(0.8,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xe6ddc8,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xf7f1e0,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  /* a big sheet of white paper on the bench, like the investigation's paper */
+  const paper=new THREE.Mesh(new THREE.BoxGeometry(3.6,0.02,2.4),stdMat(0xffffff,0.9));
+  paper.position.set(1.6,0.01,1.9); paper.receiveShadow=true; scene3.add(paper);
+  /* the drawn rays: incident ray box -> mirror point -> eye */
+  scene3.add(rayBar(1.05,2.45,2.25,1.5));
+  scene3.add(rayBar(2.35,1.3,3.85,2.1));
+  scene3.add(buildTree(-5.3,-3.1,1.0));
+  scene3.add(buildTree(5.9,2.9,0.9));
+  scene3.add(buildTree(-5.6,3.0,0.75));
+  reg('lamp',buildLamp());
+  reg('mirror',buildPlaneMirror());
+  reg('spoon',buildSpoon());
+  reg('raybox',buildRayBoxAt(0xf2b134,0.7,2.5));
+  reg('normalpost',buildNormalPost());
+  reg('eye',buildEye());
+  reg('protractor',buildProtractor());
+  reg('pencil',buildPencil());
+  reg('cyclist',buildCyclist());
+  reg('carmirror',buildCarMirror());
+  reg('ray30',buildRayBoxAt(0xe2574c,-4.4,-2.7));
+  reg('ray50',buildRayBoxAt(0x3d7bd6,-2.4,-2.9));
+  reg('ray70',buildRayBoxAt(0x3fa34d,1.6,-2.9));
+  reg('rock',buildRock());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('lamp',p,G.lamp); }
+  { const p=sphProxy(0.62); p.position.set(0,0.8,0); addProxy('mirror',p,G.mirror); }
+  { const p=sphProxy(0.55); p.position.set(0,0.15,0); addProxy('spoon',p,G.spoon); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('raybox',p,G.raybox); }
+  { const p=sphProxy(0.5); p.position.set(0,0.7,0); addProxy('normalpost',p,G.normalpost); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('eye',p,G.eye); }
+  { const p=sphProxy(0.58); p.position.set(0,0.15,0); addProxy('protractor',p,G.protractor); }
+  { const p=sphProxy(0.52); p.position.set(0,0.1,0); addProxy('pencil',p,G.pencil); }
+  { const p=sphProxy(0.68); p.position.set(0,0.6,0); addProxy('cyclist',p,G.cyclist); }
+  { const p=sphProxy(0.58); p.position.set(0.3,0.6,0); addProxy('carmirror',p,G.carmirror); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('ray30',p,G.ray30); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('ray50',p,G.ray50); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('ray70',p,G.ray70); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('rock',p,G.rock); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['lamp','mirror','spoon'],
+  ['raybox','normalpost','eye'],
+  ['protractor','pencil'],
+  ['cyclist','carmirror'],
+  ['ray30','ray50','ray70'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='lamp'){ T.fLamp=true; FOUND.lamp=true; }
+    if(id==='mirror'){ T.fMirror=true; FOUND.mirror=true; }
+    if(id==='spoon'){ T.fSpoon=true; FOUND.spoon=true; }
+  }else if(curStep===1){
+    if(id==='raybox'){ T.s2ray=true; FOUND.ray=true; }
+    if(id==='normalpost'){ T.s2norm=true; FOUND.norm=true; }
+    if(id==='eye'){ T.s2eye=true; FOUND.eye=true; }
+  }else if(curStep===2){
+    if(id==='protractor'){ T.s3prot=true; FOUND.prot=true; }
+    if(id==='pencil'){ T.s3pencil=true; FOUND.pencil=true; }
+  }else if(curStep===3){
+    if(id==='cyclist'){ T.s4cyc=true; FOUND.cyc=true; }
+    if(id==='carmirror'){ T.s4mir=true; FOUND.carmir=true; }
+  }else if(curStep===4){
+    if(id==='ray30'){ T.s5r30=true; FOUND.r30=true; }
+    if(id==='ray50'){ T.s5r50=true; FOUND.r50=true; }
+    if(id==='ray70'){ T.s5r70=true; FOUND.r70=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(benchMat) benchMat.color.setHSL(0.1,0.38,0.72+Math.sin(now*0.0016)*0.02);
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — tap the true cards */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=3);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=3);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — name the parts */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinInc').innerHTML=bi(STR.binInc);
+  $('ex2BinRef').innerHTML=bi(STR.binRef);
+  $('ex2BinNor').innerHTML=bi(STR.binNor);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='incident'?'➡️':ans==='reflected'?'↩️':'┆')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinInc').onclick=()=>ex2Place('incident');
+$('ex2BinRef').onclick=()=>ex2Place('reflected');
+$('ex2BinNor').onclick=()=>ex2Place('normal');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,2);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.lamp=false; FOUND.mirror=false; FOUND.spoon=false; }
+  if(step===1){ FOUND.ray=false; FOUND.norm=false; FOUND.eye=false; }
+  if(step===2){ FOUND.prot=false; FOUND.pencil=false; }
+  if(step===3){ FOUND.cyc=false; FOUND.carmir=false; }
+  if(step===4){ FOUND.r30=false; FOUND.r50=false; FOUND.r70=false; }
+  if(step===5){ PAIRS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&['incident','reflected','normal'].indexOf(s.exAns.a2[id])>=0) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fLamp=!!FOUND.lamp; t.fMirror=!!FOUND.mirror; t.fSpoon=!!FOUND.spoon; }
+  else if(i===1){ t.s2ray=!!FOUND.ray; t.s2norm=!!FOUND.norm; t.s2eye=!!FOUND.eye; }
+  else if(i===2){ t.s3prot=true; t.s3pencil=true; }
+  else if(i===3){ t.s4cyc=!!FOUND.cyc; t.s4mir=!!FOUND.carmir; }
+  else if(i===4){ t.s5r30=!!FOUND.r30; t.s5r50=!!FOUND.r50; t.s5r70=!!FOUND.r70; }
+  else if(i===5){ PAIRS.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-6-1',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

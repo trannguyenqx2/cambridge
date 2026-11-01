@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.7 Particles on the move — Các hạt chuyển động · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="3.7 Particles on the move" data-vi="3.7 Các hạt chuyển động (Particles on the move)">3.7 Particles on the move</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="Why can you smell food cooking across the room?" data-vi="Vì sao con ngửi thấy mùi thức ăn nấu ở phía bên kia phòng?">Why can you smell food cooking across the room?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Particles move randomly" data-vi="Các hạt (particles) chuyển động ngẫu nhiên">Particles move randomly</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Spread out — diffusion" data-vi="Lan ra — khuếch tán (diffusion)">Spread out — diffusion</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="High to low concentration" data-vi="Từ nồng độ (concentration) cao tới thấp">High to low concentration</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Equal everywhere" data-vi="Đều khắp nơi">Equal everywhere</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.7. The bench in this lesson is a simulation." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 3 Lực và năng lượng (Forces and energy) · Mục 3.7. Bàn thí nghiệm trong bài này là mô phỏng.">Cambridge Lower Secondary Science 8 · Unit 2 Properties of materials · Section 2.4. The bench in this lesson is a simulation — no real ethanol is used.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.7, pages 108–119; Workbook 8 (ISBN 9781108742856), pages 64–68. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 3 Forces and energy (Lực và năng lượng), mục 3.7, trang 108–119; Sách bài tập 8 (ISBN 9781108742856), trang 64–68. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.7, pages 108–119; Workbook 8 (ISBN 9781108742856), pages 64–68. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: describe how the random movement of particles causes diffusion; understand how diffusion happens in liquids and in gases; understand that the speed of diffusion depends on the concentration difference and on temperature. Key words: diffusion, concentration." data-vi="Mục tiêu: mô tả chuyển động ngẫu nhiên của các hạt (particles) gây ra khuếch tán (diffusion) như thế nào; hiểu khuếch tán xảy ra trong chất lỏng và chất khí; hiểu tốc độ khuếch tán phụ thuộc vào chênh lệch nồng độ (concentration) và nhiệt độ (temperature). Từ khóa: diffusion (khuếch tán), concentration (nồng độ).">Objectives: describe how the random movement of particles causes diffusion; understand how diffusion happens in liquids and in gases; understand that the speed of diffusion depends on the concentration difference and on temperature. Key words: diffusion, concentration.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — opening the tap between two gas jars, checking the concentrations on both sides, adding ink to water with a pipette, sorting real cases of diffusion, timing diffusion in cold, warm and hot water, and following a smell and a concentrated juice as they spread. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Watch out for the key ideas: particles never stop moving, even when diffusion stops; diffusion is fastest with a big concentration difference and a high temperature; and a smell is strongest near its source, where the concentration is highest." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên bàn thí nghiệm 3D — mở vòi giữa hai bình khí, kiểm tra nồng độ (concentration) ở cả hai phía, nhỏ mực vào nước bằng ống nhỏ giọt (pipette), phân loại các trường hợp khuếch tán (diffusion) thật, bấm giờ khuếch tán trong nước lạnh, ấm và nóng, và theo dõi một mùi hương cùng một cốc nước cam đậm đặc khi chúng lan ra. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Lưu ý các ý chính: các hạt không bao giờ ngừng chuyển động, ngay cả khi khuếch tán dừng; khuếch tán nhanh nhất khi chênh lệch nồng độ lớn và nhiệt độ cao; và mùi mạnh nhất ở gần nguồn của nó, nơi nồng độ cao nhất.">How it works: each step asks for one real action on the 3D bench — opening the tap between two gas jars, checking the concentrations on both sides, adding ink to water with a pipette, sorting real cases of diffusion, timing diffusion in cold, warm and hot water, and following a smell and a concentrated juice as they spread. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinTrue"></button>
+        <button class="binbtn nonliving" id="ex2BinFalse"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-3-7 "Particles on the move" (Science 8, Unit 3)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  tapvalve:{emoji:'🚰', name:{en:'Tap between the jars',vi:'Vòi giữa hai bình (tap)'}, short:{en:'Tap',vi:'Vòi'}, ring:0.5, labelY:1.0, fx:-0.2, fz:-2.0, fr:5.2},
+  whitegas:{emoji:'⚪', name:{en:'White gas — left jar',vi:'Khí trắng — bình trái (white gas)'}, short:{en:'White gas',vi:'Khí trắng'}, ring:0.95, labelY:2.6, fx:-1.7, fz:-2.0, fr:5.4},
+  redgas:  {emoji:'🔴', name:{en:'Red gas — right jar',vi:'Khí đỏ — bình phải (red gas)'}, short:{en:'Red gas',vi:'Khí đỏ'}, ring:0.95, labelY:2.6, fx:1.3, fz:-2.0, fr:5.4},
+  pipette: {emoji:'🧪', name:{en:'Dropper pipette',vi:'Ống nhỏ giọt (pipette)'}, short:{en:'Pipette',vi:'Ống nhỏ giọt'}, ring:0.5, labelY:1.15, fx:-2.7, fz:0.9, fr:5.0},
+  beaker:  {emoji:'🥛', name:{en:'Beaker of warm water',vi:'Cốc nước ấm (beaker)'}, short:{en:'Beaker',vi:'Cốc nước'}, ring:0.9, labelY:1.5, fx:-3.8, fz:0.9, fr:5.2},
+  coldbeaker:{emoji:'🧊', name:{en:'Cold water beaker — diffusion took 90 s',vi:'Cốc nước lạnh — khuếch tán mất 90 giây'}, short:{en:'Cold · 90 s',vi:'Lạnh · 90 giây'}, ring:0.62, labelY:1.25, fx:1.7, fz:1.7, fr:5.0},
+  warmbeaker:{emoji:'💧', name:{en:'Warm water beaker — diffusion took 45 s',vi:'Cốc nước ấm — khuếch tán mất 45 giây'}, short:{en:'Warm · 45 s',vi:'Ấm · 45 giây'}, ring:0.62, labelY:1.25, fx:3.0, fz:1.7, fr:5.0},
+  hotbeaker:{emoji:'♨️', name:{en:'Hot water beaker — diffusion took 20 s',vi:'Cốc nước nóng — khuếch tán mất 20 giây'}, short:{en:'Hot · 20 s',vi:'Nóng · 20 giây'}, ring:0.62, labelY:1.25, fx:4.3, fz:1.7, fr:5.0},
+  perfume: {emoji:'🌸', name:{en:'Open perfume bottle',vi:'Chai nước hoa đã mở (perfume)'}, short:{en:'Perfume',vi:'Nước hoa'}, ring:0.55, labelY:1.35, fx:4.3, fz:-1.5, fr:5.0},
+  orangejuice:{emoji:'🍊', name:{en:'Concentrated orange juice',vi:'Nước cam đậm đặc (concentrated)'}, short:{en:'Orange juice',vi:'Nước cam'}, ring:0.6, labelY:1.2, fx:-4.6, fz:-0.9, fr:5.2}
+};
+const FOCUSORDER=['tapvalve','whitegas','redgas','pipette','beaker','hotbeaker','perfume','orangejuice'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My diffusion record',vi:'Bản ghi khuếch tán của con'},
+  u2Brief:{en:'What your experiments show so far.',vi:'Các thí nghiệm của con đang cho thấy gì.'},
+  recGas:{en:'Gases mixed — equal concentration both sides',vi:'Khí đã trộn — nồng độ (concentration) bằng nhau hai phía'},
+  recInk:{en:'Ink spread through all the water',vi:'Mực đã lan khắp nước'},
+  recFast:{en:'Fastest diffusion — the hot beaker (20 s)',vi:'Khuếch tán nhanh nhất — cốc nóng (20 giây)'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your practical checklist.',vi:'Danh sách thực hành của con.'},
+  didGas:{en:'Mixed two gases by diffusion',vi:'Đã trộn hai khí bằng khuếch tán (diffusion)'},
+  didInk:{en:'Watched ink diffuse in water',vi:'Đã quan sát mực khuếch tán trong nước'},
+  didSort:{en:'Sorted real cases of diffusion',vi:'Đã phân loại các trường hợp khuếch tán thật'},
+  didTemp:{en:'Timed diffusion at three temperatures',vi:'Đã bấm giờ khuếch tán ở ba nhiệt độ'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binDiff:{en:'DIFFUSION ✓',vi:'KHUẾCH TÁN ✓ (diffusion)'},
+  binNot:{en:'NOT DIFFUSION ✗',vi:'KHÔNG PHẢI KHUẾCH TÁN ✗'},
+  binTrue:{en:'TRUE ✓',vi:'ĐÚNG ✓ (true)'},
+  binFalse:{en:'FALSE ✗',vi:'SAI ✗ (false)'},
+  lookGas:{en:'Look at the gas jars 🫙',vi:'Ngắm các bình khí 🫙'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.7',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.7'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — After the seal is removed',vi:'Bài tập 1 · Focus — Sau khi tấm ngăn được lấy ra'},
+  ex1Inst:{en:'Workbook 3.7A: two gas jars are separated by a seal, and ink is added to water. Tap the 4 cards that correctly describe the particles a long time after mixing.',vi:'Sách bài tập 3.7A: hai bình khí bị ngăn bởi một tấm ngăn, và mực được nhỏ vào nước. Chạm vào 4 thẻ mô tả đúng các hạt (particles) một thời gian dài sau khi trộn.'},
+  ex2T:{en:'Exercise 2 · Practice — True or false?',vi:'Bài tập 2 · Practice — Đúng hay sai?'},
+  ex2Inst:{en:'Workbook 3.7B: a green gas spreads to fill a bottle, and blue ink spreads through water. Tap a statement card, then tap TRUE or FALSE.',vi:'Sách bài tập 3.7B: một khí xanh lá lan ra đầy chai, và mực xanh dương lan khắp nước. Chạm vào một thẻ phát biểu, rồi chạm ĐÚNG (TRUE) hoặc SAI (FALSE).'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai'},
+  ex3Inst:{en:'Workbook 3.7C: a purple crystal spreads its colour through water. In each sentence, tap the WRONG word to cross it out.',vi:'Sách bài tập 3.7C: một tinh thể tím lan màu của nó khắp nước. Trong mỗi câu, chạm vào từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'diffusion',vi:'khuếch tán'},
+  {en:'concentration',vi:'nồng độ'},
+  {en:'particle',vi:'hạt'},
+  {en:'temperature',vi:'nhiệt độ'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Mixing gases',vi:'Trộn các khí'}, word:{en:'diffusion',vi:'khuếch tán'},
+  q:{en:'Two jars stand side by side — white gas on the left, red gas on the right. What happens when the tap between them opens?',vi:'Hai bình đứng cạnh nhau — khí trắng bên trái, khí đỏ bên phải. Điều gì xảy ra khi vòi giữa chúng mở ra?'},
+  act:{en:'Tap the tap between the jars to open it. Then tap the white gas jar and the red gas jar to watch each gas start to spread.',vi:'Chạm vào vòi (tap) giữa hai bình để mở nó. Rồi chạm vào bình khí trắng và bình khí đỏ để xem mỗi khí bắt đầu lan ra.'},
+  see:{en:'Particles of each gas slip through the opening and begin to mix on both sides.',vi:'Các hạt (particles) của mỗi khí lách qua chỗ mở và bắt đầu trộn lẫn ở cả hai phía.'},
+  concl:[
+    {en:'The particles in a gas move randomly — both their speed and their direction are random.',vi:'Các hạt (particles) trong chất khí chuyển động ngẫu nhiên (randomly) — cả tốc độ lẫn hướng của chúng đều ngẫu nhiên.'},
+    {en:'Because of that random movement, each gas spreads out to fill the whole container. That spreading is diffusion (diffusion).',vi:'Nhờ chuyển động ngẫu nhiên đó, mỗi khí lan ra lấp đầy cả hai bình. Sự lan ra đó là khuếch tán (diffusion).'}]},
+ {tag:{en:'Equal concentration',vi:'Nồng độ bằng nhau'}, word:{en:'concentration',vi:'nồng độ'},
+  q:{en:'After some time, how do the two sides compare?',vi:'Sau một thời gian, hai phía so với nhau như thế nào?'},
+  act:{en:'Tap the left jar to check its particles, then tap the right jar to check its particles.',vi:'Chạm vào bình trái để kiểm tra các hạt của nó, rồi chạm vào bình phải để kiểm tra các hạt của nó.'},
+  see:{en:'Both jars now hold a mix of white and red particles, at the same concentration on each side.',vi:'Cả hai bình giờ đều chứa hỗn hợp hạt trắng và đỏ, với nồng độ (concentration) như nhau ở mỗi phía.'},
+  concl:[
+    {en:'Concentration (concentration) means how many particles there are in a particular volume.',vi:'Nồng độ (concentration) nghĩa là có bao nhiêu hạt (particles) trong một thể tích nhất định.'},
+    {en:'Diffusion is the overall movement of particles from where their concentration is higher to where it is lower — and it stops when the concentrations are equal.',vi:'Khuếch tán (diffusion) là chuyển động tổng thể của các hạt từ nơi nồng độ của chúng cao hơn tới nơi thấp hơn — và nó dừng khi các nồng độ bằng nhau.'},
+    {en:'The individual particles do NOT stop moving when diffusion stops — they keep moving randomly.',vi:'Từng hạt riêng lẻ KHÔNG ngừng chuyển động khi khuếch tán dừng — chúng vẫn tiếp tục chuyển động ngẫu nhiên.'}]},
+ {tag:{en:'Diffusion in liquids',vi:'Khuếch tán trong chất lỏng'}, word:{en:'diffusion',vi:'khuếch tán'},
+  q:{en:'Does diffusion happen in a liquid too? Watch the ink in the beaker of warm water.',vi:'Khuếch tán (diffusion) có xảy ra trong chất lỏng không? Hãy quan sát mực trong cốc nước ấm.'},
+  act:{en:'Fill the beaker with warm water and let it stand until the water is still (the beaker is ready on the bench). Tap the dropper pipette to add one or two drops of ink at the bottom of the water. Then tap the beaker to watch what happens.',vi:'Đổ đầy nước ấm vào cốc và để yên cho tới khi nước lặng (cốc đã sẵn trên bàn). Chạm vào ống nhỏ giọt (pipette) để nhỏ một hoặc hai giọt mực xuống đáy nước. Rồi chạm vào cốc để quan sát điều xảy ra.'},
+  see:{en:'The ink spreads slowly from the bottom until the whole beaker is evenly coloured.',vi:'Mực lan chậm từ đáy lên cho tới khi cả cốc nhuộm màu đều.'},
+  concl:[
+    {en:'Particles in a liquid also move at random, so diffusion happens in liquids as well as in gases.',vi:'Các hạt (particles) trong chất lỏng cũng chuyển động ngẫu nhiên, nên khuếch tán (diffusion) xảy ra trong chất lỏng cũng như trong chất khí.'},
+    {en:'The ink moves from the area of high concentration, where it was dropped, to areas of lower concentration, until it is spread evenly.',vi:'Mực di chuyển từ vùng nồng độ (concentration) cao, nơi nó được nhỏ vào, tới các vùng nồng độ thấp hơn, cho tới khi nó lan đều.'}]},
+ {tag:{en:'Diffusion or not?',vi:'Khuếch tán hay không?'}, word:{en:'diffusion',vi:'khuếch tán'},
+  q:{en:'Which of these everyday changes are really diffusion?',vi:'Những thay đổi thường ngày nào sau đây thực sự là khuếch tán (diffusion)?'},
+  act:{en:'Each card shows something being added or released. Tap a card, then tap DIFFUSION or NOT DIFFUSION.',vi:'Mỗi thẻ cho thấy một thứ được thêm vào hoặc thoát ra. Chạm vào một thẻ, rồi chạm KHUẾCH TÁN (DIFFUSION) hoặc KHÔNG PHẢI KHUẾCH TÁN.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Adding milk to coffee, adding salty water to pure water and letting gas escape into the air all result in diffusion — particles spread from high to low concentration.',vi:'Thêm sữa vào cà phê, thêm nước muối vào nước tinh khiết và để khí thoát ra không khí đều gây khuếch tán (diffusion) — các hạt lan từ nồng độ (concentration) cao tới thấp.'},
+    {en:'Adding sand to water is NOT diffusion — sand grains do not spread particle by particle through the water, and throwing small rocks into the air is just throwing.',vi:'Thêm cát vào nước KHÔNG phải khuếch tán — các hạt cát không lan ra từng hạt trong nước, và ném những viên đá nhỏ lên trời chỉ là ném.'}]},
+ {tag:{en:'Temperature and speed',vi:'Nhiệt độ và tốc độ'}, word:{en:'temperature',vi:'nhiệt độ'},
+  q:{en:'Three identical beakers hold equal volumes of water at different temperatures. The same drop of ink goes into each. Which beaker colours first?',vi:'Ba cốc giống hệt chứa thể tích nước bằng nhau ở các nhiệt độ (temperature) khác nhau. Cùng một giọt mực được nhỏ vào mỗi cốc. Cốc nào nhuộm màu trước?'},
+  act:{en:'Tap each beaker to run its timed diffusion: the cold beaker, the warm beaker and the hot beaker. The stopwatch times in this simulation are shown on each beaker.',vi:'Chạm vào từng cốc để chạy lần khuếch tán có bấm giờ của nó: cốc lạnh, cốc ấm và cốc nóng. Thời gian bấm giờ trong mô phỏng này được ghi trên mỗi cốc.'},
+  see:{en:'Cold: 90 s · Warm: 45 s · Hot: 20 s — the hotter the water, the sooner the ink fills the beaker.',vi:'Lạnh: 90 giây · Ấm: 45 giây · Nóng: 20 giây — nước càng nóng, mực càng sớm lấp đầy cốc.'},
+  concl:[
+    {en:'The higher the temperature, the faster diffusion happens — in this simulation the hot beaker finished in 20 s and the cold one needed 90 s.',vi:'Nhiệt độ (temperature) càng cao, khuếch tán (diffusion) càng nhanh — trong mô phỏng này cốc nóng xong trong 20 giây và cốc lạnh cần 90 giây.'},
+    {en:'Higher temperature makes the particles themselves move faster, so they spread out faster. Tea spreads through hot water faster than through cold water for the same reason.',vi:'Nhiệt độ cao hơn làm chính các hạt (particles) chuyển động nhanh hơn, nên chúng lan ra nhanh hơn. Trà lan qua nước nóng nhanh hơn qua nước lạnh cũng vì lý do đó.'},
+    {en:'Equal volumes of water in identical beakers keep the test fair — only the temperature changes.',vi:'Thể tích nước bằng nhau trong các cốc giống hệt giữ phép thử công bằng — chỉ nhiệt độ thay đổi.'}]},
+ {tag:{en:'Concentration and smell',vi:'Nồng độ và mùi'}, word:{en:'concentration',vi:'nồng độ'},
+  q:{en:'Why is a smell stronger close to its source — and why does concentrated juice colour a whole glass?',vi:'Vì sao một mùi lại mạnh hơn ở gần nguồn của nó — và vì sao nước cam đậm đặc nhuộm màu cả cốc?'},
+  act:{en:'Tap the open perfume bottle to release its particles into the air. Then tap the glass of concentrated orange juice being topped up with water.',vi:'Chạm vào chai nước hoa (perfume) đã mở để các hạt của nó thoát ra không khí. Rồi chạm vào cốc nước cam đậm đặc (concentrated) đang được thêm nước.'},
+  see:{en:'Perfume particles spread through the room, strongest near the bottle. The orange colour spreads until the whole glass is evenly orange.',vi:'Các hạt nước hoa lan khắp phòng, mạnh nhất ở gần chai. Màu cam lan ra cho tới khi cả cốc đều màu cam.'},
+  concl:[
+    {en:'The bigger the difference in concentration, the faster diffusion happens — concentrated juice spreads quickly into plain water.',vi:'Chênh lệch nồng độ (concentration) càng lớn, khuếch tán (diffusion) càng nhanh — nước cam đậm đặc lan nhanh vào nước trắng.'},
+    {en:'A smell is stronger closer to its source because the concentration of its particles is higher there. Many animals follow the strengthening smell to find food.',vi:'Một mùi mạnh hơn ở gần nguồn của nó vì nồng độ của các hạt của nó ở đó cao hơn. Nhiều động vật lần theo mùi mạnh dần để tìm thức ăn.'},
+    {en:'When the orange colour stops spreading, the particles have not stopped moving — their concentrations are simply equal.',vi:'Khi màu cam ngừng lan, các hạt không hề ngừng chuyển động — chỉ là nồng độ của chúng đã bằng nhau.'},
+    {en:'I can describe diffusion.',vi:'Con mô tả được khuếch tán (diffusion).'},
+    {en:'I can understand how diffusion happens in gases.',vi:'Con hiểu được khuếch tán xảy ra trong chất khí như thế nào.'},
+    {en:'I can understand how diffusion happens in liquids.',vi:'Con hiểu được khuếch tán xảy ra trong chất lỏng như thế nào.'},
+    {en:'I can understand that the speed of diffusion is affected by the difference in concentration and by the temperature.',vi:'Con hiểu được tốc độ khuếch tán bị ảnh hưởng bởi chênh lệch nồng độ (concentration) và bởi nhiệt độ (temperature).'}]}
+];
+const SORTCARDS=[
+ {id:'d_milk',emoji:'☕',en:'Adding milk to coffee',vi:'Thêm sữa vào cà phê',ans:'diffusion'},
+ {id:'d_sand',emoji:'🏖️',en:'Adding sand to water',vi:'Thêm cát vào nước',ans:'not'},
+ {id:'d_salt',emoji:'🧂',en:'Adding salty water to pure water',vi:'Thêm nước muối vào nước tinh khiết',ans:'diffusion'},
+ {id:'d_gas',emoji:'🎈',en:'Gas escaping from a cylinder into the air',vi:'Khí thoát từ bình chứa ra không khí',ans:'diffusion'},
+ {id:'d_rocks',emoji:'🪨',en:'Throwing small pieces of rock into the air',vi:'Ném những mảnh đá nhỏ lên trời',ans:'not'},
+ {id:'d_perfume',emoji:'🌸',en:'Perfume spreading across a room',vi:'Nước hoa lan khắp phòng',ans:'diffusion'}
+];
+const SORT_ORDER=mixOrder(SORTCARDS,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'Zara is across the room from an open bottle of perfume, and after a few minutes she can smell it. Which statement explains why?',vi:'Zara ở phía bên kia phòng so với một chai nước hoa đã mở, và sau vài phút bạn ấy ngửi thấy mùi. Phát biểu nào giải thích vì sao?'},
+  o:[{en:'All the perfume particles move in one direction',vi:'Mọi hạt nước hoa chuyển động theo một hướng'},{en:'The perfume gas particles move randomly and spread out',vi:'Các hạt khí nước hoa chuyển động ngẫu nhiên (randomly) và lan ra'},{en:'All the particles in the air stay still',vi:'Mọi hạt trong không khí đứng yên'}],a:1,
+  e:{en:'Gas particles move randomly, so perfume particles spread through the air by diffusion until they reach Zara.',vi:'Các hạt khí chuyển động ngẫu nhiên, nên các hạt nước hoa lan qua không khí bằng khuếch tán (diffusion) cho tới khi tới chỗ Zara.'}},
+ {q:{en:'Which change would make Zara smell the perfume in a shorter time, if nothing else changes?',vi:'Thay đổi nào sẽ làm Zara ngửi thấy mùi nước hoa trong thời gian ngắn hơn, nếu không có gì khác thay đổi?'},
+  o:[{en:'The air in the room is at a higher temperature',vi:'Không khí trong phòng ở nhiệt độ (temperature) cao hơn'},{en:'Zara moves further away from the bottle',vi:'Zara di chuyển ra xa chai hơn'},{en:'The lid is put back on the bottle',vi:'Nắp được đậy lại lên chai'}],a:0,
+  e:{en:'Higher temperature makes particles move faster, so they diffuse faster. Moving away or closing the bottle would slow or stop the smell arriving.',vi:'Nhiệt độ cao hơn làm các hạt chuyển động nhanh hơn, nên chúng khuếch tán (diffusion) nhanh hơn. Đi ra xa hoặc đậy nắp sẽ làm mùi tới chậm hơn hoặc dừng hẳn.'}},
+ {q:{en:'What is meant by diffusion?',vi:'Khuếch tán (diffusion) nghĩa là gì?'},
+  o:[{en:'Particles moving only downwards',vi:'Các hạt chỉ chuyển động xuống dưới'},{en:'Particles stopping as soon as they spread out',vi:'Các hạt dừng lại ngay khi chúng lan ra'},{en:'The overall random movement of particles from a higher concentration to a lower concentration',vi:'Chuyển động ngẫu nhiên tổng thể của các hạt từ nồng độ (concentration) cao hơn tới nồng độ thấp hơn'}],a:2,
+  e:{en:'Diffusion is the overall movement from high concentration to low concentration, caused by the random movement of individual particles.',vi:'Khuếch tán là chuyển động tổng thể từ nồng độ cao tới nồng độ thấp, gây ra bởi chuyển động ngẫu nhiên của từng hạt riêng lẻ.'}},
+ {q:{en:'Arun says: when the orange colour has stopped spreading in a drink, the particles in the liquid have stopped moving. Is he correct?',vi:'Arun nói: khi màu cam đã ngừng lan trong một cốc nước, các hạt trong chất lỏng đã ngừng chuyển động. Bạn ấy có đúng không?'},
+  o:[{en:'Yes — everything has stopped',vi:'Đúng — mọi thứ đã dừng lại'},{en:'No — the particles keep moving; the concentrations are now equal',vi:'Không — các hạt vẫn tiếp tục chuyển động; các nồng độ (concentration) giờ đã bằng nhau'},{en:'Yes — because the colour is even',vi:'Đúng — vì màu đã đều'}],a:1,
+  e:{en:'Diffusion stops when concentrations are equal, but the movement of individual particles never stops.',vi:'Khuếch tán (diffusion) dừng khi các nồng độ bằng nhau, nhưng chuyển động của từng hạt riêng lẻ không bao giờ dừng.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_mixedgas',emoji:'🫙',en:'Gas particles evenly mixed in both jars',vi:'Các hạt khí trộn đều trong cả hai bình',keyw:true},
+ {id:'e_separate',emoji:'🧱',en:'The two gases stay completely separate for ever',vi:'Hai khí mãi mãi tách riêng hoàn toàn',keyw:false},
+ {id:'e_inkspread',emoji:'💙',en:'Ink particles spread evenly through all the water',vi:'Các hạt mực lan đều khắp nước',keyw:true},
+ {id:'e_inkbottom',emoji:'⬇️',en:'Ink particles stay only at the bottom for ever',vi:'Các hạt mực mãi mãi chỉ ở dưới đáy',keyw:false},
+ {id:'e_equalconc',emoji:'⚖️',en:'Both sides end with equal concentration',vi:'Cả hai phía kết thúc với nồng độ (concentration) bằng nhau',keyw:true},
+ {id:'e_stopmove',emoji:'🛑',en:'Particles stop moving once they have spread out',vi:'Các hạt ngừng chuyển động một khi đã lan ra',keyw:false},
+ {id:'e_keepmoving',emoji:'🌀',en:'Particles keep moving even after diffusion stops',vi:'Các hạt vẫn tiếp tục chuyển động ngay cả sau khi khuếch tán dừng',keyw:true},
+ {id:'e_oneway',emoji:'➡️',en:'All particles move in one direction only',vi:'Mọi hạt chỉ chuyển động theo một hướng',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_stopmove',emoji:'🌿',en:'When the green colour fills the bottle, the movement of particles has stopped',vi:'Khi màu xanh lá lấp đầy chai, chuyển động của các hạt đã dừng lại',ans:'false'},
+ {id:'x_stopdiff',emoji:'🌿',en:'When the green colour fills the bottle, diffusion has stopped',vi:'Khi màu xanh lá lấp đầy chai, khuếch tán (diffusion) đã dừng lại',ans:'true'},
+ {id:'x_highbottom',emoji:'💙',en:'At first the blue ink is only at the bottom because its concentration is highest there',vi:'Lúc đầu mực xanh dương chỉ ở đáy vì nồng độ (concentration) của nó cao nhất ở đó',ans:'true'},
+ {id:'x_random',emoji:'🎲',en:'Particles in gases and liquids move in random directions',vi:'Các hạt trong chất khí và chất lỏng chuyển động theo các hướng ngẫu nhiên',ans:'true'},
+ {id:'x_hotslow',emoji:'🌡️',en:'Water turns blue faster when the water is colder',vi:'Nước nhuộm xanh nhanh hơn khi nước lạnh hơn',ans:'false'},
+ {id:'x_bromine',emoji:'🟤',en:'Bromine gas looks weaker further from its container because its concentration is lower there',vi:'Khí bromine trông nhạt hơn ở xa bình chứa của nó vì nồng độ của nó ở đó thấp hơn',ans:'true'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Near the crystal that has just dissolved, the purple colour is strongest because the concentration there is',vi:'Gần tinh thể vừa tan, màu tím đậm nhất vì nồng độ (concentration) ở đó là'},
+  wrong:1,
+  opts:[{en:'the highest',vi:'cao nhất (highest)'},{en:'the lowest',vi:'thấp nhất (lowest)'}],
+  e:{en:'The colour is most intense where the particles are most concentrated — cross out “the lowest”.',vi:'Màu đậm nhất ở nơi các hạt tập trung nhất — hãy gạch bỏ “thấp nhất”.'}},
+ {pre:{en:'As the purple spreads through all the liquid, its colour becomes',vi:'Khi màu tím lan khắp chất lỏng, màu của nó trở nên'},
+  wrong:0,
+  opts:[{en:'more intense',vi:'đậm hơn (more intense)'},{en:'less intense',vi:'nhạt hơn (less intense)'}],
+  e:{en:'The same particles spread through a bigger volume, so the concentration — and the colour — becomes less intense.',vi:'Cùng những hạt đó lan ra một thể tích lớn hơn, nên nồng độ — và màu — trở nên nhạt hơn.'}},
+ {pre:{en:'Hot coffee smells stronger than cold coffee because at higher temperature the particles move',vi:'Cà phê nóng có mùi mạnh hơn cà phê lạnh vì ở nhiệt độ (temperature) cao hơn các hạt chuyển động'},
+  wrong:1,
+  opts:[{en:'faster',vi:'nhanh hơn (faster)'},{en:'slower',vi:'chậm hơn (slower)'}],
+  e:{en:'Higher temperature makes particles move faster, so the smell diffuses faster and arrives stronger — cross out “slower”.',vi:'Nhiệt độ cao hơn làm các hạt chuyển động nhanh hơn, nên mùi khuếch tán nhanh hơn và tới mạnh hơn — hãy gạch bỏ “chậm hơn”.'}},
+ {pre:{en:'An animal searching for food moves towards the direction where the smell gets',vi:'Một con vật đang tìm thức ăn di chuyển về hướng mà mùi trở nên'},
+  wrong:0,
+  opts:[{en:'weaker',vi:'yếu hơn (weaker)'},{en:'stronger',vi:'mạnh hơn (stronger)'}],
+  e:{en:'The smell strengthens closer to the food, so the animal follows the strengthening smell — cross out “weaker”.',vi:'Mùi mạnh dần khi tới gần thức ăn, nên con vật lần theo mùi mạnh dần — hãy gạch bỏ “yếu hơn”.'}},
+ {pre:{en:'When all the liquid is evenly purple, the particles in it',vi:'Khi toàn bộ chất lỏng đều màu tím, các hạt trong đó'},
+  wrong:0,
+  opts:[{en:'stop moving',vi:'ngừng chuyển động (stop moving)'},{en:'keep moving',vi:'vẫn tiếp tục chuyển động (keep moving)'}],
+  e:{en:'Diffusion stops at equal concentration, but individual particles keep moving — cross out “stop moving”.',vi:'Khuếch tán dừng ở nồng độ bằng nhau, nhưng từng hạt vẫn tiếp tục chuyển động — hãy gạch bỏ “ngừng chuyển động”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-3-7';
+const SUMKEY='camb:sum:sci8-3-7';
+const BOT_CODE='sci8-3.7';
+let FOUND={gas:false,ink:false,smell:false,juice:false};
+let SORTED=new Set();
+function newTrack(){return {
+  s1open:false, s1white:false, s1red:false,
+  s2left:false, s2right:false,
+  s3pip:false, s3watch:false,
+  s4correct:new Set(), s4sel:null,
+  s5cold:false, s5warm:false, s5hot:false,
+  s6perf:false, s6juice:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.s1open&&T.s1white&&T.s1red;
+  if(i===1) return T.s2left&&T.s2right;
+  if(i===2) return T.s3pip&&T.s3watch;
+  if(i===3) return T.s4correct.size>=5;
+  if(i===4) return T.s5cold&&T.s5warm&&T.s5hot;
+  if(i===5) return T.s6perf&&T.s6juice;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Tap opened '+(T.s1open?'✓':'…')+' · white gas spreading '+(T.s1white?'✓':'…')+' · red gas spreading '+(T.s1red?'✓':'…')+'.',
+                     'Vòi đã mở '+(T.s1open?'✓':'…')+' · khí trắng đang lan '+(T.s1white?'✓':'…')+' · khí đỏ đang lan '+(T.s1red?'✓':'…')+'.');
+  if(i===1) return B('Left jar checked '+(T.s2left?'✓':'…')+' · right jar checked '+(T.s2right?'✓':'…')+'. Both sides should show the same mix.',
+                     'Bình trái đã kiểm tra '+(T.s2left?'✓':'…')+' · bình phải đã kiểm tra '+(T.s2right?'✓':'…')+'. Cả hai phía phải cho thấy cùng một hỗn hợp.');
+  if(i===2) return B('Ink drops added at the bottom '+(T.s3pip?'✓':'…')+' · ink watched spreading '+(T.s3watch?'✓':'…')+'.',
+                     'Đã nhỏ giọt mực xuống đáy '+(T.s3pip?'✓':'…')+' · đã quan sát mực lan ra '+(T.s3watch?'✓':'…')+'.');
+  if(i===3){
+    const c=T.s4sel? SORTCARDS.find(x=>x.id===T.s4sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap DIFFUSION or NOT DIFFUSION.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm KHUẾCH TÁN (DIFFUSION) hoặc KHÔNG PHẢI KHUẾCH TÁN.');
+    return B('Cards right: '+T.s4correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s4correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===4) return B('Timed: cold (90 s) '+(T.s5cold?'✓':'…')+' · warm (45 s) '+(T.s5warm?'✓':'…')+' · hot (20 s) '+(T.s5hot?'✓':'…')+'.',
+                     'Đã bấm giờ: lạnh (90 giây) '+(T.s5cold?'✓':'…')+' · ấm (45 giây) '+(T.s5warm?'✓':'…')+' · nóng (20 giây) '+(T.s5hot?'✓':'…')+'.');
+  if(i===5) return B('Perfume released '+(T.s6perf?'✓':'…')+' · orange juice topped up and spreading '+(T.s6juice?'✓':'…')+'.',
+                     'Nước hoa đã thoát ra '+(T.s6perf?'✓':'…')+' · nước cam đã thêm nước và đang lan '+(T.s6juice?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🚰',label:{en:'Tap opened',vi:'Đã mở vòi'},got:T.s1open},
+      {emoji:'⚪',label:{en:'White gas spreading',vi:'Khí trắng đang lan'},got:T.s1white},
+      {emoji:'🔴',label:{en:'Red gas spreading',vi:'Khí đỏ đang lan'},got:T.s1red}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'⬅️',label:{en:'Left jar checked',vi:'Đã kiểm tra bình trái'},got:T.s2left},
+      {emoji:'➡️',label:{en:'Right jar checked',vi:'Đã kiểm tra bình phải'},got:T.s2right}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🧪',label:{en:'Ink drops added',vi:'Đã nhỏ giọt mực'},got:T.s3pip},
+      {emoji:'🥛',label:{en:'Ink watched spreading',vi:'Đã quan sát mực lan'},got:T.s3watch}
+    ]);
+  }else if(curStep===3){
+    buildSort(box,SORT_ORDER,
+      [{key:'diffusion',label:STR.binDiff,cls:'living'},{key:'not',label:STR.binNot,cls:'nonliving'}],
+      T.s4correct,()=>T.s4sel,v=>{T.s4sel=v;},null,onSortPlaced);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🧊',label:{en:'Cold — 90 s',vi:'Lạnh — 90 giây'},got:T.s5cold},
+      {emoji:'💧',label:{en:'Warm — 45 s',vi:'Ấm — 45 giây'},got:T.s5warm},
+      {emoji:'♨️',label:{en:'Hot — 20 s',vi:'Nóng — 20 giây'},got:T.s5hot}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🌸',label:{en:'Perfume released',vi:'Nước hoa đã thoát ra'},got:T.s6perf},
+      {emoji:'🍊',label:{en:'Juice spreading',vi:'Nước cam đang lan'},got:T.s6juice}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookGas);
+    b.onclick=()=>focusThing('whitegas');
+    box.appendChild(b);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusThing('tapvalve'); setTimeout(()=>focusThing('whitegas'),900); }
+  else if(i===1){ focusThing('whitegas'); setTimeout(()=>focusThing('redgas'),900); }
+  else if(i===2){ focusThing('pipette'); setTimeout(()=>focusThing('beaker'),900); }
+  else if(i===3){ demoSort(SORTCARDS,T.s4correct); }
+  else if(i===4){ focusThing('coldbeaker'); setTimeout(()=>focusThing('hotbeaker'),900); }
+  else if(i===5){ focusThing('perfume'); setTimeout(()=>focusThing('orangejuice'),900); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recGas)+'</span><b>'+(doneSteps.has(1)?'✓':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recInk)+'</span><b>'+(FOUND.ink?'✓':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recFast)+'</span><b>'+(doneSteps.has(4)?'✓':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didGas},
+    {got:doneSteps.has(2),label:STR.didInk},
+    {got:doneSteps.has(3),label:STR.didSort},
+    {got:doneSteps.has(4),label:STR.didTemp}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let gasSepGroup=null, gasMixGroup=null, inkGroup=null, mixColdG=null, mixWarmG=null, mixHotG=null, steamGroup=null, juiceGroup=null;
+let beakerWaterMat=null;
+let PARTJ=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function partSphere(color,x,y,z,r,parent){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(r||0.09,8,6),stdMat(color,0.6));
+  m.position.set(x,y,z); parent.add(m);
+  PARTJ.push({m:m,bx:x,by:y,bz:z,ph:Math.random()*6.28,sp:0.6+Math.random()*0.9});
+  return m;
+}
+function buildGasJar(cx,side){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(1.9,2.3,1.6),
+    new THREE.MeshStandardMaterial({color:0xbfe3f2,roughness:0.2,transparent:true,opacity:0.32}));
+  glass.position.set(cx,1.55,-2.0); g.add(glass);
+  const base=shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.0,0.16,1.7),stdMat(0x8d99a6,0.8)));
+  base.position.set(cx,0.36,-2.0); g.add(base);
+  g.userData.baseY=0;
+  return g;
+}
+function buildValve(){
+  const g=new THREE.Group();
+  const pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.7,10),stdMat(0x9fd4e8,0.4));
+  pipe.rotation.z=Math.PI/2; pipe.position.y=0.35; g.add(pipe);
+  const wheel=shadowed(new THREE.Mesh(new THREE.TorusGeometry(0.24,0.055,8,20),stdMat(0xd23c2a,0.6)));
+  wheel.position.y=0.72; g.add(wheel);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.3,8),stdMat(0x5b7186,0.6));
+  stem.position.y=0.52; g.add(stem);
+  g.position.set(-0.2,1.2,-2.0); g.userData.baseY=1.2;
+  return g;
+}
+function buildBeakerBig(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.55,1.2,20),
+    new THREE.MeshStandardMaterial({color:0xbfe3f2,roughness:0.25,transparent:true,opacity:0.4}));
+  glass.position.y=0.6; g.add(glass);
+  beakerWaterMat=new THREE.MeshStandardMaterial({color:0x7cc4e8,roughness:0.3,transparent:true,opacity:0.75});
+  const w=new THREE.Mesh(new THREE.CylinderGeometry(0.54,0.5,0.95,20),beakerWaterMat);
+  w.position.y=0.52; g.add(w);
+  g.position.set(-3.8,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildPipette(){
+  const g=new THREE.Group();
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.02,1.0,8),stdMat(0xdfeaf5,0.35));
+  tube.position.y=0.5; g.add(tube);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),stdMat(0x3d7bd6,0.6));
+  bulb.position.y=1.08; g.add(bulb);
+  const drop=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),stdMat(0x2456c8,0.5));
+  drop.position.y=-0.06; g.add(drop);
+  g.position.set(-2.7,1.15,0.9); g.rotation.z=0.35; g.userData.baseY=1.15;
+  return g;
+}
+function buildSmallBeaker(cx,color){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.4,0.9,16),
+    new THREE.MeshStandardMaterial({color:0xbfe3f2,roughness:0.25,transparent:true,opacity:0.4}));
+  glass.position.y=0.45; g.add(glass);
+  const w=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.35,0.68,16),stdMat(color,0.5));
+  w.position.y=0.38; w.material.transparent=true; w.material.opacity=0.8; g.add(w);
+  g.position.set(cx,0,1.7); g.userData.baseY=0;
+  return g;
+}
+function buildPerfume(){
+  const g=new THREE.Group();
+  const bottle=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.62,0.42),stdMat(0xe86a9e,0.4)));
+  bottle.position.y=0.31; g.add(bottle);
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,0.2,10),stdMat(0xd9b23c,0.4));
+  neck.position.y=0.72; g.add(neck);
+  for(let i=0;i<5;i++){
+    const s=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6),stdMat(0xf2a7c3,0.5));
+    s.position.set((i-2)*0.13,0.95+((i%2)*0.14),0.1*((i%3)-1)); s.material.transparent=true; s.material.opacity=0.75; g.add(s);
+  }
+  g.position.set(4.3,0,-1.5); g.userData.baseY=0;
+  return g;
+}
+function buildJuice(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.34,0.95,16),
+    new THREE.MeshStandardMaterial({color:0xbfe3f2,roughness:0.25,transparent:true,opacity:0.4}));
+  glass.position.y=0.48; g.add(glass);
+  const j=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.3,0.5,16),stdMat(0xf2762e,0.55));
+  j.position.y=0.27; j.material.transparent=true; j.material.opacity=0.9; g.add(j);
+  g.position.set(-4.6,0,-0.9); g.userData.baseY=0;
+  return g;
+}
+function buildParticleGroups(){
+  gasSepGroup=new THREE.Group(); scene3.add(gasSepGroup);
+  for(let i=0;i<9;i++) partSphere(0xf4f7fa,-2.35+((i%3)*0.55),0.85+Math.floor(i/3)*0.55,-2.35+((i%2)*0.6),0.1,gasSepGroup);
+  for(let i=0;i<9;i++) partSphere(0xd23c2a,0.75+((i%3)*0.55),0.85+Math.floor(i/3)*0.55,-2.35+((i%2)*0.6),0.1,gasSepGroup);
+  gasMixGroup=new THREE.Group(); scene3.add(gasMixGroup);
+  for(let i=0;i<8;i++){ const left=i%2===0; const cx=left?-1.7:1.3; partSphere(i%3===0?0xd23c2a:0xf4f7fa,cx-0.6+((i%4)*0.4),0.85+(Math.floor(i/4)*0.8),-2.3+((i%2)*0.55),0.1,gasMixGroup); }
+  for(let i=0;i<8;i++){ const left=i%2!==0; const cx=left?-1.7:1.3; partSphere(i%3===0?0xf4f7fa:0xd23c2a,cx-0.6+((i%4)*0.4),1.35+(Math.floor(i/4)*0.7),-1.85+((i%2)*0.4),0.1,gasMixGroup); }
+  inkGroup=new THREE.Group(); scene3.add(inkGroup);
+  for(let i=0;i<10;i++) partSphere(0x2456c8,-4.05+((i%3)*0.25),0.25+Math.floor(i/3)*0.28,0.7+((i%2)*0.35),0.075,inkGroup);
+  mixColdG=new THREE.Group(); scene3.add(mixColdG);
+  for(let i=0;i<5;i++) partSphere(0x7a4fd0,1.5+((i%3)*0.2),0.2+Math.floor(i/3)*0.3,1.55+((i%2)*0.25),0.06,mixColdG);
+  mixWarmG=new THREE.Group(); scene3.add(mixWarmG);
+  for(let i=0;i<5;i++) partSphere(0x7a4fd0,2.8+((i%3)*0.2),0.2+Math.floor(i/3)*0.3,1.55+((i%2)*0.25),0.06,mixWarmG);
+  mixHotG=new THREE.Group(); scene3.add(mixHotG);
+  for(let i=0;i<5;i++) partSphere(0x7a4fd0,4.1+((i%3)*0.2),0.2+Math.floor(i/3)*0.3,1.55+((i%2)*0.25),0.06,mixHotG);
+  steamGroup=new THREE.Group(); scene3.add(steamGroup);
+  for(let i=0;i<4;i++){
+    const s=new THREE.Mesh(new THREE.SphereGeometry(0.11,8,6),stdMat(0xffffff,0.9));
+    s.material.transparent=true; s.material.opacity=0.55; s.position.set(4.15+i*0.12,1.05+((i%2)*0.18),1.6); steamGroup.add(s);
+    PARTJ.push({m:s,bx:s.position.x,by:s.position.y,bz:s.position.z,ph:i*1.4,sp:0.8});
+  }
+  juiceGroup=new THREE.Group(); scene3.add(juiceGroup);
+  for(let i=0;i<6;i++) partSphere(0xf2a03c,-4.8+((i%3)*0.2),0.6+Math.floor(i/3)*0.25,-1.05+((i%2)*0.3),0.06,juiceGroup);
+}
+function syncSceneState(){
+  if(!scene3) return;
+  const mixed=curStep>0||T.s1open;
+  if(gasSepGroup) gasSepGroup.visible=!mixed;
+  if(gasMixGroup) gasMixGroup.visible=mixed;
+  if(inkGroup) inkGroup.visible=(curStep>2)||(curStep===2&&T.s3pip);
+  if(mixColdG) mixColdG.visible=(curStep>4)||(curStep===4&&T.s5cold);
+  if(mixWarmG) mixWarmG.visible=(curStep>4)||(curStep===4&&T.s5warm);
+  if(mixHotG) mixHotG.visible=(curStep>4)||(curStep===4&&T.s5hot);
+  if(steamGroup) steamGroup.visible=curStep>=4;
+  if(juiceGroup) juiceGroup.visible=(curStep===5&&T.s6juice);
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdcecf7);
+  scene3.fog=new THREE.Fog(0xdcecf7,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13,0.35,7.5),stdMat(0xb08954,0.95));
+  bench.position.set(0.3,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc7d3de,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8f1f8,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  const jarL=buildGasJar(-1.7,0); scene3.add(jarL);
+  const jarR=buildGasJar(1.3,1); scene3.add(jarR);
+  reg('tapvalve',buildValve());
+  { const holder=new THREE.Group(); holder.position.set(-1.7,0,-2.0); reg('whitegas',holder); }
+  { const holder=new THREE.Group(); holder.position.set(1.3,0,-2.0); reg('redgas',holder); }
+  reg('beaker',buildBeakerBig());
+  reg('pipette',buildPipette());
+  reg('coldbeaker',buildSmallBeaker(1.7,0x9fd4e8));
+  reg('warmbeaker',buildSmallBeaker(3.0,0x5aa7d6));
+  reg('hotbeaker',buildSmallBeaker(4.3,0x2b6cb0));
+  reg('perfume',buildPerfume());
+  reg('orangejuice',buildJuice());
+  buildParticleGroups();
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('tapvalve',p,G.tapvalve); }
+  { const p=sphProxy(0.95); p.position.set(0,1.55,0); addProxy('whitegas',p,G.whitegas); }
+  { const p=sphProxy(0.95); p.position.set(0,1.55,0); addProxy('redgas',p,G.redgas); }
+  { const p=sphProxy(0.8); p.position.set(0,0.6,0); addProxy('beaker',p,G.beaker); }
+  { const p=sphProxy(0.42); p.position.set(0,0.5,0); addProxy('pipette',p,G.pipette); }
+  { const p=sphProxy(0.55); p.position.set(0,0.45,0); addProxy('coldbeaker',p,G.coldbeaker); }
+  { const p=sphProxy(0.55); p.position.set(0,0.45,0); addProxy('warmbeaker',p,G.warmbeaker); }
+  { const p=sphProxy(0.55); p.position.set(0,0.45,0); addProxy('hotbeaker',p,G.hotbeaker); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('perfume',p,G.perfume); }
+  { const p=sphProxy(0.55); p.position.set(0,0.5,0); addProxy('orangejuice',p,G.orangejuice); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  syncSceneState();
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['tapvalve','whitegas','redgas'],
+  ['whitegas','redgas'],
+  ['pipette','beaker'],
+  [],
+  ['coldbeaker','warmbeaker','hotbeaker'],
+  ['perfume','orangejuice']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='tapvalve') T.s1open=true;
+    if(id==='whitegas'){ T.s1white=true; FOUND.gas=true; }
+    if(id==='redgas'){ T.s1red=true; FOUND.gas=true; }
+  }else if(curStep===1){
+    if(id==='whitegas') T.s2left=true;
+    if(id==='redgas') T.s2right=true;
+  }else if(curStep===2){
+    if(id==='pipette') T.s3pip=true;
+    if(id==='beaker'){ T.s3watch=true; FOUND.ink=true; }
+  }else if(curStep===4){
+    if(id==='coldbeaker') T.s5cold=true;
+    if(id==='warmbeaker') T.s5warm=true;
+    if(id==='hotbeaker') T.s5hot=true;
+  }else if(curStep===5){
+    if(id==='perfume'){ T.s6perf=true; FOUND.smell=true; }
+    if(id==='orangejuice'){ T.s6juice=true; FOUND.juice=true; }
+  }
+  syncSceneState();
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  syncSceneState();
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  for(let i=0;i<PARTJ.length;i++){
+    const p=PARTJ[i];
+    p.m.position.x=p.bx+Math.sin(now*0.001*p.sp+p.ph)*0.09;
+    p.m.position.y=p.by+Math.cos(now*0.0013*p.sp+p.ph*1.7)*0.07;
+    p.m.position.z=p.bz+Math.sin(now*0.0008*p.sp+p.ph*0.6)*0.07;
+  }
+  if(beakerWaterMat) beakerWaterMat.color.setHSL(0.55,0.62,0.5+Math.sin(now*0.0016)*0.04);
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — after mixing */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — true or false */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinTrue').innerHTML=bi(STR.binTrue);
+  $('ex2BinFalse').innerHTML=bi(STR.binFalse);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='true'?'✓':'✗')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinTrue').onclick=()=>ex2Place('true');
+$('ex2BinFalse').onclick=()=>ex2Place('false');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.gas=false; }
+  if(step===2){ FOUND.ink=false; }
+  if(step===3){ SORTCARDS.forEach(c=>SORTED.delete(c.id)); }
+  if(step===5){ FOUND.smell=false; FOUND.juice=false; }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='true'||s.exAns.a2[id]==='false')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.s1open=true; t.s1white=true; t.s1red=true; }
+  else if(i===1){ t.s2left=true; t.s2right=true; }
+  else if(i===2){ t.s3pip=true; t.s3watch=true; }
+  else if(i===3){ SORTCARDS.forEach(c=>{ if(SORTED.has(c.id)) t.s4correct.add(c.id); }); }
+  else if(i===4){ t.s5cold=true; t.s5warm=true; t.s5hot=true; }
+  else if(i===5){ t.s6perf=true; t.s6juice=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-3-7',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

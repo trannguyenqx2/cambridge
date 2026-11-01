@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>7.3 Growth, development and health — Tăng trưởng, phát triển và sức khỏe · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="7.3 Growth, development and health" data-vi="7.3 Tăng trưởng, phát triển và sức khỏe (Growth, development and health)">7.3 Growth, development and health</span>
+    <span class="eqchip i18n" data-en="Unit 7 · Diet and growth" data-vi="Bài 7 · Chế độ ăn và tăng trưởng (Diet and growth)">Unit 7 · Diet and growth</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How do we grow and develop — and what keeps us healthy?" data-vi="Ta tăng trưởng (growth) và phát triển (development) thế nào — và điều gì giữ ta khỏe mạnh?">How do we grow and develop — and what keeps us healthy?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Cells divide and grow" data-vi="Tế bào phân chia và lớn lên">Cells divide and grow</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Development forms a whole person" data-vi="Phát triển (development) tạo thành một con người hoàn chỉnh">Development forms a whole person</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Exercise keeps us healthy" data-vi="Vận động giữ ta khỏe mạnh">Exercise keeps us healthy</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Smoking damages health" data-vi="Hút thuốc làm hại sức khỏe">Smoking damages health</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the cells, people and jars on the stage!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các tế bào, con người và lọ trên sân khấu!">🖱 Drag to look around · Scroll to zoom · Tap the cells, people and jars on the stage!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 7 Diet and growth · Section 7.3. The people and cells on the stage are models — sizes are not to scale." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 7 Chế độ ăn và tăng trưởng (Diet and growth) · Mục 7.3. Con người và tế bào trên sân khấu là mô hình — kích thước không theo tỉ lệ thật.">Cambridge Lower Secondary Science 8 · Unit 7 Diet and growth · Section 7.3. The people and cells on the stage are models — sizes are not to scale.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 7 Diet and growth, section 7.3, pages 245–248; Workbook 8 (ISBN 9781108742856), pages 144–152. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 7 Diet and growth (Chế độ ăn và tăng trưởng), mục 7.3, trang 245–248; Sách bài tập 8 (ISBN 9781108742856), trang 144–152. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 7 Diet and growth, section 7.3, pages 245–248; Workbook 8 (ISBN 9781108742856), pages 144–152. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: learn how growth takes place; find out the difference between growth and development; think about how diet and exercise affect growth, development and health; learn how smoking affects health. Key words: carbon monoxide, development, embryo, nicotine, particulates, tar." data-vi="Mục tiêu: học cách tăng trưởng (growth) diễn ra; tìm hiểu sự khác nhau giữa tăng trưởng và phát triển (development); nghĩ về cách chế độ ăn và vận động ảnh hưởng tới tăng trưởng, phát triển và sức khỏe; học cách hút thuốc ảnh hưởng tới sức khỏe. Từ khóa: carbon monoxide (khí CO), development (phát triển), embryo (phôi), nicotine (nicotin), particulates (hạt bụi mịn), tar (hắc ín).">Objectives: learn how growth takes place; find out the difference between growth and development; think about how diet and exercise affect growth, development and health; learn how smoking affects health. Key words: carbon monoxide, development, embryo, nicotine, particulates, tar.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the stage — following a single cell as it divides and grows into an embryo, finding the protein and energy growth needs, sorting growth changes from development changes, walking through the five life stages, collecting three benefits of exercise, and meeting the four harmful substances in tobacco smoke. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Left out of the interactive lesson: Activity 7.3.1's group research discussion about why people smoke (a classroom discussion, not a machine-checkable action), Workbook 7.3B's internet search for smoking data for another country and hand-drawn bar chart, Workbook 7.3C's free choice of a data set to graph, and the exact bar heights of the Learner's Book pregnancy chart and Workbook 7.3A deaths chart (the extracted text does not carry the bar values, so no numbers were invented — the trends and the survey percentages that the text does give, such as 41% in 7.3C, are taught)." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên sân khấu — theo dõi một tế bào đơn lẻ khi nó phân chia và lớn lên thành phôi (embryo), tìm nhu cầu chất đạm (protein) và năng lượng để tăng trưởng, phân loại thay đổi tăng trưởng với thay đổi phát triển (development), đi qua năm giai đoạn cuộc đời, thu thập ba lợi ích của vận động, và gặp bốn chất gây hại trong khói thuốc lá. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Không đưa vào bài tương tác: thảo luận nhóm nghiên cứu Hoạt động 7.3.1 về vì sao người ta hút thuốc (là thảo luận lớp học, không phải hành động kiểm tra được bằng máy), Bài tập 7.3B yêu cầu tìm trên internet số liệu hút thuốc của một nước khác và vẽ biểu đồ cột bằng tay, Bài tập 7.3C tự chọn một bộ số liệu để vẽ đồ thị, và chiều cao cột chính xác của biểu đồ mang thai trong sách học và biểu đồ tử vong 7.3A trong sách bài tập (bản trích text không có giá trị các cột, nên không bịa ra số nào — các xu hướng và tỉ lệ phần trăm của khảo sát mà bản text có ghi, như 41% trong 7.3C, vẫn được dạy).">How it works: each step asks for one real action on the stage. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-7-3 "Growth, development and health" (Science 8, Unit 7)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+const THINGS={
+  cell1:{emoji:'🔵',name:{en:'A single cell — where every person begins',vi:'Một tế bào (cell) đơn lẻ — nơi mọi người bắt đầu'},short:{en:'Single cell',vi:'Tế bào đơn lẻ'},ring:0.6,labelY:1.0,fx:-5.4,fz:-1.6,fr:4.6},
+  cells2:{emoji:'🔵🔵',name:{en:'Two cells — the first cell has divided',vi:'Hai tế bào — tế bào đầu tiên đã phân chia'},short:{en:'Two cells',vi:'Hai tế bào'},ring:0.65,labelY:1.0,fx:-4.2,fz:-1.8,fr:4.6},
+  embryo:{emoji:'⚪',name:{en:'An embryo — a little ball of cells',vi:'Một phôi (embryo) — một quả cầu nhỏ gồm các tế bào'},short:{en:'Embryo',vi:'Phôi'},ring:0.65,labelY:1.05,fx:-3.0,fz:-1.6,fr:4.6},
+  protein:{emoji:'🍗',name:{en:'Protein-rich food — cells contain a lot of protein',vi:'Thức ăn giàu chất đạm (protein) — tế bào chứa nhiều chất đạm'},short:{en:'Protein food',vi:'Thức ăn giàu đạm'},ring:0.6,labelY:1.0,fx:-1.6,fz:-1.8,fr:4.6},
+  energy:{emoji:'⚡',name:{en:'Energy food — dividing cells need energy',vi:'Thức ăn năng lượng — tế bào phân chia cần năng lượng (energy)'},short:{en:'Energy food',vi:'Thức ăn năng lượng'},ring:0.6,labelY:1.15,fx:-0.4,fz:-1.9,fr:4.6},
+  childfig:{emoji:'🧒',name:{en:'A growing child — needs protein and energy',vi:'Một đứa trẻ đang lớn — cần chất đạm (protein) và năng lượng'},short:{en:'Growing child',vi:'Trẻ đang lớn'},ring:0.6,labelY:1.3,fx:0.9,fz:-1.7,fr:4.8},
+  baby:{emoji:'👶',name:{en:'Baby — the first stage, from birth',vi:'Em bé (baby) — giai đoạn đầu tiên, từ khi sinh ra'},short:{en:'Baby',vi:'Em bé'},ring:0.55,labelY:1.0,fx:2.2,fz:-1.8,fr:4.6},
+  toddler:{emoji:'🚶',name:{en:'Toddler — learning to walk',vi:'Trẻ chập chững (toddler) — đang học đi'},short:{en:'Toddler',vi:'Trẻ chập chững'},ring:0.55,labelY:1.15,fx:3.2,fz:-1.8,fr:4.6},
+  childstage:{emoji:'🧒',name:{en:'Child — growing and learning fast',vi:'Trẻ em (child) — lớn và học rất nhanh'},short:{en:'Child',vi:'Trẻ em'},ring:0.6,labelY:1.45,fx:4.3,fz:-1.8,fr:4.8},
+  adolescent:{emoji:'🧑',name:{en:'Adolescent — the teenage stage',vi:'Thanh thiếu niên (adolescent) — giai đoạn tuổi teen'},short:{en:'Adolescent',vi:'Thanh thiếu niên'},ring:0.65,labelY:1.8,fx:5.4,fz:-1.7,fr:5.0},
+  adult:{emoji:'🧍',name:{en:'Adult — fully grown, at about 18–20 years',vi:'Người lớn (adult) — đã lớn hoàn toàn, ở khoảng 18–20 tuổi'},short:{en:'Adult',vi:'Người lớn'},ring:0.65,labelY:2.0,fx:6.4,fz:-1.7,fr:5.2},
+  heart:{emoji:'❤️',name:{en:'The heart — exercise makes it strong',vi:'Tim (heart) — vận động làm tim khỏe'},short:{en:'Heart',vi:'Tim'},ring:0.6,labelY:1.05,fx:-4.6,fz:2.2,fr:4.6},
+  muscle:{emoji:'💪',name:{en:'Muscles — exercise makes them strong',vi:'Cơ bắp (muscles) — vận động làm cơ bắp khỏe'},short:{en:'Muscles',vi:'Cơ bắp'},ring:0.6,labelY:1.05,fx:-3.2,fz:2.2,fr:4.6},
+  fatblob:{emoji:'⚖️',name:{en:'Stored fat — exercise uses up stored energy',vi:'Mỡ dự trữ (fat) — vận động dùng bớt năng lượng dự trữ'},short:{en:'Stored fat',vi:'Mỡ dự trữ'},ring:0.6,labelY:0.95,fx:-1.8,fz:2.3,fr:4.6},
+  nicotine:{emoji:'🧪',name:{en:'Nicotine — the addictive substance in tobacco',vi:'Nicotine (nicotin) — chất gây nghiện trong thuốc lá'},short:{en:'Nicotine',vi:'Nicotine'},ring:0.55,labelY:1.05,fx:0.2,fz:2.3,fr:4.6},
+  tarjar:{emoji:'🫙',name:{en:'Tar — dark, sticky substances that can cause cancer',vi:'Tar (hắc ín) — các chất sẫm màu, dính, có thể gây ung thư'},short:{en:'Tar',vi:'Hắc ín'},ring:0.55,labelY:0.95,fx:1.5,fz:2.3,fr:4.6},
+  monoxide:{emoji:'☁️',name:{en:'Carbon monoxide — a poisonous gas in smoke',vi:'Carbon monoxide — một khí độc trong khói thuốc'},short:{en:'Carbon monoxide',vi:'Carbon monoxide'},ring:0.65,labelY:1.05,fx:2.9,fz:2.2,fr:4.6},
+  particulates:{emoji:'⚫',name:{en:'Particulates — tiny particles trapped in the lungs',vi:'Particulates (hạt bụi mịn) — các hạt rất nhỏ bị kẹt trong phổi'},short:{en:'Particulates',vi:'Hạt bụi mịn'},ring:0.6,labelY:0.9,fx:4.3,fz:2.3,fr:4.6},
+  rock:{emoji:'🪨',name:{en:'An ordinary stone on display',vi:'Một hòn đá thường để trưng bày'},short:{en:'Stone',vi:'Hòn đá'},ring:0.6,labelY:0.85,fx:5.8,fz:2.4,fr:5.0}
+};
+const FOCUSORDER=['cell1','embryo','baby','adult','heart','nicotine','tarjar','monoxide'];
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the stage',vi:'Trên sân khấu'},
+  u1Brief:{en:'Tap a name to LOOK at the object. Looking is not doing — to do a step, tap the object itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Facts from the book',vi:'Sự kiện từ sách'},
+  u2Brief:{en:'The book’s own facts, as you find them on the stage.',vi:'Các sự kiện của chính sách, khi con tìm thấy chúng trên sân khấu.'},
+  recGrow:{en:'How a body grows — cells divide, then each cell',vi:'Cơ thể lớn lên thế nào — tế bào phân chia, rồi mỗi tế bào'},
+  recNeeds:{en:'Dividing cells need',vi:'Tế bào đang phân chia cần'},
+  recStages:{en:'Life stages, in order',vi:'Các giai đoạn cuộc đời, theo thứ tự'},
+  recSmoke:{en:'Harmful smoke substances studied',vi:'Số chất gây hại trong khói đã học'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your growth-and-health checklist.',vi:'Danh sách thực hành về tăng trưởng và sức khỏe của con.'},
+  didGrow:{en:'Described how growth happens',vi:'Đã mô tả được tăng trưởng diễn ra thế nào'},
+  didSort:{en:'Sorted growth from development',vi:'Đã phân loại tăng trưởng và phát triển (development)'},
+  didEx:{en:'Collected the benefits of exercise',vi:'Đã thu thập các lợi ích của vận động'},
+  didSmoke:{en:'Explained how smoking damages health',vi:'Đã giải thích được hút thuốc làm hại sức khỏe thế nào'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'GROWTH 📈',vi:'TĂNG TRƯỞNG (growth) 📈'},
+  binMix:{en:'DEVELOPMENT 🧩',vi:'PHÁT TRIỂN (development) 🧩'},
+  binPerm:{en:'GROWTH 📈',vi:'TĂNG TRƯỞNG (growth) 📈'},
+  binNot:{en:'DEVELOPMENT 🧩',vi:'PHÁT TRIỂN (development) 🧩'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 7.3',vi:'📝 Bài tập — Sách bài tập (Workbook) 7.3'},
+  exIntro:{en:'Workbook games for this lesson: smoking data and substances (Exercise 7.3A), growth or development, and cross out the wrong word — including the 2003 China survey from 7.3C. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: số liệu và các chất của hút thuốc (Bài tập 7.3A), tăng trưởng hay phát triển, và gạch bỏ từ sai — gồm cả khảo sát Trung Quốc năm 2003 từ 7.3C. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Smoking: data and substances (7.3A)',vi:'Bài tập 1 · Focus — Hút thuốc: số liệu và các chất (7.3A)'},
+  ex1Inst:{en:'Tap the 4 TRUE statements. Two come from the book’s charts: in Workbook 7.3A the percentages of deaths due to smoking were greater for men than for women, and in the Learner’s Book chart the more cigarettes a mother smoked in pregnancy, the greater the chance of a baby with low birthweight.',vi:'Chạm vào 4 câu ĐÚNG. Hai câu đến từ biểu đồ của sách: trong Bài tập 7.3A, tỉ lệ tử vong do hút thuốc ở nam cao hơn ở nữ, và trong biểu đồ của sách học, mẹ hút càng nhiều thuốc khi mang thai thì khả năng sinh con nhẹ cân càng cao.'},
+  ex2T:{en:'Exercise 2 · Practice — Growth or development?',vi:'Bài tập 2 · Practice — Tăng trưởng (growth) hay phát triển (development)?'},
+  ex2Inst:{en:'Growth means getting bigger. Development means the other changes — new tissues and organs, new abilities. Tap a card, then tap GROWTH or DEVELOPMENT.',vi:'Tăng trưởng (growth) nghĩa là lớn lên. Phát triển (development) nghĩa là các thay đổi còn lại — mô và cơ quan mới, khả năng mới. Chạm vào một thẻ, rồi chạm TĂNG TRƯỞNG (GROWTH) hoặc PHÁT TRIỂN (DEVELOPMENT).'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (7.3C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (7.3C)'},
+  ex3Inst:{en:'Each sentence is about growth, exercise or smoking data. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu nói về tăng trưởng, vận động hoặc số liệu hút thuốc. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'carbon monoxide',vi:'khí CO'},
+  {en:'development',vi:'phát triển'},
+  {en:'embryo',vi:'phôi'},
+  {en:'nicotine',vi:'nicotin'},
+  {en:'particulates',vi:'hạt bụi mịn'},
+  {en:'tar',vi:'hắc ín'}
+];
+const STEPS=[
+ {tag:{en:'How growth happens',vi:'Tăng trưởng diễn ra thế nào'}, word:{en:'embryo',vi:'phôi'},
+  q:{en:'Getting started: every person began life as a single cell. How does that one cell become a whole baby?',vi:'Khởi động: mọi người đều bắt đầu cuộc sống như một tế bào (cell) đơn lẻ. Làm sao tế bào duy nhất đó trở thành một em bé hoàn chỉnh?'},
+  act:{en:'Follow the growth story on the stage: tap the single cell, then the two cells after it divides, then the embryo — the little ball of cells.',vi:'Theo dõi câu chuyện tăng trưởng trên sân khấu: chạm vào tế bào đơn lẻ, rồi hai tế bào sau khi nó phân chia, rồi phôi (embryo) — quả cầu nhỏ gồm các tế bào.'},
+  see:{en:'Each stage bounces and shows its name.',vi:'Mỗi giai đoạn nảy lên và hiện tên của nó.'},
+  concl:[
+    {en:'Growth (growth) means getting bigger. A single cell divides into two; each cell grows, then divides again — and again.',vi:'Tăng trưởng (growth) nghĩa là lớn lên. Một tế bào đơn lẻ phân chia thành hai; mỗi tế bào lớn lên, rồi lại phân chia — và cứ thế tiếp tục.'},
+    {en:'At first the cells are all the same. They form a little ball of cells called an embryo (embryo), and eventually a baby — all inside the mother’s body.',vi:'Lúc đầu các tế bào đều giống nhau. Chúng tạo thành một quả cầu nhỏ gọi là phôi (embryo), và cuối cùng là một em bé — tất cả bên trong cơ thể mẹ.'},
+    {en:'The baby keeps growing after it is born, until it is about 18–20 years old.',vi:'Em bé tiếp tục lớn lên sau khi sinh, cho tới khi khoảng 18–20 tuổi.'}]},
+ {tag:{en:'What growth needs',vi:'Tăng trưởng cần gì'}, word:{en:'development',vi:'phát triển'},
+  q:{en:'Dividing cells cannot be made from nothing. What must a growing body take in from food?',vi:'Các tế bào đang phân chia không thể được tạo ra từ hư không. Một cơ thể đang lớn phải lấy gì từ thức ăn?'},
+  act:{en:'Tap the protein-rich food, then the energy food, then the growing child who needs both of them.',vi:'Chạm vào thức ăn giàu chất đạm (protein), rồi thức ăn năng lượng, rồi đứa trẻ đang lớn cần cả hai thứ đó.'},
+  see:{en:'Each need lights up on the child’s checklist.',vi:'Mỗi nhu cầu sáng lên trong danh sách của đứa trẻ.'},
+  concl:[
+    {en:'Cells contain a lot of protein (protein), so making new cells needs protein from the diet — and energy is needed to make the cells divide.',vi:'Tế bào chứa nhiều chất đạm (protein), nên tạo tế bào mới cần chất đạm từ chế độ ăn — và cần năng lượng (energy) để các tế bào phân chia.'},
+    {en:'A pregnant woman and a growing child both need plenty of protein, and enough energy, in their diet.',vi:'Một phụ nữ mang thai và một đứa trẻ đang lớn đều cần nhiều chất đạm (protein), và đủ năng lượng, trong chế độ ăn của mình.'},
+    {en:'That is why young children who do not get enough protein or energy in their diet may not grow very tall: there is not enough material or energy for their cells to keep dividing and growing.',vi:'Đó là lý do trẻ nhỏ không nhận đủ chất đạm hay năng lượng trong chế độ ăn có thể không cao lớn được: không đủ vật chất hay năng lượng để tế bào của chúng tiếp tục phân chia và lớn lên.'}]},
+ {tag:{en:'Growth or development?',vi:'Tăng trưởng hay phát triển?'}, word:{en:'development',vi:'phát triển'},
+  q:{en:'Changing from one cell into an adult is more than just getting bigger. Can you sort growth changes from development changes?',vi:'Thay đổi từ một tế bào thành người lớn không chỉ là lớn lên. Con có phân loại được thay đổi tăng trưởng (growth) với thay đổi phát triển (development) không?'},
+  act:{en:'Each card describes a change. Tap a card, then tap GROWTH or DEVELOPMENT.',vi:'Mỗi thẻ mô tả một thay đổi. Chạm vào một thẻ, rồi chạm TĂNG TRƯỞNG (GROWTH) hoặc PHÁT TRIỂN (DEVELOPMENT).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Growth (growth) is getting bigger: cells divide and each new cell grows, so the body gains size and mass.',vi:'Tăng trưởng (growth) là lớn lên: tế bào phân chia và mỗi tế bào mới lớn lên, nên cơ thể tăng kích thước và khối lượng.'},
+    {en:'Development (development) is the other changes along the way: tissues and organs form in the embryo, leg muscles and bones strengthen so a baby can walk and then run, and the brain develops as the child learns to talk and to play.',vi:'Phát triển (development) là các thay đổi còn lại trên hành trình: mô và cơ quan hình thành trong phôi (embryo), cơ chân và xương khỏe lên để em bé biết đi rồi biết chạy, và não phát triển khi trẻ học nói và học chơi.'},
+    {en:'Everyone grows and develops at different rates and in slightly different ways — but everyone goes through the same stages.',vi:'Mọi người tăng trưởng và phát triển với tốc độ khác nhau và theo cách hơi khác nhau — nhưng mọi người đều trải qua cùng các giai đoạn.'}]},
+ {tag:{en:'Stages of development',vi:'Các giai đoạn phát triển'}, word:{en:'development',vi:'phát triển'},
+  q:{en:'The book’s chart shows development as one long flow with no sharp breaks. Can you walk through its five stages?',vi:'Biểu đồ của sách cho thấy phát triển (development) là một dòng dài liên tục, không có ranh giới sắc nét. Con có đi qua được năm giai đoạn của nó không?'},
+  act:{en:'Tap the five figures in order: baby, toddler, child, adolescent, adult. Tapping them in any order counts — but read the order on their labels!',vi:'Chạm vào năm hình người theo thứ tự: em bé (baby), trẻ chập chững (toddler), trẻ em (child), thanh thiếu niên (adolescent), người lớn (adult). Chạm theo thứ tự nào cũng được tính — nhưng hãy đọc thứ tự trên nhãn của chúng!'},
+  see:{en:'Each figure bounces and shows its stage and what happens in it.',vi:'Mỗi hình người nảy lên và hiện giai đoạn cùng điều diễn ra ở giai đoạn đó.'},
+  concl:[
+    {en:'The stages blend gradually into one another — baby, toddler, child, adolescent, adult — with no sharp divisions between them.',vi:'Các giai đoạn hòa dần vào nhau — em bé (baby), trẻ chập chững (toddler), trẻ em (child), thanh thiếu niên (adolescent), người lớn (adult) — không có ranh giới sắc nét giữa chúng.'},
+    {en:'Growth mostly finishes at about 18–20 years old, when the adult stage is reached.',vi:'Tăng trưởng (growth) hầu như kết thúc ở khoảng 18–20 tuổi, khi đạt giai đoạn người lớn (adult).'}]},
+ {tag:{en:'Exercise and health',vi:'Vận động và sức khỏe'}, word:{en:'development',vi:'phát triển'},
+  q:{en:'Getting started: most people know that plenty of exercise helps you stay healthy. Can you collect the three ways it helps?',vi:'Khởi động: hầu hết mọi người biết rằng vận động nhiều giúp ta khỏe mạnh. Con có thu thập được ba cách nó giúp ta không?'},
+  act:{en:'Tap the heart, then the muscles, then the store of fat — the three places exercise does its work.',vi:'Chạm vào tim (heart), rồi cơ bắp (muscles), rồi kho mỡ dự trữ (fat) — ba nơi vận động phát huy tác dụng.'},
+  see:{en:'Each benefit appears on the checklist as you tap.',vi:'Mỗi lợi ích hiện trên danh sách khi con chạm.'},
+  concl:[
+    {en:'Exercise uses some of the energy in the food you eat each day, so less of it is stored as fat (fat).',vi:'Vận động dùng một phần năng lượng (energy) trong thức ăn con ăn mỗi ngày, nên ít năng lượng bị dự trữ thành mỡ (fat) hơn.'},
+    {en:'Exercise makes the heart (heart) and muscles (muscles) work hard, so they become strong.',vi:'Vận động khiến tim (heart) và cơ bắp (muscles) làm việc vất vả, nên chúng trở nên khỏe mạnh.'},
+    {en:'Exercise can also make people feel more cheerful and positive about life.',vi:'Vận động còn có thể khiến người ta cảm thấy vui vẻ và tích cực hơn về cuộc sống.'}]},
+ {tag:{en:'How smoking damages health',vi:'Hút thuốc làm hại sức khỏe thế nào'}, word:{en:'nicotine',vi:'nicotin'},
+  q:{en:'Tobacco smoke carries several harmful substances into the body. Can you meet all four — and learn what each one does?',vi:'Khói thuốc lá mang nhiều chất gây hại vào cơ thể. Con có gặp được cả bốn chất — và học mỗi chất làm gì không?'},
+  act:{en:'Tap the four smoke substances: the nicotine bottle, the tar jar, the carbon monoxide cloud and the particulates.',vi:'Chạm vào bốn chất trong khói: lọ nicotine (nicotin), lọ tar (hắc ín), đám mây carbon monoxide và các hạt particulates (hạt bụi mịn).'},
+  see:{en:'Each substance bounces and shows its name — its harm is explained in the answer.',vi:'Mỗi chất nảy lên và hiện tên của nó — tác hại của nó được giải thích trong đáp án.'},
+  concl:[
+    {en:'Nicotine (nicotine) is addictive — once you are used to it, it is very difficult to manage without it, which is why smokers find it so hard to stop. It also narrows blood vessels, making heart disease more likely.',vi:'Nicotine (nicotin) gây nghiện — khi đã quen với nó, rất khó sống thiếu nó, đó là lý do người hút thuốc rất khó bỏ. Nó còn làm mạch máu hẹp lại, khiến bệnh tim dễ xảy ra hơn.'},
+    {en:'Tar (tar) is a mixture of dark, sticky substances. Some chemicals in tar cause cancer (cancer) — cells dividing out of control and spreading — including lung cancer.',vi:'Tar (hắc ín) là hỗn hợp các chất sẫm màu, dính. Một số hóa chất trong tar gây ung thư (cancer) — các tế bào phân chia mất kiểm soát và lan rộng — gồm cả ung thư phổi.'},
+    {en:'Carbon monoxide (carbon monoxide) is a poisonous gas. It combines with haemoglobin in red blood cells, so the haemoglobin cannot carry oxygen properly: the smoker’s cells get too little oxygen, respire less, and have too little energy.',vi:'Carbon monoxide là một khí độc. Nó kết hợp với haemoglobin trong tế bào máu đỏ, nên haemoglobin không vận chuyển được oxy (oxygen) đúng cách: tế bào của người hút thuốc nhận quá ít oxy, hô hấp ít hơn, và có quá ít năng lượng.'},
+    {en:'Particulates (particulates) are tiny particles that get trapped in the lungs and break down the walls of the alveoli, leaving big spaces instead of millions of tiny alveoli — so getting enough oxygen into the blood becomes difficult. Smoking also harms people nearby who breathe in the smoke.',vi:'Particulates (hạt bụi mịn) là các hạt rất nhỏ bị kẹt trong phổi và phá vỡ thành của các phế nang (alveoli), để lại các khoảng lớn thay vì hàng triệu phế nang nhỏ — nên việc đưa đủ oxy (oxygen) vào máu trở nên khó khăn. Hút thuốc còn làm hại những người xung quanh hít phải khói thuốc.'},
+    {en:'I can describe how organisms grow.',vi:'Con mô tả được sinh vật tăng trưởng (grow) thế nào.'},
+    {en:'I can explain what is meant by development.',vi:'Con giải thích được phát triển (development) nghĩa là gì.'},
+    {en:'I can explain why exercise is good for a person’s health.',vi:'Con giải thích được vì sao vận động tốt cho sức khỏe của một người.'},
+    {en:'I can explain how smoking damages health.',vi:'Con giải thích được hút thuốc làm hại sức khỏe thế nào.'}]}
+];
+const CARDS7=[
+ {id:'s_taller',emoji:'📏',en:'Getting taller as the bones grow longer',vi:'Cao lên khi xương dài ra',ans:'growth'},
+ {id:'s_talk',emoji:'🗣️',en:'Learning to talk',vi:'Học nói',ans:'development'},
+ {id:'s_mass',emoji:'⚖️',en:'Gaining mass as cells divide and each new cell grows',vi:'Tăng khối lượng khi tế bào phân chia và mỗi tế bào mới lớn lên',ans:'growth'},
+ {id:'s_walk',emoji:'🏃',en:'Leg muscles and bones strengthening, so the child can walk and then run',vi:'Cơ chân và xương khỏe lên, để trẻ biết đi rồi biết chạy',ans:'development'},
+ {id:'s_bigger',emoji:'📈',en:'The whole body getting bigger',vi:'Toàn bộ cơ thể lớn lên',ans:'growth'},
+ {id:'s_organs',emoji:'🫀',en:'Tissues and organs forming inside the embryo',vi:'Mô và cơ quan hình thành bên trong phôi (embryo)',ans:'development'}
+];
+const CARDS7_ORDER=mixOrder(CARDS7,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What happens as a person grows, to make their body get bigger?',vi:'Điều gì xảy ra khi một người tăng trưởng (grow), khiến cơ thể họ lớn lên?'},
+  o:[{en:'Cells disappear and are replaced by air',vi:'Tế bào biến mất và được thay bằng không khí'},{en:'Cells divide, and each new cell grows, again and again',vi:'Tế bào phân chia, và mỗi tế bào mới lớn lên, lặp đi lặp lại'},{en:'Each cell stretches like a balloon and never divides',vi:'Mỗi tế bào giãn ra như quả bóng và không bao giờ phân chia'}],a:1,
+  e:{en:'Growth is cell division plus cell growth: one cell becomes two, each grows, then they divide again — starting from a single cell, through an embryo, to a baby.',vi:'Tăng trưởng (growth) là phân chia tế bào cộng với tế bào lớn lên: một tế bào thành hai, mỗi tế bào lớn lên, rồi chúng lại phân chia — bắt đầu từ một tế bào đơn lẻ, qua phôi (embryo), tới một em bé.'}},
+ {q:{en:'What is development?',vi:'Phát triển (development) là gì?'},
+  o:[{en:'The changes that form tissues and organs and bring new abilities, such as walking and talking',vi:'Các thay đổi tạo thành mô và cơ quan và mang lại khả năng mới, như đi và nói'},{en:'Only getting taller',vi:'Chỉ là cao lên'},{en:'Eating more protein',vi:'Ăn nhiều chất đạm (protein) hơn'}],a:0,
+  e:{en:'Development is more than size: organs form, muscles and bones strengthen for walking and running, and the brain develops for talking and playing.',vi:'Phát triển (development) không chỉ là kích thước: cơ quan hình thành, cơ và xương khỏe lên để đi và chạy, và não phát triển để nói và chơi.'}},
+ {q:{en:'Why may young children who get too little protein or energy not grow very tall?',vi:'Vì sao trẻ nhỏ nhận quá ít chất đạm (protein) hoặc năng lượng có thể không cao lớn được?'},
+  o:[{en:'Protein makes children sleep too much',vi:'Chất đạm làm trẻ ngủ quá nhiều'},{en:'Energy stops cells dividing',vi:'Năng lượng ngăn tế bào phân chia'},{en:'New cells are built from protein, and dividing needs energy — without enough of either, cells cannot keep dividing and growing',vi:'Tế bào mới được xây từ chất đạm (protein), và phân chia cần năng lượng (energy) — thiếu một trong hai, tế bào không thể tiếp tục phân chia và lớn lên'}],a:2,
+  e:{en:'Cells contain a lot of protein, and energy is needed to make cells divide. A growing child needs plenty of both in their diet.',vi:'Tế bào chứa nhiều chất đạm (protein), và cần năng lượng (energy) để tế bào phân chia. Một đứa trẻ đang lớn cần nhiều cả hai thứ trong chế độ ăn.'}},
+ {q:{en:'How does carbon monoxide from smoking harm the body?',vi:'Carbon monoxide từ hút thuốc làm hại cơ thể thế nào?'},
+  o:[{en:'It helps haemoglobin carry extra oxygen',vi:'Nó giúp haemoglobin mang thêm oxy (oxygen)'},{en:'It combines with haemoglobin in red blood cells, so less oxygen reaches the body cells and they have less energy',vi:'Nó kết hợp với haemoglobin trong tế bào máu đỏ, nên ít oxy tới được tế bào cơ thể hơn và chúng có ít năng lượng hơn'},{en:'It makes red blood cells divide faster',vi:'Nó làm tế bào máu đỏ phân chia nhanh hơn'}],a:1,
+  e:{en:'Carbon monoxide is a poisonous gas. Joined to haemoglobin, it blocks oxygen transport, so cells cannot respire enough and lack energy.',vi:'Carbon monoxide là một khí độc. Khi gắn vào haemoglobin, nó chặn việc vận chuyển oxy (oxygen), nên tế bào không hô hấp đủ và thiếu năng lượng.'}}
+];
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_men',emoji:'📊',en:'In the 7.3A chart, the percentages of deaths due to smoking were greater for men than for women',vi:'Trong biểu đồ 7.3A, tỉ lệ tử vong do hút thuốc ở nam cao hơn ở nữ',keyw:true},
+ {id:'e_wide',emoji:'🩸',en:'Nicotine makes blood vessels wider, so blood flows more easily',vi:'Nicotine làm mạch máu rộng ra, nên máu chảy dễ hơn',keyw:false},
+ {id:'e_birth',emoji:'👶',en:'The more cigarettes a mother smoked in pregnancy, the greater the chance of a baby with low birthweight',vi:'Mẹ hút càng nhiều thuốc khi mang thai, khả năng sinh con nhẹ cân càng cao',keyw:true},
+ {id:'e_cohelp',emoji:'🩸',en:'Carbon monoxide helps haemoglobin to carry oxygen',vi:'Carbon monoxide giúp haemoglobin vận chuyển oxy (oxygen)',keyw:false},
+ {id:'e_addict',emoji:'🚬',en:'Nicotine is addictive, which is why smokers find it very hard to stop',vi:'Nicotine (nicotin) gây nghiện, đó là lý do người hút thuốc rất khó bỏ',keyw:true},
+ {id:'e_repair',emoji:'🫁',en:'Particulates repair the walls of the alveoli in the lungs',vi:'Particulates (hạt bụi mịn) sửa chữa thành của các phế nang (alveoli) trong phổi',keyw:false},
+ {id:'e_tar',emoji:'🫙',en:'Some chemicals in tar cause cancer',vi:'Một số hóa chất trong tar (hắc ín) gây ung thư (cancer)',keyw:true},
+ {id:'e_lesslikely',emoji:'👶',en:'Smoking in pregnancy makes a low birthweight less likely',vi:'Hút thuốc khi mang thai làm nhẹ cân ít khả năng xảy ra hơn',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_taller',emoji:'📏',en:'Getting taller and heavier as the years pass',vi:'Cao lên và nặng lên theo năm tháng',ans:'growth'},
+ {id:'x_talk',emoji:'🗣️',en:'Learning to talk, and later to read',vi:'Học nói, và sau đó học đọc',ans:'development'},
+ {id:'x_cells',emoji:'🔵',en:'Cells dividing, with each new cell growing',vi:'Tế bào phân chia, với mỗi tế bào mới lớn lên',ans:'growth'},
+ {id:'x_organs',emoji:'🫀',en:'The heart, lungs and other organs forming in the embryo',vi:'Tim, phổi và các cơ quan khác hình thành trong phôi (embryo)',ans:'development'},
+ {id:'x_bones',emoji:'🦴',en:'Bones growing longer as more cells are made',vi:'Xương dài ra khi nhiều tế bào được tạo thêm',ans:'growth'},
+ {id:'x_play',emoji:'🧸',en:'The brain developing as the child learns to play with toys',vi:'Não phát triển khi trẻ học chơi với đồ chơi',ans:'development'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'As a person grows, cells divide and each new cell then',vi:'Khi một người lớn lên, tế bào phân chia và mỗi tế bào mới sau đó'},
+  wrong:1,
+  opts:[{en:'grows',vi:'lớn lên (grows)'},{en:'vanishes',vi:'biến mất'}],
+  e:{en:'Each new cell grows before dividing again — that is how the body gets bigger. Cross out “vanishes”.',vi:'Mỗi tế bào mới lớn lên trước khi lại phân chia — đó là cách cơ thể lớn lên. Hãy gạch bỏ “biến mất”.'}},
+ {pre:{en:'Regular exercise makes the heart and muscles',vi:'Vận động thường xuyên làm tim (heart) và cơ bắp (muscles)'},
+  wrong:1,
+  opts:[{en:'stronger',vi:'khỏe hơn (stronger)'},{en:'weaker',vi:'yếu hơn'}],
+  e:{en:'Working the heart and muscles hard makes them strong. Cross out “weaker”.',vi:'Khiến tim và cơ bắp làm việc vất vả làm chúng khỏe lên. Hãy gạch bỏ “yếu hơn”.'}},
+ {pre:{en:'In the 2003 China survey (Workbook 7.3C), 41% of people who had given up smoking said they gave up because they',vi:'Trong khảo sát Trung Quốc năm 2003 (Bài tập 7.3C), 41% số người đã bỏ thuốc nói họ bỏ vì họ'},
+  wrong:0,
+  opts:[{en:'enjoyed smoking so much',vi:'quá thích hút thuốc'},{en:'had become ill',vi:'đã bị bệnh (had become ill)'}],
+  e:{en:'The biggest group — 41% — gave up because they had become ill; another 27% were worried they might become ill. Cross out “enjoyed smoking so much”.',vi:'Nhóm lớn nhất — 41% — bỏ thuốc vì họ đã bị bệnh; 27% khác lo rằng họ có thể bị bệnh. Hãy gạch bỏ “quá thích hút thuốc”.'}},
+ {pre:{en:'People who had failed to give up smoking most often said — 54% of them — that they went back because they',vi:'Những người bỏ thuốc thất bại thường nói nhất — 54% trong số họ — rằng họ hút lại vì họ'},
+  wrong:1,
+  opts:[{en:'could not manage without cigarettes',vi:'không thể sống thiếu thuốc lá (could not manage without cigarettes)'},{en:'had forgotten about cigarettes completely',vi:'đã quên hẳn thuốc lá'}],
+  e:{en:'Nicotine is addictive: 54% said they could not manage without cigarettes. Cross out “had forgotten about cigarettes completely”.',vi:'Nicotine (nicotin) gây nghiện: 54% nói họ không thể sống thiếu thuốc lá. Hãy gạch bỏ “đã quên hẳn thuốc lá”.'}},
+ {pre:{en:'The more cigarettes a mother smokes during pregnancy, the',vi:'Mẹ hút càng nhiều thuốc khi mang thai thì'},
+  wrong:0,
+  opts:[{en:'smaller the chance of a baby with low birthweight',vi:'khả năng sinh con nhẹ cân càng nhỏ'},{en:'greater the chance of a baby with low birthweight',vi:'khả năng sinh con nhẹ cân càng lớn (greater)'}],
+  e:{en:'The book’s bar chart rises with the number of cigarettes: more smoking, more low-birthweight babies. Cross out “smaller the chance”.',vi:'Biểu đồ cột của sách tăng theo số điếu thuốc: hút càng nhiều, càng nhiều em bé nhẹ cân. Hãy gạch bỏ “khả năng càng nhỏ”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-7-3';
+const SUMKEY='camb:sum:sci8-7-3';
+const BOT_CODE='sci8-7.3';
+let FOUND={embryo:false,prot:false,energy:false,heart:false,nic:false,tar:false,co:false,part:false};
+let SORTED=new Set();
+function newTrack(){return {
+  d1:false, d2:false, d3:false,
+  nProt:false, nEnergy:false, nChild:false,
+  sortCorrect:new Set(), sortSel:null,
+  stBaby:false, stToddler:false, stChild:false, stAdol:false, stAdult:false,
+  exHeart:false, exMuscle:false, exFat:false,
+  smNic:false, smTar:false, smCO:false, smPart:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.d1&&T.d2&&T.d3;
+  if(i===1) return T.nProt&&T.nEnergy&&T.nChild;
+  if(i===2) return T.sortCorrect.size>=5;
+  if(i===3) return T.stBaby&&T.stToddler&&T.stChild&&T.stAdol&&T.stAdult;
+  if(i===4) return T.exHeart&&T.exMuscle&&T.exFat;
+  if(i===5) return T.smNic&&T.smTar&&T.smCO&&T.smPart;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Growth story: single cell '+(T.d1?'✓':'…')+' · two cells after dividing '+(T.d2?'✓':'…')+' · embryo, a ball of cells '+(T.d3?'✓':'…')+'. Tap them on the stage!',
+                     'Câu chuyện tăng trưởng: tế bào đơn lẻ '+(T.d1?'✓':'…')+' · hai tế bào sau khi phân chia '+(T.d2?'✓':'…')+' · phôi (embryo), một quả cầu tế bào '+(T.d3?'✓':'…')+'. Hãy chạm vào chúng trên sân khấu!');
+  if(i===1) return B('Growth needs: protein-rich food '+(T.nProt?'✓':'…')+' · energy food '+(T.nEnergy?'✓':'…')+' · the growing child who needs both '+(T.nChild?'✓':'…')+'.',
+                     'Nhu cầu tăng trưởng: thức ăn giàu chất đạm (protein) '+(T.nProt?'✓':'…')+' · thức ăn năng lượng '+(T.nEnergy?'✓':'…')+' · đứa trẻ đang lớn cần cả hai '+(T.nChild?'✓':'…')+'.');
+  if(i===2){
+    const c=T.sortSel? CARDS7.find(x=>x.id===T.sortSel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap GROWTH or DEVELOPMENT.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm TĂNG TRƯỞNG (GROWTH) hoặc PHÁT TRIỂN (DEVELOPMENT).');
+    return B('Cards right: '+T.sortCorrect.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.sortCorrect.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===3) return B('Stages tapped: baby '+(T.stBaby?'✓':'…')+' · toddler '+(T.stToddler?'✓':'…')+' · child '+(T.stChild?'✓':'…')+' · adolescent '+(T.stAdol?'✓':'…')+' · adult '+(T.stAdult?'✓':'…')+'.',
+                     'Các giai đoạn đã chạm: em bé (baby) '+(T.stBaby?'✓':'…')+' · trẻ chập chững (toddler) '+(T.stToddler?'✓':'…')+' · trẻ em (child) '+(T.stChild?'✓':'…')+' · thanh thiếu niên (adolescent) '+(T.stAdol?'✓':'…')+' · người lớn (adult) '+(T.stAdult?'✓':'…')+'.');
+  if(i===4) return B('Exercise benefits: heart made strong '+(T.exHeart?'✓':'…')+' · muscles made strong '+(T.exMuscle?'✓':'…')+' · stored fat used up for energy '+(T.exFat?'✓':'…')+'.',
+                     'Lợi ích của vận động: tim khỏe lên '+(T.exHeart?'✓':'…')+' · cơ bắp khỏe lên '+(T.exMuscle?'✓':'…')+' · mỡ dự trữ được dùng làm năng lượng '+(T.exFat?'✓':'…')+'.');
+  if(i===5) return B('Smoke substances: nicotine '+(T.smNic?'✓':'…')+' · tar '+(T.smTar?'✓':'…')+' · carbon monoxide '+(T.smCO?'✓':'…')+' · particulates '+(T.smPart?'✓':'…')+'.',
+                     'Các chất trong khói: nicotine (nicotin) '+(T.smNic?'✓':'…')+' · tar (hắc ín) '+(T.smTar?'✓':'…')+' · carbon monoxide '+(T.smCO?'✓':'…')+' · particulates (hạt bụi mịn) '+(T.smPart?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔵',label:{en:'Single cell',vi:'Tế bào đơn lẻ'},got:T.d1},
+      {emoji:'🔵🔵',label:{en:'Two cells — it divided',vi:'Hai tế bào — nó đã phân chia'},got:T.d2},
+      {emoji:'⚪',label:{en:'Embryo — a ball of cells',vi:'Phôi — một quả cầu tế bào'},got:T.d3}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🍗',label:{en:'Protein for new cells',vi:'Chất đạm cho tế bào mới'},got:T.nProt},
+      {emoji:'⚡',label:{en:'Energy to divide',vi:'Năng lượng để phân chia'},got:T.nEnergy},
+      {emoji:'🧒',label:{en:'The growing child',vi:'Đứa trẻ đang lớn'},got:T.nChild}
+    ]);
+  }else if(curStep===2){
+    buildSort(box,CARDS7_ORDER,
+      [{key:'growth',label:STR.binPure,cls:'living'},{key:'development',label:STR.binMix,cls:'nonliving'}],
+      T.sortCorrect,()=>T.sortSel,v=>{T.sortSel=v;},null,onSortPlaced);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'👶',label:{en:'Baby',vi:'Em bé'},got:T.stBaby},
+      {emoji:'🚶',label:{en:'Toddler',vi:'Trẻ chập chững'},got:T.stToddler},
+      {emoji:'🧒',label:{en:'Child',vi:'Trẻ em'},got:T.stChild},
+      {emoji:'🧑',label:{en:'Adolescent',vi:'Thanh thiếu niên'},got:T.stAdol},
+      {emoji:'🧍',label:{en:'Adult',vi:'Người lớn'},got:T.stAdult}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'❤️',label:{en:'Heart becomes strong',vi:'Tim khỏe lên'},got:T.exHeart},
+      {emoji:'💪',label:{en:'Muscles become strong',vi:'Cơ bắp khỏe lên'},got:T.exMuscle},
+      {emoji:'⚖️',label:{en:'Less energy stored as fat',vi:'Ít năng lượng dự trữ thành mỡ hơn'},got:T.exFat}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'🧪',label:{en:'Nicotine — addictive',vi:'Nicotine — gây nghiện'},got:T.smNic},
+      {emoji:'🫙',label:{en:'Tar — can cause cancer',vi:'Tar — có thể gây ung thư'},got:T.smTar},
+      {emoji:'☁️',label:{en:'Carbon monoxide — poisonous gas',vi:'Carbon monoxide — khí độc'},got:T.smCO},
+      {emoji:'⚫',label:{en:'Particulates — trapped in lungs',vi:'Particulates — kẹt trong phổi'},got:T.smPart}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusThing('cell1'); setTimeout(()=>focusThing('embryo'),900); }
+  else if(i===1){ focusThing('protein'); setTimeout(()=>focusThing('childfig'),900); }
+  else if(i===2){ demoSort(CARDS7,T.sortCorrect); }
+  else if(i===3){ focusThing('baby'); setTimeout(()=>focusThing('adult'),900); }
+  else if(i===4){ focusThing('heart'); setTimeout(()=>focusThing('fatblob'),900); }
+  else if(i===5){ focusThing('nicotine'); setTimeout(()=>focusThing('monoxide'),900); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  const smoke=(FOUND.nic?1:0)+(FOUND.tar?1:0)+(FOUND.co?1:0)+(FOUND.part?1:0);
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recGrow)+'</span><b>'+(FOUND.embryo?'grows':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recNeeds)+'</span><b>'+((FOUND.prot&&FOUND.energy)?'protein + energy':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recStages)+'</span><b>'+(doneSteps.has(3)?'baby → adult':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recSmoke)+'</span><b>'+smoke+' / 4</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didGrow},
+    {got:doneSteps.has(2),label:STR.didSort},
+    {got:doneSteps.has(4),label:STR.didEx},
+    {got:doneSteps.has(5),label:STR.didSmoke}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let pondMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildGdBall(color,r,x,y,z){
+  const g=new THREE.Group();
+  const b=shadowed(new THREE.Mesh(new THREE.SphereGeometry(r,16,12),stdMat(color,0.6)));
+  b.position.y=y; g.add(b); g.position.set(x,0,z); g.userData.baseY=0; return g;
+}
+function buildGdCell1(){
+  const g=new THREE.Group();
+  const outer=new THREE.Mesh(new THREE.SphereGeometry(0.42,18,14),stdMat(0x7ec3e8,0.45));
+  outer.position.y=0.5; g.add(outer);
+  const nuc=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.17,12,10),stdMat(0x3d6fb8,0.6)));
+  nuc.position.y=0.5; g.add(nuc);
+  g.position.set(-5.4,0,-1.6); g.userData.baseY=0; return g;
+}
+function buildGdCells2(){
+  const g=new THREE.Group();
+  [-0.26,0.26].forEach(dx=>{
+    const outer=new THREE.Mesh(new THREE.SphereGeometry(0.34,16,12),stdMat(0x7ec3e8,0.45));
+    outer.position.set(dx,0.42,0); g.add(outer);
+    const nuc=new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),stdMat(0x3d6fb8,0.6));
+    nuc.position.set(dx,0.42,0); g.add(nuc);
+  });
+  g.position.set(-4.2,0,-1.8); g.userData.baseY=0; return g;
+}
+function buildGdEmbryo(){
+  const g=new THREE.Group();
+  [[0,0.42,0],[0.3,0.35,0.1],[-0.3,0.38,-0.08],[0.12,0.68,-0.1],[-0.14,0.66,0.12],[0.02,0.3,0.28],[-0.05,0.32,-0.28]].forEach(p=>{
+    const c=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19,12,10),stdMat(0xa8d4f0,0.5)));
+    c.position.set(p[0],p[1],p[2]); g.add(c);
+  });
+  g.position.set(-3.0,0,-1.6); g.userData.baseY=0; return g;
+}
+function buildGdProtein(){
+  const g=new THREE.Group();
+  const meat=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.32,14,12),stdMat(0xb3541e,0.8)));
+  meat.position.y=0.42; meat.scale.set(1.15,0.9,0.9); g.add(meat);
+  const bone=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,0.42,8),stdMat(0xf2ead8,0.7));
+  bone.position.set(0.36,0.22,0); bone.rotation.z=0.7; g.add(bone);
+  const egg=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2,12,10),stdMat(0xffffff,0.5)));
+  egg.position.set(-0.38,0.2,0.18); egg.scale.y=1.2; g.add(egg);
+  const tray=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.58,0.06,16),stdMat(0xd8dee6,0.6));
+  tray.position.y=0.03; g.add(tray);
+  g.position.set(-1.6,0,-1.8); g.userData.baseY=0; return g;
+}
+function buildGdEnergy(){
+  const g=new THREE.Group();
+  const core=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,12),stdMat(0xf7b731,0.45)));
+  core.position.y=0.55; g.add(core);
+  for(let k=0;k<6;k++){
+    const a=k/6*Math.PI*2;
+    const ray=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.26,6),stdMat(0xffd76a,0.5));
+    ray.position.set(Math.cos(a)*0.48,0.55+Math.sin(a)*0.48,0);
+    ray.rotation.z=a-Math.PI/2; g.add(ray);
+  }
+  const loaf=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.24,0.3),stdMat(0xd9a066,0.85)));
+  loaf.position.set(0,0.12,0.3); g.add(loaf);
+  g.position.set(-0.4,0,-1.9); g.userData.baseY=0; return g;
+}
+function buildGdFigure(h,shirt,x,z){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16*h,0.2*h,h*0.62,10),stdMat(shirt,0.8)));
+  body.position.y=h*0.31; g.add(body);
+  const head=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19*h,12,10),stdMat(0xf0c8a0,0.6)));
+  head.position.y=h*0.62+0.17*h; g.add(head);
+  [-1,1].forEach(s=>{
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.05*h,0.05*h,h*0.5,6),stdMat(shirt,0.8));
+    arm.position.set(s*0.24*h,h*0.42,0); arm.rotation.z=s*0.35; g.add(arm);
+  });
+  g.position.set(x,0,z); g.userData.baseY=0; return g;
+}
+function buildGdHeart(){
+  const g=new THREE.Group();
+  const top=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.34,14,12),stdMat(0xd33a4e,0.55)));
+  top.position.y=0.52; top.scale.set(1.15,0.95,0.9); g.add(top);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.3,0.42,12),stdMat(0xd33a4e,0.55));
+  tip.position.y=0.2; tip.rotation.x=Math.PI; g.add(tip);
+  g.position.set(-4.6,0,2.2); g.userData.baseY=0; return g;
+}
+function buildGdMuscle(){
+  const g=new THREE.Group();
+  const upper=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.13,0.62,10),stdMat(0xf0c8a0,0.6));
+  upper.position.set(-0.22,0.32,0); upper.rotation.z=0.5; g.add(upper);
+  const bicep=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.24,14,12),stdMat(0xe8b184,0.6)));
+  bicep.position.set(-0.05,0.52,0); bicep.scale.set(1.25,0.9,0.9); g.add(bicep);
+  const fore=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,0.55,10),stdMat(0xf0c8a0,0.6));
+  fore.position.set(0.28,0.62,0); fore.rotation.z=-1.15; g.add(fore);
+  g.position.set(-3.2,0,2.2); g.userData.baseY=0; return g;
+}
+function buildGdFat(){
+  const g=new THREE.Group();
+  [[0,0.3,0,0.34],[0.3,0.22,0.1,0.24],[-0.3,0.24,-0.08,0.26]].forEach(p=>{
+    const b=shadowed(new THREE.Mesh(new THREE.SphereGeometry(p[3],12,10),stdMat(0xf5d76e,0.6)));
+    b.position.set(p[0],p[1],p[2]); g.add(b);
+  });
+  g.position.set(-1.8,0,2.3); g.userData.baseY=0; return g;
+}
+function buildGdBottle(color,capColor,x,z){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.22,0.62,12),stdMat(color,0.5)));
+  body.position.y=0.34; g.add(body);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.16,10),stdMat(capColor,0.6));
+  cap.position.y=0.73; g.add(cap);
+  const label=new THREE.Mesh(new THREE.CylinderGeometry(0.215,0.215,0.24,12,1,true),stdMat(0xffffff,0.6));
+  label.position.y=0.34; g.add(label);
+  g.position.set(x,0,z); g.userData.baseY=0; return g;
+}
+function buildGdTar(){
+  const g=new THREE.Group();
+  const jar=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.28,0.44,14),stdMat(0x2b2118,0.35)));
+  jar.position.y=0.24; g.add(jar);
+  const lid=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.32,0.08,14),stdMat(0x6e6259,0.7));
+  lid.position.y=0.5; g.add(lid);
+  g.position.set(1.5,0,2.3); g.userData.baseY=0; return g;
+}
+function buildGdCloud(){
+  const g=new THREE.Group();
+  [[0,0.5,0,0.3],[0.3,0.42,0.08,0.22],[-0.3,0.44,-0.06,0.24],[0.05,0.66,-0.05,0.2]].forEach(p=>{
+    const c=new THREE.Mesh(new THREE.SphereGeometry(p[3],12,10),stdMat(0x9aa3ab,0.5));
+    c.position.set(p[0],p[1],p[2]); g.add(c);
+  });
+  g.position.set(2.9,0,2.2); g.userData.baseY=0; return g;
+}
+function buildGdParts(){
+  const g=new THREE.Group();
+  const dish=new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.5,0.06,16),stdMat(0xd8dee6,0.6));
+  dish.position.y=0.03; g.add(dish);
+  for(let k=0;k<14;k++){
+    const px=-0.35+((k*29)%70)/100, pz=-0.3+((k*41)%60)/100;
+    const dot=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.055,6,5),stdMat(0x1c1c22,0.8)));
+    dot.position.set(px,0.12+((k*13)%10)/100,pz); g.add(dot);
+  }
+  g.position.set(4.3,0,2.3); g.userData.baseY=0; return g;
+}
+function buildGdRock(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.42,0),stdMat(0x8d99a6,0.95)));
+  r.position.y=0.3; r.scale.y=0.75; g.add(r);
+  g.position.set(5.8,0,2.4); g.userData.baseY=0; return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdff2e2);
+  scene3.fog=new THREE.Fog(0xdff2e2,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x6a7f5f,0.95));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.85);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-8; sunL.shadow.camera.right=8; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.35); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(14.5,0.35,7.5),stdMat(0xbfe3c8,0.95));
+  ground.position.set(0.4,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  pondMat=new THREE.MeshBasicMaterial({color:0x7ec3e8,transparent:true,opacity:0.35,side:THREE.DoubleSide,depthWrite:false});
+  const pool=new THREE.Mesh(new THREE.CircleGeometry(1.7,28),pondMat);
+  pool.rotation.x=-Math.PI/2; pool.position.set(-4.2,0.02,-1.7); scene3.add(pool);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xa8c8a0,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xeaf7ff,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  reg('cell1',buildGdCell1());
+  reg('cells2',buildGdCells2());
+  reg('embryo',buildGdEmbryo());
+  reg('protein',buildGdProtein());
+  reg('energy',buildGdEnergy());
+  reg('childfig',buildGdFigure(0.95,0x3d8bfd,0.9,-1.7));
+  reg('baby',buildGdFigure(0.55,0xf2a0c0,2.2,-1.8));
+  reg('toddler',buildGdFigure(0.75,0xffc93d,3.2,-1.8));
+  reg('childstage',buildGdFigure(1.05,0x3fa34d,4.3,-1.8));
+  reg('adolescent',buildGdFigure(1.4,0x7a4fd0,5.4,-1.7));
+  reg('adult',buildGdFigure(1.6,0x0b76d1,6.4,-1.7));
+  reg('heart',buildGdHeart());
+  reg('muscle',buildGdMuscle());
+  reg('fatblob',buildGdFat());
+  reg('nicotine',buildGdBottle(0xd94f70,0x22384f,0.2,2.3));
+  reg('tarjar',buildGdTar());
+  reg('monoxide',buildGdCloud());
+  reg('particulates',buildGdParts());
+  reg('rock',buildGdRock());
+  { const p=sphProxy(0.6); p.position.set(0,0.5,0); addProxy('cell1',p,G.cell1); }
+  { const p=sphProxy(0.62); p.position.set(0,0.42,0); addProxy('cells2',p,G.cells2); }
+  { const p=sphProxy(0.62); p.position.set(0,0.45,0); addProxy('embryo',p,G.embryo); }
+  { const p=sphProxy(0.6); p.position.set(0,0.35,0); addProxy('protein',p,G.protein); }
+  { const p=sphProxy(0.62); p.position.set(0,0.5,0); addProxy('energy',p,G.energy); }
+  { const p=sphProxy(0.55); p.position.set(0,0.55,0); addProxy('childfig',p,G.childfig); }
+  { const p=sphProxy(0.5); p.position.set(0,0.35,0); addProxy('baby',p,G.baby); }
+  { const p=sphProxy(0.52); p.position.set(0,0.45,0); addProxy('toddler',p,G.toddler); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('childstage',p,G.childstage); }
+  { const p=sphProxy(0.6); p.position.set(0,0.8,0); addProxy('adolescent',p,G.adolescent); }
+  { const p=sphProxy(0.62); p.position.set(0,0.9,0); addProxy('adult',p,G.adult); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('heart',p,G.heart); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('muscle',p,G.muscle); }
+  { const p=sphProxy(0.6); p.position.set(0,0.3,0); addProxy('fatblob',p,G.fatblob); }
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('nicotine',p,G.nicotine); }
+  { const p=sphProxy(0.52); p.position.set(0,0.3,0); addProxy('tarjar',p,G.tarjar); }
+  { const p=sphProxy(0.62); p.position.set(0,0.5,0); addProxy('monoxide',p,G.monoxide); }
+  { const p=sphProxy(0.58); p.position.set(0,0.2,0); addProxy('particulates',p,G.particulates); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('rock',p,G.rock); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['cell1','cells2','embryo'],
+  ['protein','energy','childfig'],
+  [],
+  ['baby','toddler','childstage','adolescent','adult'],
+  ['heart','muscle','fatblob'],
+  ['nicotine','tarjar','monoxide','particulates']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='cell1') T.d1=true;
+    if(id==='cells2') T.d2=true;
+    if(id==='embryo'){ T.d3=true; FOUND.embryo=true; }
+  }else if(curStep===1){
+    if(id==='protein'){ T.nProt=true; FOUND.prot=true; }
+    if(id==='energy'){ T.nEnergy=true; FOUND.energy=true; }
+    if(id==='childfig') T.nChild=true;
+  }else if(curStep===3){
+    if(id==='baby') T.stBaby=true;
+    if(id==='toddler') T.stToddler=true;
+    if(id==='childstage') T.stChild=true;
+    if(id==='adolescent') T.stAdol=true;
+    if(id==='adult') T.stAdult=true;
+  }else if(curStep===4){
+    if(id==='heart'){ T.exHeart=true; FOUND.heart=true; }
+    if(id==='muscle') T.exMuscle=true;
+    if(id==='fatblob') T.exFat=true;
+  }else if(curStep===5){
+    if(id==='nicotine'){ T.smNic=true; FOUND.nic=true; }
+    if(id==='tarjar'){ T.smTar=true; FOUND.tar=true; }
+    if(id==='monoxide'){ T.smCO=true; FOUND.co=true; }
+    if(id==='particulates'){ T.smPart=true; FOUND.part=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(pondMat) pondMat.opacity=0.3+Math.sin(now*0.0016)*0.06;
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='growth'?'📈':'🧩')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('growth');
+$('ex2BinNot').onclick=()=>ex2Place('development');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.embryo=false; }
+  if(step===1){ FOUND.prot=false; FOUND.energy=false; }
+  if(step===2){ CARDS7.forEach(c=>SORTED.delete(c.id)); }
+  if(step===4){ FOUND.heart=false; }
+  if(step===5){ FOUND.nic=false; FOUND.tar=false; FOUND.co=false; FOUND.part=false; }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='growth'||s.exAns.a2[id]==='development')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.d1=true; t.d2=true; t.d3=true; }
+  else if(i===1){ t.nProt=true; t.nEnergy=true; t.nChild=true; }
+  else if(i===2){ CARDS7.forEach(c=>t.sortCorrect.add(c.id)); }
+  else if(i===3){ t.stBaby=true; t.stToddler=true; t.stChild=true; t.stAdol=true; t.stAdult=true; }
+  else if(i===4){ t.exHeart=true; t.exMuscle=true; t.exFat=true; }
+  else if(i===5){ t.smNic=true; t.smTar=true; t.smCO=true; t.smPart=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-7-3',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

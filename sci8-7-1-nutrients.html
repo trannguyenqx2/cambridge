@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>7.1 Nutrients — Chất dinh dưỡng · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="7.1 Nutrients" data-vi="7.1 Chất dinh dưỡng (Nutrients)">7.1 Nutrients</span>
+    <span class="eqchip i18n" data-en="Unit 7 · Diet and growth" data-vi="Bài 7 · Chế độ ăn và tăng trưởng (Diet and growth)">Unit 7 · Diet and growth</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What are the six types of nutrient, and why does your body need each one?" data-vi="Sáu loại chất dinh dưỡng (nutrients) là gì, và vì sao cơ thể con cần mỗi loại?">What are the six types of nutrient, and why does your body need each one?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Protein, carbohydrate and fat" data-vi="Protein, carbohydrate và chất béo (fat)">Protein, carbohydrate and fat</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Vitamins and minerals" data-vi="Vitamin (vitamins) và khoáng chất (minerals)">Vitamins and minerals</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Energy stores and the starch test" data-vi="Dự trữ năng lượng và phép thử tinh bột (starch)">Energy stores and the starch test</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Water completes the six" data-vi="Nước (water) hoàn thiện sáu loại">Water completes the six</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap the foods on the table!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các món ăn trên bàn!">🖱 Drag to look around · Scroll to zoom · Tap the foods on the table!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 7 Diet and growth · Section 7.1. The kitchen scene in this lesson is a simulation — portion sizes are not to scale." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 7 Chế độ ăn và tăng trưởng (Diet and growth) · Mục 7.1. Cảnh bếp trong bài này là mô phỏng — khẩu phần không theo tỉ lệ thật.">Cambridge Lower Secondary Science 8 · Unit 7 Diet and growth · Section 7.1. The kitchen scene in this lesson is a simulation — portion sizes are not to scale.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="<p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 7 Diet and growth, section 7.1, pages 230–237; Workbook 8 (ISBN 9781108742856), pages 134–137. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 7 Diet and growth (Chế độ ăn và tăng trưởng), mục 7.1, trang 230–237; Sách bài tập 8 (ISBN 9781108742856), trang 134–137. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 7 Diet and growth, section 7.1, pages 230–237; Workbook 8 (ISBN 9781108742856), pages 134–137. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="<p class="i18n" data-en="Objectives: learn about the six types of nutrient that everyone needs to eat; find out why they are needed; learn about some good sources of these nutrients. Key words: anaemia, carbohydrate, fat, minerals, nutrients, oil, protein, starch, vitamin A, vitamin C, vitamin D, vitamins." data-vi="Mục tiêu: tìm hiểu sáu loại chất dinh dưỡng (nutrients) mà ai cũng cần ăn; tìm hiểu vì sao cần chúng; biết một số nguồn tốt của các chất dinh dưỡng này. Từ khóa: anaemia (thiếu máu), carbohydrate, fat (chất béo), minerals (khoáng chất), nutrients (chất dinh dưỡng), oil (dầu), protein, starch (tinh bột), vitamin A, vitamin C, vitamin D, vitamins (các vitamin).">Objectives: learn about the six types of nutrient that everyone needs to eat; find out why they are needed; learn about some good sources of these nutrients. Key words: anaemia, carbohydrate, fat, minerals, nutrients, oil, protein, starch, vitamin A, vitamin C, vitamin D, vitamins.</p>
+    <p class="i18n" data-en="<p class="i18n" data-en="How it works: each step asks for one real action on the 3D kitchen stage — meeting the three nutrients on the book's plate (rice, chicken and beans, avocado), finding the body's short-term and long-term energy stores, running the book's iodine test for starch on foods kept separate on white tiles, and matching vitamins A, C and D and the minerals calcium and iron to their jobs and sources, finishing with the protein/carbohydrate sorting of Activity 7.1.1. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Two book items were left out of the interactive steps: the Workbook 7.1B data-handling questions that need the full printed nutrient table (the extracted table text is garbled, so no figures were invented — the sorting exercise teaches the same source knowledge), and the statement that almost 90% of body weight is water (not used, as it does not match the usual textbook figure)." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên sân khấu bếp 3D — gặp ba chất dinh dưỡng trên đĩa thức ăn của sách (cơm, thịt gà và đậu, quả bơ), tìm nơi dự trữ năng lượng ngắn hạn và dài hạn của cơ thể, thực hiện phép thử iodine tìm tinh bột của sách trên các món giữ tách riêng trên gạch trắng, và nối vitamin A, C, D cùng các khoáng chất canxi và sắt với nhiệm vụ và nguồn của chúng, kết thúc bằng bài phân loại protein/carbohydrate của Hoạt động 7.1.1. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Hai nội dung của sách không đưa vào các bước tương tác: các câu hỏi xử lý dữ liệu của Sách bài tập 7.1B cần bảng dinh dưỡng in đầy đủ (bản trích text của bảng bị lỗi, nên không bịa ra số liệu nào — bài tập phân loại dạy cùng kiến thức về nguồn), và câu nói gần 90% trọng lượng cơ thể là nước (không dùng, vì không khớp với số liệu sách giáo khoa thường gặp).">How it works: each step asks for one real action on the 3D kitchen stage. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-7-1 "Nutrients" (Science 8, Unit 7)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= foods and body things ================= */
+const THINGS={
+  rice:    {emoji:'🍚', name:{en:'Rice — rich in starch, a carbohydrate',vi:'Cơm (rice) — giàu tinh bột (starch), một carbohydrate'}, short:{en:'Rice · starch',vi:'Cơm · tinh bột'}, ring:0.6, labelY:0.95, fx:-0.2, fz:-1.8, fr:4.8},
+  chicken: {emoji:'🍗', name:{en:'Chicken and beans — rich in protein',vi:'Thịt gà và đậu (chicken and beans) — giàu chất đạm (protein)'}, short:{en:'Chicken · protein',vi:'Thịt gà · protein'}, ring:0.6, labelY:0.95, fx:1.4, fz:-0.7, fr:4.8},
+  avocado: {emoji:'🥑', name:{en:'Avocado — rich in fats and oils',vi:'Quả bơ (avocado) — giàu chất béo và dầu (fats and oils)'}, short:{en:'Avocado · fat',vi:'Bơ · chất béo'}, ring:0.55, labelY:0.85, fx:-1.8, fz:-0.9, fr:4.6},
+  liver:   {emoji:'🫘', name:{en:'Liver and muscles — short-term carbohydrate stores',vi:'Gan và cơ (liver and muscles) — nơi dự trữ carbohydrate ngắn hạn'}, short:{en:'Liver store',vi:'Dự trữ ở gan'}, ring:0.6, labelY:0.9, fx:-3.6, fz:-0.8, fr:4.8},
+  fatstore:{emoji:'🧈', name:{en:'Fat stored under the skin — a long-term energy store',vi:'Mỡ dự trữ dưới da (fat under the skin) — dự trữ năng lượng dài hạn'}, short:{en:'Fat store',vi:'Dự trữ mỡ'}, ring:0.65, labelY:1.0, fx:3.2, fz:-1.8, fr:5.0},
+  potato:  {emoji:'🥔', name:{en:'Potato on a white tile — for the iodine test',vi:'Khoai tây (potato) trên gạch trắng — để thử bằng iodine'}, short:{en:'Potato',vi:'Khoai tây'}, ring:0.55, labelY:0.8, fx:-3.8, fz:2.2, fr:4.6},
+  bread:   {emoji:'🍞', name:{en:'Bread on a white tile — for the iodine test',vi:'Bánh mì (bread) trên gạch trắng — để thử bằng iodine'}, short:{en:'Bread',vi:'Bánh mì'}, ring:0.55, labelY:0.85, fx:-2.4, fz:2.6, fr:4.6},
+  cheese:  {emoji:'🧀', name:{en:'Cheese on a white tile — for the iodine test',vi:'Phô mai (cheese) trên gạch trắng — để thử bằng iodine'}, short:{en:'Cheese',vi:'Phô mai'}, ring:0.55, labelY:0.8, fx:-1.2, fz:2.4, fr:4.6},
+  carrot:  {emoji:'🥕', name:{en:'Carrots and green vegetables — vitamin A',vi:'Cà rốt và rau xanh (carrots, green vegetables) — vitamin A'}, short:{en:'Carrot · vit A',vi:'Cà rốt · vit A'}, ring:0.5, labelY:0.85, fx:0.6, fz:2.5, fr:4.6},
+  orange:  {emoji:'🍊', name:{en:'Oranges and fresh fruit — vitamin C',vi:'Cam và trái cây tươi (oranges, fresh fruit) — vitamin C'}, short:{en:'Orange · vit C',vi:'Cam · vit C'}, ring:0.5, labelY:0.85, fx:1.9, fz:2.2, fr:4.6},
+  oilyfish:{emoji:'🐟', name:{en:'Oily fish — a food source of vitamin D',vi:'Cá béo (oily fish) — nguồn vitamin D từ thức ăn'}, short:{en:'Oily fish · vit D',vi:'Cá béo · vit D'}, ring:0.6, labelY:0.85, fx:3.3, fz:2.5, fr:4.8},
+  milk:    {emoji:'🥛', name:{en:'Foods made from milk — rich in calcium',vi:'Thực phẩm từ sữa (foods from milk) — giàu canxi (calcium)'}, short:{en:'Milk · calcium',vi:'Sữa · canxi'}, ring:0.5, labelY:1.0, fx:4.7, fz:2.2, fr:4.6},
+  meat:    {emoji:'🥩', name:{en:'Red meat — a good source of iron',vi:'Thịt đỏ (red meat) — nguồn sắt (iron) tốt'}, short:{en:'Red meat · iron',vi:'Thịt đỏ · sắt'}, ring:0.55, labelY:0.8, fx:5.5, fz:0.7, fr:4.8},
+  waterglass:{emoji:'💧', name:{en:'Water — a nutrient the body needs every day',vi:'Nước (water) — một chất dinh dưỡng cơ thể cần mỗi ngày'}, short:{en:'Water',vi:'Nước'}, ring:0.5, labelY:0.95, fx:4.9, fz:-0.7, fr:4.6},
+  sun:     {emoji:'☀️', name:{en:'Sunlight — vitamin D is made in skin when sunlight falls on it',vi:'Ánh nắng (sunlight) — vitamin D được tạo ra trong da khi nắng chiếu vào'}, short:{en:'Sunlight',vi:'Ánh nắng'}, ring:1.0, labelY:2.2, fx:0, fz:0, fr:10.5}
+};
+const FOCUSORDER=['rice','chicken','avocado','potato','carrot','orange','milk','waterglass'];
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the table',vi:'Trên bàn ăn'},
+  u1Brief:{en:'Tap a name to LOOK at the food. Looking is not doing — to do a step, tap the food itself on the stage!',vi:'Chạm vào một tên để NGẮM món ăn. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính món ăn đó trên sân khấu!'},
+  u2T:{en:'Facts from the book',vi:'Sự kiện từ sách'},
+  u2Brief:{en:'Key facts from the section, as you discover them on the stage.',vi:'Các sự kiện chính của mục học, khi con khám phá chúng trên sân khấu.'},
+  recStarch:{en:'Rice starch is broken down to make',vi:'Tinh bột (starch) trong cơm được phân giải thành'},
+  recIodine:{en:'Iodine solution on a starchy food turns',vi:'Dung dịch iodine (iodine solution) trên thức ăn có tinh bột chuyển thành'},
+  recVitD:{en:'For most people, most vitamin D is made in the',vi:'Với hầu hết mọi người, phần lớn vitamin D được tạo ra trong'},
+  recIron:{en:'Eating too little iron causes the illness',vi:'Ăn quá ít sắt (iron) gây ra bệnh'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your nutrients checklist.',vi:'Danh sách thực hành về chất dinh dưỡng của con.'},
+  didPlate:{en:'Named the three nutrients on a plate of food',vi:'Đã kể được ba chất dinh dưỡng trên một đĩa thức ăn'},
+  didTest:{en:'Tested foods for starch with iodine solution',vi:'Đã thử tinh bột (starch) trong thức ăn bằng dung dịch iodine'},
+  didVit:{en:'Matched vitamins and minerals to their jobs',vi:'Đã nối được các vitamin và khoáng chất với nhiệm vụ của chúng'},
+  didSort:{en:'Sorted foods into protein-rich and carbohydrate-rich',vi:'Đã phân loại thức ăn thành giàu protein và giàu carbohydrate'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'PROTEIN 🍗',vi:'PROTEIN (chất đạm) 🍗'},
+  binMix:{en:'CARBOHYDRATE 🍚',vi:'CARBOHYDRATE (chất bột đường) 🍚'},
+  binPerm:{en:'VITAMINS & MINERALS 🥕',vi:'VITAMIN VÀ KHOÁNG CHẤT (vitamins & minerals) 🥕'},
+  binNot:{en:'ENERGY NUTRIENTS ⚡',vi:'CHẤT CHO NĂNG LƯỢNG (energy nutrients) ⚡'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 7.1',vi:'📝 Bài tập — Sách bài tập (Workbook) 7.1'},
+  exIntro:{en:'Workbook games for this lesson: what each nutrient does (Exercise 7.1A), sorting sources of nutrients (linked to 7.1B), and completing summary sentences (7.1C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: mỗi chất dinh dưỡng làm gì (Bài tập 7.1A), phân loại nguồn chất dinh dưỡng (gắn với 7.1B), và hoàn thành các câu tóm tắt (7.1C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — What does each nutrient do? (7.1A)',vi:'Bài tập 1 · Focus — Mỗi chất dinh dưỡng làm gì? (7.1A)'},
+  ex1Inst:{en:'In the Workbook you draw a line from each nutrient to its function. Here, tap the 4 cards that match a nutrient to its CORRECT job.',vi:'Trong Sách bài tập, con nối mỗi chất dinh dưỡng với chức năng của nó. Ở đây, hãy chạm vào 4 thẻ nối đúng một chất dinh dưỡng với nhiệm vụ ĐÚNG của nó.'},
+  ex2T:{en:'Exercise 2 · Practice — Which nutrient is each food a good source of?',vi:'Bài tập 2 · Practice — Mỗi món ăn là nguồn tốt của chất dinh dưỡng nào?'},
+  ex2Inst:{en:'Tap a food card, then tap VITAMINS & MINERALS or ENERGY NUTRIENTS to say what the food is a good source of. (Energy nutrients are carbohydrate and fat.)',vi:'Chạm vào một thẻ thức ăn, rồi chạm VITAMIN VÀ KHOÁNG CHẤT hoặc CHẤT CHO NĂNG LƯỢNG để nói món ăn đó là nguồn tốt của nhóm nào. (Chất cho năng lượng là carbohydrate và fat.)'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (7.1C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (7.1C)'},
+  ex3Inst:{en:'Each sentence summarises a nutrient’s function or source. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu tóm tắt chức năng hoặc nguồn của một chất dinh dưỡng. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'nutrients',vi:'chất dinh dưỡng'},
+  {en:'carbohydrate',vi:'chất bột đường'},
+  {en:'starch',vi:'tinh bột'},
+  {en:'protein',vi:'chất đạm'},
+  {en:'fat',vi:'chất béo'},
+  {en:'oil',vi:'dầu'},
+  {en:'vitamins',vi:'các vitamin'},
+  {en:'minerals',vi:'khoáng chất'},
+  {en:'anaemia',vi:'thiếu máu'}
+];
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Nutrients on a plate',vi:'Chất dinh dưỡng trên một đĩa thức ăn'}, word:{en:'nutrients',vi:'chất dinh dưỡng'},
+  q:{en:'Getting started: everyone needs energy to stay alive. A plate of food holds several different nutrients. What does each part of the meal do?',vi:'Khởi động: ai cũng cần năng lượng để sống. Một đĩa thức ăn chứa nhiều chất dinh dưỡng (nutrients) khác nhau. Mỗi phần của bữa ăn làm nhiệm vụ gì?'},
+  act:{en:'Tap the three foods on the plate: the rice, the chicken, and the avocado.',vi:'Chạm vào ba món trên đĩa: cơm (rice), thịt gà (chicken), và quả bơ (avocado).'},
+  see:{en:'Each food bounces and shows which nutrient it is rich in.',vi:'Mỗi món ăn nảy lên và hiện chất dinh dưỡng mà nó giàu.'},
+  concl:[
+    {en:'Nutrients (nutrients) are substances in food that your body needs to stay healthy. Rice is rich in starch (starch) — a type of carbohydrate (carbohydrate). The body breaks starch down into a sugar called glucose, which cells use in respiration to release energy.',vi:'Chất dinh dưỡng (nutrients) là những chất trong thức ăn mà cơ thể cần để khỏe mạnh. Cơm giàu tinh bột (starch) — một loại carbohydrate. Cơ thể phân giải tinh bột thành một loại đường tên là glucose, được tế bào dùng trong hô hấp (respiration) để giải phóng năng lượng.'},
+    {en:'Chicken and beans are rich in protein (protein). Protein is needed to make new cells, so the body can grow and repair itself; it is also used to make haemoglobin and antibodies.',vi:'Thịt gà và đậu giàu chất đạm (protein). Protein cần để tạo tế bào mới, giúp cơ thể lớn lên và tự sửa chữa; nó còn được dùng để tạo haemoglobin và kháng thể (antibodies).'},
+    {en:'Avocado is rich in fats and oils (fat, oil). Fats are solid at room temperature and oils are liquid, but both give energy and are needed to make cell membranes.',vi:'Quả bơ giàu chất béo và dầu (fat, oil). Chất béo ở thể rắn ở nhiệt độ phòng còn dầu ở thể lỏng, nhưng cả hai đều cho năng lượng và cần để tạo màng tế bào (cell membranes).'}]},
+ {tag:{en:'Energy stores',vi:'Dự trữ năng lượng'}, word:{en:'carbohydrate',vi:'chất bột đường'},
+  q:{en:'You do not eat all the time, but you need energy all the time. Where does the body keep energy for later?',vi:'Con không ăn suốt ngày, nhưng con cần năng lượng suốt ngày. Cơ thể cất giữ năng lượng ở đâu để dùng sau?'},
+  act:{en:'Tap the liver store model, then tap the fat store under the skin.',vi:'Chạm vào mô hình dự trữ ở gan (liver), rồi chạm vào lớp mỡ dự trữ dưới da (fat store).'},
+  see:{en:'The two stores light up: a small, short-term carbohydrate store, and a larger, long-term fat store.',vi:'Hai nơi dự trữ sáng lên: một kho carbohydrate nhỏ, ngắn hạn, và một kho mỡ lớn hơn, dài hạn.'},
+  concl:[
+    {en:'Almost all of your energy comes from the carbohydrates and fats you eat — and protein can supply energy too if those run out.',vi:'Hầu hết năng lượng của con đến từ carbohydrate và chất béo (fats) con ăn — và protein cũng có thể cung cấp năng lượng nếu hai nguồn kia cạn.'},
+    {en:'A small amount of carbohydrate is stored in cells, especially in the liver and muscles. These are short-term energy stores.',vi:'Một lượng nhỏ carbohydrate được dự trữ trong tế bào, nhất là ở gan (liver) và cơ (muscles). Đây là dự trữ năng lượng ngắn hạn.'},
+    {en:'For long-term stores, the body keeps fat in special cells under the skin and around some organs. Fat stores also insulate the body — animals in cold places, like seals, have thick fat layers that slow heat loss.',vi:'Để dự trữ dài hạn, cơ thể giữ chất béo (fat) trong các tế bào đặc biệt dưới da và quanh một số cơ quan. Mỡ dự trữ còn cách nhiệt cho cơ thể — động vật ở nơi lạnh, như hải cẩu, có lớp mỡ dày làm chậm mất nhiệt.'}]},
+ {tag:{en:'Testing foods for starch',vi:'Thử tinh bột trong thức ăn'}, word:{en:'starch',vi:'tinh bột'},
+  q:{en:'Think like a scientist: iodine solution is orange-brown, but it turns very dark blue-black when it mixes with starch. Which of these foods contain starch?',vi:'Tư duy như nhà khoa học: dung dịch iodine có màu nâu cam, nhưng khi gặp tinh bột (starch) nó chuyển thành màu xanh đen rất đậm. Những thức ăn nào sau đây chứa tinh bột?'},
+  act:{en:'Tap each food on its white tile to add drops of iodine solution: the potato, the bread, then the cheese. Keep the foods separate and use a clean tile each time, like in the book’s method.',vi:'Chạm vào mỗi món ăn trên gạch trắng của nó để nhỏ vài giọt dung dịch iodine: khoai tây (potato), bánh mì (bread), rồi phô mai (cheese). Giữ các món tách riêng và dùng gạch sạch mỗi lần, như phương pháp trong sách.'},
+  see:{en:'Foods with starch turn the iodine dark blue-black. Foods without starch leave it orange-brown.',vi:'Thức ăn có tinh bột làm iodine chuyển thành xanh đen đậm. Thức ăn không có tinh bột để iodine giữ màu nâu cam.'},
+  concl:[
+    {en:'Potato and bread contain starch (starch), so the iodine solution turned dark blue-black on them. Cheese contains no starch, so the iodine stayed orange-brown.',vi:'Khoai tây và bánh mì chứa tinh bột (starch), nên dung dịch iodine trên chúng chuyển thành xanh đen đậm. Phô mai không chứa tinh bột, nên iodine giữ màu nâu cam.'},
+    {en:'The foods were kept separate and the tile was cleaned each time, so starch from one food could not spread to another and spoil the results. A white tile makes the colour change easy to see.',vi:'Các món ăn được giữ tách riêng và gạch được lau sạch mỗi lần, nên tinh bột từ một món không thể lan sang món khác và làm hỏng kết quả. Gạch trắng giúp nhìn rõ sự đổi màu.'},
+    {en:'The colour you observe is a result; deciding “this food contains starch” from that colour is a conclusion.',vi:'Màu con quan sát được là một kết quả (result); quyết định “món này chứa tinh bột” từ màu đó là một kết luận (conclusion).'}]},
+ {tag:{en:'Vitamins A, C and D',vi:'Vitamin A, C và D'}, word:{en:'vitamins',vi:'các vitamin'},
+  q:{en:'Vitamins are nutrients needed in only small amounts — but without them you can become ill. What does each of these vitamins do?',vi:'Vitamin (vitamins) là chất dinh dưỡng chỉ cần với lượng nhỏ — nhưng thiếu chúng con có thể bị bệnh. Mỗi vitamin này làm nhiệm vụ gì?'},
+  act:{en:'Tap the carrot (vitamin A), the orange (vitamin C), and the oily fish (vitamin D).',vi:'Chạm vào cà rốt (carrot) (vitamin A), quả cam (orange) (vitamin C), và cá béo (oily fish) (vitamin D).'},
+  see:{en:'Each source bounces and names its vitamin.',vi:'Mỗi nguồn nảy lên và nêu tên vitamin của nó.'},
+  concl:[
+    {en:'Vitamin A (vitamin A) keeps your eyes working well, especially for seeing in dim light, and helps white blood cells fight pathogens. Carrots, green vegetables, squash, fruit, milk foods and some fish supply it.',vi:'Vitamin A giúp mắt hoạt động tốt, nhất là để nhìn trong ánh sáng mờ, và giúp bạch cầu chống lại mầm bệnh (pathogens). Cà rốt, rau xanh, bí, trái cây, thực phẩm từ sữa và một số loại cá cung cấp nó.'},
+    {en:'Vitamin C (vitamin C) keeps skin strong and helps it heal, and keeps blood vessels and bones healthy. Without it, a person can get scurvy — weakness with swollen, bleeding gums — the illness that once struck sailors on long voyages with no fresh fruit or vegetables. Citrus fruit, potatoes and berries are good sources.',vi:'Vitamin C giữ cho da chắc khỏe và giúp da mau lành, và giữ mạch máu và xương khỏe mạnh. Thiếu nó, một người có thể mắc bệnh scorbut (scurvy) — yếu mệt với nướu sưng, chảy máu — căn bệnh từng tấn công thủy thủ trên các chuyến biển dài không có trái cây và rau tươi. Trái cây họ cam quýt, khoai tây và quả mọng là nguồn tốt.'},
+    {en:'Vitamin D (vitamin D) is needed for strong bones and teeth because it helps the body absorb calcium. Oily fish is the best food source, but for most people most vitamin D is made in the skin when sunlight falls on it. Too little in children can cause rickets, where bones do not grow normally.',vi:'Vitamin D cần cho xương và răng chắc khỏe vì nó giúp cơ thể hấp thụ canxi (calcium). Cá béo là nguồn từ thức ăn tốt nhất, nhưng với hầu hết mọi người, phần lớn vitamin D được tạo ra trong da khi ánh nắng chiếu vào. Thiếu quá nhiều ở trẻ em có thể gây còi xương (rickets), khi xương không phát triển bình thường.'}]},
+ {tag:{en:'Minerals and water',vi:'Khoáng chất và nước'}, word:{en:'minerals',vi:'khoáng chất'},
+  q:{en:'Two more kinds of nutrient complete the list: minerals — such as calcium and iron — and water itself. Why does the body need them?',vi:'Hai loại chất dinh dưỡng nữa hoàn thiện danh sách: khoáng chất (minerals) — như canxi và sắt — và chính nước. Vì sao cơ thể cần chúng?'},
+  act:{en:'Tap the milk carton (calcium), the red meat (iron), and the glass of water.',vi:'Chạm vào hộp sữa (milk) (canxi — calcium), thịt đỏ (red meat) (sắt — iron), và ly nước (water).'},
+  see:{en:'Each one bounces and names its nutrient.',vi:'Mỗi thứ nảy lên và nêu tên chất dinh dưỡng của nó.'},
+  concl:[
+    {en:'Calcium (calcium) is a mineral (minerals) needed for strong bones and teeth. Foods made from milk are excellent sources; seeds and nuts such as almonds contain a lot too.',vi:'Canxi (calcium) là một khoáng chất (minerals) cần cho xương và răng chắc khỏe. Thực phẩm từ sữa là nguồn tuyệt vời; hạt và quả hạch như hạnh nhân cũng chứa nhiều.'},
+    {en:'Iron (iron) is needed to make haemoglobin, which carries oxygen around the body. Too little iron means too little haemoglobin and too little oxygen delivered — an illness called anaemia (anaemia) that leaves a person very tired, with little energy. Red meat, dark green vegetables, fish, shellfish, nuts and seeds are good sources.',vi:'Sắt (iron) cần để tạo haemoglobin, chất vận chuyển oxygen đi khắp cơ thể. Quá ít sắt nghĩa là quá ít haemoglobin và quá ít oxygen được đưa tới — một bệnh gọi là thiếu máu (anaemia) khiến người bệnh rất mệt và ít năng lượng. Thịt đỏ, rau xanh đậm, cá, hải sản có vỏ, quả hạch và hạt là nguồn tốt.'},
+    {en:'Water (water) is a nutrient too. Cells and blood contain a lot of water: it dissolves the chemicals inside cells so they can react together, and it lets blood flow easily, carrying substances all over the body.',vi:'Nước (water) cũng là một chất dinh dưỡng. Tế bào và máu chứa rất nhiều nước: nó hòa tan các hóa chất bên trong tế bào để chúng phản ứng với nhau, và giúp máu chảy dễ dàng, mang các chất đi khắp cơ thể.'}]},
+ {tag:{en:'Protein or carbohydrate?',vi:'Protein hay carbohydrate?'}, word:{en:'protein',vi:'chất đạm'},
+  q:{en:'Activity 7.1.1: from a list of foods eaten today, you circle the protein-rich foods in green and the carbohydrate-rich foods in blue. Can you sort these foods the same way?',vi:'Hoạt động 7.1.1: từ danh sách thức ăn đã ăn hôm nay, con khoanh các món giàu protein bằng màu xanh lá và các món giàu carbohydrate bằng màu xanh dương. Con có phân loại các món này giống vậy không?'},
+  act:{en:'Each card is a food. Tap a card, then tap PROTEIN or CARBOHYDRATE to say what the food contains a lot of.',vi:'Mỗi thẻ là một món ăn. Chạm vào một thẻ, rồi chạm PROTEIN hoặc CARBOHYDRATE để nói món đó chứa nhiều chất gì.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Chicken, fish and eggs are rich in protein (protein); rice, bread and potatoes are rich in carbohydrate (carbohydrate). Some foods, like beans, contain a lot of both.',vi:'Thịt gà, cá và trứng giàu protein; cơm, bánh mì và khoai tây giàu carbohydrate. Một số món, như đậu, chứa nhiều cả hai.'},
+    {en:'The six types of nutrient everyone needs are: protein, carbohydrate, fat (and oil), vitamins, minerals and water.',vi:'Sáu loại chất dinh dưỡng (nutrients) ai cũng cần là: protein, carbohydrate, chất béo (fat) (và dầu — oil), vitamin (vitamins), khoáng chất (minerals) và nước (water).'},
+    {en:'I can list the six types of nutrient that I need in my diet.',vi:'Con kể được sáu loại chất dinh dưỡng (nutrient) con cần trong chế độ ăn.'},
+    {en:'I can explain why I need each of these nutrients.',vi:'Con giải thích được vì sao con cần mỗi chất dinh dưỡng này.'},
+    {en:'I can list some foods that contain each of these nutrients.',vi:'Con kể được một số món ăn chứa mỗi chất dinh dưỡng này.'}]}
+];
+const FOODS6=[
+ {id:'c_chicken',emoji:'🍗',en:'Chicken',vi:'Thịt gà (chicken)',ans:'protein'},
+ {id:'c_rice',emoji:'🍚',en:'Rice',vi:'Cơm (rice)',ans:'carbohydrate'},
+ {id:'c_fish',emoji:'🐟',en:'Fish',vi:'Cá (fish)',ans:'protein'},
+ {id:'c_bread',emoji:'🍞',en:'Bread',vi:'Bánh mì (bread)',ans:'carbohydrate'},
+ {id:'c_egg',emoji:'🥚',en:'Eggs',vi:'Trứng (eggs)',ans:'protein'},
+ {id:'c_potato',emoji:'🥔',en:'Potatoes',vi:'Khoai tây (potatoes)',ans:'carbohydrate'}
+];
+const FOODS6_ORDER=mixOrder(FOODS6,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'What is a nutrient?',vi:'Chất dinh dưỡng (nutrient) là gì?'},
+  o:[{en:'Any food you enjoy eating',vi:'Bất kỳ món ăn nào con thích ăn'},{en:'A substance in food that the body needs to stay healthy',vi:'Một chất trong thức ăn mà cơ thể cần để khỏe mạnh'},{en:'A vitamin made in the skin',vi:'Một vitamin được tạo ra trong da'}],a:1,
+  e:{en:'Nutrients are substances found in food that you need to stay healthy. Food is what you eat; nutrients are the useful substances inside it.',vi:'Chất dinh dưỡng (nutrients) là những chất có trong thức ăn mà con cần để khỏe mạnh. Thức ăn (food) là thứ con ăn; chất dinh dưỡng là các chất có ích bên trong nó.'}},
+ {q:{en:'In the iodine test, what colour shows that a food contains starch?',vi:'Trong phép thử iodine, màu nào cho thấy một món ăn chứa tinh bột (starch)?'},
+  o:[{en:'Very dark blue-black',vi:'Xanh đen rất đậm'},{en:'Orange-brown, unchanged',vi:'Nâu cam, không đổi'},{en:'Bright green',vi:'Xanh lá sáng'}],a:0,
+  e:{en:'Iodine solution is orange-brown. Mixed with starch it becomes very dark blue-black — that colour change is the result that shows starch is present.',vi:'Dung dịch iodine có màu nâu cam. Khi gặp tinh bột (starch) nó chuyển thành xanh đen rất đậm — sự đổi màu đó là kết quả cho thấy có tinh bột.'}},
+ {q:{en:'For most people, where does most of their vitamin D come from?',vi:'Với hầu hết mọi người, phần lớn vitamin D đến từ đâu?'},
+  o:[{en:'From citrus fruit',vi:'Từ trái cây họ cam quýt'},{en:'From drinking water',vi:'Từ nước uống'},{en:'It is made in the skin when sunlight falls on it',vi:'Nó được tạo ra trong da khi ánh nắng chiếu vào'}],a:2,
+  e:{en:'Few foods contain vitamin D — oily fish is the best food source. For most people, most vitamin D is made in the skin in sunlight, and it helps the body absorb calcium for strong bones and teeth.',vi:'Rất ít thức ăn chứa vitamin D — cá béo là nguồn từ thức ăn tốt nhất. Với hầu hết mọi người, phần lớn vitamin D được tạo ra trong da dưới ánh nắng, và nó giúp cơ thể hấp thụ canxi (calcium) cho xương và răng chắc khỏe.'}},
+ {q:{en:'A person with anaemia feels very tired and has little energy. What are they missing?',vi:'Một người bị thiếu máu (anaemia) cảm thấy rất mệt và ít năng lượng. Họ đang thiếu chất gì?'},
+  o:[{en:'Vitamin C, so their skin cannot heal',vi:'Vitamin C, nên da của họ không lành được'},{en:'Iron, so they make too little haemoglobin to carry oxygen',vi:'Sắt (iron), nên họ tạo quá ít haemoglobin để vận chuyển oxygen'},{en:'Calcium, so their bones are weak',vi:'Canxi (calcium), nên xương của họ yếu'}],a:1,
+  e:{en:'Iron is needed to make haemoglobin. Without enough iron, too little oxygen is transported around the body, so respiration cannot release much energy — that is anaemia.',vi:'Sắt (iron) cần để tạo haemoglobin. Thiếu sắt, quá ít oxygen được vận chuyển khắp cơ thể, nên hô hấp (respiration) không giải phóng được nhiều năng lượng — đó là thiếu máu (anaemia).'}}
+];
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_protein',emoji:'🍗',en:'Protein — for growth, making new cells',vi:'Protein — để tăng trưởng, tạo tế bào mới',keyw:true},
+ {id:'e_calcium',emoji:'🦴',en:'Calcium — used in respiration to release energy',vi:'Canxi (calcium) — dùng trong hô hấp để giải phóng năng lượng',keyw:false},
+ {id:'e_iron',emoji:'🩸',en:'Iron — needed to make haemoglobin',vi:'Sắt (iron) — cần để tạo haemoglobin',keyw:true},
+ {id:'e_vita',emoji:'🥕',en:'Vitamin A — for strong bones and teeth',vi:'Vitamin A — cho xương và răng chắc khỏe',keyw:false},
+ {id:'e_vitc',emoji:'🍊',en:'Vitamin C — keeps skin strong and helps it heal quickly',vi:'Vitamin C — giữ da chắc khỏe và giúp da mau lành',keyw:true},
+ {id:'e_carb',emoji:'🍚',en:'Carbohydrate — makes bones and teeth strong',vi:'Carbohydrate — làm xương và răng chắc khỏe',keyw:false},
+ {id:'e_vitd',emoji:'☀️',en:'Vitamin D — helps the body absorb calcium, for strong bones and teeth',vi:'Vitamin D — giúp cơ thể hấp thụ canxi (calcium), cho xương và răng chắc khỏe',keyw:true},
+ {id:'e_fat',emoji:'🥑',en:'Fat and oil — help you see in the dark',vi:'Chất béo và dầu (fat and oil) — giúp con nhìn trong bóng tối',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_carrot',emoji:'🥕',en:'Carrots — a good source of vitamin A',vi:'Cà rốt (carrots) — nguồn vitamin A tốt',ans:'micro'},
+ {id:'x_rice',emoji:'🍚',en:'Rice — rich in starch, a carbohydrate',vi:'Cơm (rice) — giàu tinh bột (starch), một carbohydrate',ans:'energy'},
+ {id:'x_orange',emoji:'🍊',en:'Oranges — rich in vitamin C',vi:'Cam (oranges) — giàu vitamin C',ans:'micro'},
+ {id:'x_avocado',emoji:'🥑',en:'Avocado — rich in fat and oil',vi:'Quả bơ (avocado) — giàu chất béo và dầu (fat and oil)',ans:'energy'},
+ {id:'x_milk',emoji:'🥛',en:'Foods made from milk — rich in calcium',vi:'Thực phẩm từ sữa — giàu canxi (calcium)',ans:'micro'},
+ {id:'x_bread',emoji:'🍞',en:'Bread — rich in carbohydrate',vi:'Bánh mì (bread) — giàu carbohydrate',ans:'energy'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Iron is needed to make',vi:'Sắt (iron) cần để tạo'},
+  wrong:1,
+  opts:[{en:'haemoglobin',vi:'haemoglobin'},{en:'bones and teeth',vi:'xương và răng'}],
+  e:{en:'Iron makes haemoglobin, which carries oxygen. Calcium is the nutrient for bones and teeth — cross out “bones and teeth”.',vi:'Sắt tạo haemoglobin, chất vận chuyển oxygen. Canxi (calcium) mới là chất cho xương và răng — hãy gạch bỏ “xương và răng”.'}},
+ {pre:{en:'A lack of vitamin C causes the illness',vi:'Thiếu vitamin C gây ra bệnh'},
+  wrong:1,
+  opts:[{en:'scurvy',vi:'scorbut (scurvy)'},{en:'rickets',vi:'còi xương (rickets)'}],
+  e:{en:'Too little vitamin C causes scurvy. Rickets is caused by too little vitamin D in children — cross out “rickets”.',vi:'Quá ít vitamin C gây bệnh scorbut (scurvy). Còi xương (rickets) do quá ít vitamin D ở trẻ em — hãy gạch bỏ “rickets”.'}},
+ {pre:{en:'Vitamin D helps the body to absorb',vi:'Vitamin D giúp cơ thể hấp thụ'},
+  wrong:1,
+  opts:[{en:'calcium',vi:'canxi (calcium)'},{en:'glucose',vi:'glucose'}],
+  e:{en:'Vitamin D helps the body absorb calcium from food, for strong bones and teeth — cross out “glucose”.',vi:'Vitamin D giúp cơ thể hấp thụ canxi (calcium) từ thức ăn, cho xương và răng chắc khỏe — hãy gạch bỏ “glucose”.'}},
+ {pre:{en:'Starch is broken down in the body to make',vi:'Tinh bột (starch) được phân giải trong cơ thể để tạo'},
+  wrong:0,
+  opts:[{en:'protein',vi:'protein'},{en:'glucose, a sugar used in respiration',vi:'glucose, một loại đường dùng trong hô hấp (respiration)'}],
+  e:{en:'Starch breaks down into glucose, the fuel cells use in respiration. Protein comes from protein-rich foods — cross out “protein”.',vi:'Tinh bột phân giải thành glucose, nhiên liệu tế bào dùng trong hô hấp (respiration). Protein đến từ thức ăn giàu protein — hãy gạch bỏ “protein”.'}},
+ {pre:{en:'For long-term energy stores, the body stores',vi:'Để dự trữ năng lượng dài hạn, cơ thể dự trữ'},
+  wrong:1,
+  opts:[{en:'fat in cells under the skin',vi:'chất béo (fat) trong tế bào dưới da'},{en:'starch dissolved in the blood',vi:'tinh bột (starch) hòa tan trong máu'}],
+  e:{en:'Long-term stores are fat under the skin and around organs. Only a little carbohydrate is stored, in the liver and muscles — cross out “starch dissolved in the blood”.',vi:'Dự trữ dài hạn là chất béo (fat) dưới da và quanh các cơ quan. Chỉ một ít carbohydrate được dự trữ, ở gan và cơ — hãy gạch bỏ “tinh bột hòa tan trong máu”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-7-1';
+const SUMKEY='camb:sum:sci8-7-1';
+const BOT_CODE='sci8-7.1';
+let FOUND={rice:false,chicken:false,avo:false,liver:false,fat:false,potato:false,bread:false,cheese:false,carrot:false,orange:false,fish:false,milk:false,meat:false,water:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fRice:false, fChicken:false, fAvo:false,
+  s2liver:false, s2fat:false,
+  s3potato:false, s3bread:false, s3cheese:false,
+  s4carrot:false, s4orange:false, s4fish:false,
+  s5milk:false, s5meat:false, s5water:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fRice&&T.fChicken&&T.fAvo;
+  if(i===1) return T.s2liver&&T.s2fat;
+  if(i===2) return T.s3potato&&T.s3bread&&T.s3cheese;
+  if(i===3) return T.s4carrot&&T.s4orange&&T.s4fish;
+  if(i===4) return T.s5milk&&T.s5meat&&T.s5water;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Foods tapped: rice, rich in starch '+(T.fRice?'✓':'…')+' · chicken, rich in protein '+(T.fChicken?'✓':'…')+' · avocado, rich in fat and oil '+(T.fAvo?'✓':'…')+'. Tap the foods on the plate!',
+                     'Đã chạm: cơm, giàu tinh bột (starch) '+(T.fRice?'✓':'…')+' · thịt gà, giàu protein '+(T.fChicken?'✓':'…')+' · quả bơ, giàu chất béo và dầu (fat, oil) '+(T.fAvo?'✓':'…')+'. Hãy chạm vào các món trên đĩa!');
+  if(i===1) return B('Stores found: liver and muscles — short-term carbohydrate store '+(T.s2liver?'✓':'…')+' · fat under the skin — long-term store and insulation '+(T.s2fat?'✓':'…')+'.',
+                     'Đã tìm thấy: gan và cơ — dự trữ carbohydrate ngắn hạn '+(T.s2liver?'✓':'…')+' · mỡ dưới da — dự trữ dài hạn và cách nhiệt '+(T.s2fat?'✓':'…')+'.');
+  if(i===2) return B('Iodine tests done: potato — turned dark blue-black, contains starch '+(T.s3potato?'✓':'…')+' · bread — turned dark blue-black, contains starch '+(T.s3bread?'✓':'…')+' · cheese — stayed orange-brown, no starch '+(T.s3cheese?'✓':'…')+'.',
+                     'Đã thử iodine: khoai tây — chuyển xanh đen đậm, có tinh bột (starch) '+(T.s3potato?'✓':'…')+' · bánh mì — chuyển xanh đen đậm, có tinh bột '+(T.s3bread?'✓':'…')+' · phô mai — giữ màu nâu cam, không có tinh bột '+(T.s3cheese?'✓':'…')+'.');
+  if(i===3) return B('Vitamin sources tapped: carrot — vitamin A, for eyes and night vision '+(T.s4carrot?'✓':'…')+' · orange — vitamin C, for strong, healing skin '+(T.s4orange?'✓':'…')+' · oily fish — vitamin D, to absorb calcium '+(T.s4fish?'✓':'…')+'.',
+                     'Đã chạm nguồn vitamin: cà rốt — vitamin A, cho mắt và nhìn ban đêm '+(T.s4carrot?'✓':'…')+' · cam — vitamin C, cho da chắc khỏe và mau lành '+(T.s4orange?'✓':'…')+' · cá béo — vitamin D, để hấp thụ canxi (calcium) '+(T.s4fish?'✓':'…')+'.');
+  if(i===4) return B('Tapped: milk foods — calcium for bones and teeth '+(T.s5milk?'✓':'…')+' · red meat — iron for haemoglobin '+(T.s5meat?'✓':'…')+' · water — dissolves chemicals and lets blood flow '+(T.s5water?'✓':'…')+'.',
+                     'Đã chạm: thực phẩm từ sữa — canxi (calcium) cho xương và răng '+(T.s5milk?'✓':'…')+' · thịt đỏ — sắt (iron) cho haemoglobin '+(T.s5meat?'✓':'…')+' · nước (water) — hòa tan hóa chất và giúp máu chảy '+(T.s5water?'✓':'…')+'.');
+  if(i===5){
+    const c=T.s6sel? FOODS6.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap PROTEIN or CARBOHYDRATE.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm PROTEIN hoặc CARBOHYDRATE.');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🍚',label:{en:'Rice — starch',vi:'Cơm — tinh bột'},got:T.fRice},
+      {emoji:'🍗',label:{en:'Chicken — protein',vi:'Thịt gà — protein'},got:T.fChicken},
+      {emoji:'🥑',label:{en:'Avocado — fat and oil',vi:'Quả bơ — chất béo và dầu'},got:T.fAvo}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🫘',label:{en:'Liver — short-term store',vi:'Gan — dự trữ ngắn hạn'},got:T.s2liver},
+      {emoji:'🧈',label:{en:'Fat under skin — long-term store',vi:'Mỡ dưới da — dự trữ dài hạn'},got:T.s2fat}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🥔',label:{en:'Test the potato',vi:'Thử khoai tây'},got:T.s3potato},
+      {emoji:'🍞',label:{en:'Test the bread',vi:'Thử bánh mì'},got:T.s3bread},
+      {emoji:'🧀',label:{en:'Test the cheese',vi:'Thử phô mai'},got:T.s3cheese}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🥕',label:{en:'Carrot — vitamin A',vi:'Cà rốt — vitamin A'},got:T.s4carrot},
+      {emoji:'🍊',label:{en:'Orange — vitamin C',vi:'Cam — vitamin C'},got:T.s4orange},
+      {emoji:'🐟',label:{en:'Oily fish — vitamin D',vi:'Cá béo — vitamin D'},got:T.s4fish}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🥛',label:{en:'Milk — calcium',vi:'Sữa — canxi'},got:T.s5milk},
+      {emoji:'🥩',label:{en:'Red meat — iron',vi:'Thịt đỏ — sắt'},got:T.s5meat},
+      {emoji:'💧',label:{en:'Water',vi:'Nước'},got:T.s5water}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,FOODS6_ORDER,
+      [{key:'protein',label:STR.binPure,cls:'living'},{key:'carbohydrate',label:STR.binMix,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('rice'); bounceThing('rice'); setTimeout(()=>{ focusVisual('chicken'); bounceThing('chicken'); },900); }
+  else if(i===1){ focusThing('liver'); setTimeout(()=>focusThing('fatstore'),900); }
+  else if(i===2){ focusThing('potato'); setTimeout(()=>focusThing('bread'),900); }
+  else if(i===3){ focusThing('carrot'); setTimeout(()=>focusThing('orange'),900); }
+  else if(i===4){ focusThing('milk'); setTimeout(()=>focusThing('meat'),900); }
+  else if(i===5){ demoSort(FOODS6,T.s6correct); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recStarch)+'</span><b>'+(FOUND.rice?'glucose':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recIodine)+'</span><b>'+(FOUND.potato?'dark blue-black':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recVitD)+'</span><b>'+(FOUND.fish?'skin, in sunlight':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recIron)+'</span><b>'+(FOUND.meat?'anaemia':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didPlate},
+    {got:doneSteps.has(2),label:STR.didTest},
+    {got:doneSteps.has(4),label:STR.didVit},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let pondMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildNutSun(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.85,18,14),stdMat(0xf7b731,0.5)));
+  ball.position.y=1.25; g.add(ball);
+  const corona=new THREE.Mesh(new THREE.TorusGeometry(1.02,0.07,8,28),stdMat(0xffd76a,0.5));
+  corona.position.y=1.25; corona.rotation.x=0.5; g.add(corona);
+  g.position.set(-5.2,0,-2.2); g.userData.baseY=0;
+  return g;
+}
+function buildNutPlate(x,z){
+  const g=new THREE.Group();
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.5,0.09,20),stdMat(0xeef2f6,0.4));
+  plate.position.y=0.05; g.add(plate);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildNutRice(){
+  const g=buildNutPlate(-0.2,-1.8);
+  const heap=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.42,14,10),stdMat(0xf7f3e8,0.7)));
+  heap.position.y=0.18; heap.scale.y=0.55; g.add(heap);
+  return g;
+}
+function buildNutChicken(){
+  const g=buildNutPlate(1.4,-0.7);
+  const meat1=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),stdMat(0xb06a35,0.8)));
+  meat1.position.set(-0.12,0.28,0); meat1.scale.set(1.25,0.85,0.9); g.add(meat1);
+  const bone=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.4,7),stdMat(0xf5efe2,0.5));
+  bone.position.set(0.28,0.3,0.1); bone.rotation.z=0.9; g.add(bone);
+  const beans=new THREE.Mesh(new THREE.SphereGeometry(0.13,9,7),stdMat(0x8a5a2b,0.8));
+  beans.position.set(-0.3,0.16,0.3); beans.scale.y=0.7; g.add(beans);
+  return g;
+}
+function buildNutAvocado(){
+  const g=buildNutPlate(-1.8,-0.9);
+  const skin=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,10),stdMat(0x2e6b34,0.7)));
+  skin.position.y=0.28; skin.scale.set(0.85,1.15,0.85); g.add(skin);
+  const flesh=new THREE.Mesh(new THREE.SphereGeometry(0.2,12,9),stdMat(0xcfe08a,0.6));
+  flesh.position.set(0,0.34,0.16); flesh.scale.set(0.8,1.05,0.5); g.add(flesh);
+  const pit=new THREE.Mesh(new THREE.SphereGeometry(0.09,9,7),stdMat(0x7a4a21,0.8));
+  pit.position.set(0,0.3,0.28); g.add(pit);
+  return g;
+}
+function buildNutLiver(){
+  const g=new THREE.Group();
+  const stand=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.56,0.08,16),stdMat(0xd8dee6,0.5));
+  stand.position.y=0.04; g.add(stand);
+  const organ=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.42,14,10),stdMat(0x8e2f32,0.65)));
+  organ.position.y=0.3; organ.scale.set(1.25,0.6,0.9); g.add(organ);
+  const muscle=new THREE.Mesh(new THREE.SphereGeometry(0.2,10,8),stdMat(0xc1553b,0.75));
+  muscle.position.set(0.42,0.2,0.2); muscle.scale.set(1.2,0.7,0.8); g.add(muscle);
+  g.position.set(-3.6,0,-0.8); g.userData.baseY=0;
+  return g;
+}
+function buildNutFat(){
+  const g=new THREE.Group();
+  const fat=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.34,0.7),stdMat(0xf2d06b,0.85)));
+  fat.position.y=0.2; g.add(fat);
+  const skin=new THREE.Mesh(new THREE.BoxGeometry(1.0,0.1,0.74),stdMat(0xe8b48c,0.7));
+  skin.position.y=0.42; g.add(skin);
+  g.position.set(3.2,0,-1.8); g.userData.baseY=0;
+  return g;
+}
+function buildNutTile(x,z){
+  const g=new THREE.Group();
+  const tile=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.06,0.7),stdMat(0xf4f7fa,0.35));
+  tile.position.y=0.03; g.add(tile);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildNutPotato(){
+  const g=buildNutTile(-3.8,2.2);
+  const spud=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,12,9),stdMat(0xc9a26b,0.9)));
+  spud.position.y=0.24; spud.scale.set(1.15,0.8,0.9); g.add(spud);
+  return g;
+}
+function buildNutBread(){
+  const g=buildNutTile(-2.4,2.6);
+  const loaf=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.62,0.3,0.42),stdMat(0xd9a45b,0.9)));
+  loaf.position.y=0.22; g.add(loaf);
+  const top=new THREE.Mesh(new THREE.SphereGeometry(0.31,12,8),stdMat(0xe3b96f,0.9));
+  top.position.y=0.34; top.scale.set(1,0.45,0.68); g.add(top);
+  return g;
+}
+function buildNutCheese(){
+  const g=buildNutTile(-1.2,2.4);
+  const wedge=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.34,0.2,14,1,false,0,1.9),stdMat(0xf2c230,0.7)));
+  wedge.position.y=0.16; g.add(wedge);
+  return g;
+}
+function buildNutCarrot(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.16,0.62,10),stdMat(0xe07b24,0.7)));
+  body.position.y=0.32; body.rotation.x=Math.PI; g.add(body);
+  [[0.08,0],[ -0.08,0.05],[0, -0.08]].forEach(p=>{
+    const leaf=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.3,7),stdMat(0x2e7d46,0.8));
+    leaf.position.set(p[0],0.72,p[1]); g.add(leaf);
+  });
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.28,0.06,14),stdMat(0xeef2f6,0.4));
+  plate.position.y=0.03; g.add(plate);
+  g.position.set(0.6,0,2.5); g.userData.baseY=0;
+  return g;
+}
+function buildNutOrange(){
+  const g=new THREE.Group();
+  const fruit=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3,14,11),stdMat(0xf2762e,0.6)));
+  fruit.position.y=0.32; g.add(fruit);
+  const leaf=new THREE.Mesh(new THREE.SphereGeometry(0.1,8,6),stdMat(0x2e7d46,0.8));
+  leaf.position.set(0.08,0.62,0); leaf.scale.set(1.4,0.4,0.8); g.add(leaf);
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.3,0.06,14),stdMat(0xeef2f6,0.4));
+  plate.position.y=0.03; g.add(plate);
+  g.position.set(1.9,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildNutFish(){
+  const g=new THREE.Group();
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.42,0.06,16),stdMat(0xeef2f6,0.4));
+  plate.position.y=0.03; g.add(plate);
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.32,14,10),stdMat(0x5b83a6,0.55)));
+  body.position.y=0.28; body.scale.set(1.5,0.62,0.7); g.add(body);
+  const tail=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.3,8),stdMat(0x476b8a,0.6));
+  tail.position.set(-0.52,0.28,0); tail.rotation.z=1.57; g.add(tail);
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(0.045,7,6),stdMat(0x16283f,0.4));
+  eye.position.set(0.32,0.36,0.18); g.add(eye);
+  g.position.set(3.3,0,2.5); g.userData.baseY=0;
+  return g;
+}
+function buildNutMilk(){
+  const g=new THREE.Group();
+  const carton=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.72,0.42),stdMat(0xf4f7fa,0.5)));
+  carton.position.y=0.36; g.add(carton);
+  const band=new THREE.Mesh(new THREE.BoxGeometry(0.44,0.2,0.44),stdMat(0x0b76d1,0.6));
+  band.position.y=0.3; g.add(band);
+  const roof=new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.3,0.18,4),stdMat(0xdde7f0,0.5));
+  roof.position.y=0.8; roof.rotation.y=Math.PI/4; g.add(roof);
+  g.position.set(4.7,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildNutMeat(){
+  const g=new THREE.Group();
+  const plate=new THREE.Mesh(new THREE.CylinderGeometry(0.48,0.4,0.06,16),stdMat(0xeef2f6,0.4));
+  plate.position.y=0.03; g.add(plate);
+  const slab=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.66,0.2,0.46),stdMat(0xa83232,0.75)));
+  slab.position.y=0.17; g.add(slab);
+  const stripe=new THREE.Mesh(new THREE.BoxGeometry(0.68,0.06,0.12),stdMat(0xf2e3da,0.6));
+  stripe.position.y=0.2; g.add(stripe);
+  g.position.set(5.5,0,0.7); g.userData.baseY=0;
+  return g;
+}
+function buildNutWater(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.16,0.52,14,1,true),stdMat(0xbfe3ff,0.3));
+  glass.position.y=0.27; g.add(glass);
+  const water=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.14,0.38,14),stdMat(0x3d8bfd,0.35)));
+  water.position.y=0.22; g.add(water);
+  g.position.set(4.9,0,-0.7); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0x2a1f14);
+  scene3.fog=new THREE.Fog(0x2a1f14,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x8a7a5f,0.95));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xfff2df,0.35); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0x8a5a38,0.95));
+  ground.position.set(0.8,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  pondMat=new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.4,side:THREE.DoubleSide,depthWrite:false});
+  const runner=new THREE.Mesh(new THREE.RingGeometry(1.5,1.68,44),pondMat);
+  runner.rotation.x=-Math.PI/2; runner.position.set(0.1,0.03,-1.2); scene3.add(runner);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x1d1409,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0x3a2a18,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  reg('sun',buildNutSun());
+  reg('rice',buildNutRice());
+  reg('chicken',buildNutChicken());
+  reg('avocado',buildNutAvocado());
+  reg('liver',buildNutLiver());
+  reg('fatstore',buildNutFat());
+  reg('potato',buildNutPotato());
+  reg('bread',buildNutBread());
+  reg('cheese',buildNutCheese());
+  reg('carrot',buildNutCarrot());
+  reg('orange',buildNutOrange());
+  reg('oilyfish',buildNutFish());
+  reg('milk',buildNutMilk());
+  reg('meat',buildNutMeat());
+  reg('waterglass',buildNutWater());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(1.0); p.position.set(0,1.25,0); addProxy('sun',p,G.sun); }
+  { const p=sphProxy(0.62); p.position.set(0,0.25,0); addProxy('rice',p,G.rice); }
+  { const p=sphProxy(0.62); p.position.set(0,0.28,0); addProxy('chicken',p,G.chicken); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('avocado',p,G.avocado); }
+  { const p=sphProxy(0.62); p.position.set(0,0.3,0); addProxy('liver',p,G.liver); }
+  { const p=sphProxy(0.65); p.position.set(0,0.25,0); addProxy('fatstore',p,G.fatstore); }
+  { const p=sphProxy(0.55); p.position.set(0,0.22,0); addProxy('potato',p,G.potato); }
+  { const p=sphProxy(0.55); p.position.set(0,0.25,0); addProxy('bread',p,G.bread); }
+  { const p=sphProxy(0.55); p.position.set(0,0.18,0); addProxy('cheese',p,G.cheese); }
+  { const p=sphProxy(0.5); p.position.set(0,0.35,0); addProxy('carrot',p,G.carrot); }
+  { const p=sphProxy(0.52); p.position.set(0,0.32,0); addProxy('orange',p,G.orange); }
+  { const p=sphProxy(0.6); p.position.set(0,0.28,0); addProxy('oilyfish',p,G.oilyfish); }
+  { const p=sphProxy(0.52); p.position.set(0,0.4,0); addProxy('milk',p,G.milk); }
+  { const p=sphProxy(0.58); p.position.set(0,0.2,0); addProxy('meat',p,G.meat); }
+  { const p=sphProxy(0.5); p.position.set(0,0.27,0); addProxy('waterglass',p,G.waterglass); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['rice','chicken','avocado'],
+  ['liver','fatstore'],
+  ['potato','bread','cheese'],
+  ['carrot','orange','oilyfish'],
+  ['milk','meat','waterglass'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='rice'){ T.fRice=true; FOUND.rice=true; }
+    if(id==='chicken'){ T.fChicken=true; FOUND.chicken=true; }
+    if(id==='avocado'){ T.fAvo=true; FOUND.avo=true; }
+  }else if(curStep===1){
+    if(id==='liver'){ T.s2liver=true; FOUND.liver=true; }
+    if(id==='fatstore'){ T.s2fat=true; FOUND.fat=true; }
+  }else if(curStep===2){
+    if(id==='potato'){ T.s3potato=true; FOUND.potato=true; }
+    if(id==='bread'){ T.s3bread=true; FOUND.bread=true; }
+    if(id==='cheese'){ T.s3cheese=true; FOUND.cheese=true; }
+  }else if(curStep===3){
+    if(id==='carrot'){ T.s4carrot=true; FOUND.carrot=true; }
+    if(id==='orange'){ T.s4orange=true; FOUND.orange=true; }
+    if(id==='oilyfish'){ T.s4fish=true; FOUND.fish=true; }
+  }else if(curStep===4){
+    if(id==='milk'){ T.s5milk=true; FOUND.milk=true; }
+    if(id==='meat'){ T.s5meat=true; FOUND.meat=true; }
+    if(id==='waterglass'){ T.s5water=true; FOUND.water=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(pondMat) pondMat.color.setHSL(0.08,0.7,0.5+Math.sin(now*0.0016)*0.04);
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — correct nutrient functions */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — which nutrient group is each food a source of? */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='micro'?'🥕':'⚡')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('micro');
+$('ex2BinNot').onclick=()=>ex2Place('energy');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.rice=false; FOUND.chicken=false; FOUND.avo=false; }
+  if(step===1){ FOUND.liver=false; FOUND.fat=false; }
+  if(step===2){ FOUND.potato=false; FOUND.bread=false; FOUND.cheese=false; }
+  if(step===3){ FOUND.carrot=false; FOUND.orange=false; FOUND.fish=false; }
+  if(step===4){ FOUND.milk=false; FOUND.meat=false; FOUND.water=false; }
+  if(step===5){ FOODS6.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='micro'||s.exAns.a2[id]==='energy')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fRice=!!FOUND.rice; t.fChicken=!!FOUND.chicken; t.fAvo=!!FOUND.avo; }
+  else if(i===1){ t.s2liver=!!FOUND.liver; t.s2fat=!!FOUND.fat; }
+  else if(i===2){ t.s3potato=!!FOUND.potato; t.s3bread=!!FOUND.bread; t.s3cheese=!!FOUND.cheese; }
+  else if(i===3){ t.s4carrot=!!FOUND.carrot; t.s4orange=!!FOUND.orange; t.s4fish=!!FOUND.fish; }
+  else if(i===4){ t.s5milk=!!FOUND.milk; t.s5meat=!!FOUND.meat; t.s5water=!!FOUND.water; }
+  else if(i===5){ FOODS6.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-7-1',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

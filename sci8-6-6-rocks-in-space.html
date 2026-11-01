@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>6.6 Rocks in space — Đá trong không gian · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="6.6 Rocks in space" data-vi="6.6 Đá trong không gian (Rocks in space)">6.6 Rocks in space</span>
+    <span class="eqchip i18n" data-en="Unit 6 · Light" data-vi="Bài 6 · Ánh sáng (Light)">Unit 6 · Light</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="What are asteroids, and where did their rocks come from?" data-vi="Tiểu hành tinh (asteroids) là gì, và đá của chúng từ đâu ra?">What are asteroids, and where did their rocks come from?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Rocks orbiting the Sun" data-vi="Đá quay quanh (orbit) Mặt Trời">Rocks orbiting the Sun</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="The asteroid belt" data-vi="Vành đai tiểu hành tinh (asteroid belt)">The asteroid belt</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Leftovers of the Solar System" data-vi="Phần còn sót lại của Hệ Mặt Trời">Leftovers of the Solar System</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Sometimes they impact Earth" data-vi="Đôi khi chúng va chạm (impact) với Trái Đất">Sometimes they impact Earth</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things out in space!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật ngoài không gian!">🖱 Drag to look around · Scroll to zoom · Tap things in the field and pond!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.6. The space scene in this lesson is a simulation — sizes and distances are not to scale." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 6 Ánh sáng (Light) · Mục 6.6. Cảnh không gian trong bài này là mô phỏng — kích thước và khoảng cách không theo tỉ lệ thật.">Cambridge Lower Secondary Science 8 · Unit 6 Light · Section 6.6. The space scene in this lesson is a simulation — sizes and distances are not to scale.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.6, pages 218–229; Workbook 8 (ISBN 9781108742856), pages 130–133. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 6 Light (Ánh sáng), mục 6.6, trang 218–229; Sách bài tập 8 (ISBN 9781108742856), trang 130–133. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 6 Light, section 6.6, pages 218–229; Workbook 8 (ISBN 9781108742856), pages 130–133. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: discover that asteroids are rocks that are smaller than planets; know that scientists believe asteroids to be rocks left over from the formation of the Solar System. Key words: asteroid belt, asteroids, craters, impacts." data-vi="Mục tiêu: khám phá rằng tiểu hành tinh (asteroids) là đá nhỏ hơn hành tinh; biết rằng các nhà khoa học tin tiểu hành tinh là đá còn sót lại từ khi Hệ Mặt Trời hình thành. Từ khóa: asteroid belt (vành đai tiểu hành tinh), asteroids (tiểu hành tinh), craters (hố va chạm), impacts (các vụ va chạm).">Objectives: discover that asteroids are rocks that are smaller than planets; know that scientists believe asteroids to be rocks left over from the formation of the Solar System. Key words: asteroid belt, asteroids, craters, impacts.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D space stage — meeting asteroids of very different sizes (Ceres 975 km across; Itokawa 530 m long), bracketing the asteroid belt between Mars and Jupiter, building the book's model asteroid (Activity 6.6.1), showing why asteroids impact Earth, judging the book's Tunguska evidence like a scientist, and sorting asteroid features from planet features. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done. Two book items were left out of the interactive lesson: the scale calculation comparing a 200 km asteroid with Jupiter (the Jupiter diameter figure is missing from the extracted book text, so no number was invented) and the Workbook Vesta calculation (the extracted text gives Mercury's diameter inconsistently, so the ratio idea is taught without that figure)." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên sân khấu không gian 3D — gặp các tiểu hành tinh có kích thước rất khác nhau (Ceres đường kính 975 km; Itokawa dài 530 m), xác định vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc, làm tiểu hành tinh mô hình của sách (Hoạt động 6.6.1), chỉ ra vì sao tiểu hành tinh va chạm với Trái Đất, xét bằng chứng Tunguska của sách như một nhà khoa học, và phân loại đặc điểm của tiểu hành tinh với hành tinh. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm. Hai nội dung của sách không đưa vào bài tương tác: phép tính tỉ lệ so sánh một tiểu hành tinh 200 km với Sao Mộc (số liệu đường kính của Sao Mộc bị thiếu trong bản trích text của sách, nên không bịa ra số nào) và phép tính Vesta trong Sách bài tập (bản trích text ghi đường kính của Sao Thủy không nhất quán, nên ý tưởng tỉ lệ được dạy mà không dùng số liệu đó).">How it works: each step asks for one real action on the 3D space stage. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-6-6 "Rocks in space" (Science 8, Unit 6)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= space things ================= */
+const THINGS={
+  ceres:   {emoji:'🌕', name:{en:'Ceres — the largest asteroid, 975 km across',vi:'Ceres — tiểu hành tinh (asteroid) lớn nhất, đường kính 975 km'}, short:{en:'Ceres · 975 km',vi:'Ceres · 975 km'}, ring:0.85, labelY:1.35, fx:-0.2, fz:-1.8, fr:5.2},
+  itokawa: {emoji:'🪨', name:{en:'Itokawa — a small asteroid, 530 m long',vi:'Itokawa — một tiểu hành tinh (asteroid) nhỏ, dài 530 m'}, short:{en:'Itokawa · 530 m',vi:'Itokawa · 530 m'}, ring:0.55, labelY:0.85, fx:1.2, fz:-0.7, fr:4.6},
+  belt1:   {emoji:'☄️', name:{en:'A rock in the asteroid belt',vi:'Một tảng đá trong vành đai tiểu hành tinh (asteroid belt)'}, short:{en:'Belt rock',vi:'Đá trong vành đai'}, ring:0.55, labelY:0.8, fx:-1.6, fz:-0.9, fr:4.6},
+  mars:    {emoji:'🔴', name:{en:'Mars — the planet inside the belt',vi:'Sao Hỏa (Mars) — hành tinh ở phía trong vành đai'}, short:{en:'Mars',vi:'Sao Hỏa'}, ring:0.7, labelY:1.05, fx:-3.4, fz:-0.6, fr:5.0},
+  jupiter: {emoji:'🪐', name:{en:'Jupiter — the giant planet outside the belt',vi:'Sao Mộc (Jupiter) — hành tinh khổng lồ ở phía ngoài vành đai'}, short:{en:'Jupiter',vi:'Sao Mộc'}, ring:1.25, labelY:1.75, fx:2.8, fz:-2.0, fr:6.0},
+  sun:     {emoji:'☀️', name:{en:'The Sun — asteroids orbit the Sun',vi:'Mặt Trời (Sun) — các tiểu hành tinh quay quanh Mặt Trời'}, short:{en:'Sun',vi:'Mặt Trời'}, ring:1.15, labelY:2.3, fx:0, fz:0, fr:10.5},
+  earth:   {emoji:'🌍', name:{en:'Earth — asteroids sometimes impact Earth',vi:'Trái Đất (Earth) — tiểu hành tinh đôi khi va chạm (impact) với Trái Đất'}, short:{en:'Earth',vi:'Trái Đất'}, ring:0.8, labelY:1.15, fx:4.8, fz:0.6, fr:5.2},
+  nea:     {emoji:'☄️', name:{en:'A near-Earth asteroid — its orbit passes close to Earth',vi:'Một tiểu hành tinh gần Trái Đất — quỹ đạo (orbit) của nó đi gần Trái Đất'}, short:{en:'Near-Earth asteroid',vi:'Tiểu hành tinh gần Trái Đất'}, ring:0.5, labelY:0.75, fx:4.0, fz:1.6, fr:4.6},
+  modelrock:{emoji:'🎨', name:{en:'Model asteroid — a small rock, painted grey',vi:'Tiểu hành tinh mô hình — một hòn đá nhỏ, sơn màu xám'}, short:{en:'Model asteroid',vi:'Mô hình tiểu hành tinh'}, ring:0.6, labelY:0.95, fx:-3.8, fz:2.2, fr:4.8},
+  sand:    {emoji:'🏖️', name:{en:'Coarse sand — glued on for a rough surface',vi:'Cát thô (sand) — dán lên để tạo bề mặt thô ráp'}, short:{en:'Coarse sand',vi:'Cát thô'}, ring:0.55, labelY:0.8, fx:-2.4, fz:2.6, fr:4.6},
+  paint:   {emoji:'🖌️', name:{en:'Black and white paint — mixed to make grey',vi:'Sơn đen và trắng — trộn với nhau để thành màu xám'}, short:{en:'Paint pots',vi:'Hộp sơn'}, ring:0.55, labelY:0.9, fx:-1.2, fz:2.4, fr:4.6},
+  forest:  {emoji:'🌲', name:{en:'Tunguska forest — trees flattened in 1908',vi:'Rừng Tunguska — cây bị san phẳng năm 1908'}, short:{en:'Tunguska forest',vi:'Rừng Tunguska'}, ring:0.95, labelY:1.2, fx:1.4, fz:2.2, fr:5.4},
+  fragment:{emoji:'🔍', name:{en:'Rocky fragments found at Tunguska',vi:'Các mảnh đá (fragments) tìm thấy ở Tunguska'}, short:{en:'Rocky fragments',vi:'Mảnh đá'}, ring:0.55, labelY:0.75, fx:2.8, fz:2.6, fr:4.6},
+  rock:    {emoji:'🪨', name:{en:'An ordinary rock on display',vi:'Một hòn đá thường để trưng bày'}, short:{en:'Rock',vi:'Hòn đá'}, ring:0.6, labelY:0.8, fx:5.6, fz:2.6, fr:5.0}
+};
+const FOCUSORDER=['ceres','itokawa','mars','jupiter','earth','nea','modelrock','forest'];
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'Out in space',vi:'Ngoài không gian'},
+  u1Brief:{en:'Tap a name to LOOK at the object. Looking is not doing — to do a step, tap the object itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'Numbers from the book',vi:'Số liệu từ sách'},
+  u2Brief:{en:'The book’s own sizes and facts, as you find them on the stage.',vi:'Các kích thước và sự kiện của chính sách, khi con tìm thấy chúng trên sân khấu.'},
+  recPens:{en:'Ceres — diameter',vi:'Ceres — đường kính'},
+  recBands:{en:'Itokawa — length',vi:'Itokawa — chiều dài'},
+  recFront:{en:'Asteroid belt — between the orbits of',vi:'Vành đai tiểu hành tinh (asteroid belt) — giữa quỹ đạo của'},
+  recEagle:{en:'A large asteroid impact on Earth — on average every',vi:'Một vụ va chạm (impact) lớn với Trái Đất — trung bình mỗi'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your space-work checklist.',vi:'Danh sách thực hành về không gian của con.'},
+  didSetup:{en:'Described what an asteroid is',vi:'Đã mô tả được tiểu hành tinh (asteroid) là gì'},
+  didRun:{en:'Made a model asteroid',vi:'Đã làm một tiểu hành tinh mô hình'},
+  didSort:{en:'Sorted asteroid features from planet features',vi:'Đã phân loại đặc điểm của tiểu hành tinh và hành tinh'},
+  didPlant:{en:'Judged the Tunguska evidence',vi:'Đã xét bằng chứng về Tunguska'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binPure:{en:'ASTEROID ☄️',vi:'TIỂU HÀNH TINH (asteroid) ☄️'},
+  binMix:{en:'PLANET 🪐',vi:'HÀNH TINH (planet) 🪐'},
+  binPerm:{en:'ASTEROID ☄️',vi:'TIỂU HÀNH TINH (asteroid) ☄️'},
+  binNot:{en:'PLANET 🪐',vi:'HÀNH TINH (planet) 🪐'},
+  lookPaper:{en:'Look at Jupiter 🪐',vi:'Ngắm Sao Mộc 🪐'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 6.6',vi:'📝 Bài tập — Sách bài tập (Workbook) 6.6'},
+  exIntro:{en:'Workbook games for this lesson: describing asteroids (Exercise 6.6A), asteroids and planets (6.6B and 6.6C). They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này: mô tả tiểu hành tinh (asteroid) (Bài tập 6.6A), tiểu hành tinh và hành tinh (6.6B và 6.6C). Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Describing asteroids (6.6A)',vi:'Bài tập 1 · Focus — Mô tả tiểu hành tinh (asteroid) (6.6A)'},
+  ex1Inst:{en:'Tap the 4 statements that correctly describe asteroids. (The path an asteroid follows around the Sun is called its orbit.)',vi:'Chạm vào 4 câu mô tả đúng tiểu hành tinh (asteroid). (Đường đi của một tiểu hành tinh quanh Mặt Trời được gọi là quỹ đạo (orbit) của nó.)'},
+  ex2T:{en:'Exercise 2 · Practice — Asteroid or planet? (6.6B)',vi:'Bài tập 2 · Practice — Tiểu hành tinh hay hành tinh? (6.6B)'},
+  ex2Inst:{en:'Earth is a planet with a core, a mantle and a crust. Most asteroids are not like that. Tap a card, then tap ASTEROID or PLANET to say which object the card describes best.',vi:'Trái Đất là một hành tinh có lõi (core), lớp phủ (mantle) và vỏ (crust). Hầu hết tiểu hành tinh không như vậy. Chạm vào một thẻ, rồi chạm TIỂU HÀNH TINH (ASTEROID) hoặc HÀNH TINH (PLANET) để nói thẻ đó mô tả vật nào nhất.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong word (6.6C)',vi:'Bài tập 3 · Challenge — Gạch bỏ từ sai (6.6C)'},
+  ex3Inst:{en:'Each sentence compares asteroids and planets, or weighs up evidence. Tap the WRONG word or phrase to cross it out.',vi:'Mỗi câu so sánh tiểu hành tinh (asteroids) và hành tinh (planets), hoặc cân nhắc bằng chứng. Chạm vào từ hay cụm từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'asteroids',vi:'tiểu hành tinh'},
+  {en:'asteroid belt',vi:'vành đai tiểu hành tinh'},
+  {en:'craters',vi:'hố va chạm'},
+  {en:'impacts',vi:'các vụ va chạm'},
+  {en:'orbit',vi:'quỹ đạo'}
+];
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'What is an asteroid?',vi:'Tiểu hành tinh là gì?'}, word:{en:'asteroids',vi:'tiểu hành tinh'},
+  q:{en:'Getting started: the Solar System holds many kinds of object — planets, moons, the Sun. What is an asteroid?',vi:'Khởi động: Hệ Mặt Trời có nhiều loại vật thể — hành tinh, mặt trăng, Mặt Trời. Tiểu hành tinh (asteroid) là gì?'},
+  act:{en:'Tap three asteroids on the stage: Ceres (the largest), Itokawa (a small one a spacecraft visited) and one small rock in the asteroid belt.',vi:'Chạm vào ba tiểu hành tinh trên sân khấu: Ceres (lớn nhất), Itokawa (một tiểu hành tinh nhỏ mà tàu vũ trụ đã tới thăm) và một tảng đá nhỏ trong vành đai tiểu hành tinh (asteroid belt).'},
+  see:{en:'Each asteroid bounces and shows its name and size.',vi:'Mỗi tiểu hành tinh nảy lên và hiện tên cùng kích thước của nó.'},
+  concl:[
+    {en:'An asteroid (asteroid) is an object made of rock that orbits (orbits) the Sun. Asteroids are smaller than planets.',vi:'Một tiểu hành tinh (asteroid) là một vật làm bằng đá quay quanh (orbit) Mặt Trời. Tiểu hành tinh nhỏ hơn hành tinh (planet).'},
+    {en:'They come in many sizes: the largest, Ceres, is 975 km across, while the smallest one studied is only 2 m across.',vi:'Chúng có nhiều kích thước: lớn nhất, Ceres, có đường kính 975 km, còn tiểu hành tinh nhỏ nhất đã được nghiên cứu chỉ rộng 2 m.'},
+    {en:'Most asteroids are not round or regular — scientists compare their shape to potatoes. Ceres is unusual: it is round, cratered (craters), and even has a core, a mantle and a crust.',vi:'Hầu hết tiểu hành tinh không tròn và không đều — các nhà khoa học so sánh hình dạng của chúng với củ khoai tây. Ceres khác thường: nó tròn, đầy hố va chạm (craters), và còn có lõi (core), lớp phủ (mantle) và vỏ (crust).'}]},
+ {tag:{en:'The asteroid belt',vi:'Vành đai tiểu hành tinh'}, word:{en:'asteroid belt',vi:'vành đai tiểu hành tinh'},
+  q:{en:'There are millions of asteroids. Where are most of them found?',vi:'Có hàng triệu tiểu hành tinh. Hầu hết chúng được tìm thấy ở đâu?'},
+  act:{en:'Tap Mars, the planet on the inner side, then tap Jupiter, the giant planet on the outer side. The belt lies between their orbits.',vi:'Chạm vào Sao Hỏa (Mars), hành tinh ở phía trong, rồi chạm vào Sao Mộc (Jupiter), hành tinh khổng lồ ở phía ngoài. Vành đai nằm giữa quỹ đạo (orbits) của chúng.'},
+  see:{en:'Mars and Jupiter light up as the two markers of the belt, with the belt rocks between them.',vi:'Sao Hỏa và Sao Mộc sáng lên như hai mốc của vành đai, với các tảng đá của vành đai ở giữa chúng.'},
+  concl:[
+    {en:'Most asteroids orbit (orbit) the Sun between the orbits of Mars and Jupiter. That region is called the asteroid belt (asteroid belt).',vi:'Hầu hết tiểu hành tinh quay quanh (orbit) Mặt Trời giữa quỹ đạo của Sao Hỏa (Mars) và Sao Mộc (Jupiter). Vùng đó được gọi là vành đai tiểu hành tinh (asteroid belt).'},
+    {en:'The path an asteroid follows around the Sun is called its orbit (orbit).',vi:'Đường đi của một tiểu hành tinh quanh Mặt Trời được gọi là quỹ đạo (orbit) của nó.'},
+    {en:'Scientists believe asteroids are rocks left over from the formation of the Solar System — material that never grew into a planet. Ceres might have become a planet if it had kept growing.',vi:'Các nhà khoa học tin rằng tiểu hành tinh là những tảng đá còn sót lại từ khi Hệ Mặt Trời hình thành — vật chất không bao giờ lớn lên thành hành tinh. Ceres có thể đã trở thành hành tinh nếu nó tiếp tục lớn lên.'}]},
+ {tag:{en:'Make a model asteroid',vi:'Làm một tiểu hành tinh mô hình'}, word:{en:'craters',vi:'hố va chạm'},
+  q:{en:'Activity 6.6.1: in class you make a model asteroid from a small rock, sand, glue and paint. Can you build one here?',vi:'Hoạt động 6.6.1: ở lớp, con làm một tiểu hành tinh mô hình từ một hòn đá nhỏ, cát, keo và sơn. Con có làm được một cái ở đây không?'},
+  act:{en:'Tap the model rock to choose it, tap the coarse sand to glue on a rough texture, then tap the paint pots — black and white mixed to make the greys you want.',vi:'Chạm vào hòn đá mô hình để chọn nó, chạm vào cát thô (sand) để dán lên một bề mặt thô ráp, rồi chạm vào các hộp sơn — đen và trắng trộn với nhau để thành màu xám con muốn.'},
+  see:{en:'Your model gains a rough, cratered surface and a grey colour — and together the class models make part of an asteroid belt.',vi:'Mô hình của con có bề mặt thô ráp, đầy hố (craters) và màu xám — và các mô hình của cả lớp hợp lại thành một phần của vành đai tiểu hành tinh.'},
+  concl:[
+    {en:'A good model shows how asteroids differ from planets: it is small, irregular in shape and rough — not large, round and smooth like a planet.',vi:'Một mô hình tốt cho thấy tiểu hành tinh khác hành tinh (planet) thế nào: nó nhỏ, hình dạng không đều và thô ráp — không lớn, tròn và nhẵn như một hành tinh.'},
+    {en:'Real asteroids are just as irregular. Itokawa, for example, looks like lumps of rock held together loosely — pieces broken from other small bodies by impacts (impacts).',vi:'Tiểu hành tinh thật cũng không đều như vậy. Ví dụ Itokawa trông như các cục đá được giữ với nhau một cách lỏng lẻo — các mảnh vỡ ra từ các thiên thể nhỏ khác do va chạm (impacts).'}]},
+ {tag:{en:'Asteroids and Earth',vi:'Tiểu hành tinh và Trái Đất'}, word:{en:'impacts',vi:'các vụ va chạm'},
+  q:{en:'Some asteroids pass close to Earth. Why do asteroids sometimes impact Earth?',vi:'Một số tiểu hành tinh đi gần Trái Đất. Vì sao tiểu hành tinh đôi khi va chạm (impact) với Trái Đất?'},
+  act:{en:'Tap the near-Earth asteroid whose orbit passes close by, then tap Earth itself.',vi:'Chạm vào tiểu hành tinh gần Trái Đất mà quỹ đạo (orbit) của nó đi gần qua, rồi chạm vào chính Trái Đất (Earth).'},
+  see:{en:'The asteroid is pulled towards Earth — the two reasons for impacts appear in the answer.',vi:'Tiểu hành tinh bị hút về phía Trái Đất — hai lý do của các vụ va chạm sẽ hiện trong đáp án.'},
+  concl:[
+    {en:'There are two reasons: Earth exerts a strong force of gravity (gravity) on passing objects such as asteroids, and many asteroids have orbits (orbits) that pass relatively close to Earth.',vi:'Có hai lý do: Trái Đất tác dụng một lực hấp dẫn (gravity) mạnh lên các vật đi ngang qua như tiểu hành tinh, và nhiều tiểu hành tinh có quỹ đạo (orbits) đi khá gần Trái Đất.'},
+    {en:'Scientists think a large asteroid impacts (impacts) Earth on average every 130 000 years. Smaller ones arrive very often — the ones mapped from 1994 to 2013 were small, broke apart in the atmosphere and never reached the surface.',vi:'Các nhà khoa học cho rằng một tiểu hành tinh lớn va chạm (impacts) với Trái Đất trung bình mỗi 130 000 năm. Các tiểu hành tinh nhỏ hơn tới rất thường xuyên — những cái được lập bản đồ từ 1994 tới 2013 đều nhỏ, vỡ ra trong khí quyển và không bao giờ chạm tới bề mặt.'}]},
+ {tag:{en:'What happened at Tunguska?',vi:'Điều gì đã xảy ra ở Tunguska?'}, word:{en:'impacts',vi:'các vụ va chạm'},
+  q:{en:'Think like a scientist: on 30 June 1908 a huge explosion flattened a forest at Tunguska in northern Russia. Five ideas were suggested — a comet, a volcano, a new bomb, an alien spacecraft, or an asteroid. Which fits the evidence?',vi:'Tư duy như nhà khoa học: ngày 30 tháng 6 năm 1908, một vụ nổ rất lớn đã san phẳng một khu rừng ở Tunguska, miền bắc nước Nga. Năm ý tưởng được nêu ra — sao chổi, núi lửa, một loại bom mới, tàu vũ trụ của người ngoài hành tinh, hoặc một tiểu hành tinh. Ý tưởng nào khớp với bằng chứng?'},
+  act:{en:'Tap the flattened Tunguska forest, then tap the small rocky fragments found there, to collect the two key pieces of evidence.',vi:'Chạm vào khu rừng Tunguska bị san phẳng, rồi chạm vào các mảnh đá (fragments) nhỏ tìm thấy ở đó, để thu thập hai bằng chứng chính.'},
+  see:{en:'The fallen trees all point outwards from one centre, and the fragments show signs of falling through the atmosphere at very high speed.',vi:'Các cây đổ đều hướng ra ngoài từ một tâm, và các mảnh đá cho thấy dấu vết rơi qua khí quyển với tốc độ rất cao.'},
+  concl:[
+    {en:'The explosion happened 5 km to 10 km above the ground, was heard over 800 km away, and flattened trees over 2000 km² — with every fallen tree pointing outwards from a central position.',vi:'Vụ nổ xảy ra ở độ cao 5 km tới 10 km trên mặt đất, được nghe thấy cách đó hơn 800 km, và san phẳng cây trên 2000 km² — với mọi cây đổ đều hướng ra ngoài từ một vị trí trung tâm.'},
+    {en:'An asteroid impact (impact) fits best: it explains the rocky fragments and the blast in the air. A volcano is unlikely (Tunguska is far from tectonic plate boundaries), a bomb test is impossible (very powerful bombs were only made in 1945, and none this powerful has ever been made), and an alien craft is unsupported (no metal parts were found). A comet is less likely: most comets break up higher in the atmosphere, and only a small part of a comet is rock.',vi:'Một vụ va chạm (impact) của tiểu hành tinh khớp nhất: nó giải thích các mảnh đá và vụ nổ trên không. Núi lửa khó xảy ra (Tunguska xa các ranh giới mảng kiến tạo), thử bom là không thể (bom rất mạnh chỉ được chế tạo vào năm 1945, và chưa từng có quả bom nào mạnh như vậy), và tàu của người ngoài hành tinh không có bằng chứng (không tìm thấy mảnh kim loại nào). Sao chổi ít khả năng hơn: hầu hết sao chổi vỡ ở cao hơn trong khí quyển, và chỉ một phần nhỏ của sao chổi là đá.'},
+    {en:'Conclusions like this have limits: the evidence was gathered long after 1908, and no large crater or whole object was ever found — so the asteroid idea is the most likely, not a certainty.',vi:'Các kết luận như thế này có giới hạn: bằng chứng được thu thập rất lâu sau năm 1908, và không bao giờ tìm thấy hố lớn hay cả một vật thể — nên ý tưởng tiểu hành tinh là khả thi nhất, chứ không phải chắc chắn.'}]},
+ {tag:{en:'Asteroid or planet?',vi:'Tiểu hành tinh hay hành tinh?'}, word:{en:'asteroid belt',vi:'vành đai tiểu hành tinh'},
+  q:{en:'Asteroids and planets both orbit the Sun — but they are different kinds of object. Can you sort their features?',vi:'Tiểu hành tinh và hành tinh đều quay quanh Mặt Trời — nhưng chúng là hai loại vật thể khác nhau. Con có phân loại được đặc điểm của chúng không?'},
+  act:{en:'Each card describes an object. Tap a card, then tap ASTEROID or PLANET.',vi:'Mỗi thẻ mô tả một vật thể. Chạm vào một thẻ, rồi chạm TIỂU HÀNH TINH (ASTEROID) hoặc HÀNH TINH (PLANET).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Asteroids and planets share some things: both orbit the Sun, and the gravity of each holds its own material together.',vi:'Tiểu hành tinh và hành tinh có một số điểm chung: cả hai đều quay quanh Mặt Trời, và lực hấp dẫn (gravity) của mỗi cái giữ vật chất của chính nó lại với nhau.'},
+    {en:'They differ in size and shape: planets are large and round, while most asteroids are small and irregular — and most asteroids have no core–mantle–crust structure and no moons, because their gravity is too weak to hold a moon in orbit.',vi:'Chúng khác nhau về kích thước và hình dạng: hành tinh lớn và tròn, còn hầu hết tiểu hành tinh nhỏ và không đều — và hầu hết tiểu hành tinh không có cấu trúc lõi–lớp phủ–vỏ và không có mặt trăng, vì lực hấp dẫn (gravity) của chúng quá yếu để giữ một mặt trăng trên quỹ đạo.'},
+    {en:'I can describe what is meant by the term asteroid.',vi:'Con mô tả được thuật ngữ tiểu hành tinh (asteroid) nghĩa là gì.'},
+    {en:'I can recall where most asteroids in the Solar System are found.',vi:'Con nhớ được hầu hết tiểu hành tinh trong Hệ Mặt Trời được tìm thấy ở đâu.'},
+    {en:'I know that asteroids are formed from rocks left over from the formation of the Solar System.',vi:'Con biết tiểu hành tinh được hình thành từ đá còn sót lại từ khi Hệ Mặt Trời hình thành.'},
+    {en:'I know that some asteroids pass close by Earth and can, from time to time, impact Earth.',vi:'Con biết một số tiểu hành tinh đi gần Trái Đất và đôi khi có thể va chạm (impact) với Trái Đất.'}]}
+];
+const ASTS=[
+ {id:'c_potato',emoji:'🥔',en:'Small and irregular, shaped like a potato, made of rock',vi:'Nhỏ và không đều, hình như củ khoai tây, làm bằng đá',ans:'asteroid'},
+ {id:'c_round',emoji:'🪐',en:'Large and round, with a core, a mantle and a crust inside',vi:'Lớn và tròn, bên trong có lõi (core), lớp phủ (mantle) và vỏ (crust)',ans:'planet'},
+ {id:'c_belt',emoji:'☄️',en:'One of millions of rocks orbiting the Sun between Mars and Jupiter',vi:'Một trong hàng triệu tảng đá quay quanh Mặt Trời giữa Sao Hỏa (Mars) và Sao Mộc (Jupiter)',ans:'asteroid'},
+ {id:'c_moons',emoji:'🌙',en:'Gravity strong enough to hold one or more moons in orbit',vi:'Lực hấp dẫn (gravity) đủ mạnh để giữ một hay nhiều mặt trăng trên quỹ đạo (orbit)',ans:'planet'},
+ {id:'c_leftover',emoji:'🧱',en:'A leftover rock from when the Solar System formed, up to 975 km across',vi:'Một tảng đá còn sót lại từ khi Hệ Mặt Trời hình thành, đường kính tối đa 975 km',ans:'asteroid'},
+ {id:'c_huge',emoji:'🌍',en:'Thousands of kilometres across — far larger than any asteroid',vi:'Đường kính hàng nghìn kilômét — lớn hơn xa mọi tiểu hành tinh',ans:'planet'}
+];
+const ASTS_ORDER=mixOrder(ASTS,c=>c.ans,2);
+
+const QUIZ=[
+ {q:{en:'What is an asteroid?',vi:'Tiểu hành tinh (asteroid) là gì?'},
+  o:[{en:'A small planet with oceans',vi:'Một hành tinh nhỏ có đại dương'},{en:'An object made of rock that orbits the Sun, smaller than a planet',vi:'Một vật làm bằng đá quay quanh (orbit) Mặt Trời, nhỏ hơn hành tinh'},{en:'A star that has gone out',vi:'Một ngôi sao đã tắt'}],a:1,
+  e:{en:'Asteroids are rocky objects orbiting the Sun. They range from Ceres at 975 km across down to just a few metres.',vi:'Tiểu hành tinh (asteroids) là các vật bằng đá quay quanh Mặt Trời. Chúng từ Ceres với đường kính 975 km xuống tới chỉ vài mét.'}},
+ {q:{en:'Where are most asteroids in the Solar System found?',vi:'Hầu hết tiểu hành tinh (asteroids) trong Hệ Mặt Trời được tìm thấy ở đâu?'},
+  o:[{en:'Between the orbits of Mars and Jupiter, in the asteroid belt',vi:'Giữa quỹ đạo (orbits) của Sao Hỏa (Mars) và Sao Mộc (Jupiter), trong vành đai tiểu hành tinh (asteroid belt)'},{en:'Between the orbits of Venus and Earth',vi:'Giữa quỹ đạo của Sao Kim (Venus) và Trái Đất'},{en:'Orbiting the Earth, like the Moon',vi:'Quay quanh Trái Đất, như Mặt Trăng'}],a:0,
+  e:{en:'Most asteroids orbit the Sun between Mars and Jupiter. That region is the asteroid belt.',vi:'Hầu hết tiểu hành tinh quay quanh Mặt Trời giữa Sao Hỏa (Mars) và Sao Mộc (Jupiter). Vùng đó là vành đai tiểu hành tinh (asteroid belt).'}},
+ {q:{en:'Scientists believe asteroids are…',vi:'Các nhà khoa học tin rằng tiểu hành tinh (asteroids) là…'},
+  o:[{en:'Pieces broken off the Moon last year',vi:'Các mảnh vỡ ra từ Mặt Trăng năm ngoái'},{en:'Rocks made by volcanoes on Jupiter',vi:'Đá do núi lửa trên Sao Mộc (Jupiter) tạo ra'},{en:'Rocks left over from the formation of the Solar System',vi:'Đá còn sót lại từ khi Hệ Mặt Trời hình thành'}],a:2,
+  e:{en:'The total mass of all the belt asteroids is less than any planet — there was never enough material there to form a planet, so the rocks stayed as leftovers.',vi:'Tổng khối lượng của mọi tiểu hành tinh trong vành đai nhỏ hơn bất kỳ hành tinh nào — ở đó không bao giờ có đủ vật chất để tạo thành một hành tinh, nên các tảng đá ở lại như phần còn sót.'}},
+ {q:{en:'Why do asteroids sometimes impact Earth?',vi:'Vì sao tiểu hành tinh (asteroids) đôi khi va chạm (impact) với Trái Đất?'},
+  o:[{en:'The Sun pushes them straight at Earth',vi:'Mặt Trời đẩy chúng thẳng về phía Trái Đất'},{en:'Earth’s gravity pulls on passing asteroids, and many asteroid orbits pass close to Earth',vi:'Lực hấp dẫn (gravity) của Trái Đất hút các tiểu hành tinh đi ngang qua, và nhiều quỹ đạo (orbits) của tiểu hành tinh đi gần Trái Đất'},{en:'Asteroids are aiming at Earth',vi:'Tiểu hành tinh đang nhắm vào Trái Đất'}],a:1,
+  e:{en:'Two reasons together: a strong pull of gravity from Earth, and orbits that already pass relatively close to Earth.',vi:'Hai lý do cùng nhau: lực hấp dẫn (gravity) mạnh từ Trái Đất, và các quỹ đạo (orbits) vốn đã đi khá gần Trái Đất.'}}
+];
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_rockmade',emoji:'🪨',en:'Asteroids are made from rock',vi:'Tiểu hành tinh (asteroids) làm bằng đá',keyw:true},
+ {id:'e_bigger',emoji:'🪐',en:'All asteroids are larger than planets',vi:'Mọi tiểu hành tinh đều lớn hơn hành tinh',keyw:false},
+ {id:'e_irregular',emoji:'🥔',en:'Asteroids have irregular shapes',vi:'Tiểu hành tinh có hình dạng không đều',keyw:true},
+ {id:'e_orbitearth',emoji:'🌍',en:'All asteroids orbit the Earth',vi:'Mọi tiểu hành tinh đều quay quanh Trái Đất',keyw:false},
+ {id:'e_orbitsun',emoji:'☀️',en:'Asteroids orbit the Sun',vi:'Tiểu hành tinh quay quanh (orbit) Mặt Trời',keyw:true},
+ {id:'e_gas',emoji:'💨',en:'Asteroids are made only of gas',vi:'Tiểu hành tinh chỉ làm bằng khí (gas)',keyw:false},
+ {id:'e_belt',emoji:'☄️',en:'Most asteroids are found in the asteroid belt',vi:'Hầu hết tiểu hành tinh được tìm thấy trong vành đai tiểu hành tinh (asteroid belt)',keyw:true},
+ {id:'e_round',emoji:'⚪',en:'Every asteroid is a perfect sphere',vi:'Mọi tiểu hành tinh đều là hình cầu hoàn hảo',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_potato',emoji:'🥔',en:'Irregular, potato-like shape, only a few hundred metres long',vi:'Hình dạng không đều, như củ khoai tây, chỉ dài vài trăm mét',ans:'asteroid'},
+ {id:'x_layers',emoji:'🌍',en:'Round, with an inner structure of core, mantle and crust',vi:'Tròn, với cấu trúc bên trong gồm lõi (core), lớp phủ (mantle) và vỏ (crust)',ans:'planet'},
+ {id:'x_named',emoji:'🏷️',en:'It may have no name at all — there are millions like it, and only the studied ones are named',vi:'Nó có thể không có tên — có hàng triệu cái như nó, và chỉ những cái đã được nghiên cứu mới có tên',ans:'asteroid'},
+ {id:'x_moonhold',emoji:'🌙',en:'Its gravity holds one or more moons in orbit around it',vi:'Lực hấp dẫn (gravity) của nó giữ một hay nhiều mặt trăng trên quỹ đạo quanh nó',ans:'planet'},
+ {id:'x_rubble',emoji:'🧱',en:'A loose pile of rock lumps, held together only weakly by its own gravity',vi:'Một đống cục đá lỏng lẻo, chỉ được giữ với nhau một cách yếu ớt bởi lực hấp dẫn (gravity) của chính nó',ans:'asteroid'},
+ {id:'x_giant',emoji:'🪐',en:'By far the largest kind of object in its neighbourhood, thousands of kilometres across',vi:'Loại vật thể lớn nhất trong vùng lân cận của nó, đường kính hàng nghìn kilômét',ans:'planet'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Most asteroids are found between the orbits of',vi:'Hầu hết tiểu hành tinh (asteroids) được tìm thấy giữa quỹ đạo của'},
+  wrong:1,
+  opts:[{en:'Mars and Jupiter',vi:'Sao Hỏa (Mars) và Sao Mộc (Jupiter)'},{en:'Venus and Earth',vi:'Sao Kim (Venus) và Trái Đất'}],
+  e:{en:'The asteroid belt lies between the orbits of Mars and Jupiter — cross out “Venus and Earth”.',vi:'Vành đai tiểu hành tinh (asteroid belt) nằm giữa quỹ đạo của Sao Hỏa (Mars) và Sao Mộc (Jupiter) — hãy gạch bỏ “Sao Kim và Trái Đất”.'}},
+ {pre:{en:'Ceres, at 975 km across, is the',vi:'Ceres, với đường kính 975 km, là tiểu hành tinh'},
+  wrong:1,
+  opts:[{en:'largest asteroid',vi:'lớn nhất (largest)'},{en:'smallest asteroid',vi:'nhỏ nhất'}],
+  e:{en:'Ceres is the largest asteroid — it was discovered in 1801 and at first was thought to be a planet. Cross out “smallest asteroid”.',vi:'Ceres là tiểu hành tinh (asteroid) lớn nhất — nó được phát hiện năm 1801 và lúc đầu bị tưởng là một hành tinh. Hãy gạch bỏ “nhỏ nhất”.'}},
+ {pre:{en:'Most asteroids do not have moons because their gravity is',vi:'Hầu hết tiểu hành tinh (asteroids) không có mặt trăng vì lực hấp dẫn (gravity) của chúng'},
+  wrong:1,
+  opts:[{en:'too weak to hold a moon in orbit',vi:'quá yếu để giữ một mặt trăng trên quỹ đạo (orbit)'},{en:'too strong, so moons are crushed',vi:'quá mạnh, nên mặt trăng bị nghiền nát'}],
+  e:{en:'A small asteroid’s gravity is weak — too weak to keep a moon in orbit. Cross out “too strong”.',vi:'Lực hấp dẫn (gravity) của một tiểu hành tinh nhỏ rất yếu — quá yếu để giữ một mặt trăng trên quỹ đạo (orbit). Hãy gạch bỏ “quá mạnh”.'}},
+ {pre:{en:'The total mass of all the asteroids in the belt is',vi:'Tổng khối lượng của mọi tiểu hành tinh (asteroids) trong vành đai'},
+  wrong:0,
+  opts:[{en:'greater than any planet, so they must have broken off a giant planet',vi:'lớn hơn bất kỳ hành tinh nào, nên chúng hẳn đã vỡ ra từ một hành tinh khổng lồ'},{en:'less than any planet, which fits them being leftover rocks',vi:'nhỏ hơn bất kỳ hành tinh nào, điều này khớp với việc chúng là đá còn sót lại'}],
+  e:{en:'All the belt asteroids together still weigh less than a single planet — evidence they are leftovers that never built a planet, not fragments of one giant planet. Cross out “greater than any planet”.',vi:'Mọi tiểu hành tinh trong vành đai cộng lại vẫn nhẹ hơn một hành tinh — bằng chứng cho thấy chúng là phần còn sót lại không bao giờ tạo thành hành tinh, chứ không phải mảnh vỡ của một hành tinh khổng lồ. Hãy gạch bỏ “lớn hơn bất kỳ hành tinh nào”.'}},
+ {pre:{en:'A claim that aliens built a building on the asteroid Eros is best checked on',vi:'Một tuyên bố rằng người ngoài hành tinh đã xây một tòa nhà trên tiểu hành tinh (asteroid) Eros được kiểm tra tốt nhất trên'},
+  wrong:0,
+  opts:[{en:'an alien fan website, which says the building is real',vi:'một trang web hâm mộ người ngoài hành tinh, nơi nói tòa nhà là thật'},{en:'a university website, which explains the “building” as light reflecting off a crater',vi:'một trang web của trường đại học, nơi giải thích “tòa nhà” là ánh sáng phản xạ khỏi một hố va chạm (crater)'}],
+  e:{en:'A university source explains the evidence — light reflecting off a crater — while the alien site just makes a claim. The university website is the more reliable source. Cross out the alien fan website.',vi:'Một nguồn của trường đại học giải thích bằng chứng — ánh sáng phản xạ khỏi một hố va chạm (crater) — còn trang về người ngoài hành tinh chỉ đưa ra một tuyên bố. Trang web của trường đại học là nguồn đáng tin cậy hơn. Hãy gạch bỏ trang web hâm mộ người ngoài hành tinh.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 6 + 5 = 15 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-6-6';
+const SUMKEY='camb:sum:sci8-6-6';
+const BOT_CODE='sci8-6.6';
+let FOUND={ceres:false,itok:false,belt:false,mars:false,jup:false,model:false,sand:false,paint:false,earth:false,nea:false,forest:false,frag:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fCeres:false, fItok:false, fBelt:false,
+  s2mars:false, s2jup:false,
+  s3rock:false, s3sand:false, s3paint:false,
+  s4nea:false, s4earth:false,
+  s5forest:false, s5frag:false,
+  s6correct:new Set(), s6sel:null
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fCeres&&T.fItok&&T.fBelt;
+  if(i===1) return T.s2mars&&T.s2jup;
+  if(i===2) return T.s3rock&&T.s3sand&&T.s3paint;
+  if(i===3) return T.s4nea&&T.s4earth;
+  if(i===4) return T.s5forest&&T.s5frag;
+  if(i===5) return T.s6correct.size>=5;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Asteroids tapped: Ceres, the largest, 975 km across '+(T.fCeres?'✓':'…')+' · Itokawa, 530 m long '+(T.fItok?'✓':'…')+' · a small belt rock '+(T.fBelt?'✓':'…')+'. Tap the asteroids on the stage!',
+                     'Tiểu hành tinh đã chạm: Ceres, lớn nhất, đường kính 975 km '+(T.fCeres?'✓':'…')+' · Itokawa, dài 530 m '+(T.fItok?'✓':'…')+' · một tảng đá nhỏ trong vành đai '+(T.fBelt?'✓':'…')+'. Hãy chạm vào các tiểu hành tinh trên sân khấu!');
+  if(i===1) return B('Belt markers: Mars, on the inner side '+(T.s2mars?'✓':'…')+' · Jupiter, on the outer side '+(T.s2jup?'✓':'…')+'. The belt lies between their orbits.',
+                     'Mốc của vành đai: Sao Hỏa (Mars), ở phía trong '+(T.s2mars?'✓':'…')+' · Sao Mộc (Jupiter), ở phía ngoài '+(T.s2jup?'✓':'…')+'. Vành đai nằm giữa quỹ đạo của chúng.');
+  if(i===2) return B('Model asteroid: rock chosen '+(T.s3rock?'✓':'…')+' · sand glued on for a rough texture '+(T.s3sand?'✓':'…')+' · painted grey with mixed black and white paint '+(T.s3paint?'✓':'…')+'.',
+                     'Tiểu hành tinh mô hình: đã chọn đá '+(T.s3rock?'✓':'…')+' · đã dán cát để tạo bề mặt thô ráp '+(T.s3sand?'✓':'…')+' · đã sơn xám bằng sơn đen và trắng trộn với nhau '+(T.s3paint?'✓':'…')+'.');
+  if(i===3) return B('Near-Earth asteroid tapped '+(T.s4nea?'✓':'…')+' · Earth tapped '+(T.s4earth?'✓':'…')+'. Two reasons make impacts happen: Earth’s gravity, and orbits passing close.',
+                     'Đã chạm tiểu hành tinh gần Trái Đất '+(T.s4nea?'✓':'…')+' · đã chạm Trái Đất '+(T.s4earth?'✓':'…')+'. Hai lý do khiến va chạm xảy ra: lực hấp dẫn của Trái Đất, và các quỹ đạo đi gần qua.');
+  if(i===4) return B('Tunguska evidence: trees flattened over 2000 km², all pointing outwards '+(T.s5forest?'✓':'…')+' · small rocky fragments that fell at very high speed '+(T.s5frag?'✓':'…')+'.',
+                     'Bằng chứng Tunguska: cây bị san phẳng trên 2000 km², đều hướng ra ngoài '+(T.s5forest?'✓':'…')+' · các mảnh đá nhỏ đã rơi với tốc độ rất cao '+(T.s5frag?'✓':'…')+'.');
+  if(i===5){
+    const c=T.s6sel? ASTS.find(x=>x.id===T.s6sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap ASTEROID or PLANET.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm TIỂU HÀNH TINH (ASTEROID) hoặc HÀNH TINH (PLANET).');
+    return B('Cards right: '+T.s6correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s6correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🌕',label:{en:'Ceres — largest, 975 km',vi:'Ceres — lớn nhất, 975 km'},got:T.fCeres},
+      {emoji:'🪨',label:{en:'Itokawa — 530 m long',vi:'Itokawa — dài 530 m'},got:T.fItok},
+      {emoji:'☄️',label:{en:'A small belt rock',vi:'Một tảng đá nhỏ trong vành đai'},got:T.fBelt}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🔴',label:{en:'Mars — inner marker',vi:'Sao Hỏa — mốc phía trong'},got:T.s2mars},
+      {emoji:'🪐',label:{en:'Jupiter — outer marker',vi:'Sao Mộc — mốc phía ngoài'},got:T.s2jup}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🪨',label:{en:'Choose a small rock',vi:'Chọn một hòn đá nhỏ'},got:T.s3rock},
+      {emoji:'🏖️',label:{en:'Glue on coarse sand',vi:'Dán cát thô lên'},got:T.s3sand},
+      {emoji:'🖌️',label:{en:'Paint it grey',vi:'Sơn màu xám'},got:T.s3paint}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'☄️',label:{en:'Near-Earth asteroid',vi:'Tiểu hành tinh gần Trái Đất'},got:T.s4nea},
+      {emoji:'🌍',label:{en:'Earth — strong gravity',vi:'Trái Đất — lực hấp dẫn mạnh'},got:T.s4earth}
+    ]);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'🌲',label:{en:'Flattened forest — 2000 km²',vi:'Rừng bị san phẳng — 2000 km²'},got:T.s5forest},
+      {emoji:'🔍',label:{en:'Rocky fragments found',vi:'Đã tìm thấy mảnh đá'},got:T.s5frag}
+    ]);
+  }else if(curStep===5){
+    buildSort(box,ASTS_ORDER,
+      [{key:'asteroid',label:STR.binPure,cls:'living'},{key:'planet',label:STR.binMix,cls:'nonliving'}],
+      T.s6correct,()=>T.s6sel,v=>{T.s6sel=v;},null,onSortPlaced);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('ceres'); bounceThing('ceres'); setTimeout(()=>{ focusVisual('itokawa'); bounceThing('itokawa'); },900); }
+  else if(i===1){ focusThing('mars'); setTimeout(()=>focusThing('jupiter'),900); }
+  else if(i===2){ focusThing('modelrock'); setTimeout(()=>focusThing('paint'),900); }
+  else if(i===3){ focusThing('nea'); setTimeout(()=>focusThing('earth'),900); }
+  else if(i===4){ focusThing('forest'); setTimeout(()=>focusThing('fragment'),900); }
+  else if(i===5){ demoSort(ASTS,T.s6correct); }
+};
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recPens)+'</span><b>'+(FOUND.ceres?'975 km':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recBands)+'</span><b>'+(FOUND.itok?'530 m':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recFront)+'</span><b>'+(FOUND.jup?'Mars – Jupiter':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recEagle)+'</span><b>'+(FOUND.earth?'130 000 years':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSetup},
+    {got:doneSteps.has(2),label:STR.didRun},
+    {got:doneSteps.has(4),label:STR.didPlant},
+    {got:doneSteps.has(5),label:STR.didSort}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let pondMat=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildAstSun(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.85,18,14),stdMat(0xf7b731,0.5)));
+  ball.position.y=1.25; g.add(ball);
+  const corona=new THREE.Mesh(new THREE.TorusGeometry(1.02,0.07,8,28),stdMat(0xffd76a,0.5));
+  corona.position.y=1.25; corona.rotation.x=0.5; g.add(corona);
+  g.position.set(-5.2,0,-2.2); g.userData.baseY=0;
+  return g;
+}
+function buildAstPlanet(color,r,x,z){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(r,16,12),stdMat(color,0.65)));
+  ball.position.y=r+0.05; g.add(ball);
+  g.position.set(x,0,z); g.userData.baseY=0;
+  return g;
+}
+function buildAstJupiter(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.95,20,16),stdMat(0xd9a066,0.7)));
+  ball.position.y=1.0; g.add(ball);
+  [-0.35,0,0.35].forEach((dy,k)=>{
+    const band=new THREE.Mesh(new THREE.CylinderGeometry(0.96,0.96,0.16,20,1,true),stdMat(k===1?0xb3541e:0xf0dcb8,0.7));
+    band.position.y=1.0+dy; g.add(band);
+  });
+  const spot=new THREE.Mesh(new THREE.SphereGeometry(0.18,10,8),stdMat(0xc0392b,0.7));
+  spot.position.set(0.55,0.85,0.75); spot.scale.set(1.3,0.7,0.5); g.add(spot);
+  g.position.set(2.8,0,-2.0); g.userData.baseY=0;
+  return g;
+}
+function buildAstCeres(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.55,18,14),stdMat(0x9aa3ab,0.9)));
+  ball.position.y=0.6; g.add(ball);
+  [[0.3,0.85,0.4,0.11],[-0.35,0.7,0.35,0.09],[0.05,1.08,-0.3,0.08],[-0.15,0.4,0.5,0.07]].forEach(p=>{
+    const crater=new THREE.Mesh(new THREE.SphereGeometry(p[3],8,6),stdMat(0x6f787f,0.95));
+    crater.position.set(p[0],p[1],p[2]); crater.scale.y=0.45; g.add(crater);
+  });
+  g.position.set(-0.2,0,-1.8); g.userData.baseY=0;
+  return g;
+}
+function buildAstItokawa(){
+  const g=new THREE.Group();
+  [[0,0.22,0,0.2],[0.24,0.18,0.06,0.15],[-0.22,0.2,-0.05,0.16],[0.08,0.34,-0.1,0.12],[-0.05,0.12,0.14,0.11]].forEach(p=>{
+    const lump=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(p[3],0),stdMat(0x8d8578,0.95)));
+    lump.position.set(p[0],p[1],p[2]); g.add(lump);
+  });
+  g.position.set(1.2,0,-0.7); g.userData.baseY=0;
+  return g;
+}
+function buildAstBeltRock(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.3,0),stdMat(0x969ea6,0.95)));
+  r.position.y=0.28; r.scale.y=0.8; g.add(r);
+  const r2=new THREE.Mesh(new THREE.DodecahedronGeometry(0.16,0),stdMat(0x7d858e,0.95));
+  r2.position.set(0.3,0.14,0.15); g.add(r2);
+  g.position.set(-1.6,0,-0.9); g.userData.baseY=0;
+  return g;
+}
+function buildAstEarth(){
+  const g=new THREE.Group();
+  const ball=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.5,18,14),stdMat(0x2f7fc4,0.55)));
+  ball.position.y=0.55; g.add(ball);
+  [[0.25,0.75,0.38,0.16],[-0.3,0.5,0.35,0.13],[0.05,0.35,-0.45,0.14]].forEach(p=>{
+    const land=new THREE.Mesh(new THREE.SphereGeometry(p[3],8,6),stdMat(0x3fa34d,0.8));
+    land.position.set(p[0],p[1],p[2]); land.scale.y=0.5; g.add(land);
+  });
+  g.position.set(4.8,0,0.6); g.userData.baseY=0;
+  return g;
+}
+function buildAstNea(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.22,0),stdMat(0x6e6259,0.95)));
+  r.position.y=0.55; r.scale.y=0.8; g.add(r);
+  const trail=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.4,7),stdMat(0xd9c9a8,0.7));
+  trail.position.set(-0.35,0.62,0); trail.rotation.z=1.1; g.add(trail);
+  g.position.set(4.0,0,1.6); g.userData.baseY=0;
+  return g;
+}
+function buildAstModel(){
+  const g=new THREE.Group();
+  const tray=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.09,0.7),stdMat(0xb08954,0.8)));
+  tray.position.y=0.32; g.add(tray);
+  [[-0.4,0],[0.4,0],[-0.4,0.28],[0.4,0.28]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.3,6),stdMat(0x7a5c38,0.9));
+    leg.position.set(p[0],0.15,p[1]-0.14); g.add(leg);
+  });
+  const rockM=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.3,0),stdMat(0x8a8f94,0.9)));
+  rockM.position.y=0.62; rockM.scale.y=0.85; g.add(rockM);
+  g.position.set(-3.8,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildAstSand(){
+  const g=new THREE.Group();
+  const tray=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.08,16),stdMat(0x7f8c99,0.7));
+  tray.position.y=0.04; g.add(tray);
+  const pile=shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.34,0.34,14),stdMat(0xd9b877,0.95)));
+  pile.position.y=0.25; g.add(pile);
+  g.position.set(-2.4,0,2.6); g.userData.baseY=0;
+  return g;
+}
+function buildAstPaint(){
+  const g=new THREE.Group();
+  [[-0.18,0x2b2f36],[0.18,0xf2f2f2]].forEach(p=>{
+    const pot=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.14,0.34,14),stdMat(p[1],0.6)));
+    pot.position.set(p[0],0.17,0); g.add(pot);
+  });
+  const brush=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.55,6),stdMat(0xa9743f,0.8));
+  brush.position.set(0,0.35,0.22); brush.rotation.x=0.9; g.add(brush);
+  g.position.set(-1.2,0,2.4); g.userData.baseY=0;
+  return g;
+}
+function buildAstTree(x,z,tilt,s){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.06*s,0.09*s,0.7*s,7),stdMat(0x6e4f30,0.95));
+  trunk.position.y=0.35*s; g.add(trunk);
+  const top=new THREE.Mesh(new THREE.ConeGeometry(0.34*s,0.9*s,9),stdMat(0x2e7d46,0.9));
+  top.position.y=1.1*s; g.add(top);
+  g.position.set(x,0,z); g.rotation.z=tilt;
+  if(tilt) g.position.y=0.12;
+  return g;
+}
+function buildAstForest(){
+  const g=new THREE.Group();
+  g.add(buildAstTree(-0.7,-0.3,0,1));
+  g.add(buildAstTree(0.65,-0.35,0,0.85));
+  g.add(buildAstTree(-0.25,0.35,1.25,0.95));
+  g.add(buildAstTree(0.45,0.3,1.45,0.8));
+  g.add(buildAstTree(0.05,-0.05,-1.3,0.7));
+  g.position.set(1.4,0,2.2); g.userData.baseY=0;
+  return g;
+}
+function buildAstFragment(){
+  const g=new THREE.Group();
+  [[0,0.12,0,0.14],[0.24,0.09,0.1,0.1],[-0.22,0.08,-0.08,0.09],[0.08,0.07,0.22,0.08]].forEach(p=>{
+    const shard=shadowed(new THREE.Mesh(new THREE.TetrahedronGeometry(p[3],0),stdMat(0x4c423a,0.9)));
+    shard.position.set(p[0],p[1],p[2]); g.add(shard);
+  });
+  const dish=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.48,0.06,16),stdMat(0xd8dee6,0.6));
+  dish.position.y=0.03; g.add(dish);
+  g.position.set(2.8,0,2.6); g.userData.baseY=0;
+  return g;
+}
+function buildAstRock(){
+  const g=new THREE.Group();
+  const r=shadowed(new THREE.Mesh(new THREE.DodecahedronGeometry(0.42,0),stdMat(0x8d99a6,0.95)));
+  r.position.y=0.3; r.scale.y=0.75; g.add(r);
+  g.position.set(5.6,0,2.6); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0x101c30);
+  scene3.fog=new THREE.Fog(0x101c30,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x5a6c84,0.9));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.35); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(13.5,0.35,7.5),stdMat(0x27374d,0.95));
+  ground.position.set(0.8,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  pondMat=new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.55,side:THREE.DoubleSide,depthWrite:false});
+  const beltRing=new THREE.Mesh(new THREE.RingGeometry(1.15,1.3,44),pondMat);
+  beltRing.rotation.x=-Math.PI/2; beltRing.position.set(-0.9,0.03,-1.2); scene3.add(beltRing);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0x0b1424,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0x101c30,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  /* stars on the back wall — fixed pseudo-scatter so the scene is deterministic */
+  for(let k=0;k<70;k++){
+    const sx=-8+((k*37)%160)/10, sy=1+((k*53)%55)/10, sz=-5.2;
+    const star=new THREE.Mesh(new THREE.SphereGeometry(0.035,5,4),stdMat(0xf5f7fa,0.4));
+    star.position.set(sx,sy,sz); scene3.add(star);
+  }
+  /* small decorative belt rocks circling the belt centre */
+  for(let k=0;k<10;k++){
+    const ang=k/10*Math.PI*2;
+    const br=new THREE.Mesh(new THREE.DodecahedronGeometry(0.07+(k%3)*0.02,0),stdMat(0x8d99a6,0.95));
+    br.position.set(-0.9+Math.cos(ang)*1.22,0.06,-1.2+Math.sin(ang)*0.55);
+    scene3.add(br);
+  }
+  scene3.add(buildAstTree(-4.7,-2.7,0,1.1));
+  scene3.add(buildAstTree(5.9,-2.4,0,0.9));
+  reg('sun',buildAstSun());
+  reg('mars',buildAstPlanet(0xc1553b,0.42,-3.4,-0.6));
+  reg('jupiter',buildAstJupiter());
+  reg('ceres',buildAstCeres());
+  reg('itokawa',buildAstItokawa());
+  reg('belt1',buildAstBeltRock());
+  reg('earth',buildAstEarth());
+  reg('nea',buildAstNea());
+  reg('modelrock',buildAstModel());
+  reg('sand',buildAstSand());
+  reg('paint',buildAstPaint());
+  reg('forest',buildAstForest());
+  reg('fragment',buildAstFragment());
+  reg('rock',buildAstRock());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.95); p.position.set(0,1.25,0); addProxy('sun',p,G.sun); }
+  { const p=sphProxy(0.55); p.position.set(0,0.47,0); addProxy('mars',p,G.mars); }
+  { const p=sphProxy(1.05); p.position.set(0,1.0,0); addProxy('jupiter',p,G.jupiter); }
+  { const p=sphProxy(0.68); p.position.set(0,0.6,0); addProxy('ceres',p,G.ceres); }
+  { const p=sphProxy(0.52); p.position.set(0,0.22,0); addProxy('itokawa',p,G.itokawa); }
+  { const p=sphProxy(0.52); p.position.set(0,0.28,0); addProxy('belt1',p,G.belt1); }
+  { const p=sphProxy(0.62); p.position.set(0,0.55,0); addProxy('earth',p,G.earth); }
+  { const p=sphProxy(0.5); p.position.set(0,0.55,0); addProxy('nea',p,G.nea); }
+  { const p=sphProxy(0.58); p.position.set(0,0.5,0); addProxy('modelrock',p,G.modelrock); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('sand',p,G.sand); }
+  { const p=sphProxy(0.52); p.position.set(0,0.25,0); addProxy('paint',p,G.paint); }
+  { const p=sphProxy(0.85); p.position.set(0,0.6,0); addProxy('forest',p,G.forest); }
+  { const p=sphProxy(0.55); p.position.set(0,0.15,0); addProxy('fragment',p,G.fragment); }
+  { const p=sphProxy(0.55); p.position.set(0,0.3,0); addProxy('rock',p,G.rock); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['ceres','itokawa','belt1'],
+  ['mars','jupiter'],
+  ['modelrock','sand','paint'],
+  ['nea','earth'],
+  ['forest','fragment'],
+  []
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='ceres'){ T.fCeres=true; FOUND.ceres=true; }
+    if(id==='itokawa'){ T.fItok=true; FOUND.itok=true; }
+    if(id==='belt1'){ T.fBelt=true; FOUND.belt=true; }
+  }else if(curStep===1){
+    if(id==='mars'){ T.s2mars=true; FOUND.mars=true; }
+    if(id==='jupiter'){ T.s2jup=true; FOUND.jup=true; }
+  }else if(curStep===2){
+    if(id==='modelrock'){ T.s3rock=true; FOUND.model=true; }
+    if(id==='sand'){ T.s3sand=true; FOUND.sand=true; }
+    if(id==='paint'){ T.s3paint=true; FOUND.paint=true; }
+  }else if(curStep===3){
+    if(id==='nea'){ T.s4nea=true; FOUND.nea=true; }
+    if(id==='earth'){ T.s4earth=true; FOUND.earth=true; }
+  }else if(curStep===4){
+    if(id==='forest'){ T.s5forest=true; FOUND.forest=true; }
+    if(id==='fragment'){ T.s5frag=true; FOUND.frag=true; }
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  /* All stage objects stay visible on every step; the step card and the
+     evidence line say which ones are this step's targets. */
+}
+
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(pondMat) pondMat.color.setHSL(0.55,0.62,0.5+Math.sin(now*0.0016)*0.04);
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — find the key words */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — permitted or not */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinPerm').innerHTML=bi(STR.binPerm);
+  $('ex2BinNot').innerHTML=bi(STR.binNot);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='asteroid'?'☄':'🪐')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinPerm').onclick=()=>ex2Place('asteroid');
+$('ex2BinNot').onclick=()=>ex2Place('planet');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.ceres=false; FOUND.itok=false; FOUND.belt=false; }
+  if(step===1){ FOUND.mars=false; FOUND.jup=false; }
+  if(step===2){ FOUND.model=false; FOUND.sand=false; FOUND.paint=false; }
+  if(step===3){ FOUND.nea=false; FOUND.earth=false; }
+  if(step===4){ FOUND.forest=false; FOUND.frag=false; }
+  if(step===5){ ASTS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='asteroid'||s.exAns.a2[id]==='planet')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fCeres=!!FOUND.ceres; t.fItok=!!FOUND.itok; t.fBelt=!!FOUND.belt; }
+  else if(i===1){ t.s2mars=!!FOUND.mars; t.s2jup=!!FOUND.jup; }
+  else if(i===2){ t.s3rock=true; t.s3sand=true; t.s3paint=true; }
+  else if(i===3){ t.s4nea=!!FOUND.nea; t.s4earth=!!FOUND.earth; }
+  else if(i===4){ t.s5forest=!!FOUND.forest; t.s5frag=!!FOUND.frag; }
+  else if(i===5){ ASTS.forEach(c=>{ if(SORTED.has(c.id)) t.s6correct.add(c.id); }); }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-6-6',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

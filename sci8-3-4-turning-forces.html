@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.4 Turning forces — Lực làm quay · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="3.4 Turning forces" data-vi="3.4 Lực làm quay (Turning forces)">3.4 Turning forces</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How can a force make something turn — and how strong is the turn?" data-vi="Làm sao một lực làm vật quay — và hiệu ứng quay mạnh cỡ nào?">How can a force make something turn — and how strong is the turn?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Forces turn things" data-vi="Lực làm vật quay (turn)">Forces turn things</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Lever and pivot" data-vi="Đòn bẩy (lever) và trục quay (pivot)">Lever and pivot</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Moment = force × distance" data-vi="Mô-men (moment) = lực × khoảng cách">Moment = force × distance</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Balance the moments" data-vi="Cân bằng các mô-men (moment)">Balance the moments</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the stage!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên sân khấu!">🖱 Drag to look around · Scroll to zoom · Tap things on the stage!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.4. The stage in this lesson is a simulation." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 3 · Lực và năng lượng (Forces and energy) · Mục 3.4. Sân khấu trong bài này là mô phỏng.">Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.4. The stage in this lesson is a simulation.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.4, pages 85–92; Workbook 8 (ISBN 9781108742856), pages 51–54. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 3 · Lực và năng lượng (Forces and energy), mục 3.4, trang 85–92; Sách bài tập 8 (ISBN 9781108742856), trang 51–54. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.4, pages 85–92; Workbook 8 (ISBN 9781108742856), pages 51–54. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: recognise when a force causes something to turn; use the term moment; calculate the moment caused by a force. Key words: lever, moment, newton metres, pivot, turn." data-vi="Mục tiêu: nhận biết khi nào một lực làm vật quay (turn); dùng thuật ngữ mô-men (moment); tính mô-men (moment) do một lực gây ra. Từ khóa: lever (đòn bẩy), moment (mô-men), newton metres (newton mét), pivot (trục quay), turn (quay).">Objectives: recognise when a force causes something to turn; use the term moment; calculate the moment caused by a force. Key words: lever, moment, newton metres, pivot, turn.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D stage — finding things that turn, naming the lever and pivot, working out the door moment (35 N × 0.8 m = 28 N m), balancing the seesaw (Marcus 600 N × 2 m = Arun 800 N × 1.5 m), sorting turning from non-turning actions, and testing how the force needed changes with distance from the pivot in the metre-rule investigation. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done." data-vi="Cách hoạt động: mỗi bước yêu cầu một hành động thật trên sân khấu 3D — tìm các vật quay được, gọi tên đòn bẩy (lever) và trục quay (pivot), tính mô-men (moment) của cửa (35 N × 0,8 m = 28 N m), cân bằng bập bênh (Marcus 600 N × 2 m = Arun 800 N × 1,5 m), phân loại hành động quay và không quay, và kiểm tra lực cần thiết thay đổi thế nào theo khoảng cách tới trục quay (pivot) trong khảo sát thước mét. Bài học tự kiểm tra hành động đó (dòng tối 'Căn cứ'), và đáp án chỉ mở khi hành động đã hoàn thành. 'Xem cách làm' chỉ trình diễn — không bao giờ được tính là đã làm.">How it works: each step asks for one real action on the 3D stage — finding things that turn, naming the lever and pivot, working out the door moment, balancing the seesaw, sorting turning from non-turning actions, and testing how the force needed changes with distance from the pivot. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinPerm"></button>
+        <button class="binbtn nonliving" id="ex2BinNot"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-3-4 "Turning forces" (Science 8, Unit 3)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= stage things ================= */
+const THINGS={
+  handle:{emoji:'🚪', name:{en:'Door handle',vi:'Tay nắm cửa (door handle)'}, short:{en:'Door handle',vi:'Tay nắm cửa'}, ring:0.55, labelY:1.5, fx:-4.0, fz:0.9, fr:5.0},
+  hinge:{emoji:'🔩', name:{en:'Door hinge — the pivot',vi:'Bản lề cửa — trục quay (pivot)'}, short:{en:'Hinge (pivot)',vi:'Bản lề (trục quay)'}, ring:0.5, labelY:1.6, fx:-5.3, fz:0.9, fr:5.0},
+  pedal:{emoji:'🚲', name:{en:'Bicycle pedal',vi:'Bàn đạp xe đạp (pedal)'}, short:{en:'Pedal',vi:'Bàn đạp'}, ring:0.6, labelY:1.2, fx:-2.4, fz:1.7, fr:5.0},
+  bottle:{emoji:'🍾', name:{en:'Bottle top',vi:'Nắp chai (bottle top)'}, short:{en:'Bottle top',vi:'Nắp chai'}, ring:0.5, labelY:1.3, fx:-1.0, fz:1.9, fr:5.0},
+  chair:{emoji:'🪑', name:{en:'Chair',vi:'Cái ghế (chair)'}, short:{en:'Chair',vi:'Ghế'}, ring:0.65, labelY:1.3, fx:0.5, fz:2.0, fr:5.2},
+  plank:{emoji:'🪵', name:{en:'Seesaw plank — the lever',vi:'Ván bập bênh — đòn bẩy (lever)'}, short:{en:'Lever (plank)',vi:'Đòn bẩy (ván)'}, ring:0.7, labelY:0.9, fx:2.7, fz:-0.5, fr:5.6},
+  pivot:{emoji:'🔺', name:{en:'Seesaw pivot',vi:'Trục quay của bập bênh (pivot)'}, short:{en:'Pivot',vi:'Trục quay'}, ring:0.55, labelY:1.1, fx:2.7, fz:-0.5, fr:5.0},
+  marcus:{emoji:'🧍', name:{en:'Marcus — 600 N, 2 m from the pivot',vi:'Marcus — 600 N, cách trục quay (pivot) 2 m'}, short:{en:'Marcus 600 N',vi:'Marcus 600 N'}, ring:0.55, labelY:1.1, fx:1.25, fz:-0.5, fr:5.0},
+  arun:{emoji:'🧍', name:{en:'Arun — 800 N',vi:'Arun — 800 N'}, short:{en:'Arun 800 N',vi:'Arun 800 N'}, ring:0.55, labelY:1.1, fx:3.85, fz:-0.5, fr:5.0},
+  spanner:{emoji:'🔧', name:{en:'Spanner and nut',vi:'Cờ lê và đai ốc (spanner)'}, short:{en:'Spanner',vi:'Cờ lê'}, ring:0.6, labelY:1.1, fx:5.0, fz:1.7, fr:5.0},
+  meterule:{emoji:'📏', name:{en:'Metre rule on its pivot',vi:'Thước mét trên trục quay của nó (metre rule)'}, short:{en:'Metre rule',vi:'Thước mét'}, ring:0.8, labelY:0.8, fx:-2.2, fz:-2.3, fr:5.6},
+  farloop:{emoji:'➰', name:{en:'String loop — far from the pivot (0.8 m)',vi:'Vòng dây — xa trục quay (pivot) (0,8 m)'}, short:{en:'Far loop 0.8 m',vi:'Vòng xa 0,8 m'}, ring:0.45, labelY:0.8, fx:-0.95, fz:-2.3, fr:4.6},
+  nearloop:{emoji:'➰', name:{en:'String loop — near the pivot (0.4 m)',vi:'Vòng dây — gần trục quay (pivot) (0,4 m)'}, short:{en:'Near loop 0.4 m',vi:'Vòng gần 0,4 m'}, ring:0.45, labelY:0.8, fx:-2.85, fz:-2.3, fr:4.6},
+  newtonmeter:{emoji:'🪝', name:{en:'Newton meter',vi:'Lực kế (newton meter)'}, short:{en:'Newton meter',vi:'Lực kế'}, ring:0.5, labelY:1.0, fx:0.3, fz:-2.3, fr:5.0}
+};
+const FOCUSORDER=['handle','pedal','bottle','plank','pivot','spanner','meterule','newtonmeter'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the stage',vi:'Trên sân khấu'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the stage!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên sân khấu!'},
+  u2T:{en:'My moment record',vi:'Sổ ghi mô-men của con'},
+  u2Brief:{en:'The moments you have worked out so far.',vi:'Các mô-men (moment) con đã tính được tới nay.'},
+  recTurn:{en:'Turning things found',vi:'Vật quay được đã tìm'},
+  recDoor:{en:'Door moment: 35 N × 0.8 m',vi:'Mô-men cửa: 35 N × 0,8 m'},
+  recSeesaw:{en:'Arun balances at (800 N)',vi:'Arun cân bằng ở (800 N)'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your lesson checklist.',vi:'Danh sách kiểm tra của bài học.'},
+  didTurn:{en:'Found things that turn',vi:'Đã tìm các vật quay được'},
+  didLever:{en:'Named the lever and the pivot',vi:'Đã gọi tên đòn bẩy (lever) và trục quay (pivot)'},
+  didCalc:{en:'Calculated a moment (35 × 0.8 = 28 N m)',vi:'Đã tính một mô-men (moment) (35 × 0,8 = 28 N m)'},
+  didBalance:{en:'Balanced the seesaw moments',vi:'Đã cân bằng các mô-men trên bập bênh'},
+  didSort:{en:'Sorted turning from non-turning actions',vi:'Đã phân loại hành động quay và không quay'},
+  didInvest:{en:'Investigated force and distance from the pivot',vi:'Đã khảo sát lực và khoảng cách tới trục quay (pivot)'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binTurn:{en:'TURNING FORCE ✓',vi:'LỰC LÀM QUAY ✓ (turning force)'},
+  binNotTurn:{en:'NO TURNING FORCE',vi:'KHÔNG CÓ LỰC LÀM QUAY'},
+  lookSeesaw:{en:'Look at the seesaw 🪵',vi:'Ngắm bập bênh 🪵'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.4',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.4'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 1 · Focus — Which actions need a turning force?',vi:'Bài tập 1 · Focus — Hành động nào cần lực làm quay?'},
+  ex1Inst:{en:'From Workbook Exercise 3.4A: tap every action that needs a turning force to happen. There are 4.',vi:'Từ Bài tập Workbook 3.4A: chạm vào mọi hành động cần một lực làm quay (turning force) mới xảy ra được. Có 4 hành động như vậy.'},
+  ex2T:{en:'Exercise 2 · Practice — Calculate the moment',vi:'Bài tập 2 · Practice — Tính mô-men'},
+  ex2Inst:{en:'From Workbook Exercise 3.4B and the book questions: use moment = force × distance. In each line, tap the CORRECT value.',vi:'Từ Bài tập Workbook 3.4B và các câu hỏi trong sách: dùng moment = force × distance (mô-men = lực × khoảng cách). Trong mỗi dòng, chạm vào giá trị ĐÚNG.'},
+  ex3T:{en:'Exercise 3 · Challenge — Cross out the wrong value',vi:'Bài tập 3 · Challenge — Gạch bỏ giá trị sai'},
+  ex3Inst:{en:'From Workbook Exercise 3.4C: rearranged calculations. In each line, tap the WRONG value or word to cross it out.',vi:'Từ Bài tập Workbook 3.4C: các phép tính đã biến đổi. Trong mỗi dòng, chạm vào giá trị hay từ SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'lever',vi:'đòn bẩy'},
+  {en:'moment',vi:'mô-men'},
+  {en:'newton metres',vi:'newton mét (N m)'},
+  {en:'pivot',vi:'trục quay / điểm tựa'},
+  {en:'turn',vi:'quay / làm quay'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Getting started — things that turn',vi:'Khởi động — những vật quay được'}, word:{en:'turn',vi:'quay'},
+  q:{en:'A door handle, a bicycle pedal, a bottle top — what do forces do to all of them?',vi:'Tay nắm cửa, bàn đạp xe đạp, nắp chai — lực làm gì với tất cả chúng?'},
+  act:{en:'Tap the three things on the stage that a force makes turn: the door handle, the bicycle pedal and the bottle top.',vi:'Chạm vào ba vật trên sân khấu mà lực làm chúng quay: tay nắm cửa (door handle), bàn đạp xe đạp (pedal) và nắp chai (bottle top).'},
+  see:{en:'Each thing bounces and shows its name. A chair only slides when you pull it — it does not turn, so leave it alone.',vi:'Mỗi vật nảy lên và hiện tên. Ghế chỉ trượt khi bị kéo — nó không quay, nên đừng chạm vào ghế.'},
+  concl:[
+    {en:'Pushing or pulling can make an object turn: the handle turns, the pedal turns, the bottle top turns.',vi:'Đẩy hay kéo có thể làm một vật quay (turn): tay nắm quay, bàn đạp quay, nắp chai quay.'},
+    {en:'Forces that cause turning are at work all around us — and in our own bodies too.',vi:'Các lực gây ra sự quay (turn) đang hoạt động khắp quanh ta — và ngay trong cơ thể ta nữa.'}]},
+ {tag:{en:'Lever and pivot',vi:'Đòn bẩy và trục quay'}, word:{en:'lever',vi:'đòn bẩy'},
+  q:{en:'A seesaw turns too. Which part is the lever, and what does it turn around?',vi:'Bập bênh cũng quay. Phần nào là đòn bẩy, và nó quay quanh cái gì?'},
+  act:{en:'Tap the seesaw plank — that is the lever. Then tap the support under its middle — that is the pivot.',vi:'Chạm vào ván bập bênh — đó là đòn bẩy (lever). Rồi chạm vào trụ đỡ dưới giữa ván — đó là trục quay (pivot).'},
+  see:{en:'The plank and the pivot each show their name. Together they name the two parts of every turning system.',vi:'Ván và trục quay đều hiện tên. Cùng nhau chúng gọi tên hai bộ phận của mọi hệ quay.'},
+  concl:[
+    {en:'The object that turns is called a lever (lever).',vi:'Vật quay được gọi là đòn bẩy (lever).'},
+    {en:'The point the lever turns around is called the pivot (pivot). Your elbow is the pivot when your arm — a lever — bends.',vi:'Điểm mà đòn bẩy quay quanh được gọi là trục quay (pivot). Khuỷu tay của con là trục quay (pivot) khi cánh tay — một đòn bẩy (lever) — gập lại.'}]},
+ {tag:{en:'Calculating a moment',vi:'Tính mô-men'}, word:{en:'moment',vi:'mô-men'},
+  q:{en:'A pull of 35 N opens a door. The handle is 0.8 m from the hinges. How big is the turn?',vi:'Một lực kéo 35 N mở được một cánh cửa. Tay nắm cách bản lề 0,8 m. Hiệu ứng quay lớn cỡ nào?'},
+  act:{en:'Tap the hinge — the pivot of the door. Then tap the door handle, where the 35 N force acts, 0.8 m away from the pivot.',vi:'Chạm vào bản lề — trục quay (pivot) của cửa. Rồi chạm vào tay nắm cửa, nơi lực 35 N tác dụng, cách trục quay 0,8 m.'},
+  see:{en:'With both points found, the moment is worked out for you: 35 × 0.8 = 28 N m.',vi:'Khi đã tìm thấy cả hai điểm, mô-men (moment) được tính cho con: 35 × 0,8 = 28 N m.'},
+  concl:[
+    {en:'The turning effect of a force is called its moment (moment). A bigger force, or the same force further from the pivot, gives a bigger moment.',vi:'Hiệu ứng làm quay của một lực được gọi là mô-men (moment) của nó. Lực lớn hơn, hoặc cùng một lực ở xa trục quay (pivot) hơn, cho mô-men lớn hơn.'},
+    {en:'moment = force × distance, where distance is measured from the pivot to where the force acts.',vi:'moment = force × distance (mô-men = lực × khoảng cách), trong đó khoảng cách đo từ trục quay (pivot) tới nơi lực tác dụng.'},
+    {en:'Door: 35 N × 0.8 m = 28 N m. The unit of moment is the newton metre, written N m — capital N, small m.',vi:'Cửa: 35 N × 0,8 m = 28 N m. Đơn vị của mô-men (moment) là newton mét (newton metre), viết là N m — chữ N hoa, chữ m thường.'},
+    {en:'Check with the book arm example: a 20 N weight held 0.25 m from the elbow pivot gives 20 × 0.25 = 5 N m.',vi:'Kiểm tra với ví dụ cánh tay trong sách: vật nặng 20 N giữ cách trục quay khuỷu tay 0,25 m cho 20 × 0,25 = 5 N m.'}]},
+ {tag:{en:'Balancing a seesaw',vi:'Cân bằng bập bênh'}, word:{en:'newton metres',vi:'newton mét (N m)'},
+  q:{en:'Marcus weighs 600 N and sits 2 m from the pivot. Arun weighs 800 N. Where must Arun sit to balance?',vi:'Marcus nặng 600 N và ngồi cách trục quay 2 m. Arun nặng 800 N. Arun phải ngồi ở đâu để cân bằng?'},
+  act:{en:'Tap Marcus, sitting 2 m from the pivot on one side. Then tap Arun, on the other side, at the place where his moment balances Marcus.',vi:'Chạm vào Marcus, đang ngồi cách trục quay (pivot) 2 m ở một bên. Rồi chạm vào Arun, ở bên kia, tại vị trí mà mô-men (moment) của cậu ấy cân bằng với Marcus.'},
+  see:{en:'When both are found, the seesaw plank settles level: the moments on the two sides are equal and opposite.',vi:'Khi đã tìm thấy cả hai, ván bập bênh nằm ngang cân bằng: các mô-men (moment) ở hai phía bằng nhau và ngược chiều.'},
+  concl:[
+    {en:'Marcus makes a moment of 600 N × 2 m = 1200 N m on his side.',vi:'Marcus tạo mô-men (moment) 600 N × 2 m = 1200 N m ở phía của mình.'},
+    {en:'For balance, Arun must also make 1200 N m: distance = moment ÷ force = 1200 ÷ 800 = 1.5 m from the pivot.',vi:'Để cân bằng, Arun cũng phải tạo 1200 N m: khoảng cách = mô-men ÷ lực = 1200 ÷ 800 = 1,5 m từ trục quay (pivot).'},
+    {en:'A seesaw balances when the moments on both sides of the pivot are equal and opposite.',vi:'Bập bênh cân bằng khi các mô-men (moment) ở hai phía của trục quay (pivot) bằng nhau và ngược chiều.'}]},
+ {tag:{en:'Identifying moments',vi:'Nhận biết mô-men'}, word:{en:'turning effect',vi:'hiệu ứng làm quay'},
+  q:{en:'Which of these everyday actions use a moment to work?',vi:'Hành động thường ngày nào dưới đây dùng mô-men (moment) để hoạt động?'},
+  act:{en:'Each card shows an action, like the pictures in the book activity display. Tap a card, then tap TURNING FORCE or NO TURNING FORCE.',vi:'Mỗi thẻ cho thấy một hành động, như các bức tranh trong hoạt động trưng bày của sách. Chạm vào một thẻ, rồi chạm LỰC LÀM QUAY (TURNING FORCE) hoặc KHÔNG CÓ LỰC LÀM QUAY.'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Anything that turns when it is pushed or pulled uses a moment: doors, spanners, pedals and bottle tops.',vi:'Bất cứ vật gì quay khi bị đẩy hay kéo đều dùng mô-men (moment): cửa, cờ lê, bàn đạp và nắp chai.'},
+    {en:'Sliding, stretching and rolling in a straight line do not need a turning force.',vi:'Trượt, kéo giãn và lăn theo đường thẳng không cần lực làm quay (turning force).'}]},
+ {tag:{en:'Investigation — force and distance',vi:'Khảo sát — lực và khoảng cách'}, word:{en:'pivot',vi:'trục quay'},
+  q:{en:'A metre rule is held by an elastic band. You pull it down the same amount each time. What happens to the force needed as you pull closer to the pivot?',vi:'Một thước mét được giữ bằng dây chun. Mỗi lần con kéo nó xuống cùng một đoạn. Lực cần thiết thay đổi thế nào khi con kéo gần trục quay hơn?'},
+  act:{en:'Tap the far string loop first (0.8 m from the pivot): the newton meter reads about 1.0 N. Then tap the near string loop (0.4 m from the pivot) and compare its reading.',vi:'Chạm vào vòng dây xa trước (cách trục quay (pivot) 0,8 m): lực kế (newton meter) chỉ khoảng 1,0 N. Rồi chạm vào vòng dây gần (cách trục quay 0,4 m) và so sánh số chỉ của nó.'},
+  see:{en:'The far loop needs 1.0 N; the near loop needs 2.0 N for the same pull-down — the same moment, 0.8 N m, both times.',vi:'Vòng xa cần 1,0 N; vòng gần cần 2,0 N cho cùng một độ kéo xuống — cùng một mô-men (moment), 0,8 N m, cả hai lần.'},
+  concl:[
+    {en:'The closer to the pivot the force acts, the bigger the force needed to make the same moment — halving the distance doubles the force needed.',vi:'Lực tác dụng càng gần trục quay (pivot), lực cần thiết để tạo cùng một mô-men (moment) càng lớn — giảm một nửa khoảng cách thì lực cần thiết tăng gấp đôi.'},
+    {en:'That is why door handles sit far from the hinges, and why a longer spanner turns a stiff nut more easily.',vi:'Đó là lý do tay nắm cửa nằm xa bản lề, và vì sao cờ lê dài hơn vặn đai ốc cứng dễ hơn.'},
+    {en:'In the real investigation you pull down the same distance every time and record distances in metres, so the comparison is fair.',vi:'Trong khảo sát thật, mỗi lần con kéo xuống cùng một khoảng và ghi khoảng cách bằng mét, để phép so sánh công bằng.'},
+    {en:'I can understand that forces can cause turning effects.',vi:'Con hiểu được rằng lực có thể gây hiệu ứng làm quay (turning).'},
+    {en:'I can understand what is meant by the term moment.',vi:'Con hiểu thuật ngữ mô-men (moment) nghĩa là gì.'},
+    {en:'I know and can use the equation that links moment, force and distance.',vi:'Con biết và dùng được công thức liên hệ mô-men (moment), lực và khoảng cách.'},
+    {en:'I know the unit of moment.',vi:'Con biết đơn vị của mô-men (moment).'}]}
+];
+const TURNS=[
+ {id:'c_door',emoji:'🚪',en:'Pushing a door open',vi:'Đẩy mở một cánh cửa',ans:'turn'},
+ {id:'c_chair',emoji:'🪑',en:'Pulling a chair across the floor',vi:'Kéo một cái ghế trên sàn',ans:'notturn'},
+ {id:'c_bottle',emoji:'🍾',en:'Twisting the top off a bottle',vi:'Vặn mở nắp chai',ans:'turn'},
+ {id:'c_clock',emoji:'🕐',en:'Pushing the hands of a clock around',vi:'Đẩy các kim đồng hồ quay',ans:'turn'},
+ {id:'c_trolley',emoji:'🛒',en:'Pushing a trolley up a ramp',vi:'Đẩy xe hàng lên dốc',ans:'notturn'},
+ {id:'c_elastic',emoji:'🎗️',en:'Stretching an elastic band',vi:'Kéo giãn một dây chun',ans:'notturn'}
+];
+const TURNS_ORDER=mixOrder(TURNS,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'What is a moment, in physics?',vi:'Trong vật lý, mô-men (moment) là gì?'},
+  o:[{en:'A push in a straight line',vi:'Một lực đẩy theo đường thẳng'},{en:'The turning effect of a force',vi:'Hiệu ứng làm quay (turning effect) của một lực'},{en:'The weight of an object',vi:'Trọng lượng của một vật'}],a:1,
+  e:{en:'A moment describes how strongly a force makes something turn around a pivot.',vi:'Mô-men (moment) mô tả mức độ một lực làm vật quay quanh trục quay (pivot) mạnh thế nào.'}},
+ {q:{en:'A force of 35 N acts 0.8 m from a pivot. What is its moment?',vi:'Một lực 35 N tác dụng cách trục quay (pivot) 0,8 m. Mô-men (moment) của nó là bao nhiêu?'},
+  o:[{en:'28 N m',vi:'28 N m'},{en:'43 N m',vi:'43 N m'},{en:'2.8 N m',vi:'2,8 N m'}],a:0,
+  e:{en:'moment = force × distance = 35 × 0.8 = 28 N m.',vi:'moment = force × distance (mô-men = lực × khoảng cách) = 35 × 0,8 = 28 N m.'}},
+ {q:{en:'Marcus (600 N) sits 2 m from a seesaw pivot. How far from the pivot must Arun (800 N) sit to balance him?',vi:'Marcus (600 N) ngồi cách trục quay (pivot) của bập bênh 2 m. Arun (800 N) phải ngồi cách trục quay bao xa để cân bằng với Marcus?'},
+  o:[{en:'1.0 m',vi:'1,0 m'},{en:'2.0 m',vi:'2,0 m'},{en:'1.5 m',vi:'1,5 m'}],a:2,
+  e:{en:'Marcus makes 600 × 2 = 1200 N m. Arun needs 1200 ÷ 800 = 1.5 m.',vi:'Marcus tạo 600 × 2 = 1200 N m. Arun cần 1200 ÷ 800 = 1,5 m.'}},
+ {q:{en:'In the metre-rule investigation, the same pull-down is used each time. As the pulling force is moved closer to the pivot, the force needed…',vi:'Trong khảo sát thước mét, mỗi lần kéo xuống cùng một đoạn. Khi lực kéo được dời gần trục quay (pivot) hơn, lực cần thiết…'},
+  o:[{en:'gets smaller',vi:'nhỏ đi'},{en:'gets bigger',vi:'lớn lên'},{en:'stays exactly the same',vi:'giữ nguyên chính xác'}],a:1,
+  e:{en:'A shorter distance from the pivot gives a smaller moment for the same force, so a bigger force is needed to make the same moment.',vi:'Khoảng cách tới trục quay (pivot) ngắn hơn cho mô-men (moment) nhỏ hơn với cùng một lực, nên cần lực lớn hơn để tạo cùng một mô-men.'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_dooropen',emoji:'🚪',en:'Pushing a door open',vi:'Đẩy mở một cánh cửa',keyw:true},
+ {id:'e_pullchair',emoji:'🪑',en:'Pulling a chair across the floor',vi:'Kéo một cái ghế trên sàn',keyw:false},
+ {id:'e_twisttop',emoji:'🍾',en:'Twisting the top off a bottle',vi:'Vặn mở nắp chai',keyw:true},
+ {id:'e_clockhands',emoji:'🕐',en:'Pushing the hands of a clock around',vi:'Đẩy các kim đồng hồ quay',keyw:true},
+ {id:'e_trolley',emoji:'🛒',en:'Pushing a trolley up a ramp',vi:'Đẩy xe hàng lên dốc',keyw:false},
+ {id:'e_stretch',emoji:'🎗️',en:'Stretching an elastic band',vi:'Kéo giãn một dây chun',keyw:false},
+ {id:'e_pedal',emoji:'🚲',en:'Pedalling a bicycle',vi:'Đạp xe đạp',keyw:true},
+ {id:'e_slidebook',emoji:'📕',en:'Sliding a book across a table',vi:'Trượt một cuốn sách trên bàn',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {pre:{en:'Door: moment = 35 N × 0.8 m =',vi:'Cửa: mô-men (moment) = 35 N × 0,8 m ='},
+  ans:0,
+  opts:[{en:'28 N m',vi:'28 N m'},{en:'280 N m',vi:'280 N m'}],
+  e:{en:'35 × 0.8 = 28, and the unit is N m.',vi:'35 × 0,8 = 28, và đơn vị là N m.'}},
+ {pre:{en:'Arm: moment = 20 N × 0.25 m =',vi:'Cánh tay: mô-men (moment) = 20 N × 0,25 m ='},
+  ans:1,
+  opts:[{en:'50 N m',vi:'50 N m'},{en:'5 N m',vi:'5 N m'}],
+  e:{en:'20 × 0.25 = 5 N m.',vi:'20 × 0,25 = 5 N m.'}},
+ {pre:{en:'Door handle: Sofia pushes with 4 N at 0.12 m from the pivot. Moment =',vi:'Tay nắm cửa: Sofia đẩy với 4 N tại 0,12 m từ trục quay (pivot). Mô-men (moment) ='},
+  ans:0,
+  opts:[{en:'0.48 N m',vi:'0,48 N m'},{en:'4.8 N m',vi:'4,8 N m'}],
+  e:{en:'4 × 0.12 = 0.48 N m.',vi:'4 × 0,12 = 0,48 N m.'}},
+ {pre:{en:'Crane: a 15 000 N weight hangs 5 m from the pivot. Moment =',vi:'Cần cẩu: vật nặng 15 000 N treo cách trục quay (pivot) 5 m. Mô-men (moment) ='},
+  ans:1,
+  opts:[{en:'7 500 N m',vi:'7 500 N m'},{en:'75 000 N m',vi:'75 000 N m'}],
+  e:{en:'15 000 × 5 = 75 000 N m.',vi:'15 000 × 5 = 75 000 N m.'}},
+ {pre:{en:'Brake lever: a moment of 1.8 N m is needed, acting 0.09 m from the pivot. Force needed = 1.8 ÷ 0.09 =',vi:'Tay thắng: cần mô-men (moment) 1,8 N m, tác dụng cách trục quay (pivot) 0,09 m. Lực cần thiết = 1,8 ÷ 0,09 ='},
+  ans:0,
+  opts:[{en:'20 N',vi:'20 N'},{en:'200 N',vi:'200 N'}],
+  e:{en:'force = moment ÷ distance = 1.8 ÷ 0.09 = 20 N.',vi:'force = moment ÷ distance (lực = mô-men ÷ khoảng cách) = 1,8 ÷ 0,09 = 20 N.'}}
+];
+let EX2_ORD=EX2.map(()=>fyIdx(2));
+const EX3=[
+ {pre:{en:'A nut needs a moment of 40 N m. With a 0.2 m spanner, the force needed is',vi:'Một đai ốc cần mô-men (moment) 40 N m. Với cờ lê dài 0,2 m, lực cần thiết là'},
+  wrong:1,
+  opts:[{en:'200 N',vi:'200 N'},{en:'8 N',vi:'8 N'}],
+  e:{en:'force = 40 ÷ 0.2 = 200 N — cross out 8 N.',vi:'force (lực) = 40 ÷ 0,2 = 200 N — hãy gạch bỏ 8 N.'}},
+ {pre:{en:'An engine makes a moment of 350 N m at a wheel of radius 0.35 m. The force at the edge is',vi:'Một động cơ tạo mô-men (moment) 350 N m tại bánh xe có bán kính 0,35 m. Lực ở mép bánh là'},
+  wrong:0,
+  opts:[{en:'122.5 N',vi:'122,5 N'},{en:'1000 N',vi:'1000 N'}],
+  e:{en:'force = 350 ÷ 0.35 = 1000 N — cross out 122.5 N.',vi:'force (lực) = 350 ÷ 0,35 = 1000 N — hãy gạch bỏ 122,5 N.'}},
+ {pre:{en:'Zara (450 N) sits 1.5 m from the pivot, making 675 N m. Sofia (500 N) balances her at',vi:'Zara (450 N) ngồi cách trục quay (pivot) 1,5 m, tạo 675 N m. Sofia (500 N) cân bằng với cô ấy tại'},
+  wrong:1,
+  opts:[{en:'1.35 m',vi:'1,35 m'},{en:'13.5 m',vi:'13,5 m'}],
+  e:{en:'distance = 675 ÷ 500 = 1.35 m — cross out 13.5 m.',vi:'distance (khoảng cách) = 675 ÷ 500 = 1,35 m — hãy gạch bỏ 13,5 m.'}},
+ {pre:{en:'A longer spanner makes a nut easier to turn because the same force, acting further from the pivot, gives a',vi:'Cờ lê dài hơn làm đai ốc dễ vặn hơn vì cùng một lực, tác dụng xa trục quay (pivot) hơn, cho một'},
+  wrong:1,
+  opts:[{en:'bigger moment',vi:'mô-men lớn hơn (bigger moment)'},{en:'smaller moment',vi:'mô-men nhỏ hơn (smaller moment)'}],
+  e:{en:'moment = force × distance, so a greater distance gives a bigger moment — cross out “smaller moment”.',vi:'moment = force × distance (mô-men = lực × khoảng cách), nên khoảng cách lớn hơn cho mô-men lớn hơn — hãy gạch bỏ “mô-men nhỏ hơn”.'}},
+ {pre:{en:'If force is measured in pounds and distance in feet, then the unit of moment is',vi:'Nếu lực được đo bằng pound và khoảng cách bằng foot, thì đơn vị của mô-men (moment) là'},
+  wrong:0,
+  opts:[{en:'newton metres',vi:'newton mét (newton metres)'},{en:'pound feet',vi:'pound foot (pound feet)'}],
+  e:{en:'The moment unit combines the force unit and the distance unit: pound × feet = pound feet — cross out “newton metres”.',vi:'Đơn vị mô-men kết hợp đơn vị lực và đơn vị khoảng cách: pound × foot = pound foot — hãy gạch bỏ “newton mét”.'}}
+];
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 4 + 5 + 5 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set();
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-3-4';
+const SUMKEY='camb:sum:sci8-3-4';
+const BOT_CODE='sci8-3.4';
+let FOUND={handle:false,pedal:false,bottle:false,marcus:false,arun:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fHandle:false, fPedal:false, fBottle:false,
+  s2lever:false, s2pivot:false,
+  s3hinge:false, s3handle:false,
+  s4marcus:false, s4arun:false,
+  s5correct:new Set(), s5sel:null,
+  s6far:false, s6near:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fHandle&&T.fPedal&&T.fBottle;
+  if(i===1) return T.s2lever&&T.s2pivot;
+  if(i===2) return T.s3hinge&&T.s3handle;
+  if(i===3) return T.s4marcus&&T.s4arun;
+  if(i===4) return T.s5correct.size>=5;
+  if(i===5) return T.s6far&&T.s6near;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Turning things found: door handle '+(T.fHandle?'✓':'…')+' · bicycle pedal '+(T.fPedal?'✓':'…')+' · bottle top '+(T.fBottle?'✓':'…')+'.',
+                     'Vật quay đã tìm: tay nắm cửa '+(T.fHandle?'✓':'…')+' · bàn đạp xe đạp '+(T.fPedal?'✓':'…')+' · nắp chai '+(T.fBottle?'✓':'…')+'.');
+  if(i===1) return B('Lever (the plank) '+(T.s2lever?'✓':'…')+' · pivot '+(T.s2pivot?'✓':'…')+'.',
+                     'Đòn bẩy (lever) (ván) '+(T.s2lever?'✓':'…')+' · trục quay (pivot) '+(T.s2pivot?'✓':'…')+'.');
+  if(i===2) return B('Pivot (hinge) '+(T.s3hinge?'✓':'…')+' · force point (handle, 0.8 m away) '+(T.s3handle?'✓':'…')+(T.s3hinge&&T.s3handle?' · moment = 35 × 0.8 = 28 N m.':'.'),
+                     'Trục quay (pivot) (bản lề) '+(T.s3hinge?'✓':'…')+' · điểm đặt lực (tay nắm, cách 0,8 m) '+(T.s3handle?'✓':'…')+(T.s3hinge&&T.s3handle?' · mô-men (moment) = 35 × 0,8 = 28 N m.':'.'));
+  if(i===3) return B('Marcus: 600 N × 2 m = 1200 N m '+(T.s4marcus?'✓':'…')+' · Arun at 1.5 m: 800 N × 1.5 m = 1200 N m '+(T.s4arun?'✓':'…')+'.',
+                     'Marcus: 600 N × 2 m = 1200 N m '+(T.s4marcus?'✓':'…')+' · Arun ở 1,5 m: 800 N × 1,5 m = 1200 N m '+(T.s4arun?'✓':'…')+'.');
+  if(i===4){
+    const c=T.s5sel? TURNS.find(x=>x.id===T.s5sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap TURNING FORCE or NO TURNING FORCE.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm LỰC LÀM QUAY (TURNING FORCE) hoặc KHÔNG CÓ LỰC LÀM QUAY.');
+    return B('Cards right: '+T.s5correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s5correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===5) return B('Far loop, 0.8 m: force needed 1.0 N '+(T.s6far?'✓':'…')+' · near loop, 0.4 m: force needed 2.0 N '+(T.s6near?'✓':'…')+'.',
+                     'Vòng xa, 0,8 m: lực cần thiết 1,0 N '+(T.s6far?'✓':'…')+' · vòng gần, 0,4 m: lực cần thiết 2,0 N '+(T.s6near?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🚪',label:{en:'Door handle turns',vi:'Tay nắm cửa quay'},got:T.fHandle},
+      {emoji:'🚲',label:{en:'Bicycle pedal turns',vi:'Bàn đạp xe đạp quay'},got:T.fPedal},
+      {emoji:'🍾',label:{en:'Bottle top turns',vi:'Nắp chai quay'},got:T.fBottle}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🪵',label:{en:'Lever — the plank',vi:'Đòn bẩy (lever) — tấm ván'},got:T.s2lever},
+      {emoji:'🔺',label:{en:'Pivot — the support',vi:'Trục quay (pivot) — trụ đỡ'},got:T.s2pivot}
+    ]);
+  }else if(curStep===2){
+    statPills(box,[
+      {emoji:'🔩',label:{en:'Pivot — the hinge',vi:'Trục quay (pivot) — bản lề'},got:T.s3hinge},
+      {emoji:'🚪',label:{en:'Force point — handle at 0.8 m',vi:'Điểm đặt lực — tay nắm ở 0,8 m'},got:T.s3handle},
+      {emoji:'🧮',label:{en:'Moment = 35 × 0.8 = 28 N m',vi:'Mô-men (moment) = 35 × 0,8 = 28 N m'},got:T.s3hinge&&T.s3handle}
+    ]);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🧍',label:{en:'Marcus: 600 N × 2 m = 1200 N m',vi:'Marcus: 600 N × 2 m = 1200 N m'},got:T.s4marcus},
+      {emoji:'🧍',label:{en:'Arun at 1.5 m: 800 × 1.5 = 1200 N m',vi:'Arun ở 1,5 m: 800 × 1,5 = 1200 N m'},got:T.s4arun}
+    ]);
+  }else if(curStep===4){
+    buildSort(box,TURNS_ORDER,
+      [{key:'turn',label:STR.binTurn,cls:'living'},{key:'notturn',label:STR.binNotTurn,cls:'nonliving'}],
+      T.s5correct,()=>T.s5sel,v=>{T.s5sel=v;},null,onSortPlaced);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'➰',label:{en:'Far loop 0.8 m — 1.0 N needed',vi:'Vòng xa 0,8 m — cần 1,0 N'},got:T.s6far},
+      {emoji:'➰',label:{en:'Near loop 0.4 m — 2.0 N needed',vi:'Vòng gần 0,4 m — cần 2,0 N'},got:T.s6near}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookSeesaw);
+    b.onclick=()=>focusThing('plank');
+    box.appendChild(b);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('handle'); bounceThing('handle'); setTimeout(()=>{ focusVisual('pedal'); bounceThing('pedal'); },900); }
+  else if(i===1){ focusThing('plank'); setTimeout(()=>focusThing('pivot'),900); }
+  else if(i===2){ focusThing('hinge'); setTimeout(()=>focusThing('handle'),900); }
+  else if(i===3){ focusThing('marcus'); setTimeout(()=>focusThing('arun'),900); }
+  else if(i===4){ demoSort(TURNS,T.s5correct); }
+  else if(i===5){ focusThing('farloop'); setTimeout(()=>focusThing('nearloop'),900); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  const found=(FOUND.handle?1:0)+(FOUND.pedal?1:0)+(FOUND.bottle?1:0);
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recTurn)+'</span><b>'+found+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recDoor)+'</span><b>'+(doneSteps.has(2)?'28 N m':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recSeesaw)+'</span><b>'+(doneSteps.has(3)?'1.5 m':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didTurn},
+    {got:doneSteps.has(1),label:STR.didLever},
+    {got:doneSteps.has(2),label:STR.didCalc},
+    {got:doneSteps.has(3),label:STR.didBalance},
+    {got:doneSteps.has(4),label:STR.didSort},
+    {got:doneSteps.has(5),label:STR.didInvest}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let plankMesh=null;
+let lastRW=0, lastRH=0;
+const ORB={r:10.2, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildHandle(){
+  const g=new THREE.Group();
+  const bar=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.85,10),stdMat(0xc8a028,0.35)));
+  bar.rotation.z=Math.PI/2; bar.position.set(0,0,0.25); g.add(bar);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.3,10),stdMat(0xc8a028,0.35));
+  stem.rotation.x=Math.PI/2; g.add(stem);
+  const rose=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.07,14),stdMat(0xa8821f,0.4));
+  rose.rotation.x=Math.PI/2; rose.position.z=-0.16; g.add(rose);
+  g.position.set(-4.0,1.05,1.28); g.userData.baseY=1.05;
+  return g;
+}
+function buildHinge(){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,2.1,10),stdMat(0x77828e,0.4)));
+  post.position.y=0.35; g.add(post);
+  [-0.35,0.35].forEach(y=>{
+    const knuckle=new THREE.Mesh(new THREE.SphereGeometry(0.14,10,8),stdMat(0x9aa5b1,0.35));
+    knuckle.position.y=y; g.add(knuckle);
+  });
+  g.position.set(-5.3,0.7,1.15); g.userData.baseY=0.7;
+  return g;
+}
+function buildPedal(){
+  const g=new THREE.Group();
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.05,10,24),stdMat(0x39424e,0.5));
+  g.add(ring);
+  const crank=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.62,0.06),stdMat(0x77828e,0.4));
+  crank.rotation.z=0.7; crank.position.set(0.18,0.18,0.06); g.add(crank);
+  const ped=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.42,0.07,0.2),stdMat(0xd23c2a,0.6)));
+  ped.position.set(0.38,0.36,0.06); g.add(ped);
+  g.position.set(-2.4,0.62,1.7); g.userData.baseY=0.62;
+  return g;
+}
+function buildBottle(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.26,0.85,14),stdMat(0x2e7d4f,0.35)));
+  body.position.y=0.43; g.add(body);
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.18,0.22,12),stdMat(0x2e7d4f,0.35));
+  neck.position.y=0.96; g.add(neck);
+  const cap=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.18,12),stdMat(0xd9930d,0.5)));
+  cap.position.y=1.14; g.add(cap);
+  g.position.set(-1.0,0,1.9); g.userData.baseY=0;
+  return g;
+}
+function buildChair(){
+  const g=new THREE.Group();
+  const seat=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.08,0.8),stdMat(0x8a5a2b,0.8)));
+  seat.position.y=0.55; g.add(seat);
+  const back=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.85,0.08),stdMat(0x8a5a2b,0.8)));
+  back.position.set(0,1.05,-0.36); g.add(back);
+  [[-0.36,-0.32],[0.36,-0.32],[-0.36,0.32],[0.36,0.32]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.55,8),stdMat(0x6e4520,0.8));
+    leg.position.set(p[0],0.27,p[1]); g.add(leg);
+  });
+  g.position.set(0.5,0,2.0); g.userData.baseY=0;
+  return g;
+}
+function buildPlank(){
+  const g=new THREE.Group();
+  const board=shadowed(new THREE.Mesh(new THREE.BoxGeometry(3.6,0.12,0.55),stdMat(0xd98a2b,0.7)));
+  g.add(board);
+  g.position.set(2.7,1.02,-0.5); g.userData.baseY=1.02;
+  plankMesh=g;
+  return g;
+}
+function buildPivot(){
+  const g=new THREE.Group();
+  const tri=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.55,0.95,4),stdMat(0x39424e,0.6)));
+  tri.position.y=0.48; tri.rotation.y=Math.PI/4; g.add(tri);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(1.0,0.08,0.8),stdMat(0x22384f,0.7));
+  base.position.y=0.04; g.add(base);
+  g.position.set(2.7,0,-0.5); g.userData.baseY=0;
+  return g;
+}
+function buildPerson(color){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.26,0.62,12),stdMat(color,0.7)));
+  body.position.y=0.31; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.19,12,10),stdMat(0xe8b88a,0.7));
+  head.position.y=0.82; g.add(head);
+  const legs=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.1,0.22),stdMat(0x22384f,0.7));
+  legs.position.set(0.12,0.02,0); g.add(legs);
+  g.userData.baseY=0;
+  return g;
+}
+function buildSpanner(){
+  const g=new THREE.Group();
+  const grip=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.16,1.0,0.07),stdMat(0xb9c2cc,0.35)));
+  grip.position.y=0.2; g.add(grip);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.21,0.07,10,20),stdMat(0x9aa5b1,0.35));
+  ring.position.y=0.85; g.add(ring);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.12,6),stdMat(0x5b7186,0.4));
+  nut.rotation.x=Math.PI/2; nut.position.y=0.85; g.add(nut);
+  g.position.set(5.0,0.35,1.7); g.rotation.z=-0.5; g.userData.baseY=0.35;
+  return g;
+}
+function buildRule(){
+  const g=new THREE.Group();
+  const post=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.09,0.95,10),stdMat(0x39424e,0.6)));
+  post.position.set(-1.3,0.48,0); g.add(post);
+  const rule=shadowed(new THREE.Mesh(new THREE.BoxGeometry(3.1,0.07,0.3),stdMat(0xf2d06b,0.8)));
+  rule.position.set(0,0.98,0); g.add(rule);
+  const band=new THREE.Mesh(new THREE.BoxGeometry(0.35,0.5,0.36),stdMat(0xd23c2a,0.6));
+  band.position.set(1.45,0.75,0); g.add(band);
+  g.position.set(-2.2,0,-2.3); g.userData.baseY=0;
+  return g;
+}
+function buildLoop(color){
+  const g=new THREE.Group();
+  const loop=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.035,8,18),stdMat(color,0.6));
+  loop.position.y=0.18; g.add(loop);
+  const tail=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.35,6),stdMat(0xeeeeee,0.8));
+  tail.position.y=0.5; g.add(tail);
+  g.userData.baseY=0;
+  return g;
+}
+function buildNewton(){
+  const g=new THREE.Group();
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.07,1.9,8),stdMat(0x8d99a6,0.6));
+  post.position.y=0.95; g.add(post);
+  const body=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.11,0.62,12),stdMat(0x3d7bd6,0.5)));
+  body.position.set(0.3,1.45,0); g.add(body);
+  const hook=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.025,8,14),stdMat(0x39424e,0.5));
+  hook.position.set(0.3,1.05,0); g.add(hook);
+  g.position.set(0.3,0,-2.3); g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdcecf7);
+  scene3.fog=new THREE.Fog(0xdcecf7,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const ground=new THREE.Mesh(new THREE.BoxGeometry(13,0.35,7.5),stdMat(0x9db98a,0.95));
+  ground.position.set(0.3,-0.19,0); ground.receiveShadow=true; scene3.add(ground);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc7d3de,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8f1f8,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  /* the door itself (static): panel between hinge and handle */
+  const door=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.55,2.1,0.09),stdMat(0xa5713a,0.85)));
+  door.position.set(-4.62,1.05,1.15); scene3.add(door);
+  reg('hinge',buildHinge());
+  reg('handle',buildHandle());
+  reg('pedal',buildPedal());
+  reg('bottle',buildBottle());
+  reg('chair',buildChair());
+  reg('pivot',buildPivot());
+  reg('plank',buildPlank());
+  const pm=buildPerson(0x3d7bd6); pm.position.set(1.25,1.08,-0.5); pm.userData.baseY=1.08; reg('marcus',pm);
+  const pa=buildPerson(0xd23c2a); pa.position.set(3.85,1.08,-0.5); pa.userData.baseY=1.08; reg('arun',pa);
+  reg('spanner',buildSpanner());
+  reg('meterule',buildRule());
+  const lf=buildLoop(0x3d7bd6); lf.position.set(-0.95,0.95,-2.3); lf.userData.baseY=0.95; reg('farloop',lf);
+  const ln=buildLoop(0xd9930d); ln.position.set(-2.85,0.95,-2.3); ln.userData.baseY=0.95; reg('nearloop',ln);
+  reg('newtonmeter',buildNewton());
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.45); addProxy('handle',p,G.handle); }
+  { const p=sphProxy(0.42); p.position.set(0,0.35,0); addProxy('hinge',p,G.hinge); }
+  { const p=sphProxy(0.5); addProxy('pedal',p,G.pedal); }
+  { const p=sphProxy(0.45); p.position.set(0,0.6,0); addProxy('bottle',p,G.bottle); }
+  { const p=sphProxy(0.55); p.position.set(0,0.6,0); addProxy('chair',p,G.chair); }
+  { const p=sphProxy(0.45); p.position.set(-1.1,0,0.1); addProxy('plank',p,G.plank); }
+  { const p=sphProxy(0.45); p.position.set(0,0.45,0.35); addProxy('pivot',p,G.pivot); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('marcus',p,G.marcus); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('arun',p,G.arun); }
+  { const p=sphProxy(0.5); p.position.set(0,0.5,0); addProxy('spanner',p,G.spanner); }
+  { const p=sphProxy(0.38); p.position.set(0,0.2,0); addProxy('farloop',p,G.farloop); }
+  { const p=sphProxy(0.38); p.position.set(0,0.2,0); addProxy('nearloop',p,G.nearloop); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['handle','pedal','bottle'],
+  ['plank','pivot'],
+  ['hinge','handle'],
+  ['marcus','arun'],
+  [],
+  ['farloop','nearloop']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='handle'){ T.fHandle=true; FOUND.handle=true; }
+    if(id==='pedal'){ T.fPedal=true; FOUND.pedal=true; }
+    if(id==='bottle'){ T.fBottle=true; FOUND.bottle=true; }
+  }else if(curStep===1){
+    if(id==='plank') T.s2lever=true;
+    if(id==='pivot') T.s2pivot=true;
+  }else if(curStep===2){
+    if(id==='hinge') T.s3hinge=true;
+    if(id==='handle') T.s3handle=true;
+  }else if(curStep===3){
+    if(id==='marcus'){ T.s4marcus=true; FOUND.marcus=true; }
+    if(id==='arun'){ T.s4arun=true; FOUND.arun=true; }
+  }else if(curStep===5){
+    if(id==='farloop') T.s6far=true;
+    if(id==='nearloop') T.s6near=true;
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){
+  if(plankMesh) plankMesh.rotation.z=(i===3)? -0.1 : 0;
+}
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(plankMesh&&curStep===3){
+    const target=(T.s4marcus&&T.s4arun)? 0 : (T.s4arun? 0.1 : -0.1);
+    plankMesh.rotation.z+=(target-plankMesh.rotation.z)*0.08;
+  }
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — tick the turning actions */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=4);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=4);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — choose the correct value (bin row unused in this lesson) */
+  $('ex2BinPerm').style.display='none';
+  $('ex2BinNot').style.display='none';
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  const g2=$('ex2Grid'); g2.innerHTML=''; g2.style.display='block';
+  EX2.forEach((s2,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s2.pre)+' ';
+    (EX2_ORD[si]||s2.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s2.opts[oi];
+      let cls='wordopt';
+      if(EX2ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s2.ans) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX2DONE.has(si)? '✓ ' : '')+bi(s2.e);
+      row.appendChild(ex);
+    }
+    g2.appendChild(row);
+  });
+  g2.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX2ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.map((s2,si)=>si).filter(si=>EX2ANS[si]===EX2[si].ans));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={};
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORD=EX2.map(()=>fyIdx(2));
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.handle=false; FOUND.pedal=false; FOUND.bottle=false; }
+  if(step===3){ FOUND.marcus=false; FOUND.arun=false; }
+  if(step===4){ TURNS.forEach(c=>SORTED.delete(c.id)); }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX2.length));
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX2.length&&(s.exAns.a2[k]===0||s.exAns.a2[k]===1)) EX2ANS[si]=s.exAns.a2[k]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach((s2,si)=>{ if(EX2DONE.has(si)) EX2ANS[si]=s2.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fHandle=!!FOUND.handle; t.fPedal=!!FOUND.pedal; t.fBottle=!!FOUND.bottle; }
+  else if(i===1){ t.s2lever=true; t.s2pivot=true; }
+  else if(i===2){ t.s3hinge=true; t.s3handle=true; }
+  else if(i===3){ t.s4marcus=!!FOUND.marcus; t.s4arun=!!FOUND.arun; }
+  else if(i===4){ TURNS.forEach(c=>{ if(SORTED.has(c.id)) t.s5correct.add(c.id); }); }
+  else if(i===5){ t.s6far=true; t.s6near=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-3-4',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>

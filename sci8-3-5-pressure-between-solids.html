@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>3.5 Pressure between solids — Áp suất giữa các vật rắn · Cambridge Lower Secondary Science 8</title>
+<style>
+:root{--ink:#16283f;--mut:#5b7186;--acc:#0b76d1;--acc2:#00a3c8;--bg:#e9eff4;--card:#fff;--line:#d7e2ec;--ok:#0d9d58;--amber:#b7791f;--dark:#14324f;--orange:#f2762e}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:19px}
+button{font:inherit;font-size:16.5px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.gloss{display:block;font-size:.76em;color:var(--mut);font-weight:400;line-height:1.35;margin-top:1px}
+.gloss.inl{display:inline;margin:0 0 0 .45em;font-size:.78em}
+/* ===== app shell (full screen) ===== */
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--dark);color:#eaf3fb;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar a{color:#bcd8f2;text-decoration:none;font-size:16px}
+.topbar .ttl{font-weight:800;font-size:19px}
+.topbar .ttl .gloss{color:#9db8cf}
+.topbar .eqchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:14.5px}
+.topbar .sp{flex:1}
+.topbar #progTxt{font-size:15px;font-weight:700;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px}
+.langseg{display:flex;border:1px solid rgba(255,255,255,.4);border-radius:999px;overflow:hidden}
+.langseg button{border:none;border-radius:0;background:transparent;color:#cfe2f2;font-size:14.5px;font-weight:700;padding:6px 12px}
+.langseg button.on{background:#fff;color:var(--dark)}
+.stepbar{display:flex;gap:6px;align-items:center;background:#fff;border-bottom:1px solid var(--line);padding:7px 10px;overflow-x:auto;white-space:nowrap}
+.stepbar .lbl{font-size:13px;color:var(--mut);font-weight:700;margin-right:2px}
+.schip{border:1px solid var(--line);background:#f4f8fb;border-radius:999px;padding:6px 13px;font-size:15px;cursor:pointer}
+.schip.cur{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.schip.done{border-color:#8fd3ab;color:#0a7a44;background:#edf9f1}
+.mainline{display:flex;align-items:center;gap:8px;background:#fdf6e9;border-bottom:1px solid var(--line);padding:7px 12px;overflow-x:auto;white-space:nowrap}
+.mainline .mq{font-weight:800;font-size:16.5px}
+.mainline .mq .gloss{display:inline;margin-left:.45em;font-size:.8em}
+.chainnode{background:#fff;border:1px solid #ecd9a0;border-radius:999px;padding:4px 12px;font-size:14.5px;font-weight:600}
+.chainnode .gloss{display:inline;margin-left:.4em;font-size:.8em}
+.chainsep{color:var(--amber);font-weight:800}
+.mainrow{flex:1;display:flex;min-height:0}
+.stagewrap{flex:1;position:relative;min-width:0;background:linear-gradient(180deg,#eaf7ff,#dff2e2)}
+#stage3d{position:absolute;inset:0}
+#stage3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panelbox{position:absolute;background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(16,38,63,.13);padding:13px 15px}
+#wordCard{right:12px;bottom:12px;min-width:210px;max-width:calc(100% - 24px);text-align:center}
+#wordCard h4{margin:0 0 3px;font-size:12.5px;color:var(--acc);letter-spacing:.5px}
+#wordCard .w{font-size:25px;font-weight:800}
+#wordCard .w .gloss{font-size:.62em}
+#errBox{display:none;position:absolute;inset:auto 12px 12px 12px;background:#fdf0f0;border:1px solid #e5a3a3;color:#7a1f1f;border-radius:12px;padding:10px 13px;font-size:14.5px;z-index:40}
+.hintpill{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(16,38,63,.72);color:#eaf3fb;font-size:13.5px;padding:5px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#stepCard{left:12px;top:12px;width:416px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow-y:auto}
+#stepCard .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagchip{background:#e3eefb;color:var(--acc);font-weight:800;border-radius:999px;padding:4px 12px;font-size:14.5px}
+.status{font-size:13.5px;font-weight:800;border-radius:999px;padding:4px 11px}
+.status.yes{background:#e2f5ea;color:var(--ok)}
+.status.no{background:#eef2f6;color:var(--mut)}
+#stepCard .sq{font-size:21px;font-weight:800;margin:9px 0 6px;line-height:1.35}
+#stepCard p{margin:6px 0;font-size:17.5px;line-height:1.5;color:#2c4761}
+#stepCard p b.k{color:var(--acc)}
+#evid{font-size:16px;background:#0e2237;color:#bfe3ff;border-radius:10px;padding:9px 12px;margin:8px 0;line-height:1.5;word-break:break-word}
+#evid .gloss{color:#8fb6d8}
+#conclLock{display:block;background:#f2f5f8;border:1px dashed #b9c9d8;border-radius:12px;padding:9px 12px;margin-top:9px;font-size:16px;color:var(--mut);line-height:1.45}
+#conclBox{display:none;background:#eef7ee;border:1px solid #bfe3c8;border-radius:12px;padding:9px 12px;margin-top:9px}
+#conclBox.open{display:block}
+#conclBox p{font-size:17.5px;margin:3px 0}
+#conclBox ul{margin:4px 0 4px 18px;padding:0;font-size:17px;color:#2c4761;line-height:1.55}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btnrow .sp{flex:1}
+.bigbtn{font-size:23px;font-weight:800;padding:14px 24px;border-radius:16px;background:linear-gradient(135deg,#ff9f2e,var(--orange));color:#fff;border:none;box-shadow:0 4px 0 #c25a1d;width:100%}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c25a1d}
+.bigbtn.blue{background:linear-gradient(135deg,#3d8bfd,#0b76d1);box-shadow:0 4px 0 #0a4f8a}
+.bigbtn.blue:active{box-shadow:0 1px 0 #0a4f8a}
+.bigbtn:disabled{opacity:.45;box-shadow:none}
+.subbtn{width:100%;margin-top:8px;font-size:17.5px;font-weight:700;padding:11px 14px;border-radius:13px}
+/* sorting cards + bins */
+.picgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.piccard{border:2px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3}
+.piccard .em{font-size:34px;display:block;margin-bottom:3px}
+.piccard.sel{border-color:var(--acc);background:#eef6ff}
+.piccard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.piccard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.binrow{display:flex;gap:8px;margin-top:10px}
+.binbtn{flex:1;font-size:20px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none;line-height:1.25}
+.binbtn .gloss{color:rgba(255,255,255,.75)}
+.binbtn.living{background:#0d9d58}
+.binbtn.nonliving{background:#64748b}
+.binbtn.used{background:#d9930d}
+.binbtn.never{background:#44586e}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .45s ease}
+/* step extras: stat pills, yes/no */
+.statpills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.statpill{flex:1;text-align:center;border:2px solid var(--line);border-radius:13px;padding:9px 6px;font-size:16px;font-weight:700;background:#f7fafc;min-width:120px}
+.statpill.got{border-color:#8fd3ab;background:#edf9f1;color:#0a7a44}
+.ynrow{display:flex;gap:8px;margin-top:10px}
+.ynbtn{flex:1;font-size:22px;font-weight:800;padding:13px 8px;border-radius:14px;color:#fff;border:none}
+.ynbtn.yes{background:#d9930d}
+.ynbtn.no{background:#0d9d58}
+.qbig{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.4}
+/* ===== right console ===== */
+.console{width:344px;flex:none;background:#f6fafc;border-left:1px solid var(--line);overflow-y:auto;padding:10px}
+.unit{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:10px}
+.unit h3{margin:0 0 4px;font-size:17px;display:flex;gap:8px;align-items:center}
+.unit h3 .gloss{display:inline;font-size:.72em;margin-left:2px}
+.uno{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.unit .brief{font-size:13.5px;color:var(--mut);margin:0 0 7px;line-height:1.45}
+.focusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.focusbtn{font-size:15px;font-weight:700;padding:8px 6px;border-radius:12px;line-height:1.25}
+.focusbtn .em{font-size:20px;display:block}
+.focusbtn.on{border-color:var(--acc);background:#eef6ff;color:var(--acc)}
+.grprow{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:5px 2px;border-bottom:1px dashed var(--line)}
+.grprow:last-child{border-bottom:none}
+.grprow b{font-size:22px}
+.foundrow{display:flex;gap:9px;align-items:center;font-size:16px;padding:5px 2px;color:var(--mut)}
+.foundrow.got{color:var(--ink);font-weight:600}
+.foundrow .box{font-size:19px;flex:none}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}
+.kwchip{background:#eef6ff;border:1px solid #c4dcf5;color:#0b5aa8;border-radius:999px;padding:4px 11px;font-size:14.5px;font-weight:600}
+.small{font-size:13.5px;color:var(--mut)}
+.appfoot{background:#fff;border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:6px 14px}
+/* ===== below-the-app teacher zone ===== */
+.below{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+.below section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.below h2{margin:0 0 8px;font-size:20px}
+.below p,.below li{font-size:15.5px;line-height:1.65;color:#2c4761}
+.below .gloss{font-size:.82em}
+/* ===== Mechanics v2 additions ===== */
+#readRow{margin:8px 0 2px}
+#btnRead{font-size:17px;font-weight:800;padding:10px 16px}
+#btnRead.flash{animation:rdflash .5s ease 3}
+@keyframes rdflash{50%{background:#ffb400;color:#22384f}}
+#readHint{display:none;color:#b3541e;font-weight:700;font-size:15.5px;margin-top:6px}
+#btnGotIt{font-size:16.5px;font-weight:800;padding:9px 15px;margin-top:8px}
+#btnNext.dis{opacity:.45}
+#stepExtra.locked{opacity:.45;pointer-events:none}
+#noticeBox{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#22384f;color:#fff;font-size:17px;font-weight:700;border-radius:999px;padding:11px 22px;z-index:80;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
+#noticeBox.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#noticeBox .gloss{color:#ffd9a0}
+.qopt.sel{border-color:var(--acc);background:#eef6ff}
+.qrev{border:2px solid var(--line);border-radius:13px;padding:10px 13px;margin:8px 0;font-size:16.5px;line-height:1.5;text-align:left}
+.qrevq{font-weight:700}
+.qreva{color:#0a7a44;font-weight:700;margin-top:3px}
+.qrevy{color:#b03a3a;font-weight:700;margin-top:2px}
+.qreve{color:#2c4761;margin-top:3px}
+.piccard.placed{border-color:var(--acc)}
+.piccard.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.anstag{margin-left:6px}
+.excard.wrongsel{border-color:#e5a3a3;background:#fdf0f0}
+.excard.wrongsel .em{filter:none;opacity:1}
+.excard.missed{border-style:dashed;border-color:#b3541e}
+.wordopt.rightmark{border-color:#0a7a44;box-shadow:0 0 0 2px #8fd3ab}
+.langseg button.locked{opacity:.6}
+/* ===== quiz modal ===== */
+#quizModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#quizModal.open{display:flex}
+#botModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#botModal.open{display:flex}
+.qbox{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.qbox h2{margin:0 0 4px;font-size:23px}
+.qbox .qtext{font-size:20px;font-weight:700;line-height:1.45;margin:12px 0}
+.qbox .qtext .gloss{font-size:.75em}
+.qopt{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-size:18px;background:#fff;line-height:1.4}
+.qopt:hover{background:#f4f8fb}
+.qopt.right{border-color:#8fd3ab;background:#edf9f1}
+.qopt.wrong{border-color:#e5a3a3;background:#fdf0f0}
+.qexpl{display:none;background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:10px 13px;font-size:16.5px;margin-top:10px;line-height:1.55}
+.qexpl.open{display:block}
+.qexpl .gloss{font-size:.85em}
+/* ===== exercises overlay (Workbook-style) ===== */
+#exModal{position:fixed;inset:0;background:rgba(10,25,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#exModal.open{display:flex}
+.exbox{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:22px;max-height:88dvh;overflow-y:auto}
+.exbox h2{margin:0 0 4px;font-size:23px}
+#exScoreLine{font-size:17px;font-weight:800;color:var(--acc);margin:4px 0 2px}
+.exsec{border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:14px}
+.exsec.done{border-color:#8fd3ab;background:#f4fbf6}
+.exsec h3{margin:0 0 4px;font-size:19px}
+.exsec h3 .gloss{display:inline;margin-left:.4em;font-size:.75em}
+.exsec .exinst{font-size:16.5px;color:#2c4761;margin:2px 0 10px;line-height:1.45}
+.exstatus{font-size:13.5px;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2f6;color:var(--mut);margin-left:8px;vertical-align:middle}
+.exsec.done .exstatus{background:#e2f5ea;color:var(--ok)}
+.exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.excard{border:2px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;font-size:15.5px;line-height:1.3;width:100%}
+.excard .em{font-size:38px;display:block;margin-bottom:3px}
+.excard.grey .em{filter:grayscale(1);opacity:.45}
+.excard.coloured{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.coloured .em{filter:none;opacity:1}
+.excard.right{border-color:#8fd3ab;background:#edf9f1;cursor:default}
+.excard.right::after{content:" ✓";color:var(--ok);font-weight:800}
+.exhint{min-height:22px;font-size:15.5px;font-weight:700;color:#b3541e;margin-top:8px}
+.exsent{font-size:18px;line-height:1.5;padding:9px 4px;border-bottom:1px dashed var(--line)}
+.exsent:last-child{border-bottom:none}
+.wordopt{display:inline-block;border:2px solid var(--line);border-radius:10px;background:#fff;padding:3px 12px;margin:0 3px;cursor:pointer;font-size:17.5px;font-weight:700}
+.wordopt.crossed{text-decoration:line-through;background:#edf9f1;border-color:#8fd3ab;color:#0a7a44;cursor:default}
+.exexpl{background:#fff8e6;border:1px solid #ecd9a0;border-radius:11px;padding:8px 12px;font-size:15.5px;margin:6px 0 4px;line-height:1.5}
+.exexpl .gloss{font-size:.85em}
+@media(max-width:900px){
+  .console{display:none}
+  .console.open{display:block;position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-8px 0 30px rgba(16,38,63,.2)}
+  #btnConsole{display:inline-block !important}
+  #stepCard{width:340px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="i18n" data-en="← Science 8" data-vi="← Môn Khoa học 8">← Science 8</a>
+    <span class="ttl i18n" data-en="3.5 Pressure between solids" data-vi="3.5 Áp suất giữa các vật rắn (Pressure between solids)">3.5 Pressure between solids</span>
+    <span class="eqchip i18n" data-en="Unit 3 · Forces and energy" data-vi="Bài 3 · Lực và năng lượng (Forces and energy)">Unit 3 · Forces and energy</span>
+    <span class="sp"></span>
+    <span id="progTxt">0/6 · 0%</span>
+    <div class="langseg" id="langSeg">
+      <button data-lang="en">EN</button><button data-lang="both">EN+VI</button><button data-lang="vi">VI</button>
+    </div>
+    <button id="btnConsole" style="display:none">🎛</button>
+    <button id="btnExTop"></button>
+    <button id="btnQuizTop"></button>
+    <button id="btnBotTop"></button>
+    <button id="btnFull"></button>
+  </div>
+
+  <div class="stepbar" id="stepBar"></div>
+
+  <div class="mainline">
+    <span class="mq i18n" data-en="How can the same force press harder — or softer?" data-vi="Làm sao cùng một lực có thể ép mạnh hơn — hay nhẹ hơn?">How can the same force press harder — or softer?</span>
+    <span class="chainsep">·</span>
+    <span class="chainnode i18n" data-en="Sharp point" data-vi="Mũi nhọn (point)">Sharp point</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Smaller area" data-vi="Diện tích (area) nhỏ hơn">Smaller area</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Greater pressure" data-vi="Áp suất (pressure) lớn hơn">Greater pressure</span><span class="chainsep">→</span>
+    <span class="chainnode i18n" data-en="Spread out to soften" data-vi="Trải rộng ra để ép nhẹ hơn">Spread out to soften</span>
+  </div>
+
+  <div class="mainrow">
+    <div class="stagewrap" id="stageWrap">
+      <div id="stage3d"></div>
+      <div class="hintpill i18n" data-en="🖱 Drag to look around · Scroll to zoom · Tap things on the bench!" data-vi="🖱 Kéo chuột để xoay · Cuộn chuột để phóng to · Chạm vào các vật trên bàn thí nghiệm!">🖱 Drag to look around · Scroll to zoom · Tap things on the bench!</div>
+      <div id="errBox"></div>
+
+      <div class="panelbox" id="stepCard">
+        <div class="hd">
+          <span class="tagchip" id="scTag"></span>
+          <span class="status no" id="scStatus"></span>
+          <span class="small" id="scCount"></span>
+        </div>
+        <div class="sq" id="scQ"></div>
+        <p><b class="k" id="scDoLbl"></b> <span id="scDo"></span></p>
+        <div id="stepExtra"></div>
+        <p><b class="k" id="scSeeLbl"></b> <span id="scSee"></span></p>
+        <div id="readRow"><button class="primary" id="btnRead"></button><div id="readHint"></div></div>
+        <div id="evid"></div>
+        <div id="conclLock"></div>
+        <div id="conclBox">
+          <p style="margin-top:0"><b id="scConclLbl"></b></p>
+          <ul id="scPoints"></ul>
+          <button class="primary" id="btnGotIt" style="display:none"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnDemo"></button>
+          <button id="btnResetStep"></button>
+        </div>
+        <div class="btnrow">
+          <button id="btnPrev"></button>
+          <span class="sp"></span>
+          <button class="primary" id="btnNext"></button>
+        </div>
+      </div>
+
+      <div class="panelbox" id="wordCard">
+        <h4 id="wordCardH"></h4>
+        <div class="w" id="wordNow"></div>
+      </div>
+    </div>
+
+    <aside class="console" id="consolePanel">
+      <div class="unit">
+        <h3><span class="uno" style="background:#0d9d58">1</span><span id="u1T"></span></h3>
+        <p class="brief" id="u1Brief"></p>
+        <div class="focusgrid" id="focusRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#7a4fd0">2</span><span id="u2T"></span></h3>
+        <p class="brief" id="u2Brief"></p>
+        <div id="grpRows"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#e07b24">3</span><span id="u3T"></span></h3>
+        <p class="brief" id="u3Brief"></p>
+        <div id="foundList"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#0b76d1">4</span><span id="u4T"></span></h3>
+        <p class="brief" id="u4Brief"></p>
+        <div class="kwrow" id="kwRow"></div>
+      </div>
+
+      <div class="unit">
+        <h3><span class="uno" style="background:#44586e">i</span><span id="u5T"></span></h3>
+        <p class="brief i18n" data-en="Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.5. The bench in this lesson is a simulation — the weights, elephant and camel are models." data-vi="Khoa học Cambridge Lower Secondary 8 · Bài 3 Lực và năng lượng (Forces and energy) · Mục 3.5. Bàn thí nghiệm trong bài này là mô phỏng — các quả nặng, con voi và con lạc đà đều là mô hình.">Cambridge Lower Secondary Science 8 · Unit 3 Forces and energy · Section 3.5. The bench in this lesson is a simulation — the weights, elephant and camel are models.</p>
+      </div>
+    </aside>
+  </div>
+  <div class="appfoot i18n" data-en="Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen" data-vi="Phím tắt: ← → chuyển bước · 1–6 nhảy tới bước · Q kiểm tra · F toàn màn hình">Keys: ← → change step · 1–6 jump to a step · Q quiz · F fullscreen</div>
+</div>
+
+<div class="below">
+  <section>
+    <h2 class="i18n" data-en="For teachers and parents — about this lesson" data-vi="Dành cho giáo viên và phụ huynh — về bài học này">For teachers and parents — about this lesson</h2>
+    <p class="i18n" data-en="Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.5, pages 93–99; Workbook 8 (ISBN 9781108742856), pages 55–59. All wording in this lesson is rewritten in our own words; no text is copied from the book." data-vi="Nguồn: Dựa trên sách Cambridge Lower Secondary Science Learner's Book 8 (bản 2, ISBN 9781108742825), Bài 3 Forces and energy (Lực và năng lượng), mục 3.5, trang 93–99; Sách bài tập 8 (ISBN 9781108742856), trang 55–59. Mọi câu chữ trong bài học này đều được viết lại bằng lời của chúng tôi; không sao chép nguyên văn từ sách.">Source: Based on Cambridge Lower Secondary Science Learner's Book 8 (2nd edition, ISBN 9781108742825), Unit 3 Forces and energy, section 3.5, pages 93–99; Workbook 8 (ISBN 9781108742856), pages 55–59. All wording in this lesson is rewritten in our own words; no text is copied from the book.</p>
+    <p class="i18n" data-en="Objectives: recognise that a force can cause pressure on an area; understand what affects pressure; calculate pressure from force and area. Key words: pressure, surface area, sharp, point, newtons per square metre." data-vi="Mục tiêu: nhận biết một lực có thể gây áp suất (pressure) trên một diện tích; hiểu điều gì ảnh hưởng tới áp suất; tính áp suất từ lực và diện tích. Từ khóa: pressure (áp suất), surface area (diện tích bề mặt), sharp (sắc nhọn), point (mũi nhọn), newtons per square metre (newton trên mét vuông).">Objectives: recognise that a force can cause pressure on an area; understand what affects pressure; calculate pressure from force and area. Key words: pressure, surface area, sharp, point, newtons per square metre.</p>
+    <p class="i18n" data-en="How it works: each step asks for one real action on the 3D bench — tapping the sharp tools, the weights and the heel, sorting high- and low-pressure objects, then working the book examples: the elephant (50 000 N on 0.4 m² = 125 000 N/m²) and the foot investigation (a 60 kg person, weight 600 N, one foot 150 cm²). The lesson checks the action itself (the dark Show me line), and the answer stays locked until the action is done. Show me how only demonstrates — it never counts as done. Watch out for the key ideas: pressure = force ÷ area, a smaller area or a bigger force raises the pressure, and the unit of pressure follows the unit of area (N/m², N/cm², N/mm²)."How it works: each step asks for one real action on the 3D bench — tapping pens, setting up the paper, running the solvent, reading the separated bands, sorting dye results and choosing a solvent for leaf pigment. The lesson checks the action itself (the dark 'Show me' line), and the answer stays locked until the action is done. 'Show me how' only demonstrates — it never counts as done.</p>
+  </section>
+  <section>
+    <h2 class="i18n" data-en="The 6 steps" data-vi="6 bước của bài học">The 6 steps</h2>
+    <ol id="roadmap"></ol>
+  </section>
+</div>
+
+<div id="noticeBox"></div>
+
+<div id="quizModal">
+  <div class="qbox">
+    <h2 id="qTitle"></h2>
+    <div class="small" id="qProg"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="qexpl" id="qExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="qClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="qBack" style="display:none"></button>
+      <button class="primary" id="qNext"></button>
+    </div>
+    <div class="small" id="qScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<div id="botModal">
+  <div class="qbox">
+    <h2 id="bTitle"></h2>
+    <div class="small" id="bProg"></div>
+    <div class="qtext" id="bText"></div>
+    <div id="bOpts"></div>
+    <div class="qexpl" id="bExpl"></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button id="bClose"></button>
+      <span class="sp" style="flex:1"></span>
+      <button class="primary" id="bNext"></button>
+    </div>
+    <div class="small" id="bScore" style="margin-top:10px;font-weight:700;font-size:16px"></div>
+  </div>
+</div>
+
+<script src="camb-engine.js"></script>
+<div id="exModal">
+  <div class="qbox exbox">
+    <h2 id="exTitle"></h2>
+    <div id="exScoreLine"></div>
+    <div class="small" id="exIntro"></div>
+
+    <section class="exsec" id="exSec1">
+      <h3 id="ex1T"></h3>
+      <p class="exinst" id="ex1Inst"></p>
+      <div class="exgrid" id="ex1Grid"></div>
+      <div class="exhint" id="ex1Hint"></div>
+    </section>
+
+    <section class="exsec" id="exSec2">
+      <h3 id="ex2T"></h3>
+      <p class="exinst" id="ex2Inst"></p>
+      <div class="picgrid" id="ex2Grid"></div>
+      <div class="binrow">
+        <button class="binbtn living" id="ex2BinGreat"></button>
+        <button class="binbtn nonliving" id="ex2BinSmall"></button>
+      </div>
+    </section>
+
+    <section class="exsec" id="exSec3">
+      <h3 id="ex3T"></h3>
+      <p class="exinst" id="ex3Inst"></p>
+      <div id="ex3List"></div>
+    </section>
+
+    <div class="btnrow" style="margin-top:16px">
+      <button class="primary" id="exSubmit"></button>
+      <button id="exRetry" style="display:none"></button>
+      <span class="sp" style="flex:1"></span>
+      <button id="exClose"></button>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
+/* =====================================================================
+   LESSON CONTENT — sci8-3-5 "Pressure between solids" (Science 8, Unit 3)
+   Loaded between camb-engine.js and camb-bridge.js.
+   ===================================================================== */
+
+/* ================= bench things ================= */
+const THINGS={
+  knife:   {emoji:'🔪', name:{en:'Sharp knife',vi:'Dao sắc (knife)'},              short:{en:'Knife',vi:'Dao'},            ring:0.55, labelY:1.0,  fx:2.0,  fz:0.9,  fr:5.0},
+  pin:     {emoji:'📌', name:{en:'Drawing pin',vi:'Ghim vẽ (drawing pin)'},       short:{en:'Pin',vi:'Ghim'},             ring:0.5,  labelY:1.0,  fx:3.05, fz:0.9,  fr:5.0},
+  scissors:{emoji:'✂️', name:{en:'Scissors',vi:'Kéo (scissors)'},                 short:{en:'Scissors',vi:'Kéo'},         ring:0.55, labelY:1.0,  fx:4.1,  fz:0.9,  fr:5.0},
+  weight:  {emoji:'🏋️', name:{en:'Stack of weights — a bigger force',vi:'Chồng quả nặng — một lực lớn hơn'}, short:{en:'Weights',vi:'Quả nặng'}, ring:0.6, labelY:1.5, fx:-3.4, fz:1.8, fr:5.2},
+  heel:    {emoji:'👠', name:{en:'Stiletto heel — a tiny area',vi:'Gót giày nhọn — diện tích rất nhỏ'}, short:{en:'Heel',vi:'Gót giày'}, ring:0.5, labelY:1.1, fx:-2.0, fz:1.9, fr:5.0},
+  camel:   {emoji:'🐪', name:{en:'Camel — big feet, for looking only',vi:'Lạc đà — bàn chân to, chỉ để ngắm'}, short:{en:'Camel',vi:'Lạc đà'}, ring:1.1, labelY:2.2, fx:4.6, fz:-2.6, fr:6.2},
+  elephant:{emoji:'🐘', name:{en:'Elephant — weight 50 000 N',vi:'Voi — trọng lượng 50 000 N'}, short:{en:'Elephant',vi:'Voi'}, ring:1.15, labelY:2.6, fx:-1.4, fz:-1.1, fr:6.4},
+  footmat: {emoji:'🐾', name:{en:'Footprint mat — total foot area 0.4 m²',vi:'Thảm dấu chân — tổng diện tích chân 0,4 m²'}, short:{en:'Foot area 0.4 m²',vi:'Diện tích chân 0,4 m²'}, ring:0.7, labelY:0.7, fx:0.9, fz:1.7, fr:5.2},
+  scale:   {emoji:'⚖️', name:{en:'Bathroom scale — mass 60 kg',vi:'Cân phòng tắm — khối lượng 60 kg'}, short:{en:'Scale',vi:'Cân'}, ring:0.6, labelY:1.0, fx:-3.9, fz:-0.9, fr:5.2},
+  footprint:{emoji:'🦶', name:{en:'Foot outline on squared paper — 150 cm²',vi:'Hình bàn chân trên giấy ô vuông — 150 cm²'}, short:{en:'Foot 150 cm²',vi:'Bàn chân 150 cm²'}, ring:0.6, labelY:0.8, fx:-2.6, fz:0.35, fr:5.0},
+  unitm:   {emoji:'⬛', name:{en:'Area tile: 1 square metre (m²)',vi:'Ô diện tích: 1 mét vuông (m²)'}, short:{en:'1 m²',vi:'1 m²'}, ring:0.65, labelY:1.1, fx:2.3, fz:-1.6, fr:5.0},
+  unitcm:  {emoji:'🟦', name:{en:'Area tile: square centimetres (cm²)',vi:'Ô diện tích: xăng-ti-mét vuông (cm²)'}, short:{en:'cm²',vi:'cm²'}, ring:0.5, labelY:1.0, fx:3.4, fz:-0.7, fr:5.0},
+  unitmm:  {emoji:'🟨', name:{en:'Area tile: square millimetres (mm²)',vi:'Ô diện tích: mi-li-mét vuông (mm²)'}, short:{en:'mm²',vi:'mm²'}, ring:0.4, labelY:0.9, fx:4.3, fz:-1.6, fr:5.0}
+};
+const FOCUSORDER=['knife','pin','scissors','weight','heel','camel','elephant','scale'];
+
+/* ================= UI strings ================= */
+const STR={
+  stepsLbl:{en:'STEPS',vi:'CÁC BƯỚC'},
+  stepOf:(i,n)=>({en:'Step '+(i+1)+' of '+n,vi:'Bước '+(i+1)+' / '+n}),
+  stepWord:{en:'Step',vi:'Bước'},
+  doLbl:{en:'Do this:',vi:'Hãy làm:'},
+  seeLbl:{en:'You will see:',vi:'Con sẽ thấy:'},
+  conclLbl:{en:'Answer:',vi:'Đáp án:'},
+  icanLbl:{en:'Look what I can do!',vi:'Xem con làm được gì này!'},
+  locked:{en:'Do the action to unlock the answer 🔒',vi:'Làm hành động ở trên để mở đáp án 🔒'},
+  demoBtn:{en:'▶ Show me how',vi:'▶ Xem cách làm'},
+  resetBtn:{en:'↺ Reset step',vi:'↺ Làm lại bước'},
+  prevBtn:{en:'‹ Back',vi:'‹ Quay lại'},
+  nextBtn:{en:'Next ›',vi:'Tiếp ›'},
+  nextQuiz:{en:'Go to the quiz ›',vi:'Tới bài kiểm tra ›'},
+  quizBtn:{en:'Quiz ✓',vi:'Kiểm tra ✓'},
+  botBtn:{en:'🤖 Bot duel',vi:'🤖 Đấu bot'},
+  botTitle:{en:'🤖 Bot duel — can you beat the bot?',vi:'🤖 Đấu bot — con thắng được bot không?'},
+  botPickLbl:{en:'The bot picked',vi:'Bot đã chọn'},
+  botOk:{en:'the bot is right!',vi:'bot đúng rồi!'},
+  botNo:{en:'the bot is wrong!',vi:'bot sai rồi!'},
+  botWin:{en:'🏆 You win! +1 ⭐',vi:'🏆 Con thắng! +1 ⭐'},
+  botWinHad:{en:'🏆 You win! (Star already won)',vi:'🏆 Con thắng! (Ngôi sao đã nhận rồi)'},
+  botDraw:{en:'🤝 Draw! Try again.',vi:'🤝 Hòa! Thử lại nhé.'},
+  botLose:{en:'🤖 The bot wins. Try again!',vi:'🤖 Bot thắng rồi. Thử lại nhé!'},
+  botAgain:{en:'Play again',vi:'Chơi lại'},
+  fullBtn:{en:'⛶ Fullscreen',vi:'⛶ Toàn màn hình'},
+  notDone:{en:'Not done yet',vi:'Chưa làm'},
+  doneSt:{en:'Done ✓',vi:'Đã làm ✓'},
+  evidDone:{en:'Show me: DONE ✓ — ',vi:'Căn cứ: ĐÃ ĐẠT ✓ — '},
+  evidHead:{en:'Show me: ',vi:'Căn cứ: '},
+  wordCardH:{en:'KEY WORD',vi:'TỪ KHÓA'},
+  u1T:{en:'On the bench',vi:'Trên bàn thí nghiệm'},
+  u1Brief:{en:'Tap a name to LOOK at the thing. Looking is not doing — to do a step, tap the thing itself on the bench!',vi:'Chạm vào một tên để NGẮM vật đó. Ngắm chưa phải là làm — muốn làm một bước, hãy chạm vào chính vật đó trên bàn!'},
+  u2T:{en:'My pressure record',vi:'Hồ sơ áp suất của con'},
+  u2Brief:{en:'What you have found and worked out so far.',vi:'Những gì con đã tìm thấy và tính được.'},
+  recSharp:{en:'Sharp objects found',vi:'Vật sắc nhọn đã tìm'},
+  recSort:{en:'Pressure cards sorted right',vi:'Thẻ áp suất đã xếp đúng'},
+  recEle:{en:'Elephant pressure worked out',vi:'Đã tính áp suất của voi'},
+  recFoot:{en:'Foot pressure worked out',vi:'Đã tính áp suất của bàn chân'},
+  u3T:{en:'Things I did',vi:'Những việc con đã làm'},
+  u3Brief:{en:'Your practical checklist.',vi:'Danh sách thực hành của con.'},
+  didSharp:{en:'Found the sharp tools',vi:'Đã tìm các dụng cụ sắc nhọn'},
+  didChange:{en:'Changed force and area',vi:'Đã thay đổi lực và diện tích'},
+  didSort:{en:'Sorted high and low pressure',vi:'Đã phân loại áp suất cao và thấp'},
+  didCalc:{en:'Calculated the elephant pressure',vi:'Đã tính áp suất của voi'},
+  didInvest:{en:'Investigated foot pressure',vi:'Đã khảo sát áp suất bàn chân'},
+  u4T:{en:'Key words',vi:'Từ khóa'},
+  u4Brief:{en:'Words to learn in this lesson.',vi:'Các từ cần học trong bài này.'},
+  u5T:{en:'About',vi:'Giới thiệu'},
+  binHigh:{en:'HIGH pressure',vi:'Áp suất CAO (HIGH pressure)'},
+  binLow:{en:'LOW pressure',vi:'Áp suất THẤP (LOW pressure)'},
+  binGreat:{en:'GREATEST pressure',vi:'Áp suất LỚN NHẤT (GREATEST)'},
+  binSmall:{en:'SMALLEST pressure',vi:'Áp suất NHỎ NHẤT (SMALLEST)'},
+  lookEle:{en:'Look at the elephant 🐘',vi:'Ngắm con voi 🐘'},
+  quizTitle:{en:'Quiz — check what you know',vi:'Kiểm tra — xem con nhớ gì'},
+  exBtn:{en:'📝 Exercises',vi:'📝 Bài tập'},
+  exTitle:{en:'📝 Exercises — Workbook 3.5',vi:'📝 Bài tập — Sách bài tập (Workbook) 3.5'},
+  exIntro:{en:'Workbook games for this lesson. They do not change your steps — do them any time!',vi:'Các trò chơi kiểu sách bài tập (Workbook) cho bài này. Chúng không ảnh hưởng tới các bước học — làm lúc nào cũng được!'},
+  exClose:{en:'Close',vi:'Đóng'},
+  ex1T:{en:'Exercise 3.5A · Focus — Describing pressure',vi:'Bài tập 3.5A · Focus — Mô tả áp suất'},
+  ex1Inst:{en:'Tap every card where the pressure on the surface is HIGH. Leave the low-pressure cards grey.',vi:'Chạm vào mọi thẻ mà áp suất (pressure) trên bề mặt là CAO. Để nguyên các thẻ áp suất thấp màu xám.'},
+  ex2T:{en:'Exercise 3.5B · Practice — Greatest and smallest pressure',vi:'Bài tập 3.5B · Practice — Áp suất lớn nhất và nhỏ nhất'},
+  ex2Inst:{en:'The same box can rest on faces of 15 cm² or 60 cm², and people press floors in different ways. Tap a card, then tap GREATEST pressure or SMALLEST pressure for it.',vi:'Cùng một chiếc hộp có thể đặt trên mặt 15 cm² hoặc 60 cm², và con người ép sàn theo nhiều cách khác nhau. Chạm vào một thẻ, rồi chạm Áp suất LỚN NHẤT hoặc NHỎ NHẤT cho thẻ đó.'},
+  ex3T:{en:'Exercise 3.5C · Challenge — Cross out the wrong word',vi:'Bài tập 3.5C · Challenge — Gạch bỏ từ sai'},
+  ex3Inst:{en:'In each sentence, tap the WRONG ending to cross it out.',vi:'Trong mỗi câu, chạm vào phần kết SAI để gạch bỏ nó.'},
+  exDoneTag:{en:'Done ✓',vi:'Xong ✓'},
+  exTodoTag:{en:'Not done yet',vi:'Chưa xong'},
+  exGreat:{en:'Great work! 🌟',vi:'Làm tốt lắm! 🌟'},
+  qClose:{en:'Close',vi:'Đóng'},
+  qNext:{en:'Next question ›',vi:'Câu tiếp ›'},
+  qResult:{en:'See results',vi:'Xem kết quả'},
+  qAgain:{en:'Try again',vi:'Làm lại'},
+  qRight:{en:'Right! ',vi:'Đúng rồi! '},
+  qWrong:{en:'Not quite. ',vi:'Chưa đúng. '},
+  qDone:{en:'You finished the quiz!',vi:'Con đã làm xong bài kiểm tra!'},
+  startBtn:{en:"I've read it — Start",vi:'Con đã đọc — Bắt đầu'},
+  startAgainBtn:{en:'Read again — Start',vi:'Đọc lại — Bắt đầu'},
+  readWait:n=>({en:'Read the task first… '+n,vi:'Hãy đọc nhiệm vụ trước… '+n}),
+  readAgain:{en:'Read the instruction again',vi:'Hãy đọc lại hướng dẫn'},
+  gotItBtn:{en:'Got it ✓',vi:'Con đã hiểu ✓'},
+  ackWait:n=>({en:'Read the conclusion… '+n,vi:'Hãy đọc kết luận… '+n}),
+  finishSteps:{en:'Finish all the steps first',vi:'Hãy hoàn thành hết các bước học trước'},
+  viParents:{en:'Vietnamese is for parents',vi:'Tiếng Việt dành cho phụ huynh'},
+  qSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  qBack:{en:'‹ Back',vi:'‹ Quay lại'},
+  qYourAns:{en:'Your answer: ',vi:'Đáp án của con: '},
+  qRightAns:{en:'Right answer: ',vi:'Đáp án đúng: '},
+  qNoAns:{en:'(no answer)',vi:'(chưa trả lời)'},
+  exSubmit:{en:'Submit ✓',vi:'Nộp bài ✓'},
+  exAnswered:(n,t)=>({en:'Answered: '+n+' of '+t+' — tap Submit when you are ready.',vi:'Đã trả lời: '+n+' / '+t+' — khi sẵn sàng hãy chạm Nộp bài.'})
+};
+const KEYWORDS=[
+  {en:'pressure',vi:'áp suất'},
+  {en:'surface area',vi:'diện tích bề mặt'},
+  {en:'sharp',vi:'sắc nhọn'},
+  {en:'point',vi:'mũi nhọn'},
+  {en:'newtons per square metre',vi:'newton trên mét vuông'},
+  {en:'force',vi:'lực'}
+];
+
+/* ================= steps ================= */
+const STEPS=[
+ {tag:{en:'Sharp points and edges',vi:'Mũi nhọn và lưỡi sắc'}, word:{en:'sharp',vi:'sắc nhọn'},
+  q:{en:'A nail has a sharp point at one end. Which other tools are sharp — and why?',vi:'Một chiếc đinh có mũi nhọn (point) ở một đầu. Những dụng cụ nào khác cũng sắc nhọn — và vì sao?'},
+  act:{en:'Tap the three sharp tools on the bench: the knife, the drawing pin and the scissors.',vi:'Chạm vào ba dụng cụ sắc nhọn trên bàn: con dao, chiếc ghim vẽ (drawing pin) và chiếc kéo (scissors).'},
+  see:{en:'Each tool bounces and shows its name. Finding all three completes the step.',vi:'Mỗi dụng cụ nảy lên và hiện tên. Tìm đủ ba dụng cụ là hoàn thành bước.'},
+  concl:[
+    {en:'A sharp point (point) or edge touches a surface over a very small area.',vi:'Một mũi nhọn (point) hay lưỡi sắc chạm vào bề mặt trên một diện tích (area) rất nhỏ.'},
+    {en:'The whole force presses on that tiny area, so the pressure is high — a pin goes easily into wood or card, and scissors cut easily.',vi:'Toàn bộ lực ép lên diện tích bé xíu đó, nên áp suất (pressure) cao — ghim dễ cắm vào gỗ hay bìa, và kéo cắt dễ dàng.'}]},
+ {tag:{en:'Force and area',vi:'Lực và diện tích'}, word:{en:'pressure',vi:'áp suất'},
+  q:{en:'A knife cuts modelling clay. If the clay is hard to cut, what two changes make the knife press harder?',vi:'Một con dao cắt đất nặn. Nếu đất khó cắt, hai thay đổi nào làm dao ép mạnh hơn?'},
+  act:{en:'Tap the stack of weights — pushing down with a bigger force. Then tap the stiletto heel — a force pressing on a tiny area.',vi:'Chạm vào chồng quả nặng — ấn xuống bằng một lực (force) lớn hơn. Rồi chạm vào gót giày nhọn — một lực ép lên một diện tích (area) rất nhỏ.'},
+  see:{en:'The weights bounce for “bigger force” and the heel bounces for “smaller area”.',vi:'Các quả nặng nảy lên cho “lực lớn hơn” và gót giày nảy lên cho “diện tích nhỏ hơn”.'},
+  concl:[
+    {en:'Pressure is the pushing effect of a force. A bigger force gives a bigger pressure.',vi:'Áp suất (pressure) là tác dụng ép của một lực (force). Lực càng lớn thì áp suất càng lớn.'},
+    {en:'The same force on a smaller area also gives a bigger pressure — a sharper knife has less area touching the clay, so it cuts more easily.',vi:'Cùng một lực trên diện tích (area) nhỏ hơn cũng cho áp suất lớn hơn — dao sắc hơn có diện tích chạm vào đất nặn ít hơn, nên cắt dễ hơn.'},
+    {en:'The link is: pressure = force ÷ area.',vi:'Mối liên hệ là: áp suất (pressure) = lực (force) ÷ diện tích (area).'}]},
+ {tag:{en:'High or low pressure?',vi:'Áp suất cao hay thấp?'}, word:{en:'surface area',vi:'diện tích bề mặt'},
+  q:{en:'Some things are made with a big surface area, and some with a tiny one. Which is which?',vi:'Một số vật được làm với diện tích bề mặt (surface area) lớn, số khác lại rất nhỏ. Vật nào thuộc loại nào?'},
+  act:{en:'Each card shows something pressing on a surface. Tap a card, then tap HIGH pressure or LOW pressure.',vi:'Mỗi thẻ cho thấy một vật đang ép lên một bề mặt. Chạm vào một thẻ, rồi chạm Áp suất CAO (HIGH) hoặc THẤP (LOW).'},
+  see:{en:'Right cards turn green. You need 5 or more right.',vi:'Thẻ đúng sẽ chuyển màu xanh lá. Con cần đúng từ 5 thẻ trở lên.'},
+  concl:[
+    {en:'Small area → high pressure: a pin point, a knife edge and a stiletto heel all concentrate the force.',vi:'Diện tích nhỏ → áp suất cao: mũi ghim, lưỡi dao và gót giày nhọn đều tập trung lực lại.'},
+    {en:'Large area → low pressure: a camel has big feet so its weight spreads out and it does not sink into sand.',vi:'Diện tích lớn → áp suất thấp: lạc đà có bàn chân to nên trọng lượng của nó trải rộng ra và nó không lún vào cát.'},
+    {en:'On a bed of nails, a person’s weight is shared by hundreds of nails, so the pressure from each nail is very small.',vi:'Trên giường đinh, trọng lượng của một người được chia cho hàng trăm chiếc đinh, nên áp suất (pressure) từ mỗi chiếc đinh rất nhỏ.'}]},
+ {tag:{en:'Calculate: the elephant',vi:'Tính toán: con voi'}, word:{en:'newtons per square metre',vi:'newton trên mét vuông'},
+  q:{en:'An elephant weighs 50 000 N. How much pressure do its feet put on the ground?',vi:'Một con voi nặng 50 000 N. Bàn chân của nó gây áp suất bao nhiêu lên mặt đất?'},
+  act:{en:'Tap the elephant — its weight is the force, 50 000 N. Then tap the footprint mat — the total area of all four feet is 0.4 m².',vi:'Chạm vào con voi — trọng lượng của nó là lực (force), 50 000 N. Rồi chạm vào thảm dấu chân — tổng diện tích (area) của cả bốn bàn chân là 0,4 m².'},
+  see:{en:'Both values appear, ready to put into the equation.',vi:'Cả hai giá trị hiện ra, sẵn sàng đưa vào phương trình.'},
+  concl:[
+    {en:'pressure = force ÷ area = 50 000 ÷ 0.4 = 125 000 N/m².',vi:'Áp suất (pressure) = lực (force) ÷ diện tích (area) = 50 000 ÷ 0,4 = 125 000 N/m².'},
+    {en:'The unit is newtons per square metre (N/m²) because the area was measured in m².',vi:'Đơn vị là newton trên mét vuông (newtons per square metre, N/m²) vì diện tích được đo bằng m².'},
+    {en:'The same equation works in cm²: a bicycle tyre carries 500 N on 5 cm², so its pressure is 500 ÷ 5 = 100 N/cm².',vi:'Phương trình này cũng đúng với cm²: một lốp xe đạp chịu 500 N trên 5 cm², nên áp suất của nó là 500 ÷ 5 = 100 N/cm².'}]},
+ {tag:{en:'Investigate: your own feet',vi:'Khảo sát: bàn chân của con'}, word:{en:'surface area',vi:'diện tích bề mặt'},
+  q:{en:'How does the pressure you put on the floor change when you stand on one foot, or on tiptoe?',vi:'Áp suất con gây lên sàn thay đổi thế nào khi con đứng bằng một chân, hay kiễng chân?'},
+  act:{en:'Tap the bathroom scale — our person has a mass of 60 kg, so their weight is 60 × 10 = 600 N. Then tap the foot outline on squared paper — one foot covers 150 cm².',vi:'Chạm vào cân phòng tắm — người của chúng ta có khối lượng 60 kg, nên trọng lượng là 60 × 10 = 600 N. Rồi chạm vào hình bàn chân trên giấy ô vuông — một bàn chân chiếm 150 cm².'},
+  see:{en:'The scale gives the weight and the outline gives the area of one foot.',vi:'Cái cân cho trọng lượng và hình vẽ cho diện tích (area) của một bàn chân.'},
+  concl:[
+    {en:'Standing on both feet: area = 300 cm², so pressure = 600 ÷ 300 = 2 N/cm².',vi:'Đứng bằng hai chân: diện tích = 300 cm², nên áp suất (pressure) = 600 ÷ 300 = 2 N/cm².'},
+    {en:'Standing on one foot: the same weight presses on half the area, so the pressure doubles to 4 N/cm².',vi:'Đứng bằng một chân: cùng trọng lượng ép lên một nửa diện tích, nên áp suất tăng gấp đôi thành 4 N/cm².'},
+    {en:'On tiptoe the front of one foot covers only about 50 cm², so the pressure rises to 600 ÷ 50 = 12 N/cm². Lying down spreads the weight over the largest area of all, so the pressure is smallest.',vi:'Kiễng chân, phần trước của một bàn chân chỉ chiếm khoảng 50 cm², nên áp suất tăng lên 600 ÷ 50 = 12 N/cm². Nằm xuống trải trọng lượng trên diện tích lớn nhất, nên áp suất nhỏ nhất.'}]},
+ {tag:{en:'Units of pressure',vi:'Đơn vị của áp suất'}, word:{en:'newtons per square metre',vi:'newton trên mét vuông'},
+  q:{en:'Force is in newtons. How does the area unit decide the pressure unit?',vi:'Lực đo bằng newton. Đơn vị diện tích quyết định đơn vị áp suất như thế nào?'},
+  act:{en:'Tap the three area tiles on the bench: the big 1 m² tile, the cm² tile and the tiny mm² tile.',vi:'Chạm vào ba ô diện tích trên bàn: ô 1 m² lớn, ô cm² và ô mm² bé xíu.'},
+  see:{en:'Each tile bounces and shows its area unit.',vi:'Mỗi ô nảy lên và hiện đơn vị diện tích của nó.'},
+  concl:[
+    {en:'The unit of pressure is the force unit divided by the area unit: area in m² → N/m²; area in cm² → N/cm²; area in mm² → N/mm².',vi:'Đơn vị của áp suất (pressure) là đơn vị lực chia cho đơn vị diện tích: diện tích bằng m² → N/m²; bằng cm² → N/cm²; bằng mm² → N/mm².'},
+    {en:'To find a force instead, turn the equation around: force = pressure × area. A hammer only needs 50 × 1.5 = 75 N to push a nail (point area 1.5 mm²) into wood at 50 N/mm².',vi:'Muốn tìm lực, hãy đảo phương trình: lực (force) = áp suất (pressure) × diện tích (area). Một cái búa chỉ cần 50 × 1,5 = 75 N để đóng một chiếc đinh (diện tích mũi 1,5 mm²) vào gỗ ở 50 N/mm².'},
+    {en:'I can understand that pressure is the pushing effect of a force.',vi:'Con hiểu được áp suất (pressure) là tác dụng ép của một lực (force).'},
+    {en:'I know and can use the equation that links pressure, force and area.',vi:'Con biết và dùng được phương trình liên hệ áp suất (pressure), lực (force) và diện tích (area).'},
+    {en:'I can work out the unit of pressure from the units of force and area.',vi:'Con suy ra được đơn vị của áp suất từ đơn vị của lực và diện tích.'}]}
+];
+const PCARDS=[
+ {id:'p_heel',emoji:'👠',en:'Stiletto heel',vi:'Gót giày nhọn',ans:'high'},
+ {id:'p_camel',emoji:'🐪',en:'Camel foot on sand',vi:'Chân lạc đà trên cát',ans:'low'},
+ {id:'p_knife',emoji:'🔪',en:'Sharp knife edge',vi:'Lưỡi dao sắc',ans:'high'},
+ {id:'p_snow',emoji:'🎿',en:'Wide snowshoe',vi:'Giày đi tuyết rộng',ans:'low'},
+ {id:'p_pin',emoji:'📌',en:'Point of a drawing pin',vi:'Mũi ghim vẽ',ans:'high'},
+ {id:'p_bed',emoji:'🛏️',en:'Bed of nails — weight shared by hundreds of nails',vi:'Giường đinh — trọng lượng chia cho hàng trăm đinh',ans:'low'}
+];
+const PCARDS_ORDER=mixOrder(PCARDS,c=>c.ans,2);
+const QUIZ=[
+ {q:{en:'A box weighs 60 N and touches the ground over an area of 0.5 m². What pressure does it exert on the ground?',vi:'Một chiếc hộp nặng 60 N và chạm đất trên diện tích 0,5 m². Nó gây áp suất (pressure) bao nhiêu lên mặt đất?'},
+  o:[{en:'30 N/m²',vi:'30 N/m²'},{en:'120 N/m²',vi:'120 N/m²'},{en:'60.5 N/m²',vi:'60,5 N/m²'}],a:1,
+  e:{en:'pressure = force ÷ area = 60 ÷ 0.5 = 120 N/m².',vi:'Áp suất (pressure) = lực (force) ÷ diện tích (area) = 60 ÷ 0,5 = 120 N/m².'}},
+ {q:{en:'Why are shoes for walking on snow wide and flat?',vi:'Vì sao giày đi trên tuyết lại rộng và phẳng?'},
+  o:[{en:'They spread the weight over a larger area, so the pressure on the snow is smaller',vi:'Chúng trải trọng lượng trên diện tích (area) lớn hơn, nên áp suất (pressure) lên tuyết nhỏ hơn'},{en:'They make the person heavier',vi:'Chúng làm người nặng hơn'},{en:'They make the snow harder',vi:'Chúng làm tuyết cứng hơn'}],a:0,
+  e:{en:'The same force over a larger area gives a smaller pressure, so the wearer sinks less.',vi:'Cùng một lực trên diện tích lớn hơn cho áp suất nhỏ hơn, nên người đi lún ít hơn.'}},
+ {q:{en:'A nail goes into wood when the pressure at its point is 60 N/mm². The point area is 0.5 mm². What force is needed?',vi:'Một chiếc đinh cắm vào gỗ khi áp suất (pressure) ở mũi đinh là 60 N/mm². Diện tích mũi đinh là 0,5 mm². Cần lực (force) bao nhiêu?'},
+  o:[{en:'120 N',vi:'120 N'},{en:'12 N',vi:'12 N'},{en:'30 N',vi:'30 N'}],a:2,
+  e:{en:'force = pressure × area = 60 × 0.5 = 30 N.',vi:'Lực (force) = áp suất (pressure) × diện tích (area) = 60 × 0,5 = 30 N.'}},
+ {q:{en:'A force is measured in newtons and the area is measured in cm². What is the unit of the pressure?',vi:'Một lực (force) được đo bằng newton và diện tích (area) được đo bằng cm². Đơn vị của áp suất (pressure) là gì?'},
+  o:[{en:'newtons (N)',vi:'newton (N)'},{en:'N/cm²',vi:'N/cm²'},{en:'cm²/N',vi:'cm²/N'}],a:1,
+  e:{en:'Pressure is force divided by area, so the unit is the force unit over the area unit: N/cm².',vi:'Áp suất là lực chia cho diện tích, nên đơn vị là đơn vị lực trên đơn vị diện tích: N/cm².'}}
+];
+
+/* ================= workbook exercises ================= */
+const EX1=[
+ {id:'e_heel',emoji:'👠',en:'Stiletto heel on a wooden floor',vi:'Gót giày nhọn trên sàn gỗ',keyw:true},
+ {id:'e_snowshoe',emoji:'🎿',en:'Wide snowshoe on snow',vi:'Giày đi tuyết rộng trên tuyết',keyw:false},
+ {id:'e_pinpoint',emoji:'📌',en:'Point of a drawing pin',vi:'Mũi ghim vẽ (drawing pin)',keyw:true},
+ {id:'e_camel',emoji:'🐪',en:'Camel foot on sand',vi:'Chân lạc đà trên cát',keyw:false},
+ {id:'e_knife',emoji:'🔪',en:'Edge of a sharp knife',vi:'Lưỡi dao sắc',keyw:true},
+ {id:'e_bednails',emoji:'🛏️',en:'Bed of nails — pressure from each nail',vi:'Giường đinh — áp suất từ mỗi chiếc đinh',keyw:false},
+ {id:'e_bustyre',emoji:'🚌',en:'Wide bus tyre on the road',vi:'Lốp xe buýt rộng trên đường',keyw:false}
+];
+let EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+const EX2=[
+ {id:'x_faceB',emoji:'📦',en:'Box resting on face B — area 15 cm²',vi:'Hộp đặt trên mặt B — diện tích 15 cm²',ans:'greatest'},
+ {id:'x_faceC',emoji:'📦',en:'Box resting on face C — area 60 cm²',vi:'Hộp đặt trên mặt C — diện tích 60 cm²',ans:'smallest'},
+ {id:'x_heel',emoji:'👠',en:'Stiletto heel — tiny area on the floor',vi:'Gót giày nhọn — diện tích chạm sàn rất nhỏ',ans:'greatest'},
+ {id:'x_snowshoe',emoji:'🎿',en:'Snowshoe — weight spread over a large area',vi:'Giày đi tuyết — trọng lượng trải trên diện tích lớn',ans:'smallest'},
+ {id:'x_knife',emoji:'🔪',en:'Sharp knife edge pressing on bread',vi:'Lưỡi dao sắc ép lên bánh mì',ans:'greatest'},
+ {id:'x_camel',emoji:'🐪',en:'Camel foot — weight spread over a large foot',vi:'Chân lạc đà — trọng lượng trải trên bàn chân lớn',ans:'smallest'}
+];
+let EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+const EX3=[
+ {pre:{en:'Rose thorns are dangerous to touch because they have',vi:'Gai hoa hồng nguy hiểm khi chạm vào vì chúng có'},
+  wrong:1,
+  opts:[{en:'a very small area, so the pressure on your skin is high',vi:'diện tích (area) rất nhỏ, nên áp suất (pressure) lên da của con cao'},{en:'a very large area, so the pressure on your skin is low',vi:'diện tích rất lớn, nên áp suất lên da của con thấp'}],
+  e:{en:'A thorn tip touches over a tiny area, so the pressure is high — cross out the “large area” ending.',vi:'Đầu gai chạm trên diện tích bé xíu, nên áp suất cao — hãy gạch bỏ phần kết “diện tích rất lớn”.'}},
+ {pre:{en:'A large piece of wood under a car wheel in sand works because it',vi:'Một tấm gỗ lớn đặt dưới bánh xe trên cát có tác dụng vì nó'},
+  wrong:1,
+  opts:[{en:'spreads the force over a bigger area, so the pressure falls and the wheel sinks less',vi:'trải lực (force) trên diện tích (area) lớn hơn, nên áp suất (pressure) giảm và bánh xe lún ít hơn'},{en:'spreads the force over a smaller area, so the pressure rises and the wheel sinks less',vi:'trải lực trên diện tích nhỏ hơn, nên áp suất tăng và bánh xe lún ít hơn'}],
+  e:{en:'Spreading the force over a bigger area lowers the pressure — cross out the “smaller area” ending.',vi:'Trải lực trên diện tích lớn hơn làm giảm áp suất — hãy gạch bỏ phần kết “diện tích nhỏ hơn”.'}},
+ {pre:{en:'A sharp knife cuts bread more easily than a blunt knife because',vi:'Dao sắc cắt bánh mì dễ hơn dao cùn vì'},
+  wrong:1,
+  opts:[{en:'its edge has a tiny area, so the pressure is high',vi:'lưỡi của nó có diện tích (area) rất nhỏ, nên áp suất (pressure) cao'},{en:'its edge has a huge area, so the pressure is low',vi:'lưỡi của nó có diện tích rất lớn, nên áp suất thấp'}],
+  e:{en:'A sharp edge touches over a tiny area, giving high pressure for cutting — cross out the “huge area” ending.',vi:'Lưỡi sắc chạm trên diện tích bé xíu, cho áp suất cao để cắt — hãy gạch bỏ phần kết “diện tích rất lớn”.'}},
+ {pre:{en:'End A of a drawing pin — the part your thumb pushes — is wide and flat so that',vi:'Đầu A của ghim vẽ — phần ngón cái của con ấn vào — rộng và phẳng để'},
+  wrong:1,
+  opts:[{en:'the pressure on your thumb stays low and does not hurt',vi:'áp suất (pressure) lên ngón cái của con luôn thấp và không đau'},{en:'the pressure on your thumb is as high as possible',vi:'áp suất lên ngón cái của con càng cao càng tốt'}],
+  e:{en:'A wide flat top spreads the force over your thumb, keeping its pressure low — cross out the “as high as possible” ending.',vi:'Mặt trên rộng và phẳng trải lực lên ngón cái, giữ áp suất của nó thấp — hãy gạch bỏ phần kết “càng cao càng tốt”.'}},
+ {pre:{en:'End B of a drawing pin — the part that goes into the wall — is a sharp point so that',vi:'Đầu B của ghim vẽ — phần cắm vào tường — là một mũi nhọn (point) để'},
+  wrong:1,
+  opts:[{en:'the pressure on the wall is high and the pin goes in easily',vi:'áp suất (pressure) lên tường cao và ghim cắm vào dễ dàng'},{en:'the pressure on the wall is low and the pin stays out',vi:'áp suất lên tường thấp và ghim nằm ngoài'}],
+  e:{en:'A sharp point concentrates the force on a tiny area, so the pressure is high enough to enter the wall — cross out the “low pressure” ending.',vi:'Một mũi nhọn tập trung lực lên diện tích bé xíu, nên áp suất đủ cao để cắm vào tường — hãy gạch bỏ phần kết “áp suất thấp”.'}}
+];
+const EX_TOTAL=EX1.filter(x=>x.keyw).length+EX2.length+EX3.length; /* 3 + 6 + 5 = 14 */
+let EX1DONE=new Set(), EX2DONE=new Set(), EX3DONE=new Set(), ex2sel=null;
+let EX1SEL=new Set(), EX2ANS={}, EX3ANS={};
+let EX3_ORD=EX3.map(()=>fyIdx(2));
+
+/* ================= lesson keys + state ================= */
+const KEY='camb:sci8-3-5';
+const SUMKEY='camb:sum:sci8-3-5';
+const BOT_CODE='sci8-3.5';
+let FOUND={kni:false,pin:false,sci:false,ele:false,mat:false,sca:false,foot:false};
+let SORTED=new Set();
+function newTrack(){return {
+  fKnife:false, fPin:false, fSciss:false,
+  s2force:false, s2area:false,
+  s3correct:new Set(), s3sel:null,
+  s4ele:false, s4mat:false,
+  s5scale:false, s5foot:false,
+  s6m:false, s6cm:false, s6mm:false
+};}
+let T=newTrack();
+function checkStep(i){
+  if(i===0) return T.fKnife&&T.fPin&&T.fSciss;
+  if(i===1) return T.s2force&&T.s2area;
+  if(i===2) return T.s3correct.size>=5;
+  if(i===3) return T.s4ele&&T.s4mat;
+  if(i===4) return T.s5scale&&T.s5foot;
+  if(i===5) return T.s6m&&T.s6cm&&T.s6mm;
+  return false;
+}
+function evidenceObj(i){
+  const head=doneSteps.has(i)? STR.evidDone : STR.evidHead;
+  const B=(en,vi)=>({en:head.en+en, vi:head.vi+vi});
+  if(i===0) return B('Sharp tools found: knife '+(T.fKnife?'✓':'…')+' · pin '+(T.fPin?'✓':'…')+' · scissors '+(T.fSciss?'✓':'…')+'. Tap the tools on the bench!',
+                     'Dụng cụ sắc đã tìm: dao '+(T.fKnife?'✓':'…')+' · ghim '+(T.fPin?'✓':'…')+' · kéo '+(T.fSciss?'✓':'…')+'. Hãy chạm vào các dụng cụ trên bàn!');
+  if(i===1) return B('Bigger force '+(T.s2force?'✓':'…')+' · smaller area '+(T.s2area?'✓':'…')+'.',
+                     'Lực lớn hơn (force) '+(T.s2force?'✓':'…')+' · diện tích nhỏ hơn (area) '+(T.s2area?'✓':'…')+'.');
+  if(i===2){
+    const c=T.s3sel? PCARDS.find(x=>x.id===T.s3sel) : null;
+    if(c) return B('You picked “'+c.en+'”. Now tap HIGH or LOW pressure.','Con đã chọn “'+c.vi+'”. Giờ hãy chạm Áp suất CAO (HIGH) hoặc THẤP (LOW).');
+    return B('Cards right: '+T.s3correct.size+' of 6. You need 5 or more.','Số thẻ đúng: '+T.s3correct.size+' / 6. Con cần đúng từ 5 thẻ trở lên.');
+  }
+  if(i===3) return B('Force: elephant weight 50 000 N '+(T.s4ele?'✓':'…')+' · Area: four feet 0.4 m² '+(T.s4mat?'✓':'…')+'.',
+                     'Lực (force): trọng lượng voi 50 000 N '+(T.s4ele?'✓':'…')+' · Diện tích (area): bốn chân 0,4 m² '+(T.s4mat?'✓':'…')+'.');
+  if(i===4) return B('Weight from scale: 600 N '+(T.s5scale?'✓':'…')+' · Area of one foot: 150 cm² '+(T.s5foot?'✓':'…')+'.',
+                     'Trọng lượng từ cân: 600 N '+(T.s5scale?'✓':'…')+' · Diện tích một bàn chân: 150 cm² '+(T.s5foot?'✓':'…')+'.');
+  if(i===5) return B('Area tiles tapped: m² '+(T.s6m?'✓':'…')+' · cm² '+(T.s6cm?'✓':'…')+' · mm² '+(T.s6mm?'✓':'…')+'.',
+                     'Ô diện tích đã chạm: m² '+(T.s6m?'✓':'…')+' · cm² '+(T.s6cm?'✓':'…')+' · mm² '+(T.s6mm?'✓':'…')+'.');
+  return B('','');
+}
+function renderStepExtra(){
+  const box=$('stepExtra'); box.innerHTML='';
+  if(curStep===0){
+    statPills(box,[
+      {emoji:'🔪',label:{en:'Knife',vi:'Dao'},got:T.fKnife},
+      {emoji:'📌',label:{en:'Drawing pin',vi:'Ghim vẽ'},got:T.fPin},
+      {emoji:'✂️',label:{en:'Scissors',vi:'Kéo'},got:T.fSciss}
+    ]);
+  }else if(curStep===1){
+    statPills(box,[
+      {emoji:'🏋️',label:{en:'Bigger force — weights',vi:'Lực lớn hơn — quả nặng'},got:T.s2force},
+      {emoji:'👠',label:{en:'Smaller area — heel',vi:'Diện tích nhỏ hơn — gót giày'},got:T.s2area}
+    ]);
+  }else if(curStep===2){
+    buildSort(box,PCARDS_ORDER,
+      [{key:'high',label:STR.binHigh,cls:'living'},{key:'low',label:STR.binLow,cls:'nonliving'}],
+      T.s3correct,()=>T.s3sel,v=>{T.s3sel=v;},null,onSortPlaced);
+  }else if(curStep===3){
+    statPills(box,[
+      {emoji:'🐘',label:{en:'Force = 50 000 N',vi:'Lực = 50 000 N'},got:T.s4ele},
+      {emoji:'🐾',label:{en:'Area = 0.4 m²',vi:'Diện tích = 0,4 m²'},got:T.s4mat}
+    ]);
+    const b=document.createElement('button'); b.className='subbtn'; b.innerHTML=bi(STR.lookEle);
+    b.onclick=()=>focusThing('elephant');
+    box.appendChild(b);
+  }else if(curStep===4){
+    statPills(box,[
+      {emoji:'⚖️',label:{en:'Weight = 600 N',vi:'Trọng lượng = 600 N'},got:T.s5scale},
+      {emoji:'🦶',label:{en:'One foot = 150 cm²',vi:'Một bàn chân = 150 cm²'},got:T.s5foot}
+    ]);
+  }else if(curStep===5){
+    statPills(box,[
+      {emoji:'⬛',label:{en:'m² → N/m²',vi:'m² → N/m²'},got:T.s6m},
+      {emoji:'🟦',label:{en:'cm² → N/cm²',vi:'cm² → N/cm²'},got:T.s6cm},
+      {emoji:'🟨',label:{en:'mm² → N/mm²',vi:'mm² → N/mm²'},got:T.s6mm}
+    ]);
+  }
+}
+$('btnDemo').onclick=()=>{
+  const i=curStep;
+  if(i===0){ focusVisual('knife'); bounceThing('knife'); setTimeout(()=>{ focusVisual('scissors'); bounceThing('scissors'); },900); }
+  else if(i===1){ focusThing('weight'); setTimeout(()=>focusThing('heel'),900); }
+  else if(i===2){ demoSort(PCARDS,T.s3correct); }
+  else if(i===3){ focusThing('elephant'); setTimeout(()=>focusThing('footmat'),900); }
+  else if(i===4){ focusThing('scale'); setTimeout(()=>focusThing('footprint'),900); }
+  else if(i===5){ focusThing('unitm'); setTimeout(()=>focusThing('unitmm'),900); }
+};
+
+/* ================= console ================= */
+function renderChrome(){
+  $('btnQuizTop').textContent=L(STR.quizBtn);
+  $('btnBotTop').textContent=L(STR.botBtn);
+  $('btnExTop').textContent=L(STR.exBtn);
+  $('btnFull').textContent=L(STR.fullBtn);
+  $('btnDemo').innerHTML=biInl(STR.demoBtn);
+  $('btnResetStep').innerHTML=biInl(STR.resetBtn);
+  $('btnPrev').innerHTML=biInl(STR.prevBtn);
+  $('u1T').innerHTML=biInl(STR.u1T); $('u1Brief').innerHTML=bi(STR.u1Brief);
+  $('u2T').innerHTML=biInl(STR.u2T); $('u2Brief').innerHTML=bi(STR.u2Brief);
+  $('u3T').innerHTML=biInl(STR.u3T); $('u3Brief').innerHTML=bi(STR.u3Brief);
+  $('u4T').innerHTML=biInl(STR.u4T); $('u4Brief').innerHTML=bi(STR.u4Brief);
+  $('u5T').innerHTML=biInl(STR.u5T);
+  $('qTitle').innerHTML=biInl(STR.quizTitle);
+  $('qClose').textContent=L(STR.qClose);
+  $('bTitle').innerHTML=biInl(STR.botTitle);
+  $('bClose').textContent=L(STR.qClose);
+}
+function renderFocusRow(){
+  const row=$('focusRow'); row.innerHTML='';
+  FOCUSORDER.forEach(id=>{
+    const t=THINGS[id];
+    const b=document.createElement('button');
+    b.className='focusbtn'+(lastFocus===id?' on':'');
+    b.innerHTML='<span class="em">'+t.emoji+'</span>'+biInl(t.name);
+    b.onclick=()=>focusThing(id);
+    row.appendChild(b);
+  });
+}
+function renderRecord(){
+  const sharp=(FOUND.kni?1:0)+(FOUND.pin?1:0)+(FOUND.sci?1:0);
+  $('grpRows').innerHTML=
+    '<div class="grprow"><span>'+biInl(STR.recSharp)+'</span><b>'+sharp+' / 3</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recSort)+'</span><b>'+SORTED.size+' / 6</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recEle)+'</span><b>'+(doneSteps.has(3)?'125 000 N/m²':'…')+'</b></div>'+
+    '<div class="grprow"><span>'+biInl(STR.recFoot)+'</span><b>'+(doneSteps.has(4)?'2 · 4 · 12 N/cm²':'…')+'</b></div>';
+}
+function renderDid(){
+  const items=[
+    {got:doneSteps.has(0),label:STR.didSharp},
+    {got:doneSteps.has(1),label:STR.didChange},
+    {got:doneSteps.has(2),label:STR.didSort},
+    {got:doneSteps.has(3),label:STR.didCalc},
+    {got:doneSteps.has(4),label:STR.didInvest}
+  ];
+  $('foundList').innerHTML=items.map(it=>'<div class="foundrow'+(it.got?' got':'')+'"><span class="box">'+(it.got?'☑':'☐')+'</span><span>'+biInl(it.label)+'</span></div>').join('');
+}
+function renderKeyWords(){
+  $('kwRow').innerHTML=KEYWORDS.map(k=>{
+    if(lang==='en') return '<span class="kwchip">'+esc(k.en)+'</span>';
+    if(lang==='vi') return '<span class="kwchip">'+esc(k.vi)+' ('+esc(k.en)+')</span>';
+    return '<span class="kwchip">'+esc(k.en)+' = '+esc(k.vi)+'</span>';
+  }).join('');
+}
+$('btnFull').onclick=()=>{ const b=$('app'); if(b.requestFullscreen) b.requestFullscreen(); };
+$('btnConsole').onclick=()=>$('consolePanel').classList.toggle('open');
+
+/* ---- scene state ---- */
+let lastFocus=null;
+let renderer3=null, scene3=null, camera3=null;
+let G={}, nameSprite=null, ringMesh=null;
+let hitProxies=[];
+let lastRW=0, lastRH=0;
+const ORB={r:10.6, th:0.14, ph:1.06, tx:0.3, ty:0.9, tz:0};
+function reg(id,group){ group.userData.objId=id; group.traverse(o=>{ o.userData.objId=id; }); G[id]=group; scene3.add(group); return group; }
+function buildKnife(){
+  const g=new THREE.Group();
+  const blade=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.95,0.16,0.04),stdMat(0xc9d4de,0.35)));
+  blade.position.set(-0.35,0.35,0); blade.rotation.z=0.5; g.add(blade);
+  const edge=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.3,4),stdMat(0xe8eef3,0.3));
+  edge.position.set(-0.82,0.12,0); edge.rotation.z=2.2; g.add(edge);
+  const handle=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.7,10),stdMat(0x7a4a21,0.8)));
+  handle.rotation.z=0.5; handle.position.set(0.28,0.62,0); g.add(handle);
+  g.position.set(2.0,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildPin(){
+  const g=new THREE.Group();
+  const head=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.1,18),stdMat(0xd23c2a,0.55)));
+  head.position.y=0.06; g.add(head);
+  const point=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.55,10),stdMat(0x9aa5b1,0.4));
+  point.position.y=0.38; g.add(point);
+  g.position.set(3.05,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildScissors(){
+  const g=new THREE.Group();
+  [-0.16,0.16].forEach((rz,k)=>{
+    const blade=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.07,0.03),stdMat(0xc9d4de,0.35)));
+    blade.position.set(0.1,0.55+k*0.05,0); blade.rotation.z=rz; g.add(blade);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.035,8,18),stdMat(0xd9930d,0.6));
+    ring.position.set(-0.48,0.42+k*0.22,0); g.add(ring);
+  });
+  g.position.set(4.1,0,0.9); g.userData.baseY=0;
+  return g;
+}
+function buildWeight(){
+  const g=new THREE.Group();
+  const w1=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.46,0.3,18),stdMat(0x39424e,0.6)));
+  w1.position.y=0.15; g.add(w1);
+  const w2=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.36,0.26,18),stdMat(0x4a5563,0.6)));
+  w2.position.y=0.43; g.add(w2);
+  const bar=new THREE.Mesh(new THREE.TorusGeometry(0.14,0.04,8,18),stdMat(0x222a33,0.5));
+  bar.position.y=0.66; g.add(bar);
+  const arrow=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.4,4),stdMat(0xd23c2a,0.6));
+  arrow.rotation.x=Math.PI; arrow.position.y=1.15; g.add(arrow);
+  g.position.set(-3.4,0,1.8); g.userData.baseY=0;
+  return g;
+}
+function buildHeel(){
+  const g=new THREE.Group();
+  const upper=shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.85,0.3,0.34),stdMat(0xd23c6a,0.55)));
+  upper.position.set(0,0.62,0); upper.rotation.z=-0.18; g.add(upper);
+  const sole=new THREE.Mesh(new THREE.BoxGeometry(0.95,0.06,0.34),stdMat(0x8a243f,0.6));
+  sole.position.set(0,0.44,0); sole.rotation.z=-0.18; g.add(sole);
+  const heelPost=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.035,0.42,10),stdMat(0x5c1626,0.6));
+  heelPost.position.set(-0.36,0.21,0); g.add(heelPost);
+  const tip=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.04,10),stdMat(0x222a33,0.6));
+  tip.position.set(-0.36,0.02,0); g.add(tip);
+  const toe=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.1,0.32),stdMat(0x8a243f,0.6));
+  toe.position.set(0.42,0.05,0); g.add(toe);
+  g.position.set(-2.0,0,1.9); g.rotation.y=0.4; g.userData.baseY=0;
+  return g;
+}
+function buildCamel(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.85,16,12),stdMat(0xc9973f,0.9)));
+  body.scale.set(1.35,0.85,0.8); body.position.y=1.45; g.add(body);
+  const hump=new THREE.Mesh(new THREE.SphereGeometry(0.42,12,10),stdMat(0xb8892f,0.9));
+  hump.position.set(0,2.05,0); g.add(hump);
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.2,0.95,10),stdMat(0xc9973f,0.9));
+  neck.position.set(1.15,1.95,0); neck.rotation.z=-0.6; g.add(neck);
+  const head=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.28,0.3),stdMat(0xc9973f,0.9));
+  head.position.set(1.55,2.3,0); g.add(head);
+  [[-0.7,-0.3],[-0.7,0.3],[0.7,-0.3],[0.7,0.3]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,1.05,8),stdMat(0xb8892f,0.9));
+    leg.position.set(p[0],0.6,p[1]); g.add(leg);
+    const foot=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.26,0.09,14),stdMat(0xa87a2c,0.9));
+    foot.position.set(p[0],0.05,p[1]); g.add(foot);
+  });
+  g.position.set(4.6,0,-2.6); g.userData.baseY=0;
+  return g;
+}
+function buildElephant(){
+  const g=new THREE.Group();
+  const body=shadowed(new THREE.Mesh(new THREE.SphereGeometry(1.05,18,14),stdMat(0x8d99a6,0.9)));
+  body.scale.set(1.3,1.0,0.9); body.position.y=1.55; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.55,14,12),stdMat(0x99a6b3,0.9));
+  head.position.set(1.45,1.75,0); g.add(head);
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.09,1.0,10),stdMat(0x99a6b3,0.9));
+  trunk.position.set(1.95,1.15,0); trunk.rotation.z=0.25; g.add(trunk);
+  [-0.45,0.45].forEach(z=>{
+    const ear=new THREE.Mesh(new THREE.CircleGeometry(0.34,14),stdMat(0xaab6c2,0.9));
+    ear.position.set(1.25,1.85,z*1.05); g.add(ear);
+  });
+  [[-0.75,-0.45],[-0.75,0.45],[0.75,-0.45],[0.75,0.45]].forEach(p=>{
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.22,1.05,10),stdMat(0x8d99a6,0.9));
+    leg.position.set(p[0],0.53,p[1]); g.add(leg);
+  });
+  g.position.set(-1.4,0,-1.1); g.userData.baseY=0;
+  return g;
+}
+function buildFootmat(){
+  const g=new THREE.Group();
+  const mat=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.7,0.07,1.3),stdMat(0xead9a8,0.95)));
+  mat.position.y=0.04; g.add(mat);
+  [[-0.4,-0.3],[-0.4,0.3],[0.4,-0.3],[0.4,0.3]].forEach(p=>{
+    const print=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.26,0.03,16),stdMat(0x8d99a6,0.9));
+    print.position.set(p[0],0.09,p[1]); g.add(print);
+  });
+  g.position.set(0.9,0,1.7); g.userData.baseY=0;
+  return g;
+}
+function buildScale(){
+  const g=new THREE.Group();
+  const plate=shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.55,0.16,20),stdMat(0xdde5ec,0.5)));
+  plate.position.y=0.08; g.add(plate);
+  const dial=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.2,0.08,16),stdMat(0xffffff,0.5));
+  dial.position.set(0,0.2,0.3); dial.rotation.x=0.7; g.add(dial);
+  const needle=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.15,0.02),stdMat(0xd23c2a,0.5));
+  needle.position.set(0,0.24,0.36); needle.rotation.x=0.7; g.add(needle);
+  g.position.set(-3.9,0,-0.9); g.userData.baseY=0;
+  return g;
+}
+function buildFootprint(){
+  const g=new THREE.Group();
+  const paper=shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.05,1.5),stdMat(0xffffff,0.95)));
+  paper.position.y=0.03; g.add(paper);
+  for(let gx=-2; gx<=2; gx++){
+    const ln=new THREE.Mesh(new THREE.BoxGeometry(0.015,0.012,1.5),stdMat(0xc4dcf5,0.9));
+    ln.position.set(gx*0.22,0.06,0); g.add(ln);
+  }
+  const foot=new THREE.Mesh(new THREE.SphereGeometry(0.3,12,10),stdMat(0xe0a878,0.85));
+  foot.scale.set(0.75,0.18,1.5); foot.position.set(0,0.1,-0.15); g.add(foot);
+  const toes=new THREE.Mesh(new THREE.SphereGeometry(0.17,10,8),stdMat(0xe0a878,0.85));
+  toes.scale.set(1.1,0.2,0.7); toes.position.set(0,0.1,0.42); g.add(toes);
+  g.position.set(-2.6,0,0.35); g.rotation.y=0.3; g.userData.baseY=0;
+  return g;
+}
+function buildTile(size,color){
+  const g=new THREE.Group();
+  const tile=shadowed(new THREE.Mesh(new THREE.BoxGeometry(size,0.12,size),stdMat(color,0.7)));
+  tile.position.y=0.06; g.add(tile);
+  g.userData.baseY=0;
+  return g;
+}
+function init3D(){
+  const wrap=$('stage3d');
+  try{ renderer3=new THREE.WebGLRenderer({antialias:true}); }
+  catch(e){
+    wrap.innerHTML='<p style="padding:20px;font-size:17px">This device cannot show the 3D stage (WebGL is not available). The rest of the lesson still works.</p>';
+    return;
+  }
+  renderer3.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer3.shadowMap.enabled=true; renderer3.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer3.outputEncoding=THREE.sRGBEncoding;
+  wrap.appendChild(renderer3.domElement);
+  scene3=new THREE.Scene(); scene3.background=new THREE.Color(0xdcecf7);
+  scene3.fog=new THREE.Fog(0xdcecf7,18,34);
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,60);
+  scene3.add(new THREE.HemisphereLight(0xffffff,0x9db3c4,0.85));
+  const sunL=new THREE.DirectionalLight(0xffffff,0.9);
+  sunL.position.set(4,8,3.5); sunL.castShadow=true;
+  sunL.shadow.mapSize.set(1024,1024);
+  sunL.shadow.camera.left=-7; sunL.shadow.camera.right=7; sunL.shadow.camera.top=7; sunL.shadow.camera.bottom=-7;
+  sunL.shadow.camera.far=24; sunL.shadow.bias=-0.0004;
+  scene3.add(sunL);
+  const fill=new THREE.DirectionalLight(0xdfeaf5,0.3); fill.position.set(-3,2,-3); scene3.add(fill);
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(13,0.35,7.5),stdMat(0xb08954,0.95));
+  bench.position.set(0.3,-0.19,0); bench.receiveShadow=true; scene3.add(bench);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),stdMat(0xc7d3de,1));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-0.38; floor.receiveShadow=true; scene3.add(floor);
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(60,20),stdMat(0xe8f1f8,1));
+  wall.position.set(0,6,-5.5); scene3.add(wall);
+  const clay=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.4,0.8),stdMat(0xc2703d,0.95));
+  clay.position.set(2.6,0.2,2.15); clay.receiveShadow=true; scene3.add(clay);
+  reg('knife',buildKnife());
+  reg('pin',buildPin());
+  reg('scissors',buildScissors());
+  reg('weight',buildWeight());
+  reg('heel',buildHeel());
+  reg('camel',buildCamel());
+  reg('elephant',buildElephant());
+  reg('footmat',buildFootmat());
+  reg('scale',buildScale());
+  reg('footprint',buildFootprint());
+  const tm=buildTile(1.15,0x44586e); tm.position.set(2.3,0,-1.6); reg('unitm',tm);
+  const tc=buildTile(0.72,0x3d7bd6); tc.position.set(3.4,0,-0.7); reg('unitcm',tc);
+  const tmm=buildTile(0.4,0xf2c230); tmm.position.set(4.3,0,-1.6); reg('unitmm',tmm);
+  /* generous invisible hit proxies */
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('knife',p,G.knife); }
+  { const p=sphProxy(0.48); p.position.set(0,0.3,0); addProxy('pin',p,G.pin); }
+  { const p=sphProxy(0.5); p.position.set(0,0.45,0); addProxy('scissors',p,G.scissors); }
+  { const p=sphProxy(0.58); p.position.set(0,0.45,0); addProxy('weight',p,G.weight); }
+  { const p=sphProxy(0.52); p.position.set(0,0.35,0); addProxy('heel',p,G.heel); }
+  { const p=sphProxy(0.9); p.position.set(0,1.35,0); addProxy('camel',p,G.camel); }
+  { const p=sphProxy(1.25); p.position.set(0,1.4,0); addProxy('elephant',p,G.elephant); }
+  { const p=sphProxy(0.62); p.position.set(0,0.15,0); addProxy('footmat',p,G.footmat); }
+  { const p=sphProxy(0.58); p.position.set(0,0.2,0); addProxy('scale',p,G.scale); }
+  { const p=sphProxy(0.58); p.position.set(0,0.15,0); addProxy('footprint',p,G.footprint); }
+  { const p=sphProxy(0.6); p.position.set(0,0.1,0); addProxy('unitm',p,G.unitm); }
+  { const p=sphProxy(0.5); p.position.set(0,0.1,0); addProxy('unitcm',p,G.unitcm); }
+  { const p=sphProxy(0.45); p.position.set(0,0.1,0); addProxy('unitmm',p,G.unitmm); }
+  ringMesh=new THREE.Mesh(new THREE.RingGeometry(0.34,0.44,40),
+    new THREE.MeshBasicMaterial({color:0xffb400,transparent:true,opacity:0.8,side:THREE.DoubleSide,depthWrite:false}));
+  ringMesh.rotation.x=-Math.PI/2; ringMesh.position.y=0.045; ringMesh.visible=false; ringMesh.renderOrder=3;
+  scene3.add(ringMesh);
+  nameSprite=makeLabelSprite('',1.05); nameSprite.visible=false; scene3.add(nameSprite);
+  const el=renderer3.domElement; el.style.touchAction='none';
+  const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
+  let dragMode=null, downX=0, downY=0, downT=0;
+  function castAt(e){
+    const r=el.getBoundingClientRect();
+    ptr.x=((e.clientX-r.left)/r.width)*2-1;
+    ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(ptr,camera3);
+  }
+  el.addEventListener('pointerdown',e=>{
+    dragMode={x:e.clientX,y:e.clientY};
+    downX=e.clientX; downY=e.clientY; downT=performance.now();
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragMode) return;
+    ORB.th=Math.min(1.25,Math.max(-1.25,ORB.th-(e.clientX-dragMode.x)*0.005));
+    ORB.ph=Math.min(1.42,Math.max(0.5,ORB.ph-(e.clientY-dragMode.y)*0.005));
+    dragMode={x:e.clientX,y:e.clientY};
+  });
+  el.addEventListener('pointerup',e=>{
+    const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+    const dt=performance.now()-downT;
+    dragMode=null;
+    if(moved<7&&dt<600){
+      castAt(e);
+      const hits=ray.intersectObjects(hitProxies.filter(isShownObj),false);
+      if(hits.length){ const id=hits[0].object.userData.objId; if(id) handleTap(id); }
+    }
+  });
+  el.addEventListener('pointercancel',()=>{ dragMode=null; });
+  el.addEventListener('wheel',e=>{ e.preventDefault(); ORB.r=Math.min(14,Math.max(4.5,ORB.r*(1+e.deltaY*0.001))); },{passive:false});
+}
+function thingPos(id){
+  const g=G[id];
+  if(!g) return {x:0,y:0,z:0};
+  return g.position;
+}
+function labelTextFor(id){
+  const s=THINGS[id].short;
+  if(lang==='en') return s.en;
+  if(lang==='vi') return s.vi+' ('+s.en+')';
+  return s.en+' · '+s.vi;
+}
+function focusVisual(id){
+  lastFocus=id;
+  const t=THINGS[id]; if(!t) return;
+  if(nameSprite){ nameSprite.visible=true; setSpriteText(nameSprite,labelTextFor(id)); }
+  if(ringMesh){
+    const p=thingPos(id);
+    ringMesh.position.set(p.x,0.045,p.z);
+    const s=t.ring/0.44; ringMesh.scale.set(s,s,s);
+    ringMesh.visible=true;
+  }
+  renderFocusRow();
+}
+function focusThing(id){
+  focusVisual(id);
+  const t=THINGS[id]; if(!t) return;
+  const sx=ORB.tx, sz=ORB.tz, sr=ORB.r;
+  addAnim(0.9,f=>{
+    const g=easeInOut(f);
+    ORB.tx=sx+(t.fx-sx)*g; ORB.tz=sz+(t.fz-sz)*g; ORB.r=sr+(t.fr-sr)*g;
+  });
+}
+function bounceThing(id){
+  const g=G[id]; if(!g) return;
+  const baseY=g.userData.baseY||0;
+  addAnim(0.6,f=>{ g.position.y=baseY+Math.sin(f*Math.PI)*0.2; },()=>{ g.position.y=baseY; });
+}
+const STEP_TARGETS=[
+  ['knife','pin','scissors'],
+  ['weight','heel'],
+  [],
+  ['elephant','footmat'],
+  ['scale','footprint'],
+  ['unitm','unitcm','unitmm']
+];
+function handleTap(id){
+  if(stepLocked()){ flashReadBtn(); return; }
+  if(!THINGS[id]) return;
+  focusVisual(id);
+  bounceThing(id);
+  if(STEP_TARGETS[curStep].indexOf(id)<0){ addMistake(); return; }
+  if(curStep===0){
+    if(id==='knife'){ T.fKnife=true; FOUND.kni=true; }
+    if(id==='pin'){ T.fPin=true; FOUND.pin=true; }
+    if(id==='scissors'){ T.fSciss=true; FOUND.sci=true; }
+  }else if(curStep===1){
+    if(id==='weight') T.s2force=true;
+    if(id==='heel') T.s2area=true;
+  }else if(curStep===3){
+    if(id==='elephant'){ T.s4ele=true; FOUND.ele=true; }
+    if(id==='footmat'){ T.s4mat=true; FOUND.mat=true; }
+  }else if(curStep===4){
+    if(id==='scale'){ T.s5scale=true; FOUND.sca=true; }
+    if(id==='footprint'){ T.s5foot=true; FOUND.foot=true; }
+  }else if(curStep===5){
+    if(id==='unitm') T.s6m=true;
+    if(id==='unitcm') T.s6cm=true;
+    if(id==='unitmm') T.s6mm=true;
+  }
+  saveProg(); renderMirrors(); renderStepExtra(); refreshEvidence();
+}
+function applyStepStart(i){ /* all bench objects stay visible in every step */ }
+let renderErrShown=false;
+function renderScene(){
+  if(!renderer3) return;
+  try{ renderSceneInner(); }
+  catch(err){
+    renderer3=null;
+    if(!renderErrShown){
+      renderErrShown=true;
+      const d=$('errBox');
+      d.style.display='block';
+      d.textContent='3D stage error: '+(err&&err.message?err.message:String(err))+' — The rest of the lesson still works. / Sân khấu 3D gặp lỗi — phần còn lại của bài học vẫn dùng được.';
+    }
+  }
+}
+function renderSceneInner(){
+  const wrap=$('stageWrap'), w=wrap.clientWidth, h=wrap.clientHeight;
+  if(w>10&&h>10&&(w!==lastRW||h!==lastRH)){
+    renderer3.setSize(w,h); camera3.aspect=w/h; camera3.updateProjectionMatrix();
+    lastRW=w; lastRH=h;
+  }
+  const now=performance.now();
+  if(lastFocus&&THINGS[lastFocus]){
+    const p=thingPos(lastFocus);
+    if(nameSprite) nameSprite.position.set(p.x,p.y+THINGS[lastFocus].labelY,p.z);
+    if(ringMesh) ringMesh.material.opacity=0.6+Math.sin(now*0.005)*0.25;
+  }
+  camera3.position.set(
+    ORB.tx+ORB.r*Math.sin(ORB.ph)*Math.sin(ORB.th),
+    ORB.ty+ORB.r*Math.cos(ORB.ph),
+    ORB.tz+ORB.r*Math.sin(ORB.ph)*Math.cos(ORB.th));
+  camera3.lookAt(ORB.tx,ORB.ty,ORB.tz);
+  renderer3.render(scene3,camera3);
+}
+
+/* ================= exercises panel module ================= */
+function exHead(sec,doneNow){
+  return biInl(sec)+'<span class="exstatus">'+esc(L(doneNow?STR.exDoneTag:STR.exTodoTag))+'</span>';
+}
+function renderExercises(){
+  $('exTitle').innerHTML=biInl(STR.exTitle);
+  $('exIntro').innerHTML=bi(STR.exIntro);
+  $('exClose').textContent=L(STR.exClose);
+  $('exSubmit').textContent=L(STR.exSubmit);
+  $('exSubmit').style.display=exRevealed? 'none':'inline-block';
+  $('exRetry').textContent=L(STR.qAgain);
+  $('exRetry').style.display=exRevealed? 'inline-block':'none';
+  if(exRevealed){
+    const sc=EX1DONE.size+EX2DONE.size+EX3DONE.size, all=sc>=EX_TOTAL;
+    const line={en:'Exercise score: '+sc+' of '+EX_TOTAL+(all?' · Great work! 🌟':''),
+                vi:'Điểm bài tập: '+sc+' / '+EX_TOTAL+(all?' · Làm tốt lắm! 🌟':'')};
+    $('exScoreLine').innerHTML=biInl(line);
+  }else{
+    $('exScoreLine').innerHTML=biInl(STR.exAnswered(exAnsweredCount(),EX_TOTAL));
+  }
+  /* Ex 1 · Focus — tap the high-pressure cards */
+  $('exSec1').classList.toggle('done',exRevealed&&EX1DONE.size>=3);
+  $('ex1T').innerHTML=exHead(STR.ex1T,exRevealed&&EX1DONE.size>=3);
+  $('ex1Inst').innerHTML=bi(STR.ex1Inst);
+  $('ex1Hint').innerHTML='';
+  const g1=$('ex1Grid'); g1.innerHTML='';
+  EX1_ORDER.forEach(it=>{
+    const sel=EX1SEL.has(it.id);
+    const b=document.createElement('button');
+    b.className='excard '+(sel?'coloured':'grey');
+    if(exRevealed){
+      if(sel&&it.keyw) b.className='excard right';
+      else if(sel&&!it.keyw) b.className='excard wrongsel';
+      else if(!sel&&it.keyw) b.className='excard missed';
+    }
+    b.id='excard_'+it.id;
+    b.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it);
+    b.onclick=()=>{
+      if(exRevealed) return;
+      if(EX1SEL.has(it.id)) EX1SEL.delete(it.id); else EX1SEL.add(it.id);
+      saveProg(); renderExercises();
+    };
+    g1.appendChild(b);
+  });
+  /* Ex 2 · Practice — greatest or smallest pressure */
+  $('exSec2').classList.toggle('done',exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2T').innerHTML=exHead(STR.ex2T,exRevealed&&EX2DONE.size>=EX2.length);
+  $('ex2Inst').innerHTML=bi(STR.ex2Inst);
+  $('ex2BinGreat').innerHTML=bi(STR.binGreat);
+  $('ex2BinSmall').innerHTML=bi(STR.binSmall);
+  const g2=$('ex2Grid'); g2.innerHTML='';
+  EX2_ORDER.forEach(it=>{
+    const ans=EX2ANS[it.id];
+    const d=document.createElement('div');
+    d.className='piccard'+(ex2sel===it.id?' sel':'')+(exRevealed? (EX2DONE.has(it.id)? ' right' : (ans? ' wrong':'')) : (ans? ' placed':''));
+    d.id='excard_'+it.id;
+    d.innerHTML='<span class="em">'+it.emoji+'</span>'+bi(it)+(ans? '<span class="anstag">'+(ans==='greatest'?'▲':'▽')+'</span>' : '');
+    d.onclick=()=>{ if(exRevealed) return; ex2sel=it.id; renderExercises(); };
+    g2.appendChild(d);
+  });
+  /* Ex 3 · Challenge — cross out the wrong word */
+  $('exSec3').classList.toggle('done',exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3T').innerHTML=exHead(STR.ex3T,exRevealed&&EX3DONE.size>=EX3.length);
+  $('ex3Inst').innerHTML=bi(STR.ex3Inst);
+  const list=$('ex3List'); list.innerHTML='';
+  EX3.forEach((s3,si)=>{
+    const row=document.createElement('div'); row.className='exsent';
+    let html=esc(si+1)+'. '+biInl(s3.pre)+' ';
+    (EX3_ORD[si]||s3.opts.map((_,i)=>i)).forEach((oi,pos)=>{
+      const o=s3.opts[oi];
+      let cls='wordopt';
+      if(EX3ANS[si]===oi) cls+=' crossed';
+      if(exRevealed&&oi===s3.wrong) cls+=' rightmark';
+      html+='<button class="'+cls+'" data-s="'+si+'" data-o="'+oi+'">'+biInl(o)+'</button>'+(pos===0?' / ':'');
+    });
+    html+=' .';
+    row.innerHTML=html;
+    if(exRevealed){
+      const ex=document.createElement('div'); ex.className='exexpl';
+      ex.innerHTML=(EX3DONE.has(si)? '✓ ' : '')+bi(s3.e);
+      row.appendChild(ex);
+    }
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.wordopt').forEach(b=>{
+    b.onclick=()=>{
+      if(exRevealed) return;
+      const si=parseInt(b.dataset.s,10), oi=parseInt(b.dataset.o,10);
+      EX3ANS[si]=oi; saveProg(); renderExercises();
+    };
+  });
+}
+function exAnsweredCount(){ return Math.min(EX_TOTAL,EX1SEL.size+Object.keys(EX2ANS).length+Object.keys(EX3ANS).length); }
+function ex2Place(key){
+  if(exRevealed||!ex2sel) return;
+  EX2ANS[ex2sel]=key; ex2sel=null; saveProg(); renderExercises();
+}
+$('ex2BinGreat').onclick=()=>ex2Place('greatest');
+$('ex2BinSmall').onclick=()=>ex2Place('smallest');
+function scoreExercisesNow(){
+  EX1DONE=new Set(EX1.filter(x=>x.keyw&&EX1SEL.has(x.id)).map(x=>x.id));
+  EX2DONE=new Set(EX2.filter(x=>EX2ANS[x.id]===x.ans).map(x=>x.id));
+  EX3DONE=new Set(EX3.map((s3,si)=>si).filter(si=>EX3ANS[si]===EX3[si].wrong));
+  ex2sel=null;
+  return EX1DONE.size+EX2DONE.size+EX3DONE.size;
+}
+function reshuffleExercises(){
+  EX1SEL=new Set(); EX2ANS={}; EX3ANS={}; ex2sel=null;
+  EX1DONE=new Set(); EX2DONE=new Set(); EX3DONE=new Set();
+  EX1_ORDER=mixOrder(EX1,c=>c.keyw?'keyw':'not',3);
+  EX2_ORDER=mixOrder(EX2,c=>c.ans,3);
+  EX3_ORD=EX3.map(()=>fyIdx(2));
+}
+function exFeedback(){ renderExercises(); }
+function onSortPlaced(c){ SORTED.add(c.id); saveProg(); renderMirrors(); }
+function renderMirrors(){ renderRecord(); renderDid(); renderFocusRow(); }
+function clearMirrors(step){
+  if(step===0){ FOUND.kni=false; FOUND.pin=false; FOUND.sci=false; }
+  if(step===2){ PCARDS.forEach(c=>SORTED.delete(c.id)); }
+  if(step===3){ FOUND.ele=false; FOUND.mat=false; }
+  if(step===4){ FOUND.sca=false; FOUND.foot=false; }
+}
+function extraSave(){
+  return {found:FOUND, sorted:[...SORTED], exAns:{s1:[...EX1SEL],a2:EX2ANS,a3:EX3ANS}, ex:{e1:[...EX1DONE],e2:[...EX2DONE],e3:[...EX3DONE]}};
+}
+function restoreExtra(s){
+  if(!s) return;
+  if(s.found&&typeof s.found==='object') FOUND=Object.assign(FOUND,s.found);
+  if(Array.isArray(s.sorted)) SORTED=new Set(s.sorted);
+  if(s.ex&&typeof s.ex==='object'){
+    if(Array.isArray(s.ex.e1)) EX1DONE=new Set(s.ex.e1);
+    if(Array.isArray(s.ex.e2)) EX2DONE=new Set(s.ex.e2);
+    if(Array.isArray(s.ex.e3)) EX3DONE=new Set(s.ex.e3.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<EX3.length));
+  }
+  if(s.exAns&&typeof s.exAns==='object'){
+    if(Array.isArray(s.exAns.s1)) EX1SEL=new Set(s.exAns.s1.filter(id=>EX1.some(x=>x.id===id)));
+    if(s.exAns.a2&&typeof s.exAns.a2==='object') Object.keys(s.exAns.a2).forEach(id=>{ if(EX2.some(x=>x.id===id)&&(s.exAns.a2[id]==='greatest'||s.exAns.a2[id]==='smallest')) EX2ANS[id]=s.exAns.a2[id]; });
+    if(s.exAns.a3&&typeof s.exAns.a3==='object') Object.keys(s.exAns.a3).forEach(k=>{ const si=Number(k); if(Number.isInteger(si)&&si>=0&&si<EX3.length&&(s.exAns.a3[k]===0||s.exAns.a3[k]===1)) EX3ANS[si]=s.exAns.a3[k]; });
+    exRevealed=!!s.exSub;
+  }else if(EX1DONE.size||EX2DONE.size||EX3DONE.size){
+    EX1SEL=new Set(EX1DONE);
+    EX2.forEach(it=>{ if(EX2DONE.has(it.id)) EX2ANS[it.id]=it.ans; });
+    EX3.forEach((s3,si)=>{ if(EX3DONE.has(si)) EX3ANS[si]=s3.wrong; });
+    exRevealed=true;
+    exBest=Math.max(exBest,EX1DONE.size+EX2DONE.size+EX3DONE.size);
+  }
+}
+function seedDoneTrack(i){
+  const t=newTrack();
+  if(i===0){ t.fKnife=!!FOUND.kni; t.fPin=!!FOUND.pin; t.fSciss=!!FOUND.sci; }
+  else if(i===1){ t.s2force=true; t.s2area=true; }
+  else if(i===2){ PCARDS.forEach(c=>{ if(SORTED.has(c.id)) t.s3correct.add(c.id); }); }
+  else if(i===3){ t.s4ele=!!FOUND.ele; t.s4mat=!!FOUND.mat; }
+  else if(i===4){ t.s5scale=!!FOUND.sca; t.s5foot=!!FOUND.foot; }
+  else if(i===5){ t.s6m=true; t.s6cm=true; t.s6mm=true; }
+  return t;
+}
+window.CAMB_LESSON={
+  id:'sci8-3-5',
+  code:BOT_CODE,
+  extraSave:extraSave,
+  restoreExtra:restoreExtra,
+  seedDoneTrack:seedDoneTrack,
+  exTotal:EX_TOTAL,
+  renderExercises:renderExercises,
+  exAnsweredCount:exAnsweredCount,
+  exScoreNow:scoreExercisesNow,
+  exReshuffle:reshuffleExercises,
+  exFeedback:exFeedback,
+  renderMirrors:renderMirrors,
+  clearMirrors:clearMirrors
+};
+</script>
+<!-- CAMB-BRIDGE v1 --><script src="camb-bridge.js"></script><!-- /CAMB-BRIDGE v1 -->
+</body>
+</html>
