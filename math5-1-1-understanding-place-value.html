@@ -1158,50 +1158,50 @@ function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r
 function shadowed(m){ m.castShadow=true; m.receiveShadow=true; return m; }
 function proxyMat(){ return new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}); }
 function labelTexture(text,clock,dots){
-  const c=document.createElement('canvas'); c.width=256; c.height=256;
+  const c=document.createElement('canvas'); c.width=512; c.height=512;
   const g=c.getContext('2d');
-  g.fillStyle='#ffffff'; g.fillRect(0,0,256,256);
+  g.fillStyle='#ffffff'; g.fillRect(0,0,512,512);
   if(dots){
-    g.fillStyle='#22384f'; g.font='bold 30px system-ui'; g.textAlign='center'; g.textBaseline='middle';
-    g.fillText(String(text),128,28);
+    g.fillStyle='#22384f'; g.font='bold 60px system-ui'; g.textAlign='center'; g.textBaseline='middle';
+    g.fillText(String(text),256,56);
     const n=dots.count, col=dots.color||'#e07b24';
     for(let i=0;i<n;i++){
       const r=Math.floor(i/10), cc=i%10;
-      g.fillStyle=col; g.beginPath(); g.arc(28+cc*22,66+r*52,9,0,Math.PI*2); g.fill();
+      g.fillStyle=col; g.beginPath(); g.arc(56+cc*44,132+r*104,18,0,Math.PI*2); g.fill();
     }
-    const tex0=new THREE.CanvasTexture(c); return tex0;
+    const tex0=new THREE.CanvasTexture(c); tex0.anisotropy=8; return tex0;
   }
   if(clock){
-    g.strokeStyle='#22384f'; g.lineWidth=6; g.beginPath(); g.arc(128,128,108,0,Math.PI*2); g.stroke();
-    for(let h=0;h<12;h++){ const a=h/12*Math.PI*2; g.lineWidth=h%3===0?5:2; g.beginPath();
-      g.moveTo(128+Math.sin(a)*92,128-Math.cos(a)*92); g.lineTo(128+Math.sin(a)*104,128-Math.cos(a)*104); g.stroke(); }
+    g.strokeStyle='#22384f'; g.lineWidth=12; g.beginPath(); g.arc(256,256,216,0,Math.PI*2); g.stroke();
+    for(let h=0;h<12;h++){ const a=h/12*Math.PI*2; g.lineWidth=h%3===0?10:4; g.beginPath();
+      g.moveTo(256+Math.sin(a)*184,256-Math.cos(a)*184); g.lineTo(256+Math.sin(a)*208,256-Math.cos(a)*208); g.stroke(); }
     const ha=((clock.h%12)+clock.m/60)/12*Math.PI*2, ma=clock.m/60*Math.PI*2;
-    g.strokeStyle='#22384f'; g.lineWidth=10; g.beginPath(); g.moveTo(128,128); g.lineTo(128+Math.sin(ha)*58,128-Math.cos(ha)*58); g.stroke();
-    g.strokeStyle='#e07b24'; g.lineWidth=6; g.beginPath(); g.moveTo(128,128); g.lineTo(128+Math.sin(ma)*88,128-Math.cos(ma)*88); g.stroke();
-    g.fillStyle='#22384f'; g.beginPath(); g.arc(128,128,8,0,Math.PI*2); g.fill();
+    g.strokeStyle='#22384f'; g.lineWidth=20; g.beginPath(); g.moveTo(256,256); g.lineTo(256+Math.sin(ha)*116,256-Math.cos(ha)*116); g.stroke();
+    g.strokeStyle='#e07b24'; g.lineWidth=12; g.beginPath(); g.moveTo(256,256); g.lineTo(256+Math.sin(ma)*176,256-Math.cos(ma)*176); g.stroke();
+    g.fillStyle='#22384f'; g.beginPath(); g.arc(256,256,16,0,Math.PI*2); g.fill();
   } else {
-    g.fillStyle='#22384f'; g.font='bold 44px system-ui'; g.textAlign='center'; g.textBaseline='middle';
+    g.fillStyle='#22384f'; g.font='bold 88px system-ui'; g.textAlign='center'; g.textBaseline='middle';
     const words=String(text).split(' ');
     let lines=[''], li=0;
     words.forEach(w=>{ if((lines[li]+' '+w).trim().length>12&&lines[li]){ lines.push(w); li++; } else lines[li]=(lines[li]+' '+w).trim(); });
-    lines.slice(0,3).forEach((ln,i)=>{ g.fillText(ln,128,88+i*56); });
+    lines.slice(0,3).forEach((ln,i)=>{ g.fillText(ln,256,176+i*112); });
   }
-  const tex=new THREE.CanvasTexture(c); return tex;
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=8; return tex;
 }
 function makeSprite(text){
-  const c=document.createElement('canvas'); c.width=320; c.height=88;
-  const g=c.getContext('2d'); const tex=new THREE.CanvasTexture(c);
+  const c=document.createElement('canvas'); c.width=640; c.height=176;
+  const g=c.getContext('2d'); const tex=new THREE.CanvasTexture(c); tex.anisotropy=8;
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
   sp.scale.set(2.6,2.6*88/320,1); sp.renderOrder=5; sp.userData={c,g,tex,last:''};
   setSpriteText(sp,text); return sp;
 }
 function setSpriteText(sp,text){
   if(!sp) return; const u=sp.userData; if(u.last===text) return; u.last=text;
-  const g=u.g; g.clearRect(0,0,320,88);
-  const fs=text.length>18? 27 : (text.length>12? 33 : 40);
+  const g=u.g; g.clearRect(0,0,640,176);
+  const fs=text.length>18? 54 : (text.length>12? 66 : 80);
   g.font='bold '+fs+'px system-ui'; g.textAlign='center'; g.textBaseline='middle';
-  g.lineWidth=9; g.strokeStyle='rgba(255,255,255,.92)'; g.strokeText(text,160,46);
-  g.fillStyle='#22384f'; g.fillText(text,160,46); u.tex.needsUpdate=true;
+  g.lineWidth=18; g.strokeStyle='rgba(255,255,255,.92)'; g.strokeText(text,320,92);
+  g.fillStyle='#22384f'; g.fillText(text,320,92); u.tex.needsUpdate=true;
 }
 function addProxy(id,kind,mesh,parent){ mesh.userData.id=id; mesh.userData.kind=kind; parent.add(mesh); hitProxies.push(mesh); return mesh; }
 function isShownObj(o){ let n=o; while(n){ if(n.visible===false) return false; n=n.parent; } return true; }
@@ -1275,7 +1275,7 @@ function init3D(){
     el.addEventListener('pointerdown',e=>{ dragMode='maybe'; downX=e.clientX; downY=e.clientY; downT=performance.now(); lastX=e.clientX; lastY=e.clientY; });
     el.addEventListener('pointermove',e=>{
       if(dragMode==='maybe'&&Math.hypot(e.clientX-downX,e.clientY-downY)>8) dragMode='drag';
-      if(dragMode==='drag'){ ORB.th+=(e.clientX-lastX)*0.005; lastX=e.clientX; lastY=e.clientY; }
+      if(dragMode==='drag'){ ORB.th+=(e.clientX-lastX)*0.005; ORB.ph=Math.min(1.42,Math.max(0.45,ORB.ph-(e.clientY-lastY)*0.005)); lastX=e.clientX; lastY=e.clientY; }
     });
     el.addEventListener('pointerup',e=>{
       const moved=Math.hypot(e.clientX-downX,e.clientY-downY), dt=performance.now()-downT;
