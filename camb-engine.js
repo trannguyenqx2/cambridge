@@ -31,6 +31,10 @@
    census — the contract and the full change list live in engine/API.md.
    v2.1 adds two registrations from the Unit-5 census: a renderWordCard
    override (E18) and the onResetStep manual-Reset hook (E19).
+   Landscape v3 (2026-11-01, platform-grade rebuild): the closing block
+   docks the step UI into one column beside the stage (nothing hidden),
+   neutralizes ancestor width caps while active, and auto-enters on
+   device rotation with manual-exit suppression — see the block itself.
    ===================================================================== */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -698,10 +702,33 @@ function setSpriteText(sp,text){
   if(!sp) return;
   const u=sp.userData; if(u.last===text) return; u.last=text;
   const g=u.g; g.clearRect(0,0,320,88);
-  const fs=text.length>18? 27 : (text.length>12? 33 : 40);
-  g.font='bold '+fs+'px system-ui'; g.textAlign='center'; g.textBaseline='middle';
-  g.lineWidth=9; g.strokeStyle='rgba(255,255,255,.92)'; g.strokeText(text,160,46);
-  g.fillStyle='#22384f'; g.fillText(text,160,46);
+  let fs=text.length>18? 27 : (text.length>12? 33 : 40);
+  const maxW=304, minFs=fs*0.55;
+  const setF=v=>{ g.font='bold '+v+'px system-ui'; };
+  setF(fs); g.textAlign='center'; g.textBaseline='middle';
+  /* [AUDIT-3D FIX] shrink-to-fit via measureText (floor 55%), then a balanced
+     2-line wrap — sprite text never clips at the canvas edge. */
+  while(g.measureText(text).width>maxW && fs>minFs){ fs=Math.max(minFs, fs*0.9); setF(fs); }
+  g.lineWidth=9; g.strokeStyle='rgba(255,255,255,.92)'; g.fillStyle='#22384f';
+  if(g.measureText(text).width<=maxW){
+    g.strokeText(text,160,46); g.fillText(text,160,46);
+  } else {
+    const words=String(text).split(' '); let best=null;
+    for(let i=1;i<words.length;i++){
+      const a=words.slice(0,i).join(' '), b=words.slice(i).join(' ');
+      const mw=Math.max(g.measureText(a).width, g.measureText(b).width);
+      if(!best||mw<best.mw) best={a:a,b:b,mw:mw};
+    }
+    if(best){
+      while(best.mw>maxW && fs>12){ fs*=0.9; setF(fs); best.mw=Math.max(g.measureText(best.a).width, g.measureText(best.b).width); }
+      const lh=fs*1.16;
+      g.strokeText(best.a,160,46-lh/2); g.fillText(best.a,160,46-lh/2);
+      g.strokeText(best.b,160,46+lh/2); g.fillText(best.b,160,46+lh/2);
+    } else {
+      while(g.measureText(text).width>maxW && fs>12){ fs*=0.9; setF(fs); }
+      g.strokeText(text,160,46); g.fillText(text,160,46);
+    }
+  }
   u.tex.needsUpdate=true;
 }
 function stdMat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?0.85:r}); }
@@ -833,59 +860,168 @@ function cambBoot(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cambBoot);
 else cambBoot();
 
-/* ===== [TEST 2026-10-31 v2] Landscape fullscreen for phones — additive, removable =====
-   - Entering fullscreen (the lesson's own btnFull / F key) tries to lock
-     landscape orientation (Android Chrome).
-   - If the Fullscreen API is unavailable (iOS Safari), btnFull falls back to a
-     pseudo-fullscreen: #app becomes a fixed overlay that rotates itself 90
-     degrees in portrait, so the lesson still fills a landscape screen.
-   - In fullscreen the concept-chain strip is hidden and the step card is
-     capped narrower so the 3D stage gets the room.
-   - v2 fix: under the CSS rotation the canvas raycast math (clientX/Y vs the
-     rotated bounding rect) lands on wrong objects. A capture-phase remapper
-     rewrites pointer clientX/Y into the app's un-rotated local frame while
-     pseudo mode is active in a portrait viewport, so taps and drags hit the
-     right objects again. Native fullscreen is untouched. */
+/* ===== [2026-11-01 v3] Landscape fullscreen — platform grade (standalone) =====
+   Rebuilt to the Grade 7 platform standard (the BGD v3.2 child block +
+   v3.6 auto-rotate rules), adapted to the standalone context: here the
+   lesson page IS the top document, so the auto-rotate watcher and the
+   layout live in this one block.
+
+   Layout (the change from the v2 test block): entering landscape mode
+   RESTRUCTURES the shell instead of floating the step card over the
+   stage. The step bar (pills), the step card (instruction / action /
+   evidence / conclusion / buttons) and the console panel are MOVED into
+   one docked column (.ls-panel, ~300px) beside the stage inside
+   .mainrow; the stage flexes to fill the rest. NOTHING of the step UI
+   is hidden — only the concept-chain strip (.mainline) and the footer
+   (.appfoot) collapse, exactly like the v2 block did. Leaving landscape
+   restores every element to its exact original parent and order.
+   Width caps on ancestors of #app are neutralized (inline styles saved
+   and restored) while the mode is active, so no wrapper can squeeze
+   the stage.
+
+   Modes: native fullscreen (Android/desktop, ⛶ or the F key) or the
+   CSS pseudo-fullscreen (iOS Safari: #app becomes a fixed overlay,
+   self-rotated 90° in a portrait viewport). AUTO-ROTATE: on small
+   screens, rotating the device to landscape auto-enters the pseudo
+   mode (pure CSS — no Fullscreen API call, so no gesture is needed);
+   rotating back to portrait auto-exits. A manual exit via ⛶ during
+   landscape suppresses auto-enter until the next portrait→landscape
+   cycle. The v2 tap remapper (pointer coordinates under the CSS
+   rotation) is kept verbatim; the engine's orbit/zoom/pan gesture
+   ledger is untouched — the canvas never moves in the DOM, only the
+   panels do, and the content loop refits the renderer per frame. */
 (function(){
   if (window.__cambLsFull) return; window.__cambLsFull = true;
-  var css = '#app:fullscreen{width:100%;height:100%}'
-    + '#app:fullscreen .mainline{display:none}'
-    + '#app:fullscreen .topbar{padding-top:4px;padding-bottom:4px}'
-    + '#app:fullscreen .stepbar{padding-top:4px;padding-bottom:4px}'
-    + '#app:fullscreen #stepCard{width:min(330px,44%);top:8px;left:8px}'
-    + '#app:fullscreen .hintpill{bottom:6px}'
-    + '#app.ls-pseudo{position:fixed;inset:0;z-index:99999;background:#fff}'
-    + '#app.ls-pseudo .mainline{display:none}'
-    + '#app.ls-pseudo #stepCard{width:min(330px,44%);top:8px;left:8px}'
-    + '@media (orientation:portrait){#app.ls-pseudo{inset:auto;left:50%;top:50%;width:100vh;height:100vw;transform:translate(-50%,-50%) rotate(90deg)}}';
+  var root=null, stageWrap=null, panelBox=null, parents=null, ancSaved=[];
+  var mode='off', auto=false, suppressed=false;
+  function byId(id){ return document.getElementById(id); }
+  function find(){
+    root = byId('app'); stageWrap = byId('stageWrap');
+    return !!(root && stageWrap);
+  }
+  var CSS = ''
+    + '#app:fullscreen{width:100%;height:100%;max-width:none;background:#fff}'
+    + '#app.ls-pseudo{position:fixed;inset:0;z-index:99999;background:#fff;max-width:none}'
+    + '@media (orientation:portrait){#app.ls-pseudo{inset:auto;left:50%;top:50%;width:100vh;height:100vw;transform:translate(-50%,-50%) rotate(90deg)}}'
+    + '.ls-fill{height:100%!important}'
+    + '#app.ls-on .mainline{display:none}'
+    + '#app.ls-on .appfoot{display:none}'
+    + '#app.ls-on .topbar{padding-top:4px;padding-bottom:4px}'
+    + '.ls-panel{width:min(300px,40%);flex:none;display:flex;flex-direction:column;min-height:0;overflow-y:auto;background:#fff;border-left:1px solid var(--line)}'
+    + '#app.ls-on #stepBar{flex-wrap:wrap;overflow-x:visible;white-space:normal;flex:none}'
+    + '#app.ls-on #stepCard{position:static;width:auto;max-width:none;max-height:none;overflow:visible;box-shadow:none;border:0;border-bottom:1px solid var(--line);border-radius:0;flex:none}'
+    + '#app.ls-on #consolePanel{width:auto;max-width:none;flex:none;border-left:0}';
   function inject(){
     if (document.getElementById('camb-ls-full-css')) return;
     var st = document.createElement('style');
-    st.id = 'camb-ls-full-css'; st.textContent = css;
+    st.id = 'camb-ls-full-css'; st.textContent = CSS;
     (document.head || document.documentElement).appendChild(st);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inject); else inject();
-  function app(){ return document.getElementById('app'); }
-  function refit(){ [80, 350].forEach(function(ms){ setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} }, ms); }); }
+  function refit(){ [60, 200, 450].forEach(function(ms){ setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} }, ms); }); }
+  /* --- ancestor width-cap neutralization (saved + restored) --- */
+  function neutralizeAnc(){
+    ancSaved = [];
+    var el = root.parentElement;
+    while (el && el !== document.body){
+      ancSaved.push({el:el, mw:el.style.maxWidth, w:el.style.width, ml:el.style.marginLeft, mr:el.style.marginRight, h:el.style.height});
+      el.style.maxWidth='none'; el.style.width='100%'; el.style.marginLeft='0'; el.style.marginRight='0'; el.style.height='100%';
+      el = el.parentElement;
+    }
+    document.documentElement.classList.add('ls-fill');
+    if (document.body) document.body.classList.add('ls-fill');
+  }
+  function restoreAnc(){
+    ancSaved.forEach(function(a){ a.el.style.maxWidth=a.mw; a.el.style.width=a.w; a.el.style.marginLeft=a.ml; a.el.style.marginRight=a.mr; a.el.style.height=a.h; });
+    ancSaved = [];
+    document.documentElement.classList.remove('ls-fill');
+    if (document.body) document.body.classList.remove('ls-fill');
+  }
+  /* --- layout: dock the step UI into one column beside the stage --- */
+  function wrap(){
+    if (panelBox || !find()) return;
+    neutralizeAnc();
+    parents = new Map();
+    ['stepBar','stepCard','consolePanel'].forEach(function(id){
+      var el = byId(id);
+      if (el && !parents.has(el.parentNode)) parents.set(el.parentNode, Array.prototype.slice.call(el.parentNode.children));
+    });
+    panelBox = document.createElement('div'); panelBox.className = 'ls-panel';
+    stageWrap.parentNode.insertBefore(panelBox, stageWrap.nextSibling);
+    ['stepBar','stepCard','consolePanel'].forEach(function(id){
+      var el = byId(id); if (el) panelBox.appendChild(el);
+    });
+    root.classList.add('ls-on');
+    refit();
+  }
+  function unwrap(){
+    if (!panelBox) return;
+    restoreAnc();
+    parents.forEach(function(kids, parent){
+      kids.forEach(function(k){ if (k !== panelBox) parent.appendChild(k); });
+    });
+    panelBox.remove(); panelBox = null; parents = null;
+    if (root) root.classList.remove('ls-on');
+    refit();
+  }
+  /* --- modes --- */
+  function pseudoOn(isAuto){
+    if (mode !== 'off' || !find()) return;
+    inject();
+    root.classList.add('ls-pseudo');
+    mode = 'pseudo'; auto = !!isAuto;
+    wrap();
+  }
+  function pseudoOff(){
+    if (mode !== 'pseudo') return;
+    root.classList.remove('ls-pseudo');
+    mode = 'off'; auto = false;
+    unwrap();
+  }
+  function isLandscape(){ return window.innerWidth >= window.innerHeight; }
   document.addEventListener('fullscreenchange', function(){
-    if (document.fullscreenElement){
-      if (screen.orientation && screen.orientation.lock){ screen.orientation.lock('landscape').catch(function(){}); }
-    } else if (screen.orientation && screen.orientation.unlock){
-      try{ screen.orientation.unlock(); }catch(e){}
+    var a = byId('app');
+    if (document.fullscreenElement && a && document.fullscreenElement === a){
+      mode = 'fs'; auto = false; wrap();
+    } else if (mode === 'fs'){
+      mode = 'off';
+      if (screen.orientation && screen.orientation.unlock){ try{ screen.orientation.unlock(); }catch(e){} }
+      unwrap();
     }
     refit();
   });
   document.addEventListener('click', function(e){
     var t = e.target; if (!t || t.id !== 'btnFull') return;
-    var a = app(); if (!a) return;
-    if (a.classList.contains('ls-pseudo')){ a.classList.remove('ls-pseudo'); refit(); return; }
-    if (document.fullscreenElement) return;
-    if (!a.requestFullscreen){ a.classList.add('ls-pseudo'); refit(); }
+    if (!find()) return;
+    if (mode === 'pseudo'){ pseudoOff(); if (isLandscape()) suppressed = true; return; }
+    if (mode === 'fs'){ try{ var p = document.exitFullscreen(); if (p && p.catch) p.catch(function(){}); }catch(err){} return; }
+    suppressed = false;
+    if (root.requestFullscreen){
+      root.requestFullscreen().then(function(){
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function(){});
+      }).catch(function(){ pseudoOn(false); });
+    } else pseudoOn(false);
   }, true);
-  window.addEventListener('orientationchange', refit);
-  /* --- pointer coordinate remapper for the rotated pseudo mode --- */
+  /* --- auto-rotate (parent-snippet v3.6 rules, standalone form) --- */
+  function isSmallScreen(){
+    try{ return Math.min(screen.width, screen.height) <= 1100; }catch(e){ return false; }
+  }
+  function syncAuto(){
+    if (!isLandscape()){
+      suppressed = false;
+      if (mode === 'pseudo' && auto) pseudoOff();
+      return;
+    }
+    if (!isSmallScreen()) return;
+    if (mode === 'off' && !suppressed) pseudoOn(true);
+  }
+  var autoT = null;
+  window.addEventListener('resize', function(){ clearTimeout(autoT); autoT = setTimeout(syncAuto, 60); });
+  window.addEventListener('orientationchange', function(){ setTimeout(syncAuto, 180); refit(); });
+  setTimeout(syncAuto, 800);
+  /* --- pointer coordinate remapper for the rotated pseudo mode (v2, verbatim) --- */
   function pseudoRotated(){
-    var a = app();
+    var a = byId('app');
     return !!(a && a.classList.contains('ls-pseudo') && window.matchMedia && window.matchMedia('(orientation: portrait)').matches);
   }
   function remap(e){
@@ -903,4 +1039,4 @@ else cambBoot();
     document.addEventListener(type, remap, true);
   });
 })();
-/* ===== end landscape-fullscreen test block ===== */
+/* ===== end landscape-fullscreen block ===== */
